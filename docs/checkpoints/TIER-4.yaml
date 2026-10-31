@@ -2,7 +2,7 @@ tier: 4
 status: ok
 branch: tier/4
 base: tier/3
-pr: pending
+pr: https://github.com/LMafra/futebol/pull/6
 signed_commits: true  # SSH ed25519, git log %G? = G em todos os commits do tier
 context_read:
   - AGENTS.md
