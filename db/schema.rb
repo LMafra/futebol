@@ -10,9 +10,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000015) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000017) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "bolao_scoring_rules", force: :cascade do |t|
+    t.bigint "pool_id"
+    t.string "kind", null: false
+    t.integer "points", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pool_id", "kind"], name: "index_bolao_scoring_rules_on_pool_id_and_kind", unique: true, nulls_not_distinct: true
+    t.check_constraint "kind::text = ANY (ARRAY['exact_score'::character varying, 'winner_and_goal_diff'::character varying, 'winner'::character varying, 'draw'::character varying]::text[])", name: "bolao_scoring_rules_kind_valid"
+    t.check_constraint "points >= 0", name: "bolao_scoring_rules_points_non_negative"
+  end
+
+  create_table "cartola_scoring_rules", force: :cascade do |t|
+    t.string "name", null: false
+    t.decimal "goal_points", precision: 5, scale: 2, null: false
+    t.decimal "assist_points", precision: 5, scale: 2, null: false
+    t.decimal "yellow_card_penalty", precision: 5, scale: 2, null: false
+    t.decimal "red_card_penalty", precision: 5, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_cartola_scoring_rules_on_name", unique: true
+    t.check_constraint "assist_points >= 0::numeric", name: "cartola_scoring_rules_assist_points_non_negative"
+    t.check_constraint "goal_points >= 0::numeric", name: "cartola_scoring_rules_goal_points_non_negative"
+    t.check_constraint "red_card_penalty >= 0::numeric", name: "cartola_scoring_rules_red_card_penalty_non_negative"
+    t.check_constraint "yellow_card_penalty >= 0::numeric", name: "cartola_scoring_rules_yellow_card_penalty_non_negative"
+  end
 
   create_table "core_audit_logs", force: :cascade do |t|
     t.bigint "user_id"
