@@ -57,10 +57,10 @@ module Core
       self.scoring_token = scoring_token
     end
 
-    def clear_scores
+    def clear_scores(reversal_token = SecureRandom.uuid)
       self.scores_calculated_at = nil
       self.scoring_token = nil
-      self.reversal_token = SecureRandom.uuid
+      self.reversal_token = reversal_token
     end
 
     def teams_must_differ
