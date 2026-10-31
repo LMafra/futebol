@@ -12,7 +12,7 @@ RSpec.describe Scoring::Engine do
     end
 
     it 'picks the Cartola strategy' do
-      expect(described_class.scorer_for('cartola')).to eq(Scoring::CartolaScorer)
+      expect(described_class.scorer_for('cartola')).to eq(Cartola::Scorer)
     end
 
     it 'falls back to the default (null) strategy for unknown or missing games' do
