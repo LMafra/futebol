@@ -1,9 +1,9 @@
 class SessionsController < ApplicationController
   allow_unauthenticated_access only: %i[new create]
   skip_after_action :verify_authorized
-  rate_limit to: 10, within: 3.minutes, only: :create, with: lambda {
-    redirect_to new_session_path, alert: 'Try again later.'
-  }
+  include AuthRateLimiting
+
+  limit_auth_attempts
 
   def new; end
 
