@@ -1,0 +1,2 @@
+# Core never depends on other engines (docs/adr/0001-arch.md §1).
+enforce_dependencies: true
