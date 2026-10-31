@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000014) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000015) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -68,10 +68,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000014) do
     t.index ["home_team_id"], name: "index_core_matches_on_home_team_id"
     t.index ["match_date"], name: "index_core_matches_on_match_date"
     t.index ["scoring_token"], name: "index_core_matches_on_scoring_token", unique: true, where: "(scoring_token IS NOT NULL)"
-    t.check_constraint "(status::text = 'scored'::text) = (scores_calculated_at IS NOT NULL)", name: "matches_scored_has_timestamp"
     t.check_constraint "home_score >= 0 AND away_score >= 0", name: "matches_scores_non_negative"
     t.check_constraint "home_team_id <> away_team_id", name: "matches_distinct_teams"
-    t.check_constraint "status::text = ANY (ARRAY['scheduled'::character varying, 'live'::character varying, 'finished'::character varying, 'scored'::character varying]::text[])", name: "matches_status_valid"
+    t.check_constraint "scores_calculated_at IS NULL OR (status::text = ANY (ARRAY['finished'::character varying, 'scored'::character varying]::text[]))", name: "matches_timestamp_after_finish"
+    t.check_constraint "status::text <> 'scored'::text OR scores_calculated_at IS NOT NULL", name: "matches_scored_has_timestamp"
+    t.check_constraint "status::text = ANY (ARRAY['scheduled'::character varying, 'live'::character varying, 'finished'::character varying, 'scored'::character varying, 'reverted'::character varying]::text[])", name: "matches_status_valid"
   end
 
   create_table "core_players", force: :cascade do |t|
