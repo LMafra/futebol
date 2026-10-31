@@ -1,0 +1,22 @@
+phase: 3
+version: 2
+correction: 3
+status: warning
+artifacts:
+  - docs/spec-v2.md
+handoff: docs/handoffs/PHASE-3.md
+acceptance:
+  - {name: parágrafo AASM substituído pelo texto literal, result: pass, evidence: "docs/spec-v2.md §3 (snippet transition-after + 2 bullets → 1 bullet literal)"}
+  - {name: seção 'Specs de regressão obrigatórias' com bloco literal, result: pass, evidence: "docs/spec-v2.md fim do arquivo"}
+  - {name: nada mais alterado, result: pass, evidence: "diff docs/spec.md docs/spec-v2.md: só §3 + seção nova"}
+warnings:
+  - "premissa incorreta: AASM roda event `before` ANTES dos guards (README aasm/aasm linhas 269-273; lib/aasm/aasm.rb: fire_default_callbacks antes de event.may_fire?). Spec v1 estava correta neste ponto"
+  - "texto novo afirma que transition `after` adiciona 2º save!: falso p/ v1 (assign_attributes sem save; AASM faz 1 save)"
+  - "conflito: (a) revert_match! salva status=finished com scores_calculated_at presente → viola check constraint matches_scored_has_timestamp (spec §2) → PG::CheckViolation"
+  - "conflito: bloco RSpec usa estado `reverted` e from `finished`; ADR 0001 §2 = scored → finished, sem `reverted`"
+  - "conflito: factory create(:match, status: :finished, scores_calculated_at: 1.hour.ago) viola a mesma constraint"
+  - "interpretação: 'justificativa' = snippet revert_points_then_clear + 2 bullets (texto novo define implementação; manter snippet contradiria)"
+  - "decisão necessária: (1) voltar ao snippet v1, ou (2) adicionar estado `reverted` + afrouxar constraint no ADR/spec"
+cascade: "Fase 4 só TICKET-0003 → docs/tickets/TICKET-0003-v2.md (2 specs como critério de pronto)"
+downstream_affected: [4]
+mcp_calls: []

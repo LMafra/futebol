@@ -1,0 +1,25 @@
+phase: 4
+version: 3
+correction: 4
+status: ok
+artifacts:
+  - docs/tickets/TICKET-0014.md .. TICKET-0022.md
+  - docs/tickets/TICKET-0012-v2.md
+  - docs/tickets/INDEX.md (22 linhas; v1 no git a1b1f8b)
+handoff: docs/handoffs/PHASE-4.md
+acceptance:
+  - {name: 9 tickets novos no formato padrão, result: pass, evidence: "script: 0 campos faltando em 0014-0022"}
+  - {name: TICKET-0012 deps → 0001, 0002, 0010, 0014, 0015, result: pass, evidence: "TICKET-0012-v2.md"}
+  - {name: TICKET-0013 deps [0001], result: pass, evidence: "já era [0001]; sem alteração"}
+  - {name: INDEX com 22 tickets, result: pass, evidence: "docs/tickets/INDEX.md"}
+  - {name: sem dependência circular, result: pass, evidence: "DFS sobre 22 tickets: 0 ciclos"}
+warnings:
+  - "dependência para frente (não circular): 0012 → 0014, 0015; numeração ≠ ordem topológica (não reordenado; INDEX lista ordem de execução)"
+  - "sobreposição: 0015 (Pundit + 5 policies) × 0010 (ActiveAdmin + Pundit); 5 policies PORO já existem no scaffold"
+  - "sobreposição: 0017 (Scoring::Engine Strategy) × 0004 (inclui Scoring::Engine); 0004 deveria consumir 0017 (dep 0004→0017 não adicionada)"
+  - "sobreposição: 0022 (seeds reais) × 0002 (seeds idempotentes)"
+  - "0014 escolhe Rails 8 native auth (generator) em vez de Devise"
+  - "INDEX.md atualizado in-place por instrução explícita; 0003/0012 versionados como -v2"
+cascade: "nenhuma"
+downstream_affected: []
+mcp_calls: []

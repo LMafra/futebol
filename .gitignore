@@ -17,6 +17,8 @@
 /node_modules
 /coverage
 /spec/examples.txt
+*.sqlite3
+*.sqlite3-*
 
 # Secrets
 /config/master.key

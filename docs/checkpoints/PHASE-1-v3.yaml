@@ -1,0 +1,19 @@
+phase: 1
+version: 3
+correction: 2
+status: ok
+artifacts:
+  - docs/adr/0002-activeadmin-rails81.md
+handoff: docs/handoffs/PHASE-1.md
+acceptance:
+  - {name: versões rails/activeadmin/ransack/formtastic do Gemfile.lock, result: pass, evidence: "rails 8.1.4; demais não instalados"}
+  - {name: últimos 5 releases consultados, result: pass, evidence: "gh api releases?per_page=5 + rubygems deps"}
+  - {name: issues 'Rails 8.1' no título, result: pass, evidence: "search/issues: #8993, #8537 fechadas; 0 abertas"}
+  - {name: tabela + decisão + justificativa ≤3 linhas + impacto TICKET-0001, result: pass, evidence: "docs/adr/0002-activeadmin-rails81.md"}
+  - {name: Gemfile inalterado, result: pass, evidence: "git diff Gemfile vazio"}
+warnings:
+  - "Gemfile.lock resolve rails 8.1.4; checkpoint PHASE-5.yaml registrou 8.1.2 (versão do gerador). Não regenerado"
+  - "decisão = Plano A via gem 4.0.0.beta23 (prerelease), não git main; confirmar com o time"
+cascade: "nenhuma"
+downstream_affected: []
+mcp_calls: []
