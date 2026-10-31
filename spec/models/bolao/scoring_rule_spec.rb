@@ -1,6 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Bolao::ScoringRule do
+  let(:pool) { create(:bolao_pool) }
+  let(:other_pool) { create(:bolao_pool) }
+
   it 'defines the four outcome kinds in precedence order' do
     expect(described_class::KINDS).to eq(%w[exact_score winner_and_goal_diff winner draw])
   end
@@ -15,10 +18,10 @@ RSpec.describe Bolao::ScoringRule do
   end
 
   it 'rejects a duplicated kind within the same pool' do
-    create(:bolao_scoring_rule, pool_id: 7, kind: 'winner')
+    create(:bolao_scoring_rule, pool: pool, kind: 'winner')
 
-    expect(build(:bolao_scoring_rule, pool_id: 7, kind: 'winner')).not_to be_valid
-    expect(build(:bolao_scoring_rule, pool_id: 8, kind: 'winner')).to be_valid
+    expect(build(:bolao_scoring_rule, pool: pool, kind: 'winner')).not_to be_valid
+    expect(build(:bolao_scoring_rule, pool: other_pool, kind: 'winner')).to be_valid
   end
 
   describe 'database constraints' do
@@ -37,8 +40,8 @@ RSpec.describe Bolao::ScoringRule do
     end
 
     it 'raises RecordNotUnique for a duplicated kind in the same pool' do
-      create(:bolao_scoring_rule, pool_id: 7, kind: 'draw')
-      duplicate = build(:bolao_scoring_rule, pool_id: 7, kind: 'draw')
+      create(:bolao_scoring_rule, pool: pool, kind: 'draw')
+      duplicate = build(:bolao_scoring_rule, pool: pool, kind: 'draw')
 
       expect { duplicate.save!(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
     end
@@ -52,8 +55,6 @@ RSpec.describe Bolao::ScoringRule do
   end
 
   describe '.for' do
-    let(:pool) { Struct.new(:id).new(42) }
-
     before do
       { exact_score: 10, winner_and_goal_diff: 7, winner: 5, draw: 3 }.each do |kind, points|
         create(:bolao_scoring_rule, pool_id: nil, kind:, points:)
@@ -69,8 +70,8 @@ RSpec.describe Bolao::ScoringRule do
     end
 
     it 'uses the pool override where one exists' do
-      create(:bolao_scoring_rule, pool_id: pool.id, kind: 'exact_score', points: 15)
-      create(:bolao_scoring_rule, pool_id: 99, kind: 'winner', points: 1)
+      create(:bolao_scoring_rule, pool: pool, kind: 'exact_score', points: 15)
+      create(:bolao_scoring_rule, pool: other_pool, kind: 'winner', points: 1)
 
       expect(described_class.for(pool)).to eq(exact_score: 15, winner_and_goal_diff: 7, winner: 5, draw: 3)
     end

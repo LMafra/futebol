@@ -1,7 +1,9 @@
 module Bolao
-  # pool_id NULL = global rule. FK to bolao_pools arrives with the pools table (TICKET-0004).
+  # pool_id NULL = global rule.
   class ScoringRule < ApplicationRecord
     KINDS = %w[exact_score winner_and_goal_diff winner draw].freeze
+
+    belongs_to :pool, class_name: 'Bolao::Pool', optional: true
 
     validates :kind, inclusion: { in: KINDS }, uniqueness: { scope: :pool_id }
     validates :points, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
