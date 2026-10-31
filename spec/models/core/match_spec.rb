@@ -127,6 +127,15 @@ RSpec.describe Core::Match do
       expect(match.reversal_token).to match(/\A\h{8}-\h{4}-\h{4}-\h{4}-\h{12}\z/)
     end
 
+    it 'stores the reversal_token handed to revert_match!' do
+      match = create(:match, status: 'scored', scores_calculated_at: 1.hour.ago, scoring_token: SecureRandom.uuid)
+      token = SecureRandom.uuid
+
+      match.revert_match!(token)
+
+      expect(match.reload).to have_attributes(status: 'reverted', reversal_token: token)
+    end
+
     it 'can be scored again after a revert' do
       match = create(:match, status: 'scored', scores_calculated_at: 1.hour.ago, scoring_token: SecureRandom.uuid)
       match.revert_match!
