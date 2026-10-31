@@ -2,9 +2,9 @@ class PasswordsController < ApplicationController
   allow_unauthenticated_access
   skip_after_action :verify_authorized
   before_action :set_user_by_token, only: %i[edit update]
-  rate_limit to: 10, within: 3.minutes, only: :create, with: lambda {
-    redirect_to new_password_path, alert: 'Try again later.'
-  }
+  include AuthRateLimiting
+
+  limit_auth_attempts
 
   def new; end
 
