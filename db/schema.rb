@@ -10,9 +10,49 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000021) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000024) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "bolao_pools", force: :cascade do |t|
+    t.bigint "championship_id", null: false
+    t.bigint "owner_id", null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["championship_id"], name: "index_bolao_pools_on_championship_id"
+    t.index ["owner_id"], name: "index_bolao_pools_on_owner_id"
+  end
+
+  create_table "bolao_prediction_scores", force: :cascade do |t|
+    t.bigint "prediction_id", null: false
+    t.integer "points", null: false
+    t.uuid "scoring_token", null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_bolao_prediction_scores_on_discarded_at"
+    t.index ["prediction_id", "scoring_token"], name: "idx_on_prediction_id_scoring_token_acdf12d38b", unique: true
+    t.index ["scoring_token"], name: "index_bolao_prediction_scores_on_scoring_token"
+    t.check_constraint "points >= 0", name: "bolao_prediction_scores_points_non_negative"
+  end
+
+  create_table "bolao_predictions", force: :cascade do |t|
+    t.bigint "pool_id", null: false
+    t.bigint "user_id", null: false
+    t.bigint "match_id", null: false
+    t.integer "home_guess", null: false
+    t.integer "away_guess", null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_bolao_predictions_on_discarded_at"
+    t.index ["match_id"], name: "index_bolao_predictions_on_match_id"
+    t.index ["pool_id", "user_id", "match_id"], name: "index_bolao_predictions_kept_unique", unique: true, where: "(discarded_at IS NULL)"
+    t.index ["pool_id"], name: "index_bolao_predictions_on_pool_id"
+    t.index ["user_id"], name: "index_bolao_predictions_on_user_id"
+    t.check_constraint "home_guess >= 0 AND away_guess >= 0", name: "bolao_predictions_guesses_non_negative"
+  end
 
   create_table "bolao_scoring_rules", force: :cascade do |t|
     t.bigint "pool_id"
@@ -194,6 +234,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000021) do
     t.check_constraint "cpf IS NULL OR cpf::text ~ '^[0-9]{11}$'::text", name: "core_users_cpf_digits"
   end
 
+  add_foreign_key "bolao_pools", "core_championships", column: "championship_id"
+  add_foreign_key "bolao_pools", "core_users", column: "owner_id"
+  add_foreign_key "bolao_prediction_scores", "bolao_predictions", column: "prediction_id"
+  add_foreign_key "bolao_predictions", "bolao_pools", column: "pool_id"
+  add_foreign_key "bolao_predictions", "core_matches", column: "match_id"
+  add_foreign_key "bolao_predictions", "core_users", column: "user_id"
+  add_foreign_key "bolao_scoring_rules", "bolao_pools", column: "pool_id"
   add_foreign_key "cartola_lineup_players", "cartola_lineups", column: "lineup_id"
   add_foreign_key "cartola_lineup_players", "core_players", column: "player_id"
   add_foreign_key "cartola_lineups", "cartola_squads", column: "squad_id"

@@ -62,9 +62,10 @@ RSpec.describe Scoring::Engine do
     end
 
     it 'defaults to Bolao::ScoringRule.for(prediction.pool)' do
+      pool = create(:bolao_pool)
       bolao_rules.each { |kind, points| create(:bolao_scoring_rule, pool_id: nil, kind:, points:) }
-      create(:bolao_scoring_rule, pool_id: 5, kind: 'exact_score', points: 12)
-      pooled = Struct.new(:home_guess, :away_guess, :pool).new(2, 1, Struct.new(:id).new(5))
+      create(:bolao_scoring_rule, pool_id: pool.id, kind: 'exact_score', points: 12)
+      pooled = Struct.new(:home_guess, :away_guess, :pool).new(2, 1, pool)
 
       expect(described_class.points_for(prediction: pooled, home: 2, away: 1)).to eq(12)
     end
