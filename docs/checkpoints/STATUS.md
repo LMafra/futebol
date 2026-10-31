@@ -16,7 +16,7 @@
 | Tier | Tickets ok | failed | blocked | Status |
 |---|---|---|---|---|
 | 0 | 3 (0001, 0013, 0020) | 0 | 0 | ok — [TIER-0.yaml](TIER-0.yaml) |
-| 1 | 3 (0014, 0002, 0011) | 0 | 0 | ok — [TIER-1.yaml](TIER-1.yaml) |
+| 1 | 3 (0014, 0002, 0011) | 0 | 0 | ok — [TIER-1.yaml](TIER-1.yaml) · [PR #3](https://github.com/LMafra/futebol/pull/3) |
 
 ## Correções aplicadas nesta rodada
 | correção | status | artefato | impacto |
