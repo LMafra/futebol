@@ -16,6 +16,7 @@
 | Tier | Tickets ok | failed | blocked | Status |
 |---|---|---|---|---|
 | 0 | 3 (0001, 0013, 0020) | 0 | 0 | ok — [TIER-0.yaml](TIER-0.yaml) |
+| 1 | 3 (0014, 0002, 0011) | 0 | 0 | ok — [TIER-1.yaml](TIER-1.yaml) |
 
 ## Correções aplicadas nesta rodada
 | correção | status | artefato | impacto |
@@ -44,8 +45,9 @@
 ## Próximos passos
 1. ~~Ler ADR 0002~~ e ~~rodar TICKET-0001~~ — concluídos no TIER-0 (Plano A aplicado)
 2. Revisar `docs/spec-v2.md` (parágrafo AASM + regression specs) — bloqueia TICKET-0003
-3. TIER-1: TICKET-0002 (core models + seeds), 0011, 0014 (paralelos após 0001)
+3. ~~TIER-1: TICKET-0002, 0011, 0014~~ — concluídos (auth nativa em Core, schema core + seeds, design system + Lookbook)
+4. TIER-2 conforme `docs/tickets/INDEX.md` (base `tier/1`)
 
 ```bash
-cd /home/lmafra/projects/futebol && bin/setup && git switch -c ticket/0002-core-models tier/0
+cd /home/lmafra/projects/futebol && bin/setup && git switch -c tier/2 tier/1
 ```
