@@ -1,0 +1,14 @@
+phase: 7
+status: ok
+artifacts:
+  - docs/handoffs/PHASE-7.md
+  - docs/checkpoints/STATUS.md
+handoff: docs/handoffs/PHASE-7.md
+acceptance:
+  - {name: saída ≤40 linhas, result: pass, evidence: "wc -l docs/handoffs/PHASE-7.md"}
+  - {name: tree + tabela tickets + 4 MCPs + 3 linhas TICKET-0001, result: pass, evidence: "seções Tree/Tickets/MCP/TICKET-0001"}
+warnings:
+  - "caveman-compress não executado (chama API externa e sobrescreve original, viola versionamento); regras aplicadas manualmente"
+  - "skill ultracave indisponível; find-skills não executado"
+downstream_affected: []
+mcp_calls: []
