@@ -4,7 +4,7 @@
 |---|---|---|---|---|
 | [0001](TICKET-0001.md) | a | Rails 8 + 4 engines + packwerk | — | neon (opc) |
 | [0002](TICKET-0002.md) | b | Core models + seeds idempotentes | 0001 | neon |
-| [0003](TICKET-0003-v2.md) | c | AASM + fix guard revert_match! (v2) | 0002 | — |
+| [0003](TICKET-0003-v3.md) | c | AASM + fix guard revert_match! (v3) | 0002 | — |
 | [0004](TICKET-0004.md) | d | ProcessMatchPointsJob + Scoring::Engine | 0003 | — |
 | [0005](TICKET-0005.md) | e | RevertMatchPointsService (discard + AuditLog) | 0003, 0004 | — |
 | [0006](TICKET-0006.md) | f | Preview Bolão candidate_home/away | 0004 | — |
