@@ -12,6 +12,11 @@
 | 6 PR | ok | [PR #1](https://github.com/LMafra/futebol/pull/1) | — | 4 MCPs manual |
 | 7 Compress | ok | `docs/handoffs/PHASE-7.md` | — | tabela de tickets desatualizada (13 → 22), não regenerada |
 
+## Tiers
+| Tier | Tickets ok | failed | blocked | Status |
+|---|---|---|---|---|
+| 0 | 3 (0001, 0013, 0020) | 0 | 0 | ok — [TIER-0.yaml](TIER-0.yaml) |
+
 ## Correções aplicadas nesta rodada
 | correção | status | artefato | impacto |
 |---|---|---|---|
@@ -37,10 +42,10 @@
 - Resolver conflito AASM = correção local na spec (v3) + TICKET-0003 (v3); sem cascata além disso
 
 ## Próximos passos
-1. Ler `docs/adr/0002-activeadmin-rails81.md` e confirmar decisão
-2. Rodar TICKET-0001 com a decisão de compatibilidade em mãos
-3. Revisar `docs/spec-v2.md` (só o parágrafo AASM + seção de regression specs)
+1. ~~Ler ADR 0002~~ e ~~rodar TICKET-0001~~ — concluídos no TIER-0 (Plano A aplicado)
+2. Revisar `docs/spec-v2.md` (parágrafo AASM + regression specs) — bloqueia TICKET-0003
+3. TIER-1: TICKET-0002 (core models + seeds), 0011, 0014 (paralelos após 0001)
 
 ```bash
-cd /home/lmafra/projects/futebol && git switch -c ticket/0001-engines-packwerk && bundle add packwerk --group development && bundle add activeadmin --version 4.0.0.beta23 && bundle exec packwerk init
+cd /home/lmafra/projects/futebol && bin/setup && git switch -c ticket/0002-core-models tier/0
 ```

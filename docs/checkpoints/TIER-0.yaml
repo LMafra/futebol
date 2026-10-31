@@ -1,0 +1,66 @@
+tier: 0
+status: ok
+branch: tier/0
+base: feat/scaffold-docs-deploy-bootstrap
+signed_commits: true  # SSH ed25519, git log %G? = G em todos os commits do tier
+context_read:
+  - AGENTS.md
+  - docs/tickets/INDEX.md
+  - docs/spec-v2.md
+  - docs/checkpoints/STATUS.md
+  - docs/adr/0001-arch.md   # 0001-arch-v2.md não existe (Correção 1: "ADR ok, sem alterações")
+  - docs/adr/0002-activeadmin-rails81.md
+tickets:
+  - id: TICKET-0001
+    status: ok
+    branch: ticket/0001-engines-packwerk
+    commit: a56388b
+    failures: 0
+    evidence:
+      - "Gemfile: activeadmin 4.0.0.beta23 (ADR 0002 Plano A) + aasm, discard, activerecord-import, pundit, view_component, stoplight, faraday, sentry, lograge; dev: packwerk 3.3, lookbook 2.3"
+      - "Gemfile.lock: rails 8.1.4, activeadmin 4.0.0.beta23, ransack 6.0.1, formtastic 6.0.0, arbre 2.2.1"
+      - "active_admin:install --skip-users --skip-comments; CSS via Tailwind standalone (plugin.js da gem, sem node) + rake active_admin:build encadeado em tailwindcss:build"
+      - "spec/requests/admin/dashboard_spec.rb: GET /admin 200 + active_admin-<digest>.css (ActiveAdmin × Rails 8.1 validado)"
+      - "packwerk: root → 4 engines; bolao/cartola/simulador → core; core → nenhum; probe bolao→cartola gerou 'Dependency violation' (removida)"
+      - "spec/engines/boot_spec.rb: 12 exemplos (4 engines × definida/railtie, isolate_namespace, root)"
+  - id: TICKET-0013
+    status: ok
+    branch: ticket/0013-mcp-setup
+    commit: 70dd04e
+    failures: 0
+    evidence:
+      - "docs/mcp/README.md: 4 MCPs × instalação, env, escopo, smoke test, comando manual; smoke status = manual (MCPs não rodados)"
+      - ".cursor/mcp.json.example (JSON válido, ${env:VAR}, sem segredos); /.cursor/mcp.json no .gitignore"
+  - id: TICKET-0020
+    status: ok
+    branch: ticket/0020-bin-setup
+    commit: 4b70f74
+    failures: 1
+    evidence:
+      - "bin/setup: bundle → .env → docker futebol-pg (start/run + pg_isready TCP) → db:prepare → db:seed → tailwindcss:build → hooksPath → log/tmp clear; --server opcional"
+      - ".env.example: DATABASE_URL, NEON_DEV_DATABASE_URL, R2_* (6), RESEND_API_KEY, RENDER_DEPLOY_HOOK_URL, DB_*, SENTRY_DSN"
+      - "clone limpo /tmp + container novo (porta 5441): bin/setup 2× exit 0; test command no clone exit 0"
+      - "repo principal: bin/setup exit 0 ('futebol-pg already running on port 5440')"
+test_command: "bundle exec rspec && bundle exec rubocop && bundle exec packwerk check && bin/rails zeitwerk:check"
+test_results:
+  - {after: TICKET-0001, exit: 0, rspec: "13 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "All is good!"}
+  - {after: TICKET-0013, exit: 0, rspec: "13 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "All is good!"}
+  - {after: TICKET-0020, exit: 0, rspec: "13 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "All is good!"}
+acceptance:
+  - {name: bin/rails zeitwerk:check passa, result: pass, evidence: "All is good! (após cada ticket)"}
+  - {name: bundle exec packwerk check passa, result: pass, evidence: "No offenses detected / No stale violations"}
+  - {name: bin/setup roda do zero sem erro, result: pass, evidence: "clone limpo + container novo: RUN1_OK, RUN2_OK"}
+  - {name: boot_spec confirma 4 engines, result: pass, evidence: "spec/engines/boot_spec.rb 12/12"}
+  - {name: .env.example com variáveis obrigatórias, result: pass, evidence: ".env.example"}
+  - {name: docs/mcp/README.md lista 4 MCPs com comando manual, result: pass, evidence: "tabela Resumo: neon, render, r2, resend"}
+  - {name: 0001/0013/0020 status ok, result: pass, evidence: "este arquivo"}
+warnings:
+  - "TICKET-0020 falha 1: pre-commit recusou .env.example (regex '.env.'); harness seguiu com ';' e rodou bin/setup no repo real (container extra 5441 + .env ignorado). Corrigido: regex exclui .env.example (probe .env.local ainda bloqueado); container removido"
+  - "export DB_* persistiu no shell e recriou container de teste uma vez; removido; rerun no ambiente real ok"
+  - "spec-v2 §1 diz activeadmin ~> 3.5; Gemfile segue ADR 0002 (4.0.0.beta23). spec não alterada (proibido)"
+  - "ActiveAdmin 4 assume npm/cssbundling; adotado Tailwind standalone importando plugin.js da gem (tailwind-active_admin.config.js)"
+  - "config.logout_link_path = :destroy_admin_user_session_path (default do generator, rota inexistente sem Devise) → ajustar no TICKET-0014"
+  - "bin/setup: servidor agora opt-in (--server); default Rails era iniciar bin/dev"
+  - "assinatura SSH configurada no .git/config local (gpg.format ssh, user.signingkey ~/.ssh/id_ed25519.pub, commit.gpgsign true); chave precisa ser cadastrada como Signing key no GitHub para 'Verified'"
+blocked: []
+failed: []
