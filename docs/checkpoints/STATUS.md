@@ -19,6 +19,7 @@
 | 1 | 3 (0014, 0002, 0011) | 0 | 0 | ok — [TIER-1.yaml](TIER-1.yaml) · [PR #3](https://github.com/LMafra/futebol/pull/3) |
 | 2 | 4 (0003, 0016, 0017, 0022) | 0 | 0 | ok — [TIER-2.yaml](TIER-2.yaml) · [PR #4](https://github.com/LMafra/futebol/pull/4) |
 | 3 | 5 (0015, 0019, 0018, 0007, 0004) | 0 | 0 | ok — [TIER-3.yaml](TIER-3.yaml) · [PR #5](https://github.com/LMafra/futebol/pull/5) |
+| 4 | 4 (0008, 0009, 0005, 0006) | 0 | 0 | ok — [TIER-4.yaml](TIER-4.yaml) |
 
 ## Correções aplicadas nesta rodada
 | correção | status | artefato | impacto |
@@ -50,9 +51,11 @@
 3. ~~TIER-1: TICKET-0002, 0011, 0014~~ — concluídos (auth nativa em Core, schema core + seeds, design system + Lookbook)
 4. ~~TIER-2: TICKET-0003, 0016, 0017, 0022~~ — concluídos (AASM guard-first, ScoringRule Bolão + Cartola, Scoring::Engine, seeds reais)
 5. ~~TIER-3: TICKET-0015, 0019, 0018, 0007, 0004~~ — concluídos (Pundit, rate limit 5/3min, anonimização LGPD, preview Cartola dry-run, ProcessMatchPointsJob idempotente; FK `pool_id` adicionada)
-6. TIER-4 conforme `docs/tickets/INDEX.md` (base `tier/3`): 0005, 0006, 0008 desbloqueados por 0004; 0009 livre; depois 0010
+6. ~~TIER-4: TICKET-0008, 0009, 0005, 0006~~ — concluídos (broadcast com `unless_exist`, import CSV em streaming com upsert por `external_id`, revert com discard + AuditLog `ip_address`, preview Bolão com `candidate_home/away`; Active Storage instalado)
+7. TIER-5: TICKET-0010 (ActiveAdmin + Pundit; enfileirar `ProcessMatchPointsJob`, `RevertMatchPointsJob`, `ProcessCsvImportJob` nas páginas admin) → depois 0012 → 0021
 
 ```bash
-cd /home/lmafra/projects/futebol && bin/setup && git switch -c tier/4 tier/3
+cd /home/lmafra/projects/futebol && bin/setup && git switch -c tier/5 tier/4
 ```
 - Bancos locais criados antes do TIER-3 têm versões órfãs dos stubs Bolão/Cartola (07..12): rodar `bin/rails db:reset`
+- TIER-4 adiciona migrations 25 (Active Storage) e 26 (`error_log`): `bin/rails db:migrate`
