@@ -8,7 +8,7 @@ class SessionsController < ApplicationController
   def new; end
 
   def create
-    user = Core::User.authenticate_by(params.permit(:email_address, :password))
+    user = Core::User.active.authenticate_by(params.permit(:email_address, :password))
 
     if user
       start_new_session_for user
