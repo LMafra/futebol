@@ -53,6 +53,14 @@ Core::Match.find_or_create_by!(external_id: 'br26-r1-cor-sao') do |match|
   match.match_date = Time.zone.parse('2026-11-08 18:30')
 end
 
+{ exact_score: 10, winner_and_goal_diff: 7, winner: 5, draw: 3 }.each do |kind, points|
+  Bolao::ScoringRule.find_or_create_by!(pool_id: nil, kind:) { |rule| rule.points = points }
+end
+
+Cartola::ScoringRule.find_or_create_by!(name: Cartola::ScoringRule::DEFAULT_NAME) do |rule|
+  rule.assign_attributes(goal_points: 8, assist_points: 5, yellow_card_penalty: 1, red_card_penalty: 3)
+end
+
 if Rails.env.local?
   Core::User.find_or_create_by!(email_address: 'admin@futebol.dev') do |user|
     user.password = ENV.fetch('SEED_ADMIN_PASSWORD', 'futebol-admin')
@@ -60,7 +68,7 @@ if Rails.env.local?
   end
 end
 
-counts = [Core::Team, Core::Player, Core::Championship, Core::Match, Core::User].map do |model|
-  "#{model.model_name.human.pluralize}=#{model.count}"
-end
+seeded_models = [Core::Team, Core::Player, Core::Championship, Core::Match, Core::User, Bolao::ScoringRule,
+                 Cartola::ScoringRule]
+counts = seeded_models.map { |model| "#{model.name}=#{model.count}" }
 puts "seeds ok (#{counts.join(', ')})"
