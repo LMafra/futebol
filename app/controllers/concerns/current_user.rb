@@ -15,10 +15,6 @@ module CurrentUser
 
   def user_signed_in? = current_user.present?
 
-  def authenticate_admin_user!
-    redirect_to main_app.root_path, alert: 'Acesso restrito a administradores.' unless current_user&.admin?
-  end
-
   def set_current_request_details
     Current.ip_address = request.remote_ip
     Current.user_agent = request.user_agent
