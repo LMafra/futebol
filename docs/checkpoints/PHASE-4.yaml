@@ -1,0 +1,16 @@
+phase: 4
+status: ok
+artifacts:
+  - docs/tickets/INDEX.md
+  - docs/tickets/TICKET-0001.md .. TICKET-0013.md
+handoff: docs/handoffs/PHASE-4.md
+acceptance:
+  - {name: 13 tickets presentes (a→m), result: pass, evidence: "ls TICKET-*.md = 13; INDEX coluna item a..m"}
+  - {name: Cada ticket com teste antes/depois, result: pass, evidence: "grep -L 'Teste antes/depois' vazio"}
+  - {name: Ordenados por dependência, result: pass, evidence: "script: forward_deps 0"}
+  - {name: MCPs referenciados onde aplicável, result: pass, evidence: "0001/0002 neon, 0009 r2, 0012 render/neon/r2/resend, 0013 todos"}
+warnings:
+  - "skill to-tickets indisponível localmente; tickets escritos manualmente"
+  - "herda warning da Fase 1 (contratos inferidos)"
+downstream_affected: [5, 6, 7]
+mcp_calls: []
