@@ -121,6 +121,7 @@ GEM
       activesupport (>= 7.0)
     ast (2.4.3)
     base64 (0.3.0)
+    bcrypt (3.1.22)
     benchmark (0.5.0)
     better_html (2.2.0)
       actionview (>= 7.0)
@@ -536,6 +537,7 @@ DEPENDENCIES
   aasm (~> 6.0)
   activeadmin (= 4.0.0.beta23)
   activerecord-import (~> 3.0)
+  bcrypt (~> 3.1.7)
   bolao!
   bootsnap
   brakeman
