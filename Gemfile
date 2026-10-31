@@ -39,6 +39,19 @@ gem 'thruster', require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem 'image_processing', '~> 1.2'
 
+# Domain and platform gems (docs/spec-v2.md §1; activeadmin per docs/adr/0002-activeadmin-rails81.md Plan A)
+gem 'aasm', '~> 6.0'
+gem 'activeadmin', '4.0.0.beta23'
+gem 'activerecord-import', '~> 3.0'
+gem 'discard', '~> 2.0'
+gem 'faraday', '~> 2.15'
+gem 'lograge', '~> 0.15'
+gem 'pundit', '~> 2.5'
+gem 'sentry-rails', '~> 7.2'
+gem 'sentry-ruby', '~> 7.2'
+gem 'stoplight', '~> 6.0'
+gem 'view_component', '~> 4.20'
+
 gem 'bolao', path: 'engines/bolao'
 gem 'cartola', path: 'engines/cartola'
 gem 'core', path: 'engines/core'
@@ -62,6 +75,9 @@ group :development, :test do
 end
 
 group :development do
+  gem 'lookbook', '~> 2.3'
+  gem 'packwerk', '~> 3.3'
+
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem 'web-console'
 end
