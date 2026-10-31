@@ -25,6 +25,7 @@
 /config/credentials/*.key
 /.env*
 !/.env.example
+/.cursor/mcp.json
 
 # Engines
 /engines/*/log/*

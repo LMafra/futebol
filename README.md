@@ -26,6 +26,8 @@ git config core.hooksPath .githooks
 | r2 | `s3-mcp-server` apontando para o endpoint R2 (`AWS_ENDPOINT_URL=https://<account>.r2.cloudflarestorage.com`) | listar/upload/delete em buckets | não |
 | resend | MCP remoto `https://mcp.resend.com` (`RESEND_API_KEY`) | envio/teste de e-mail | não |
 
+Smoke tests, variáveis e comandos manuais por MCP: [docs/mcp/README.md](docs/mcp/README.md) · config exemplo: `.cursor/mcp.json.example`.
+
 ### Status MCP (Fase 6 — deploy bootstrap)
 
 | MCP | status | ação |
