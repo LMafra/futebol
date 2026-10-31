@@ -1,0 +1,90 @@
+tier: 2
+status: ok
+branch: tier/2
+base: tier/1
+pr: pending
+signed_commits: true  # SSH ed25519, git log %G? = G em todos os commits do tier
+context_read:
+  - AGENTS.md
+  - docs/tickets/INDEX.md
+  - docs/spec-v2.md (incl. "Specs de regressão obrigatórias")
+  - docs/checkpoints/TIER-1.yaml (status ok, 3/3 tickets ok)
+  - docs/checkpoints/PHASE-3-v2.yaml (4 conflitos AASM)
+  - docs/adr/0001-arch.md §2
+failure_policy: "falha = mesmo defeito falhar 2x consecutivas; execuções vermelhas com defeitos distintos são registradas, não bloqueiam"
+decisions:
+  - "usuário (AskQuestion): ScoringRule = dois models — Bolao::ScoringRule (pool_id/kind/points, TICKET-0016) + Cartola::ScoringRule (goal_points, assist_points, yellow_card_penalty, red_card_penalty); Scoring::Engine com strategies bolão / cartola / default"
+tickets:
+  - id: TICKET-0003
+    status: ok
+    branch: ticket/0003-aasm-guard-order
+    commit: 29ca0d0
+    failures: 0
+    evidence:
+      - "Core::Match include AASM (column :status, whiny_persistence): start_match! (scheduled→live, guard kickoff), finish_match! (live→finished, guard placar), mark_scored! (finished|reverted→scored, guard scores_calculated_at nil, after grava timestamp + scoring_token), revert_match! (scored|finished→reverted, guard :scores_calculated?, after :clear_scores)"
+      - "guard order: revert_match! roda ANTES de zerar — transition `after` só atribui scores_calculated_at=nil, scoring_token=nil, reversal_token=uuid; AASM persiste em 1 save (aasm.rb#aasm_fire_event: event before → may_fire? (guards) → event.fire (transition after) → aasm_fired (save)). Nenhum update_column fora do model"
+      - "migration engines/core/db/migrate/20261031000015_add_reverted_status_to_core_matches.rb (remove/add_check_constraint, reversível: db:rollback + db:migrate ok): matches_status_valid + 'reverted'; matches_scored_has_timestamp = scored ⇒ timestamp; nova matches_timestamp_after_finish = timestamp só em finished|scored"
+      - "spec/models/core/match_spec.rb → 21 examples, 0 failures; regressão: 'reverte com scores_calculated_at presente e zera depois' (status finished→reverted; spy no guard viu o timestamp original; depois scores_calculated_at nil) e 'falha o guard se scores_calculated_at for nil' (AASM::InvalidTransition)"
+      - "justificativa corrigida em docs/spec-v3.md §3 (spec-v2 intocado) + docs/tickets/TICKET-0003-v3.md; INDEX aponta para v3"
+    warnings:
+      - "bloco literal da spec-v2 esperava scores_calculated_at `be_present` após revert_match! (zeragem externa via update_column); trocado por `be_nil` + spy no guard, conforme critério do tier (zerado DEPOIS, dentro do model)"
+      - "estado `reverted` diverge de ADR 0001 §2 (scored → finished); ADR é imutável (AGENTS.md) — registrado em spec-v3"
+      - "RevertMatchPointsService (discard + AuditLog) não é chamado pelo model: precisa de actor/ip_address; fica com TICKET-0005 (service/job chama revert_match!)"
+      - "finish_match! ainda não enfileira ProcessMatchPointsJob (job = TICKET-0004)"
+  - id: TICKET-0016
+    status: ok
+    branch: ticket/0016-scoring-rule
+    commit: 648b14a
+    failures: 1
+    evidence:
+      - "engines/bolao/db/migrate/20261031000016_create_bolao_scoring_rules.rb: pool_id (NULL = global), kind, points not null; unique (pool_id, kind) NULLS NOT DISTINCT; add_check_constraint points >= 0 e kind IN (exact_score, winner_and_goal_diff, winner, draw)"
+      - "engines/cartola/db/migrate/20261031000017_create_cartola_scoring_rules.rb: name unique + goal_points, assist_points, yellow_card_penalty, red_card_penalty decimal(5,2) not null; add_check_constraint >= 0 em cada coluna"
+      - "Bolao::ScoringRule.for(pool) → hash kind→points com override do pool sobre a regra global; Cartola::ScoringRule.default (name 'padrao')"
+      - "spec/models/bolao/scoring_rule_spec.rb + spec/models/cartola/scoring_rule_spec.rb → 20 examples: points -1 → StatementInvalid; kind duplicado no mesmo pool (e global NULL) → RecordNotUnique; .for cai na global sem override"
+      - "seeds globais 10/7/5/3 + Cartola 8/5/1/3 idempotentes; db:rollback STEP=2 + db:migrate ok"
+    warnings:
+      - "bolao_scoring_rules.pool_id sem FK: bolao_pools ainda é migration stub (TICKET-0004) — adicionar FK lá"
+  - id: TICKET-0017
+    status: ok
+    branch: ticket/0017-scoring-engine
+    commit: 7301ea3
+    failures: 0
+    evidence:
+      - "app/services/scoring/engine.rb: SCORERS {bolao: BolaoScorer, cartola: CartolaScorer}, fallback NullScorer (0); Engine.score(game, **input); Engine.points_for(prediction:, home:, away:, rules: Bolao::ScoringRule.for(prediction.pool))"
+      - "app/services/scoring/strategies/{exact_score,winner_and_goal_diff,winner,draw}.rb: kind + applies?(guess, result); BolaoScorer aplica a 1ª na ordem de precedência, nenhuma → 0"
+      - "CartolaScorer: gols×goal_points + assistências×assist_points − amarelos×yellow_card_penalty − vermelhos×red_card_penalty"
+      - "sem condicionais de pontuação nos models (models só guardam regras + lookup)"
+      - "spec/services/scoring/engine_spec.rb → 14 examples (cartola, bolão, default + tabela 10/7/7/5/3/0 + rules customizadas + default via ScoringRule.for); strategies/*_spec.rb → 11 examples"
+    warnings:
+      - "tabela do ticket '1x0/2x1=5' contradiz spec §7 (mesmo vencedor e saldo = 7): spec seguida (1x0/2x1 = 7); caso 'só vencedor' testado com 3x1/2x1 = 5"
+  - id: TICKET-0022
+    status: ok
+    branch: ticket/0022-real-seeds
+    commit: 9b47448
+    failures: 0
+    evidence:
+      - "db/seeds.rb orquestra db/seeds/{teams,players,championships,matches,scoring_rules,users}.rb numa transação; abort em produção salvo ALLOW_PRODUCTION_SEED"
+      - "20 times Série A 2026 (db/seeds/teams.yml), elencos fictícios 4-3-3 (11 por time, camisas 1–11), Brasileirão 2026 com 38 rodadas semanais (turno e returno, 380 partidas, 05/04 → 20/12/2026, America/Sao_Paulo)"
+      - "tudo via find_or_create_by!(external_id:) (regras por kind/name, admin por email); cada belongs_to recebe 1 registro"
+      - "admin: senha de SEED_ADMIN_PASSWORD (fallback 'futebol-admin' só em development/test; fora disso KeyError)"
+      - "bin/rails db:reset && bin/rails db:seed && bin/rails db:seed → 3× 'seeds ok (Core::Team=20, Core::Player=220, Core::Championship=1, Core::Match=380, Core::User=1, Bolao::ScoringRule=4, Cartola::ScoringRule=1)'; 0 external_id duplicado"
+      - "spec/seeds_spec.rb → 9 examples (carga dupla sem novos registros, times/elencos/rodadas/round robin/regras/admin, senha via ENV, guarda de produção)"
+    warnings:
+      - "jogadores reais dos 4 times da seed anterior substituídos por nomes fictícios determinísticos; partidas todas 'scheduled'"
+test_command: "bundle exec rspec && bundle exec rubocop && bundle exec packwerk check && bin/rails zeitwerk:check"
+test_results:
+  - {after: TICKET-0003, exit: 0, rspec: "111 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: TICKET-0016, exit: 1, rspec: "132 examples, 0 failures", rubocop: "1 offense (Layout/LineLength na migration cartola)", note: "corrigido na 1ª tentativa"}
+  - {after: TICKET-0016, exit: 0, rspec: "132 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: TICKET-0017, exit: 0, rspec: "157 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: TICKET-0022, exit: 0, rspec: "163 examples, 0 failures (ordens aleatórias 4242 e 777 também verdes)", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: tier/2 merge, exit: 0, rspec: "163 examples, 0 failures", rubocop: "188 files, no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+acceptance:
+  - {name: "rspec spec/models/core/match_spec.rb: 2 regression specs do AASM passam", result: pass, evidence: "21 examples, 0 failures; #revert_match! 2/2"}
+  - {name: "Spec 1: scores_calculated_at presente → reverted e zerado DEPOIS", result: pass, evidence: "change status finished→reverted; guard viu timestamp original; reload.scores_calculated_at nil"}
+  - {name: "Spec 2: scores_calculated_at nil → AASM::InvalidTransition", result: pass}
+  - {name: "rspec spec/services/scoring/engine_spec.rb ≥3 exemplos (cartola, bolão, default)", result: pass, evidence: "14 examples, 0 failures"}
+  - {name: "migrations usam add_check_constraint", result: pass, evidence: "rg add_check_constraint engines/*/db/migrate → 16 linhas; rg '\\badd_constraint\\b' → 0"}
+  - {name: "db:reset && db:seed && db:seed → zero duplicação", result: pass, evidence: "contagens idênticas nas 3 cargas"}
+  - {name: "ScoringRule com goal_points, assist_points, yellow_card_penalty, red_card_penalty", result: pass, evidence: "Cartola::ScoringRule / cartola_scoring_rules em db/schema.rb"}
+  - {name: "TICKET-0003, 0016, 0017, 0022 com status ok", result: pass}
