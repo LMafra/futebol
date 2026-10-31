@@ -1,5 +1,6 @@
-module Scoring
-  module CartolaScorer
+module Cartola
+  module Scorer
+    # stats: { goals:, assists:, yellow_cards:, red_cards: } (missing keys count as 0);
     # rules responds to goal_points, assist_points, yellow_card_penalty and red_card_penalty (Cartola::ScoringRule).
     def self.points(stats:, rules:)
       (stats.fetch(:goals, 0) * rules.goal_points) +

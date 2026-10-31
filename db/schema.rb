@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000018) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000021) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -23,6 +23,39 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000018) do
     t.index ["pool_id", "kind"], name: "index_bolao_scoring_rules_on_pool_id_and_kind", unique: true, nulls_not_distinct: true
     t.check_constraint "kind::text = ANY (ARRAY['exact_score'::character varying::text, 'winner_and_goal_diff'::character varying::text, 'winner'::character varying::text, 'draw'::character varying::text])", name: "bolao_scoring_rules_kind_valid"
     t.check_constraint "points >= 0", name: "bolao_scoring_rules_points_non_negative"
+  end
+
+  create_table "cartola_lineup_players", force: :cascade do |t|
+    t.bigint "lineup_id", null: false
+    t.bigint "player_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lineup_id", "player_id"], name: "index_cartola_lineup_players_on_lineup_id_and_player_id", unique: true
+    t.index ["lineup_id"], name: "index_cartola_lineup_players_on_lineup_id"
+    t.index ["player_id"], name: "index_cartola_lineup_players_on_player_id"
+  end
+
+  create_table "cartola_lineups", force: :cascade do |t|
+    t.bigint "squad_id", null: false
+    t.integer "round", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["squad_id", "round"], name: "index_cartola_lineups_on_squad_id_and_round", unique: true
+    t.index ["squad_id"], name: "index_cartola_lineups_on_squad_id"
+    t.check_constraint "round >= 1 AND round <= 38", name: "cartola_lineups_round_range"
+  end
+
+  create_table "cartola_player_scores", force: :cascade do |t|
+    t.bigint "player_id", null: false
+    t.bigint "match_id", null: false
+    t.decimal "points", precision: 6, scale: 2, null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_cartola_player_scores_on_discarded_at"
+    t.index ["match_id"], name: "index_cartola_player_scores_on_match_id"
+    t.index ["player_id", "match_id"], name: "index_cartola_player_scores_kept_unique", unique: true, where: "(discarded_at IS NULL)"
+    t.index ["player_id"], name: "index_cartola_player_scores_on_player_id"
   end
 
   create_table "cartola_scoring_rules", force: :cascade do |t|
@@ -38,6 +71,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000018) do
     t.check_constraint "goal_points >= 0::numeric", name: "cartola_scoring_rules_goal_points_non_negative"
     t.check_constraint "red_card_penalty >= 0::numeric", name: "cartola_scoring_rules_red_card_penalty_non_negative"
     t.check_constraint "yellow_card_penalty >= 0::numeric", name: "cartola_scoring_rules_yellow_card_penalty_non_negative"
+  end
+
+  create_table "cartola_squads", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_cartola_squads_on_user_id"
   end
 
   create_table "core_audit_logs", force: :cascade do |t|
@@ -153,6 +194,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000018) do
     t.check_constraint "cpf IS NULL OR cpf::text ~ '^[0-9]{11}$'::text", name: "core_users_cpf_digits"
   end
 
+  add_foreign_key "cartola_lineup_players", "cartola_lineups", column: "lineup_id"
+  add_foreign_key "cartola_lineup_players", "core_players", column: "player_id"
+  add_foreign_key "cartola_lineups", "cartola_squads", column: "squad_id"
+  add_foreign_key "cartola_player_scores", "core_matches", column: "match_id"
+  add_foreign_key "cartola_player_scores", "core_players", column: "player_id"
+  add_foreign_key "cartola_squads", "core_users", column: "user_id"
   add_foreign_key "core_audit_logs", "core_users", column: "user_id"
   add_foreign_key "core_matches", "core_championships", column: "championship_id"
   add_foreign_key "core_matches", "core_teams", column: "away_team_id"
