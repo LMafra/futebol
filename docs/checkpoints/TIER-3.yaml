@@ -1,0 +1,94 @@
+tier: 3
+status: ok
+branch: tier/3
+base: tier/2
+pr: pending
+signed_commits: true  # SSH ed25519, git log %G? = G em todos os commits do tier
+context_read:
+  - AGENTS.md
+  - docs/tickets/INDEX.md
+  - docs/spec-v2.md (§1, §2, §6, §7, §8, §9) + docs/spec-v3.md (§3 AASM)
+  - docs/checkpoints/TIER-2.yaml (status ok; TICKET-0003 ok — AASM guard-first, mark_scored!(token))
+failure_policy: "falha = mesmo defeito falhar 2x consecutivas; execuções vermelhas com defeitos distintos são registradas, não bloqueiam"
+decisions:
+  - "usuário (AskQuestion): critério 'user_scores' do preview Cartola = Cartola::PlayerScore / cartola_player_scores (spec §2)"
+  - "critérios do tier prevalecem sobre os tickets: rate limit 5 / 3 min (ticket dizia 10); policies com matriz admin (permite) / não-admin (nega); User ganha name, cpf, active"
+tickets:
+  - id: TICKET-0015
+    status: ok
+    branch: ticket/0015-pundit-base
+    commit: 78488aa
+    failures: 0
+    evidence:
+      - "ApplicationController: include Pundit::Authorization; pundit_user = current_user (resume_session → Current.user); after_action verify_authorized (não-index) / verify_policy_scoped (index) via condições em action_name; rescue NotAuthorizedError → flash + redirect (HTML) / 403 JSON"
+      - "ApplicationPolicy: admin → true, usuário comum e visitante → false; Scope admin → scope.all, demais → scope.none; MatchPolicy/CsvImportPolicy/PoolPolicy/SquadPolicy herdam; AuditLogPolicy read-only (create/update/destroy false até p/ admin)"
+      - "spec/policies/ → 138 examples (shared example 'an admin-only policy': 7 actions × admin/regular/anônimo + Scope) para ApplicationPolicy + 5 policies"
+      - "spec/controllers/pundit_verification_spec.rb: action sem authorize → Pundit::AuthorizationNotPerformedError; index sem policy_scope → PolicyScopingNotPerformedError; negado → redirect+flash / 403"
+      - "Sessions/Passwords/Home: skip_after_action (não autorizam recurso); ActiveAdmin excluído da verificação (adapter Pundit = TICKET-0010)"
+    warnings:
+      - "Pundit resolve Core::Match → Core::MatchPolicy; as policies são top-level → mapear via policy_class / namespace do ActiveAdmin no TICKET-0010"
+  - id: TICKET-0019
+    status: ok
+    branch: ticket/0019-auth-rate-limit
+    commit: 9539c41
+    failures: 0
+    evidence:
+      - "app/controllers/concerns/auth_rate_limiting.rb: rate_limit to: 5, within: 3.minutes, only: :create (Rails 8 nativo; store = cache_store → Solid Cache em produção) em SessionsController e PasswordsController"
+      - "excesso → 429 renderizando o formulário com alerta 'Muitas tentativas. Aguarde alguns minutos e tente novamente.'; Rails.logger.warn 'rate_limited sessions#create ip=…'"
+      - "config/environments/test.rb cache_store :memory_store + spec/support/cache.rb (Rails.cache.clear por exemplo)"
+      - "spec/requests/rate_limit_spec.rb → 5 examples: 6ª tentativa em 3 min → 429; senha correta também bloqueada; travel 3.minutes+1s → volta a aceitar; log com IP; POST /passwords 6ª → 429"
+    warnings:
+      - "lograge ainda não configurado no app (spec §9, TICKET-0012/0021): a linha de bloqueio sai pelo Rails.logger"
+  - id: TICKET-0018
+    status: ok
+    branch: ticket/0018-anonymize-user
+    commit: 1791d36
+    failures: 0
+    evidence:
+      - "migration engines/core/db/migrate/20261031000018: core_users + name, cpf (unique parcial, add_check_constraint 11 dígitos), active (default true), anonymized_at; check anonymized ⇒ inativo e sem cpf"
+      - "Users::AnonymizeService.call(user:, actor:, ip_address:): with_lock (transação + FOR UPDATE); name 'Usuário anonimizado', email anon-<uuid>@invalid, cpf nil, senha aleatória, admin false, active false, anonymized_at; sessões destruídas; AuditLog action 'anonymize' (actor, auditable, ip_address, sem PII); 2ª chamada no-op"
+      - "SessionsController usa Core::User.active.authenticate_by (inativo não entra)"
+      - "spec/services/users/anonymize_spec.rb → 6 examples (nome/email/cpf anonimizados, id mantido, active false; nenhum PII; login antigo falha; AuditLog; idempotente by(1); rollback se AuditLog falha)"
+  - id: TICKET-0007
+    status: ok
+    branch: ticket/0007-cartola-preview
+    commit: 7df8803
+    failures: 0
+    evidence:
+      - "migrations novas 20261031000019..21 (stubs 10..12 removidos): cartola_squads, cartola_lineups (+ cartola_lineup_players, round 1..38 check), cartola_player_scores (numeric(6,2), discarded_at, unique kept por player/match)"
+      - "models Cartola::Squad, Lineup, LineupPlayer, PlayerScore (Discard::Model)"
+      - "Cartola::Scorer (fórmula movida de Scoring::CartolaScorer p/ a engine — packwerk: cartola não depende do app); Scoring::Engine :cartola → Cartola::Scorer"
+      - "Cartola::PreviewResult = Data.define(:player_points, :total); CalculatePreviewService.call(lineup:, stats:, rules: ScoringRule.default) → resultado frozen, player_points frozen"
+      - "spec/services/cartola/preview_spec.rb → 5 examples: PreviewResult < Data e frozen; total = soma; Cartola::PlayerScore.count == 0 antes e depois (not_to change); nenhum INSERT/UPDATE/DELETE (spy sql.active_record)"
+  - id: TICKET-0004
+    status: ok
+    branch: ticket/0004-process-match-points
+    commit: b7e2884
+    failures: 0
+    evidence:
+      - "migrations novas 20261031000022..24 (stubs 07..09 removidos): bolao_pools (+ FK bolao_scoring_rules.pool_id pendente do TIER-2), bolao_predictions (check guesses >= 0, discarded_at, unique kept pool/user/match), bolao_prediction_scores (check points >= 0, unique (prediction_id, scoring_token), discarded_at)"
+      - "ProcessMatchPointsJob#perform(match_id, scoring_token): no-op se match.scoring_token == token; senão transação: Scoring::Engine.points_for por palpite kept (regras por pool em cache) → insert_all unique_by (prediction_id, scoring_token) → match.mark_scored!(token)"
+      - "rescue StandardError → Rails.logger.error + Sentry.capture_exception(extra: match_id, scoring_token) → raise"
+      - "spec/jobs/core/scoring/process_match_points_spec.rb → 8 examples: 2× mesmo match+token → PredictionScore +predictions.size (2ª no-op), match intocado na 2ª; pontos 10/7/0/0; override do pool; palpites discarded ignorados; falha simulada → log + Sentry + re-raise sem scores parciais; match não finished → InvalidTransition + rollback"
+      - "specs de constraints Bolão: spec/models/bolao/prediction_spec.rb, prediction_score_spec.rb; scoring_rule_spec/engine_spec passaram a usar pools reais (FK)"
+    warnings:
+      - "finish_match! ainda não enfileira o job: core não pode depender do app (packwerk) — enfileirar no ponto de chamada (admin/service, TICKET-0010)"
+test_command: "bundle exec rspec && bundle exec rubocop && bundle exec packwerk check && bin/rails zeitwerk:check"
+test_results:
+  - {after: TICKET-0015, exit: 0, rspec: "306 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: TICKET-0019, exit: 0, rspec: "311 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: TICKET-0018, exit: 0, rspec: "322 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: TICKET-0007, exit: 1, rspec: "334 examples, 0 failures", rubocop: "Layout/LineLength no preview_spec", note: "corrigido na 1ª tentativa"}
+  - {after: TICKET-0007, exit: 0, rspec: "334 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: TICKET-0004, exit: 1, rspec: "348 examples, 0 failures", rubocop: "Metrics/MethodLength em perform", note: "defeito 1, corrigido (report_failure)"}
+  - {after: TICKET-0004, exit: 1, rspec: "348 examples, 0 failures", rubocop: "Layout/LineLength (121/120) na mensagem de log", note: "defeito distinto do anterior, corrigido; 0004 não atingiu 2 falhas do mesmo defeito"}
+  - {after: TICKET-0004, exit: 0, rspec: "348 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: tier/3 merge, exit: 0, rspec: "348 examples, 0 failures", rubocop: "216 files, no offenses", packwerk: "No offenses", zeitwerk: "all is good", note: "db:drop db:create db:migrate do zero (18 migrations up, schema.rb idêntico) + db:seed 2× sem duplicação"}
+acceptance:
+  - {name: "process_match_points_spec: 2 execuções mesmo match+token → 2ª no-op", result: pass, evidence: "change(PredictionScore).by(predictions.size) em 2× perform; match.attributes inalterado na 2ª"}
+  - {name: "process_match_points_spec: falha simulada → job registra erro (rescue)", result: pass, evidence: "Rails.logger.error + Sentry.capture_exception recebidos; exceção propagada; 0 scores"}
+  - {name: "cartola/preview_spec: PreviewResult Data.define; contagem 0 antes e depois", result: pass, evidence: "Cartola::PlayerScore.count 0/0 (decisão: user_scores = player_scores)"}
+  - {name: "spec/policies/ passa (5 policies, matriz admin/não-admin)", result: pass, evidence: "138 examples, 0 failures"}
+  - {name: "users/anonymize_spec: nome/email/cpf, mantém id, active false", result: pass, evidence: "6 examples, 0 failures"}
+  - {name: "rate limit: 6 tentativas em 3 min → 429 na 6ª", result: pass, evidence: "spec/requests/rate_limit_spec.rb 5 examples"}
+  - {name: "TICKET-0004, 0007, 0015, 0018, 0019 status ok", result: pass}
