@@ -15,6 +15,15 @@ RSpec.describe 'Sessions', type: :request do
     expect(response).to have_http_status(:ok)
   end
 
+  it 'links the login page to the public signup form' do
+    get new_session_path
+    expect(response.body).to include(%(href="#{signup_path}">Criar conta</a>))
+
+    get signup_path
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include('name="user[email_address]"', 'name="user[password_confirmation]"')
+  end
+
   it 'signs in with valid credentials and records the request origin' do
     sign_in(user)
 

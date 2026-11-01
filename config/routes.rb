@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
+  resources :users, only: %i[new create]
+  get 'signup', to: 'users#new'
 
   scope module: :bolao do
     resources :pools, only: %i[index new create show destroy] do

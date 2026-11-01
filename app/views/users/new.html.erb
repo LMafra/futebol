@@ -1,0 +1,15 @@
+<% user = @user || Core::User.new %>
+<div class="mx-auto w-full max-w-md">
+  <%= render "shared/flash" %>
+
+  <p class="text-xs font-bold uppercase tracking-widest text-graphite">Acesso</p>
+  <h1 class="mt-1 border-b-4 border-ink pb-2 font-display text-4xl font-extrabold tracking-tight">Criar conta</h1>
+
+  <div class="mt-6">
+    <%= render Ui::SignupFormComponent.new(user:, state: user.errors.any? ? :error : :default) %>
+  </div>
+
+  <p class="mt-6 text-sm text-graphite">
+    Já tem conta? <%= link_to "Entrar", new_session_path, class: "underline underline-offset-2 hover:no-underline" %>
+  </p>
+</div>
