@@ -1,24 +1,31 @@
 module Cartola
+  # How many players of each position slot a lineup may hold comes from its championship
+  # (Core::Championship#cartola_limits). The formation is a UI preset that lays out the pitch; it limits nothing.
   class Lineup < ApplicationRecord
     FORMATIONS = %w[3-4-3 3-5-2 4-3-3 4-4-2 4-5-1 5-3-2 5-4-1].freeze
     DEFAULT_FORMATION = '4-3-3'.freeze
-    PLAYERS = 11
-    BUDGET = 100
-    LINES = { 'GOL' => :goalkeeper, 'LAT' => :defense, 'ZAG' => :defense, 'MEI' => :midfield,
-              'ATA' => :attack }.freeze
+    SLOT_LABELS = { goalkeeper: 'goleiros', defender: 'defensores', midfielder: 'meio-campistas',
+                    forward: 'atacantes' }.freeze
 
     belongs_to :squad, class_name: 'Cartola::Squad'
+    belongs_to :championship, class_name: 'Core::Championship'
     has_many :lineup_players, class_name: 'Cartola::LineupPlayer', dependent: :destroy, autosave: true
     has_many :players, through: :lineup_players, class_name: 'Core::Player'
 
-    validates :round, numericality: { only_integer: true, in: 1..38 }, uniqueness: { scope: :squad_id }
+    validates :round, numericality: { only_integer: true, in: 1..38 },
+                      uniqueness: { scope: %i[squad_id championship_id] }
     validates :formation, inclusion: { in: FORMATIONS }
-    validate :eleven_players, :lines_match_formation, :within_budget
+    validate :some_players, :within_championship_limits
 
-    # "4-3-3" => { goalkeeper: 1, defense: 4, midfield: 3, attack: 3 }
-    def self.required_lines(formation)
-      defense, midfield, attack = formation.split('-').map(&:to_i)
-      { goalkeeper: 1, defense:, midfield:, attack: }
+    # "4-3-3" => { goalkeeper: 1, defender: 4, midfielder: 3, forward: 3 }
+    def self.preset(formation)
+      defender, midfielder, forward = formation.split('-').map(&:to_i)
+      { goalkeeper: 1, defender:, midfielder:, forward: }
+    end
+
+    def self.formations_for(championship)
+      limits = championship.cartola_limits
+      FORMATIONS.select { |formation| preset(formation).all? { |slot, count| count <= limits.fetch(slot) } }
     end
 
     # Marks the dropped players for destruction and builds the new ones; nothing is written until save.
@@ -27,37 +34,36 @@ module Cartola
       dropped, kept = lineup_players.partition { |lineup_player| new_ids.exclude?(lineup_player.player_id) }
       dropped.each(&:mark_for_destruction)
       kept_ids = kept.map(&:player_id)
-      new_players.each { |player| lineup_players.build(player:) unless kept_ids.include?(player.id) }
+      new_players.reject { |player| kept_ids.include?(player.id) }
+                 .each { |player| lineup_players.build(player:, position: player.slot) }
     end
 
     def selected_players = lineup_players.reject(&:marked_for_destruction?).map(&:player)
 
-    def total_cost = selected_players.sum { |player| player.cost || 0 }
+    def players_by_slot = selected_players.group_by { |player| player.slot.to_sym }
 
-    def remaining_budget = BUDGET - total_cost
-
-    def players_by_line = selected_players.group_by { |player| LINES.fetch(player.position) }
+    # Pitch slots per position: the preset, capped by the championship limits.
+    def slots
+      limits = championship.cartola_limits
+      self.class.preset(formation).to_h { |slot, count| [slot, [count, limits.fetch(slot)].min] }
+    end
 
     private
 
-    def eleven_players
-      count = selected_players.size
-      errors.add(:players, "precisa de #{PLAYERS} jogadores (tem #{count})") unless count == PLAYERS
+    def some_players
+      errors.add(:players, 'escolha pelo menos um jogador') if selected_players.empty?
     end
 
-    def lines_match_formation
-      return unless FORMATIONS.include?(formation) && selected_players.size == PLAYERS
+    def within_championship_limits
+      return if championship.nil?
 
-      actual = players_by_line.transform_values(&:size)
-      return if self.class.required_lines(formation).all? { |line, count| actual.fetch(line, 0) == count }
+      counts = players_by_slot.transform_values(&:size)
+      championship.cartola_limits.each do |slot, limit|
+        count = counts.fetch(slot, 0)
+        next if count <= limit
 
-      errors.add(:players, "não batem com a formação #{formation}")
-    end
-
-    def within_budget
-      return if total_cost <= BUDGET
-
-      errors.add(:players, "custam C$ #{format('%.2f', total_cost)}, acima do orçamento de C$ #{BUDGET}")
+        errors.add(:players, "têm #{count} #{SLOT_LABELS.fetch(slot)}; o limite do campeonato é #{limit}")
+      end
     end
   end
 end

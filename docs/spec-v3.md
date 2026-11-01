@@ -155,6 +155,15 @@ end
 - `ScoringRule#points_for(prediction_home, prediction_away, actual_home, actual_away)` → `{ points:, result: :exact | :winner | :miss }`; empate certo com placar errado é `:winner`
 - Admin: "Regras do Bolão" (escopo + "Pontos por placar exato" + "Pontos por vencedor") e "Pontuação própria" no form do bolão
 
+### Cartola
+- Por campeonato (`core_championships`): `cartola_goalkeeper_limit` 1, `cartola_defender_limit` 2, `cartola_midfielder_limit` 3, `cartola_forward_limit` 3 (máximos por posição; defensor + meio + atacante > 0), `cartola_initial_budget` 100, `cartola_base_player_value` 5
+- Posições: `core_players.position` segue `GOL/LAT/ZAG/MEI/ATA`; vagas do Cartola = `goalkeeper` (GOL), `defender` (LAT, ZAG), `midfielder` (MEI), `forward` (ATA), gravadas em `cartola_lineup_players.position`
+- Escalação (`cartola_lineups`, unique `squad_id, championship_id, round`): ≥ 1 jogador e cada posição dentro do limite; a formação é preset de UI (vagas = `min(preset, limite)`)
+- Preço: `Cartola::PlayerValue` atual → `core_players.base_value` → `cartola_base_player_value`
+- `Cartola::Wallet` (unique `user_id, championship_id`, `balance >= 0`, aberta com o orçamento inicial): `WalletService.save` debita os jogadores novos e credita os retirados a preço atual; `WalletService.destroy` devolve a escalação. Cada rodada é uma compra própria
+- `Cartola::ValueUpdateJob(match_id, scoring_token)`, enfileirado pelo `ProcessMatchPointsJob`: `novo = atual × (1 + (pontos − média da partida) / 100)`, limitado a ±20%; histórico em `cartola_player_value_histories` (unique `player_id, scoring_token`); o Reversal desfaz pelo mesmo token
+- `core_matches.round` (1..38; CSV aceita coluna `round` opcional). Rankings (`/cartola/rankings`, abas Pontos e Cartoletas): pontos = `PlayerScore` mantidos dos jogadores de cada escalação nas partidas da mesma rodada; moedas = saldo da carteira
+
 ## Specs de regressão obrigatórias
 ```ruby
 # spec/models/core/match_spec.rb

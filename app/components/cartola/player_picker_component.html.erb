@@ -16,7 +16,7 @@
 
   <% if error? %>
     <div class="mt-3 <%= error_classes %>" role="alert">
-      <span class="font-bold">Revise a escalação: confira posições, quantidade e orçamento.</span>
+      <span class="font-bold">Revise a escalação: confira os limites por posição e o saldo.</span>
     </div>
   <% end %>
 
@@ -34,7 +34,7 @@
                   <input type="checkbox" name="lineup[player_ids][]" value="<%= player.id %>" <%= "checked" if selected?(player) %>>
                   <span><%= player.name %> <span class="text-sm text-graphite"><%= player.team&.short_name %></span></span>
                 </span>
-                <span class="text-sm tabular-nums text-graphite"><%= cost(player) %></span>
+                <span class="text-sm tabular-nums text-graphite"><%= price(player) %></span>
               </label>
             </li>
           <% end %>

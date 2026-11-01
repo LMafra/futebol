@@ -1,0 +1,59 @@
+require 'rails_helper'
+
+RSpec.describe 'Admin Cartola settings', type: :request do
+  before { sign_in(create(:user, :admin)) }
+
+  let(:championship) { create(:championship) }
+
+  it 'shows the six Cartola fields on the championship form' do
+    get "/admin/championships/#{championship.id}/edit"
+
+    expect(response.body).to include('Limite de goleiros', 'Limite de defensores', 'Limite de meio-campistas',
+                                     'Limite de atacantes', 'Orçamento inicial', 'Valor base do jogador')
+  end
+
+  it 'updates the limits, budget and base value of a championship' do
+    patch "/admin/championships/#{championship.id}", params: { championship: {
+      cartola_goalkeeper_limit: 1, cartola_defender_limit: 4, cartola_midfielder_limit: 4, cartola_forward_limit: 2,
+      cartola_initial_budget: 120, cartola_base_player_value: 6.5
+    } }
+
+    expect(championship.reload).to have_attributes(cartola_limits: { goalkeeper: 1, defender: 4, midfielder: 4,
+                                                                     forward: 2 },
+                                                   cartola_initial_budget: 120, cartola_base_player_value: 6.5)
+  end
+
+  it 'rejects limits without any outfield player' do
+    patch "/admin/championships/#{championship.id}", params: { championship: {
+      cartola_defender_limit: 0, cartola_midfielder_limit: 0, cartola_forward_limit: 0
+    } }
+
+    expect(response.body).to include('Defina pelo menos um jogador de linha')
+    expect(championship.reload.cartola_defender_limit).to eq(2)
+  end
+
+  it 'sets the base value of a player' do
+    player = create(:player)
+
+    patch "/admin/players/#{player.id}", params: { player: { base_value: 9.5 } }
+
+    expect(player.reload.base_value).to eq(9.5)
+  end
+
+  it 'shows both Cartola rankings of a championship' do
+    create(:cartola_wallet, championship:, balance: 42, user: create(:user, name: 'Ana'))
+
+    get "/admin/cartolarankings?championship_id=#{championship.id}"
+
+    expect(response).to have_http_status(:ok)
+    page = Nokogiri::HTML(response.body)
+    expect(page.at_css('[data-role="ranking-coins"]').text.squish).to include('Ana C$ 42.00')
+    expect(page.at_css('[data-role="ranking-points"]')).to be_nil
+  end
+
+  it 'links the championship page to its rankings' do
+    get "/admin/championships/#{championship.id}"
+
+    expect(response.body).to include("/admin/cartolarankings?championship_id=#{championship.id}")
+  end
+end

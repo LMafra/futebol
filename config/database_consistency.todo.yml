@@ -35,6 +35,9 @@ Bolao::ScoringRule:
     MissingDependentDestroyChecker:
       enabled: false
 Cartola::Lineup:
+  championship:
+    MissingDependentDestroyChecker:
+      enabled: false
   index_cartola_lineups_on_squad_id:
     RedundantIndexChecker:
       enabled: false
@@ -55,7 +58,31 @@ Cartola::PlayerScore:
   player:
     MissingDependentDestroyChecker:
       enabled: false
+Cartola::PlayerValue:
+  championship:
+    MissingDependentDestroyChecker:
+      enabled: false
+  player:
+    MissingDependentDestroyChecker:
+      enabled: false
+Cartola::PlayerValueHistory:
+  championship:
+    MissingDependentDestroyChecker:
+      enabled: false
+  match:
+    MissingDependentDestroyChecker:
+      enabled: false
+  player:
+    MissingDependentDestroyChecker:
+      enabled: false
 Cartola::Squad:
+  user:
+    MissingDependentDestroyChecker:
+      enabled: false
+Cartola::Wallet:
+  championship:
+    MissingDependentDestroyChecker:
+      enabled: false
   user:
     MissingDependentDestroyChecker:
       enabled: false

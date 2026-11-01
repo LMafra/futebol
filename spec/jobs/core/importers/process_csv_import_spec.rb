@@ -81,6 +81,31 @@ RSpec.describe ProcessCsvImportJob do
     end
   end
 
+  describe 'coluna round (opcional)' do
+    let(:round_header) { "external_id,championship,home_team,away_team,match_date,home_score,away_score,round\n" }
+    let(:row) { 'br26-r05-x,brasileirao-2026,flamengo,palmeiras,2026-05-03 16:00,,' }
+
+    it 'grava a rodada quando a coluna existe' do
+      perform(csv_import_with("#{round_header}#{row},5\n"))
+
+      expect(Core::Match.find_by!(external_id: 'br26-r05-x').round).to eq(5)
+    end
+
+    it 'mantém a rodada já gravada ao reimportar sem a coluna' do
+      perform(csv_import_with("#{round_header}#{row},5\n"))
+      perform(csv_import_with("#{header}#{row}\n"))
+
+      expect(Core::Match.find_by!(external_id: 'br26-r05-x').round).to eq(5)
+    end
+
+    it 'rodada fora de 1..38 → failed com mensagem apontando a partida' do
+      task = perform(csv_import_with("#{round_header}#{row},39\n"))
+
+      expect(task).to have_attributes(status: 'failed')
+      expect(task.error_message).to eq(%(partida "br26-r05-x": rodada '39' fora de 1..38))
+    end
+  end
+
   describe 'arquivo vazio' do
     it 'termina completed com 0 rows (arquivo sem bytes)' do
       expect { @task = perform(csv_import_with('')) }.not_to change(Core::Match, :count)

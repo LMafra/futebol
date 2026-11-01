@@ -1,0 +1,36 @@
+<section class="w-full" <%= tag.attributes(root_attributes(label: "Ranking")) %>>
+  <% case rendered_state %>
+  <% when :default %>
+    <table class="w-full border-collapse text-left">
+      <thead>
+        <tr class="border-b-2 border-ink text-xs uppercase tracking-widest text-graphite">
+          <th scope="col" class="py-2 pr-4">#</th>
+          <th scope="col" class="py-2 pr-4">Cartoleiro</th>
+          <th scope="col" class="py-2 text-right"><%= value_header %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% rows.each do |row| %>
+          <tr class="border-b border-rule" data-role="ranking-row">
+            <td class="py-2 pr-4 font-bold tabular-nums" data-role="ranking-position"><%= row.position %></td>
+            <td class="py-2 pr-4" data-role="ranking-user"><%= player_name(row.user) %></td>
+            <td class="py-2 text-right font-semibold tabular-nums" data-role="ranking-value"><%= formatted(row.value) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% when :loading %>
+    <span class="sr-only">Carregando ranking…</span>
+    <div class="flex flex-col gap-2" aria-hidden="true">
+      <% 5.times do %>
+        <div class="h-8 w-full <%= skeleton_classes %>" data-role="skeleton"></div>
+      <% end %>
+    </div>
+  <% when :empty %>
+    <%= empty_notice("Ninguém no ranking ainda.") %>
+  <% when :error %>
+    <div class="<%= error_classes %>" role="alert">
+      <span class="font-bold">Não foi possível carregar o ranking.</span>
+    </div>
+  <% end %>
+</section>

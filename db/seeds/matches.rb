@@ -3,7 +3,7 @@ module Seeds
     double_round_robin(teams).each.with_index(1) do |pairings, round|
       pairings.each_with_index do |(home, away), index|
         Core::Match.find_or_create_by!(external_id: match_external_id(round, home, away)) do |match|
-          match.assign_attributes(home_team: home, away_team: away, championship:,
+          match.assign_attributes(home_team: home, away_team: away, championship:, round:,
                                   match_date: match_date(round, index))
         end
       end

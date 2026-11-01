@@ -11,7 +11,6 @@ FactoryBot.define do
     position { 'MEI' }
     sequence(:shirt_number) { |n| (n % 99) + 1 }
     sequence(:external_id) { |n| "player-#{n}" }
-    cost { 5 }
   end
 
   factory :championship, class: 'Core::Championship' do

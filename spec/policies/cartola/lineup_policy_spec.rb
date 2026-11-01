@@ -11,9 +11,16 @@ RSpec.describe Cartola::LineupPolicy do
     it('denies another user') { expect(policy).not_to permit(create(:user), lineup) }
   end
 
-  it 'lets an admin read but not edit' do
+  permissions :destroy? do
+    it('grants the squad owner a saved lineup') { expect(policy).to permit(owner, lineup.tap(&:save!)) }
+    it('has nothing to undo before the lineup is saved') { expect(policy).not_to permit(owner, lineup) }
+    it('denies another user') { expect(policy).not_to permit(create(:user), lineup.tap(&:save!)) }
+  end
+
+  it 'lets an admin read but not edit or undo' do
     admin = create(:user, :admin)
 
-    expect(policy.new(admin, lineup)).to have_attributes(show?: true, update?: false, edit?: false)
+    expect(policy.new(admin, lineup.tap(&:save!)))
+      .to have_attributes(show?: true, update?: false, edit?: false, destroy?: false)
   end
 end

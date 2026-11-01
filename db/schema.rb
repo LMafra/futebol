@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000031) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000036) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -113,9 +113,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000031) do
     t.bigint "player_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "position", null: false
     t.index ["lineup_id", "player_id"], name: "index_cartola_lineup_players_on_lineup_id_and_player_id", unique: true
     t.index ["lineup_id"], name: "index_cartola_lineup_players_on_lineup_id"
     t.index ["player_id"], name: "index_cartola_lineup_players_on_player_id"
+    t.check_constraint "\"position\"::text = ANY (ARRAY['goalkeeper'::character varying, 'defender'::character varying, 'midfielder'::character varying, 'forward'::character varying]::text[])", name: "cartola_lineup_players_position_valid"
   end
 
   create_table "cartola_lineups", force: :cascade do |t|
@@ -124,9 +126,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000031) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "formation", default: "4-3-3", null: false
-    t.index ["squad_id", "round"], name: "index_cartola_lineups_on_squad_id_and_round", unique: true
+    t.bigint "championship_id", null: false
+    t.index ["championship_id"], name: "index_cartola_lineups_on_championship_id"
+    t.index ["squad_id", "championship_id", "round"], name: "idx_on_squad_id_championship_id_round_ae0b2668d6", unique: true
     t.index ["squad_id"], name: "index_cartola_lineups_on_squad_id"
-    t.check_constraint "formation::text = ANY (ARRAY['3-4-3'::character varying::text, '3-5-2'::character varying::text, '4-3-3'::character varying::text, '4-4-2'::character varying::text, '4-5-1'::character varying::text, '5-3-2'::character varying::text, '5-4-1'::character varying::text])", name: "cartola_lineups_formation_valid"
+    t.check_constraint "formation::text = ANY (ARRAY['3-4-3'::character varying, '3-5-2'::character varying, '4-3-3'::character varying, '4-4-2'::character varying, '4-5-1'::character varying, '5-3-2'::character varying, '5-4-1'::character varying]::text[])", name: "cartola_lineups_formation_valid"
     t.check_constraint "round >= 1 AND round <= 38", name: "cartola_lineups_round_range"
   end
 
@@ -141,6 +145,37 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000031) do
     t.index ["match_id"], name: "index_cartola_player_scores_on_match_id"
     t.index ["player_id", "match_id"], name: "index_cartola_player_scores_kept_unique", unique: true, where: "(discarded_at IS NULL)"
     t.index ["player_id"], name: "index_cartola_player_scores_on_player_id"
+  end
+
+  create_table "cartola_player_value_histories", force: :cascade do |t|
+    t.bigint "player_id", null: false
+    t.bigint "championship_id", null: false
+    t.bigint "match_id", null: false
+    t.uuid "scoring_token", null: false
+    t.decimal "previous_value", precision: 6, scale: 2, null: false
+    t.decimal "value", precision: 6, scale: 2, null: false
+    t.decimal "score", precision: 6, scale: 2, null: false
+    t.decimal "average_score", precision: 6, scale: 2, null: false
+    t.datetime "changed_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["championship_id"], name: "index_cartola_player_value_histories_on_championship_id"
+    t.index ["match_id"], name: "index_cartola_player_value_histories_on_match_id"
+    t.index ["player_id", "scoring_token"], name: "idx_on_player_id_scoring_token_73a634962b", unique: true
+    t.index ["scoring_token"], name: "index_cartola_player_value_histories_on_scoring_token"
+    t.check_constraint "previous_value > 0::numeric AND value > 0::numeric", name: "cartola_player_value_histories_values_positive"
+  end
+
+  create_table "cartola_player_values", force: :cascade do |t|
+    t.bigint "player_id", null: false
+    t.bigint "championship_id", null: false
+    t.decimal "value", precision: 6, scale: 2, null: false
+    t.datetime "changed_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["championship_id"], name: "index_cartola_player_values_on_championship_id"
+    t.index ["player_id", "championship_id"], name: "index_cartola_player_values_on_player_id_and_championship_id", unique: true
+    t.check_constraint "value > 0::numeric", name: "cartola_player_values_value_positive"
   end
 
   create_table "cartola_scoring_rules", force: :cascade do |t|
@@ -166,6 +201,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000031) do
     t.index ["user_id"], name: "index_cartola_squads_on_user_id"
   end
 
+  create_table "cartola_wallets", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "championship_id", null: false
+    t.decimal "balance", precision: 10, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["championship_id"], name: "index_cartola_wallets_on_championship_id"
+    t.index ["user_id", "championship_id"], name: "index_cartola_wallets_on_user_id_and_championship_id", unique: true
+    t.check_constraint "balance >= 0::numeric", name: "cartola_wallets_balance_non_negative"
+  end
+
   create_table "core_audit_logs", force: :cascade do |t|
     t.bigint "user_id"
     t.string "action", null: false
@@ -186,7 +232,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000031) do
     t.string "external_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "cartola_goalkeeper_limit", default: 1, null: false
+    t.integer "cartola_defender_limit", default: 2, null: false
+    t.integer "cartola_midfielder_limit", default: 3, null: false
+    t.integer "cartola_forward_limit", default: 3, null: false
+    t.decimal "cartola_initial_budget", precision: 10, scale: 2, default: "100.0", null: false
+    t.decimal "cartola_base_player_value", precision: 6, scale: 2, default: "5.0", null: false
     t.index ["external_id"], name: "index_core_championships_on_external_id", unique: true
+    t.check_constraint "(cartola_defender_limit + cartola_midfielder_limit + cartola_forward_limit) > 0", name: "core_championships_cartola_line_limits_positive"
+    t.check_constraint "cartola_goalkeeper_limit >= 0 AND cartola_defender_limit >= 0 AND cartola_midfielder_limit >= 0 AND cartola_forward_limit >= 0", name: "core_championships_cartola_limits_non_negative"
+    t.check_constraint "cartola_initial_budget >= 0::numeric AND cartola_base_player_value >= 0::numeric", name: "core_championships_cartola_money_non_negative"
     t.check_constraint "season >= 1900 AND season <= 2100", name: "core_championships_season_range"
   end
 
@@ -216,14 +271,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000031) do
     t.string "external_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "round"
     t.index ["away_team_id"], name: "index_core_matches_on_away_team_id"
-    t.index ["championship_id"], name: "index_core_matches_on_championship_id"
+    t.index ["championship_id", "round"], name: "index_core_matches_on_championship_id_and_round"
     t.index ["external_id"], name: "index_core_matches_on_external_id", unique: true
     t.index ["home_team_id"], name: "index_core_matches_on_home_team_id"
     t.index ["match_date"], name: "index_core_matches_on_match_date"
     t.index ["scoring_token"], name: "index_core_matches_on_scoring_token", unique: true, where: "(scoring_token IS NOT NULL)"
     t.check_constraint "home_score >= 0 AND away_score >= 0", name: "matches_scores_non_negative"
     t.check_constraint "home_team_id <> away_team_id", name: "matches_distinct_teams"
+    t.check_constraint "round IS NULL OR round >= 1 AND round <= 38", name: "matches_round_range"
     t.check_constraint "scores_calculated_at IS NULL OR (status::text = ANY (ARRAY['finished'::character varying::text, 'scored'::character varying::text]))", name: "matches_timestamp_after_finish"
     t.check_constraint "status::text <> 'scored'::text OR scores_calculated_at IS NOT NULL", name: "matches_scored_has_timestamp"
     t.check_constraint "status::text = ANY (ARRAY['scheduled'::character varying::text, 'live'::character varying::text, 'finished'::character varying::text, 'scored'::character varying::text, 'reverted'::character varying::text])", name: "matches_status_valid"
@@ -237,12 +294,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000031) do
     t.string "external_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.decimal "cost", precision: 5, scale: 2, default: "0.0", null: false
+    t.decimal "base_value", precision: 6, scale: 2
     t.index ["external_id"], name: "index_core_players_on_external_id", unique: true
     t.index ["team_id", "shirt_number"], name: "index_core_players_on_team_id_and_shirt_number", unique: true, where: "(shirt_number IS NOT NULL)"
     t.index ["team_id"], name: "index_core_players_on_team_id"
     t.check_constraint "\"position\"::text = ANY (ARRAY['GOL'::character varying::text, 'LAT'::character varying::text, 'ZAG'::character varying::text, 'MEI'::character varying::text, 'ATA'::character varying::text])", name: "players_position_valid"
-    t.check_constraint "cost >= 0::numeric", name: "players_cost_non_negative"
+    t.check_constraint "base_value IS NULL OR base_value >= 0::numeric", name: "players_base_value_non_negative"
     t.check_constraint "shirt_number >= 1 AND shirt_number <= 99", name: "players_shirt_number_range"
   end
 
@@ -298,9 +355,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000031) do
   add_foreign_key "cartola_lineup_players", "cartola_lineups", column: "lineup_id"
   add_foreign_key "cartola_lineup_players", "core_players", column: "player_id"
   add_foreign_key "cartola_lineups", "cartola_squads", column: "squad_id"
+  add_foreign_key "cartola_lineups", "core_championships", column: "championship_id"
   add_foreign_key "cartola_player_scores", "core_matches", column: "match_id"
   add_foreign_key "cartola_player_scores", "core_players", column: "player_id"
+  add_foreign_key "cartola_player_value_histories", "core_championships", column: "championship_id"
+  add_foreign_key "cartola_player_value_histories", "core_matches", column: "match_id"
+  add_foreign_key "cartola_player_value_histories", "core_players", column: "player_id"
+  add_foreign_key "cartola_player_values", "core_championships", column: "championship_id"
+  add_foreign_key "cartola_player_values", "core_players", column: "player_id"
   add_foreign_key "cartola_squads", "core_users", column: "user_id"
+  add_foreign_key "cartola_wallets", "core_championships", column: "championship_id"
+  add_foreign_key "cartola_wallets", "core_users", column: "user_id"
   add_foreign_key "core_audit_logs", "core_users", column: "user_id"
   add_foreign_key "core_matches", "core_championships", column: "championship_id"
   add_foreign_key "core_matches", "core_teams", column: "away_team_id"

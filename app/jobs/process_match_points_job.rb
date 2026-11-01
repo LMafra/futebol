@@ -6,6 +6,7 @@ class ProcessMatchPointsJob < ApplicationJob
     return if match.scoring_token == scoring_token
 
     score!(match, scoring_token)
+    Cartola::ValueUpdateJob.perform_later(match.id, scoring_token)
     BroadcastUpdateService.call(match:)
   rescue StandardError => e
     report_failure(e, match_id:, scoring_token:)
