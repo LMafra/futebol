@@ -67,6 +67,8 @@ test:
   primary: &primary_test
     <<: *default
     database: futebol_test
+    # db:prepare on a fresh test database (CI) must not load the seeds.
+    seeds: false
   queue:
     <<: *primary_test
     database: futebol_test_queue
