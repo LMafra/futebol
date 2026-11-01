@@ -129,6 +129,19 @@ docker compose -f docker/openobserve/docker-compose.yml up -d
 
 Para usar uma instância remota (um VPS com o mesmo `docker-compose.yml` e a porta 5080 exposta), basta trocar o endpoint, por exemplo `https://<host>:5080/api/default`, e as credenciais no header. O Render free não roda Docker Compose, então o OpenObserve de produção fica num host separado. A edição open-source é gratuita; a Enterprise é gratuita até 50 GB/dia de ingestão. Detalhes: [OPERATIONS.md → Observabilidade](docs/OPERATIONS.md#observabilidade-opentelemetry--openobserve).
 
+### Cloudflare R2
+
+Buckets R2: `futebol-dev` e `futebol-prod`. O Active Storage usa o serviço `r2` de [`config/storage.yml`](config/storage.yml) (S3-compatível, `region: auto`): production grava em `futebol-prod`, e development usa disco, ou `futebol-dev` com `ACTIVE_STORAGE_SERVICE=r2`.
+
+| Variável | Valor |
+|---|---|
+| `R2_ACCOUNT_ID` | Account ID da Cloudflare; monta o endpoint `https://<account_id>.r2.cloudflarestorage.com` |
+| `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | token S3 do R2 (R2 → Manage API tokens) |
+| `R2_ENDPOINT` | opcional, sobrescreve o endpoint montado |
+| `R2_BUCKET_DEV`, `R2_BUCKET_PROD` | `futebol-dev` e `futebol-prod` |
+
+Passo manual: o R2 ainda precisa ser habilitado no Dashboard da Cloudflare antes da criação dos buckets ([OPERATIONS.md → Storage](docs/OPERATIONS.md#storage-cloudflare-r2)).
+
 <p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
 
 ## Uso
