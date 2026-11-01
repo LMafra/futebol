@@ -86,33 +86,33 @@ test:
 # the values provided in this file. Alternatively, you can specify a connection
 # URL environment variable explicitly:
 #
-#   production:
-#     url: <%= ENV["MY_APP_DATABASE_URL"] %>
-#
-# Connection URLs for non-primary databases can also be configured using
-# environment variables. The variable name is formed by concatenating the
-# connection name with `_DATABASE_URL`. For example:
-#
-#   CACHE_DATABASE_URL="postgres://cacheuser:cachepass@localhost/cachedatabase"
-#
-# Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
-# for a full overview on how database connection configuration can be specified.
-#
+#   # Render/Neon: DATABASE_URL is the primary. Solid Cache/Queue/Cable get their own databases on the same server,
+# named after the primary (neondb → neondb_cache, …) and created by db:prepare; CACHE_/QUEUE_/CABLE_DATABASE_URL
+# override them.
+<% sibling_url = lambda do |name|
+     ENV.fetch("#{name.upcase}_DATABASE_URL") do
+       ENV["DATABASE_URL"].presence&.then { |url| URI.parse(url).tap { |uri| uri.path = "#{uri.path}_#{name}" }.to_s }
+     end
+   end %>
 production:
   primary: &primary_production
     <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
     database: futebol_production
-    username: futebol
-    password: <%= ENV["FUTEBOL_DATABASE_PASSWORD"] %>
+    # db:prepare (bin/docker-entrypoint) must not seed a fresh production database; db:seed stays guarded.
+    seeds: false
   cache:
     <<: *primary_production
+    url: <%= sibling_url.call("cache") %>
     database: futebol_production_cache
     migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
+    url: <%= sibling_url.call("queue") %>
     database: futebol_production_queue
     migrations_paths: db/queue_migrate
   cable:
     <<: *primary_production
+    url: <%= sibling_url.call("cable") %>
     database: futebol_production_cable
     migrations_paths: db/cable_migrate
