@@ -29,7 +29,8 @@ Rails.application.configure do
   config.cache_store = :memory_store
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # ACTIVE_STORAGE_SERVICE=r2 uploads to the futebol-dev bucket (R2_* in .env).
+  config.active_storage.service = ENV.fetch('ACTIVE_STORAGE_SERVICE', 'local').to_sym
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
@@ -51,6 +52,10 @@ Rails.application.configure do
 
   # Append comments with runtime information tags to SQL queries in logs.
   config.active_record.query_log_tags_enabled = true
+
+  # Same queue backend as production; run `bin/jobs` (Procfile.dev) to process jobs.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
 
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true

@@ -1,0 +1,31 @@
+{
+  "mcpServers": {
+    "neon": {
+      "command": "npx",
+      "args": ["-y", "@neondatabase/mcp-server-neon", "start", "${env:NEON_API_KEY}"]
+    },
+    "render": {
+      "command": "npx",
+      "args": ["-y", "render-useful-mcp"],
+      "env": {
+        "RENDER_API_KEY": "${env:RENDER_API_KEY}"
+      }
+    },
+    "r2": {
+      "command": "npx",
+      "args": ["-y", "s3-mcp-server"],
+      "env": {
+        "AWS_ACCESS_KEY_ID": "${env:R2_ACCESS_KEY_ID}",
+        "AWS_SECRET_ACCESS_KEY": "${env:R2_SECRET_ACCESS_KEY}",
+        "AWS_ENDPOINT_URL": "${env:R2_ENDPOINT}",
+        "AWS_REGION": "auto"
+      }
+    },
+    "resend": {
+      "url": "https://mcp.resend.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${env:RESEND_API_KEY}"
+      }
+    }
+  }
+}

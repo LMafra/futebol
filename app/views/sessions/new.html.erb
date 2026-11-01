@@ -1,0 +1,23 @@
+<div class="mx-auto w-full max-w-md">
+  <%= render "shared/flash" %>
+
+  <p class="text-xs font-bold uppercase tracking-widest text-graphite">Acesso</p>
+  <h1 class="mt-1 border-b-4 border-ink pb-2 font-display text-4xl font-extrabold tracking-tight">Entrar</h1>
+
+  <%= form_with url: session_url, class: "mt-6 flex flex-col gap-4" do |form| %>
+    <div>
+      <%= form.label :email_address, "E-mail", class: "text-sm font-semibold" %>
+      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "voce@exemplo.com", value: params[:email_address], class: "mt-1 block w-full rounded-sm border border-rule bg-white px-3 py-2 focus:outline-2 focus:outline-pitch" %>
+    </div>
+
+    <div>
+      <%= form.label :password, "Senha", class: "text-sm font-semibold" %>
+      <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72, class: "mt-1 block w-full rounded-sm border border-rule bg-white px-3 py-2 focus:outline-2 focus:outline-pitch" %>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-4">
+      <%= form.submit "Entrar", class: "cursor-pointer rounded-sm bg-cartola px-4 py-2 font-bold text-ink transition-colors duration-fast ease-editorial hover:bg-pitch hover:text-white" %>
+      <%= link_to "Esqueceu a senha?", new_password_path, class: "text-sm text-graphite underline underline-offset-2 hover:no-underline" %>
+    </div>
+  <% end %>
+</div>

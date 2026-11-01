@@ -1,0 +1,11 @@
+# See: https://github.com/Shopify/packwerk/blob/main/USAGE.md#configuring-packwerk
+
+include:
+  - "**/*.{rb,rake,erb}"
+
+exclude:
+  - "{bin,node_modules,script,tmp,vendor}/**/*"
+  - "engines/*/bin/**/*"
+
+cache: true
+cache_directory: "tmp/cache/packwerk"

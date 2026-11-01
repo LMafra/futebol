@@ -1,0 +1,22 @@
+<div class="mx-auto w-full max-w-md">
+  <%= render "shared/flash" %>
+
+  <p class="text-xs font-bold uppercase tracking-widest text-graphite">Acesso</p>
+  <h1 class="mt-1 border-b-4 border-ink pb-2 font-display text-4xl font-extrabold tracking-tight">Nova senha</h1>
+
+  <%= form_with url: password_path(params[:token]), method: :put, class: "mt-6 flex flex-col gap-4" do |form| %>
+    <div>
+      <%= form.label :password, "Nova senha", class: "text-sm font-semibold" %>
+      <%= form.password_field :password, required: true, autocomplete: "new-password", maxlength: 72, class: "mt-1 block w-full rounded-sm border border-rule bg-white px-3 py-2 focus:outline-2 focus:outline-pitch" %>
+    </div>
+
+    <div>
+      <%= form.label :password_confirmation, "Repita a senha", class: "text-sm font-semibold" %>
+      <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", maxlength: 72, class: "mt-1 block w-full rounded-sm border border-rule bg-white px-3 py-2 focus:outline-2 focus:outline-pitch" %>
+    </div>
+
+    <div>
+      <%= form.submit "Salvar", class: "cursor-pointer rounded-sm bg-cartola px-4 py-2 font-bold text-ink transition-colors duration-fast ease-editorial hover:bg-pitch hover:text-white" %>
+    </div>
+  <% end %>
+</div>

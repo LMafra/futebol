@@ -1,0 +1,90 @@
+tier: 4
+status: ok
+branch: tier/4
+base: tier/3
+pr: https://github.com/LMafra/futebol/pull/6
+signed_commits: true  # SSH ed25519, git log %G? = G em todos os commits do tier
+context_read:
+  - AGENTS.md
+  - docs/tickets/INDEX.md
+  - docs/spec-v2.md (§2, §7, §8) + docs/spec-v3.md (§3 AASM)
+  - docs/checkpoints/TIER-3.yaml (status ok; TICKET-0004 ok → 0005 e 0006 desbloqueados, nenhum blocked)
+failure_policy: "falha = mesmo defeito falhar 2x consecutivas; execuções vermelhas com defeitos distintos são registradas, não bloqueiam"
+decisions:
+  - "critérios do tier prevalecem sobre os tickets (mesma regra do TIER-3): paths dos specs = spec/services/matches/broadcast_spec.rb, spec/jobs/core/importers/process_csv_import_spec.rb, spec/services/core/scoring/revert_spec.rb, spec/services/bolao/calculate_preview_spec.rb"
+  - "critério 'failed com error_log': nova coluna core_csv_imports.error_log (classe + mensagem + backtrace) ao lado de error_message (spec §2, usada pelo CsvImportStatusComponent); check failed ⇒ ambos preenchidos"
+  - "preview Bolão 5/3/0: a regra global segue spec §7 (10/7/5/3); os 3 cenários usam override do bolão (exact 5, vencedor+saldo/vencedor/empate 3) — mesma engine, regras por pool; caso do ticket (2x1 → 10 com regras globais) também coberto"
+  - "packwerk: engine bolao não pode depender do app → Bolao.scorer (porta) ligado a Scoring::Engine em config/initializers/bolao.rb (to_prepare); service fica no path do ticket"
+  - "'re_finish' = re-pontuação a partir de reverted (mark_scored! aceita finished | reverted, spec-v3 §3); não há evento re_finish no AASM"
+tickets:
+  - id: TICKET-0008
+    status: ok
+    branch: ticket/0008-broadcast-update
+    commit: 14b2a3f
+    failures: 0
+    evidence:
+      - "app/services/broadcast_update_service.rb: Rails.cache.write(\"broadcast:match:#{id}\", 1, unless_exist: true, expires_in: 5.seconds); só quem grava faz Turbo::StreamsChannel.broadcast_replace_to(match, target: dom_id(match, :scoreboard), renderable: Ui::ScoreboardComponent)"
+      - "MemoryStore (test) e Solid Cache (prod) implementam unless_exist atomicamente (MemoryStore#write_entry dentro de synchronize; SolidCache::Store::Api#write_entry unless_exist)"
+      - "spec/services/matches/broadcast_spec.rb → 5 examples: 10 Threads + Concurrent::CountDownLatch → have_broadcasted_to(match).once e 1 true / 9 false; write com unless_exist/expires_in 5s; payload replace do scoreboard; após 5s volta a transmitir; partidas diferentes independentes"
+      - "mutação: sem unless_exist o spec falha com 'expected exactly 1 ... but broadcast 10' (antes/depois do ticket)"
+      - "ProcessMatchPointsJob chama BroadcastUpdateService após o commit da pontuação (+1 example: 2× perform → 1 broadcast)"
+  - id: TICKET-0009
+    status: ok
+    branch: ticket/0009-csv-import-streaming
+    commit: e09e9f2
+    failures: 0
+    evidence:
+      - "app/jobs/process_csv_import_job.rb: task.csv_file.open { CSV.foreach(file.path, headers: true, encoding: 'bom|utf-8').each_slice(500) } → Core::Match.import(rows, validate: false, on_duplicate_key_update: { conflict_target: [:external_id], columns: UPSERT_COLUMNS }); rows_processed incrementado por lote"
+      - "rescue StandardError → Rails.logger.error + Sentry.capture_exception + task.fail!(e) (status failed, error_message, error_log); sem re-raise (arquivo inválido não melhora com retry)"
+      - "Active Storage instalado (db/migrate/20261031000025); Core::CsvImport has_one_attached :csv_file; migration 20261031000026 error_log + check csv_imports_failed_has_error"
+      - "spec/jobs/core/importers/process_csv_import_spec.rb → 12 examples: válido → completed (3 rows); streaming (Blob#open sim, Blob#download e CSV.read não); lotes de 500 (501 linhas → 2 imports); external_id duplicado → upsert (count +2, placar atualizado, import com on_duplicate_key_update conflict_target external_id); reimport mantém contagem; vazio (0 bytes e só cabeçalho) → completed 0 rows; encoding inválido → failed + error_log CSV::InvalidEncodingError; falha R2 (Net::ReadTimeout, ActiveStorage::FileNotFoundError) → failed + error_log; time desconhecido → mensagem; log + Sentry"
+      - "spec/models/core/csv_import_spec.rb +3: failed exige erros (model e constraint), fail! grava classe/mensagem/backtrace"
+  - id: TICKET-0005
+    status: ok
+    branch: ticket/0005-revert-match-points
+    commit: fb2bdc7
+    failures: 0
+    evidence:
+      - "app/services/revert_match_points_service.rb: match.with_lock { no-op se reversal_token já aplicado; scoring_token = match.scoring_token; match.revert_match!(reversal_token) (guard vê scores_calculated_at presente, zera no after); Bolao::PredictionScore.kept.where(scoring_token:).discard_all; Core::AuditLog.create!(action: 'revert', user: actor, auditable: match, ip_address:, metadata: scoring_token/reversal_token/discarded_scores) }"
+      - "Core::Match#clear_scores(reversal_token = SecureRandom.uuid): revert_match!(token) grava o token recebido (match_spec +1)"
+      - "app/jobs/revert_match_points_job.rb perform(match_id, reversal_token, ip_address:, actor_id: nil): no-op se match.reversal_token == reversal_token; rescue → log + Sentry + raise"
+      - "idempotência robusta: token já auditado (metadata->>'reversal_token') também é no-op, cobrindo token antigo depois de outra reversão"
+      - "spec/services/core/scoring/revert_spec.rb → 12 examples: happy path finished → reverted (scores discarded, kept vazio, outra partida intacta) e scored → reverted; guard (revert_match! chamado com scores_calculated_at presente; nil → InvalidTransition sem mudanças); AuditLog com ip_address/ator/tokens; sem ip → RecordInvalid + rollback (scores kept); mesmo token 2× → no-op (service e job); token antigo após re_finish → não re-reverte (2 cenários); falha → log + Sentry"
+  - id: TICKET-0006
+    status: ok
+    branch: ticket/0006-bolao-preview
+    commit: d32e03b
+    failures: 0
+    evidence:
+      - "engines/bolao/app/services/bolao/calculate_preview_service.rb: call(match:, candidate_home:, candidate_away:) → Bolao::Preview = Data.define(:rows, :total) (Row Data.define); pontua palpites kept contra os candidatos, nunca lê match.home_score/away_score; zero writes"
+      - "candidatos: Integer(value.to_s, 10, exception: false) >= 0, senão ArgumentError (aceita '2' de params)"
+      - "reusa Scoring::Engine.points_for via Bolao.scorer (config/initializers/bolao.rb), regras por pool em cache"
+      - "spec/services/bolao/calculate_preview_spec.rb → 14 examples: exato 5 / tendência 3 / erro 0 com candidate 2x1; candidato vs placar real 0x0 (match.home_score/away_score não chamados); Scoring::Engine recebe home/away candidatos; Preview Data frozen, total; descartados ignorados; zero INSERT/UPDATE/DELETE e PredictionScore.count inalterado; 5 entradas inválidas → ArgumentError"
+test_command: "bundle exec rspec && bundle exec rubocop && bundle exec packwerk check && bin/rails zeitwerk:check"
+test_results:
+  - {after: TICKET-0008, exit: 1, rspec: "354 examples, 0 failures", rubocop: "MethodLength em ProcessMatchPointsJob#perform + 2 no broadcast_spec", note: "defeito 1, corrigido (score! extraído)"}
+  - {after: TICKET-0008, exit: 0, rspec: "354 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: TICKET-0009, exit: 1, rspec: "369 examples, 0 failures", rubocop: "estilo da migration gerada por active_storage:install", note: "defeito distinto, corrigido com rubocop -a"}
+  - {after: TICKET-0009, exit: 0, rspec: "369 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: TICKET-0005, exit: 0, rspec: "382 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: TICKET-0006, exit: 0, rspec: "396 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: tier/4 merge, exit: 0, rspec: "396 examples, 0 failures", rubocop: "224 files, no offenses", packwerk: "No offenses", zeitwerk: "all is good", note: "db:drop db:create db:migrate do zero (20 migrations up, schema.rb idêntico) + db:seed 2× (380 partidas, 20 times, 220 jogadores, 4 regras — sem duplicação)"}
+acceptance:
+  - {name: "broadcast_spec: 10 threads mesma match → exatamente 1 broadcast", result: pass, evidence: "have_broadcasted_to(match.to_gid_param).once; results 1 true / 9 false"}
+  - {name: "process_csv_import_spec: upload válido → completed", result: pass}
+  - {name: "process_csv_import_spec: external_id duplicado → upsert via on_duplicate_key_update", result: pass}
+  - {name: "process_csv_import_spec: arquivo vazio → completed com 0 rows", result: pass}
+  - {name: "process_csv_import_spec: erro de encoding → failed com error_log", result: pass}
+  - {name: "process_csv_import_spec: falha de R2 → failed com error_log", result: pass}
+  - {name: "revert_spec: happy path finished → reverted, scores discarded", result: pass}
+  - {name: "revert_spec: guard (revert_match! com scores_calculated_at presente)", result: pass}
+  - {name: "revert_spec: idempotência (mesmo token 2x → no-op)", result: pass}
+  - {name: "revert_spec: token antigo após re_finish → não re-reverte", result: pass}
+  - {name: "revert_spec: AuditLog com ip_address preenchido", result: pass}
+  - {name: "calculate_preview_spec: exato 5, tendência 3, erro 0 com candidate_home/away", result: pass}
+  - {name: "TICKET-0005, 0006, 0008, 0009 status ok", result: pass}
+warnings:
+  - "throttle de 5s do broadcast descarta atualizações seguintes dentro da janela (comportamento pedido pelo ticket); o placar só reflete a última mudança no próximo broadcast após a janela"
+  - "Ui::ScoreboardComponent::STATUS_LABELS não tem 'reverted' (mostra o status cru) — ajustar junto das telas do TICKET-0010"
+  - "import CSV não é transacional entre lotes: falha no lote N mantém os lotes anteriores (upsert idempotente, reimport corrige)"
+  - "ninguém enfileira RevertMatchPointsJob/ProcessCsvImportJob ainda: ponto de chamada = ActiveAdmin (TICKET-0010)"

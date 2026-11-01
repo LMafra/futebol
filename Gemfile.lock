@@ -28,6 +28,8 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    aasm (6.0.0)
+      concurrent-ruby (~> 1.0)
     action_text-trix (2.1.19)
       railties
     actioncable (8.1.4)
@@ -74,6 +76,15 @@ GEM
       erubi (~> 1.11)
       rails-dom-testing (~> 2.2)
       rails-html-sanitizer (~> 1.6)
+    activeadmin (4.0.0.beta23)
+      arbre (~> 2.0)
+      csv
+      formtastic (>= 6.0)
+      formtastic_i18n (>= 0.7)
+      inherited_resources (~> 2.0)
+      kaminari (>= 1.2.1)
+      railties (>= 7.2)
+      ransack (>= 4.0)
     activejob (8.1.4)
       activesupport (= 8.1.4)
       globalid (>= 0.3.6)
@@ -83,6 +94,8 @@ GEM
       activemodel (= 8.1.4)
       activesupport (= 8.1.4)
       timeout (>= 0.4.0)
+    activerecord-import (3.0.1)
+      activerecord (>= 6.1)
     activestorage (8.1.4)
       actionpack (= 8.1.4)
       activejob (= 8.1.4)
@@ -102,8 +115,41 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
+    addressable (2.9.1)
+      public_suffix (>= 2.0.2, < 8.0)
+    arbre (2.2.1)
+      activesupport (>= 7.0)
     ast (2.4.3)
+    aws-eventstream (1.4.1)
+    aws-partitions (1.1300.0)
+    aws-sdk-core (3.263.0)
+      aws-eventstream (~> 1, >= 1.4.1)
+      aws-partitions (~> 1, >= 1.992.0)
+      aws-sigv4 (~> 1.9)
+      base64
+      bigdecimal
+      jmespath (~> 1, >= 1.6.1)
+      logger
+      rexml (~> 3.4, >= 3.4.2)
+    aws-sdk-kms (1.138.0)
+      aws-sdk-core (~> 3, >= 3.263.0)
+      aws-sigv4 (~> 1.5)
+    aws-sdk-s3 (1.237.0)
+      aws-sdk-core (~> 3, >= 3.263.0)
+      aws-sdk-kms (~> 1)
+      aws-sigv4 (~> 1.5)
+    aws-sigv4 (1.12.1)
+      aws-eventstream (~> 1, >= 1.0.2)
     base64 (0.3.0)
+    bcrypt (3.1.22)
+    benchmark (0.5.0)
+    better_html (2.2.0)
+      actionview (>= 7.0)
+      activesupport (>= 7.0)
+      ast (~> 2.0)
+      erubi (~> 1.4)
+      parser (>= 2.4)
+      smart_properties
     bigdecimal (4.1.3)
     bindex (0.8.1)
     bootsnap (1.26.1)
@@ -116,12 +162,20 @@ GEM
       thor (~> 1.0)
     concurrent-ruby (1.3.8)
     connection_pool (3.0.2)
+    constant_resolver (0.3.0)
     crass (1.0.8)
+    css_parser (3.3.0)
+      addressable
+      base64
+      ssrf_filter (~> 1.5)
+    csv (3.3.7)
     date (3.6.0)
     debug (1.11.1)
       irb (~> 1.10)
       reline (>= 0.3.8)
     diff-lcs (1.6.2)
+    discard (2.0.0)
+      activerecord (>= 7.0, < 9.0)
     drb (2.2.3)
     erb (6.0.7)
     erubi (1.13.1)
@@ -132,6 +186,12 @@ GEM
     factory_bot_rails (6.5.1)
       factory_bot (~> 6.5)
       railties (>= 6.1.0)
+    faraday (2.15.1)
+      faraday-net_http (>= 2.0, < 3.6)
+      json
+      logger
+    faraday-net_http (3.5.0)
+      net-http (~> 0.5)
     ffi (1.17.4-aarch64-linux-gnu)
     ffi (1.17.4-aarch64-linux-musl)
     ffi (1.17.4-arm-linux-gnu)
@@ -140,11 +200,19 @@ GEM
     ffi (1.17.4-x86_64-darwin)
     ffi (1.17.4-x86_64-linux-gnu)
     ffi (1.17.4-x86_64-linux-musl)
+    formtastic (6.0.0)
+      actionpack (>= 7.2.0)
+    formtastic_i18n (0.7.0)
     fugit (1.14.0)
       et-orbi (~> 1.4)
       raabro (~> 1.4)
     globalid (1.4.0)
       activesupport (>= 6.1)
+    has_scope (0.9.0)
+      actionpack (>= 7.0)
+      activesupport (>= 7.0)
+    htmlbeautifier (1.4.3)
+    htmlentities (4.4.2)
     i18n (1.15.2)
       concurrent-ruby (~> 1.0)
     image_processing (1.14.0)
@@ -154,6 +222,11 @@ GEM
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
       railties (>= 6.0.0)
+    inherited_resources (2.1.0)
+      actionpack (>= 7.0)
+      has_scope (>= 0.6)
+      railties (>= 7.0)
+      responders (>= 2)
     io-console (0.9.5)
     irb (1.18.0)
       pp (>= 0.6.0)
@@ -163,13 +236,44 @@ GEM
     jbuilder (2.15.1)
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
+    jmespath (1.6.2)
     json (3.1.0)
+    kaminari (1.3.2)
+      activesupport (>= 4.1.0)
+      kaminari-actionview (= 1.3.2)
+      kaminari-activerecord (= 1.3.2)
+      kaminari-core (= 1.3.2)
+    kaminari-actionview (1.3.2)
+      actionview
+      kaminari-core (= 1.3.2)
+    kaminari-activerecord (1.3.2)
+      activerecord
+      kaminari-core (= 1.3.2)
+    kaminari-core (1.3.2)
     language_server-protocol (3.17.0.6)
     lint_roller (1.1.0)
     logger (1.7.0)
+    lograge (0.15.1)
+      actionpack (>= 4)
+      activesupport (>= 4)
+      logger
+      railties (>= 4)
+      request_store (~> 1.0)
     loofah (2.25.2)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
+    lookbook (2.3.15)
+      activemodel
+      css_parser
+      htmlbeautifier (~> 1.3)
+      htmlentities (~> 4.3)
+      marcel (>= 1.0)
+      railties (>= 5.0)
+      redcarpet (~> 3.5)
+      rouge (>= 3.26, < 6.0)
+      view_component (>= 2.0)
+      yard (~> 0.9)
+      zeitwerk (~> 2.5)
     mail (2.9.1)
       logger
       mini_mime (>= 0.1.1)
@@ -183,7 +287,20 @@ GEM
     minitest (6.0.6)
       drb (~> 2.0)
       prism (~> 1.5)
+    mission_control-jobs (1.3.1)
+      actioncable (>= 7.1)
+      actionpack (>= 7.1)
+      activejob (>= 7.1)
+      activerecord (>= 7.1)
+      importmap-rails (>= 1.2.1)
+      irb (~> 1.13)
+      railties (>= 7.1)
+      stimulus-rails
+      turbo-rails
     msgpack (1.8.7)
+    net-http (0.10.0)
+      net-protocol (>= 0.3.0)
+      uri (>= 0.11.1)
     net-imap (0.6.8)
       date
       net-protocol
@@ -210,6 +327,17 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.4-x86_64-linux-musl)
       racc (~> 1.4)
+    packwerk (3.3.1)
+      activesupport (>= 6.0)
+      ast
+      benchmark
+      better_html
+      bundler
+      constant_resolver (>= 0.3)
+      parallel
+      parser
+      prism (>= 1.4.0)
+      zeitwerk (>= 2.6.1)
     parallel (2.3.0)
     parser (3.3.13.0)
       ast (~> 2.4.1)
@@ -229,8 +357,11 @@ GEM
       actionpack (>= 7.0.0)
       activesupport (>= 7.0.0)
       rack
+    public_suffix (7.0.5)
     puma (8.0.2)
       nio4r (~> 2.0)
+    pundit (2.5.2)
+      activesupport (>= 3.0.0)
     raabro (1.5.0)
     racc (1.8.1)
     rack (3.2.8)
@@ -273,6 +404,10 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.4.2)
+    ransack (6.0.1)
+      activerecord (>= 7.2)
+      activesupport (>= 7.2)
+      i18n
     rbs (4.2.0)
       logger
       prism (>= 1.6.0)
@@ -282,9 +417,18 @@ GEM
       prism (>= 1.6.0)
       rbs (>= 4.0.0)
       tsort
+    redcarpet (3.6.1)
     regexp_parser (2.13.1)
     reline (0.7.0)
       io-console (~> 0.5)
+    request_store (1.7.0)
+      rack (>= 1.4)
+    responders (3.2.1)
+      actionpack (>= 7.0)
+      railties (>= 7.0)
+    rexml (3.4.4)
+    rouge (5.1.0)
+      strscan (~> 3.1)
     rspec-core (3.13.6)
       rspec-support (~> 3.13.0)
     rspec-expectations (3.13.5)
@@ -335,6 +479,14 @@ GEM
       ffi (~> 1.12)
       logger
     securerandom (0.4.1)
+    sentry-rails (7.2.0)
+      railties (>= 5.2.0)
+      sentry-ruby (~> 7.2.0)
+    sentry-ruby (7.2.0)
+      bigdecimal
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      logger
+    smart_properties (1.17.0)
     solid_cable (4.1.0)
       actioncable (>= 7.2)
       activejob (>= 7.2)
@@ -351,8 +503,13 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
+    ssrf_filter (1.6.0)
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
+    stoplight (6.0.0)
+      concurrent-ruby
+      zeitwerk
+    strscan (3.1.8)
     tailwindcss-rails (4.7.0)
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
@@ -381,6 +538,10 @@ GEM
     unicode-emoji (4.3.0)
     uri (1.1.2)
     useragent (0.16.11)
+    view_component (4.20.0)
+      actionview (>= 7.1.0)
+      activesupport (>= 7.1.0)
+      prism (>= 1.0)
     web-console (4.3.0)
       actionview (>= 8.0.0)
       bindex (>= 0.4.0)
@@ -389,6 +550,7 @@ GEM
       base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    yard (0.9.45)
     zeitwerk (2.8.3)
 
 PLATFORMS
@@ -404,6 +566,11 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  aasm (~> 6.0)
+  activeadmin (= 4.0.0.beta23)
+  activerecord-import (~> 3.0)
+  aws-sdk-s3 (~> 1.200)
+  bcrypt (~> 3.1.7)
   bolao!
   bootsnap
   brakeman
@@ -411,25 +578,36 @@ DEPENDENCIES
   cartola!
   core!
   debug
+  discard (~> 2.0)
   factory_bot_rails (~> 6.5)
+  faraday (~> 2.15)
   image_processing (~> 1.2)
   importmap-rails
   jbuilder
+  lograge (~> 0.15)
+  lookbook (~> 2.3)
+  mission_control-jobs (~> 1.3)
+  packwerk (~> 3.3)
   pg (~> 1.1)
   propshaft
   puma (>= 5.0)
+  pundit (~> 2.5)
   rails (~> 8.1.2)
   rspec-rails (~> 8.0)
   rubocop-rails-omakase
+  sentry-rails (~> 7.2)
+  sentry-ruby (~> 7.2)
   simulador!
   solid_cable
   solid_cache
   solid_queue
   stimulus-rails
+  stoplight (~> 6.0)
   tailwindcss-rails
   thruster
   turbo-rails
   tzinfo-data
+  view_component (~> 4.20)
   web-console
 
 BUNDLED WITH

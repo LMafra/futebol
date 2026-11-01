@@ -27,4 +27,20 @@ Metrics/BlockLength:
     - 'spec/**/*'
     - 'engines/*/spec/**/*'
     - 'config/routes.rb'
+    - 'config/environments/*'
     - 'app/admin/**/*'
+
+Naming/PredicateMethod:
+  AllowedMethods:
+    - call
+    - save
+
+Metrics/MethodLength:
+  Exclude:
+    - 'db/migrate/**/*'
+    - 'engines/*/db/migrate/**/*'
+
+Metrics/AbcSize:
+  Exclude:
+    - 'db/migrate/**/*'
+    - 'engines/*/db/migrate/**/*'

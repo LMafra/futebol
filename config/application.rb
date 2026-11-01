@@ -38,5 +38,13 @@ module Futebol
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # Solid Queue dashboard at /admin/jobs: admin-only through JobsDashboardController (Pundit), no HTTP basic auth.
+    config.mission_control.jobs.adapters = [:solid_queue]
+    config.mission_control.jobs.base_controller_class = 'JobsDashboardController'
+    config.mission_control.jobs.http_basic_auth_enabled = false
+
+    config.view_component.previews.paths << config.root.join('spec/components/previews').to_s
+    config.view_component.previews.default_layout = 'component_preview'
   end
 end

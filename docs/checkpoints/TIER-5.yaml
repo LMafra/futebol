@@ -1,0 +1,75 @@
+tier: 5
+status: ok
+branch: tier/5
+base: tier/4
+pr: https://github.com/LMafra/futebol/pull/7
+signed_commits: true  # SSH ed25519, git log %G? = G em todos os commits do tier
+context_read:
+  - AGENTS.md
+  - docs/tickets/INDEX.md
+  - docs/spec-v2.md (§2 ActiveAdmin/Pundit, §7 regras, §8 jobs) + docs/spec-v3.md (§3 AASM)
+  - docs/checkpoints/TIER-4.yaml (status ok)
+stop_condition_check: "TICKET-0005, 0006, 0009 ok (TIER-4.yaml); TICKET-0007, 0015 ok (TIER-3.yaml) → nenhum blocked, tier executado"
+failure_policy: "falha = mesmo defeito falhar 2x consecutivas; execuções vermelhas com defeitos distintos são registradas, não bloqueiam"
+decisions:
+  - "não existe Core::ScoringRule (TIER-2 escolheu dois models: Bolao::ScoringRule e Cartola::ScoringRule) → Core::ScoringRulePolicy é a policy base; Bolao::ScoringRulePolicy e Cartola::ScoringRulePolicy herdam dela (Pundit resolve pelo namespace do model)"
+  - "policies movidas para o namespace do model (app/policies/core/*, bolao/*, cartola/*) via git mv; Pundit resolve Core::Match → Core::MatchPolicy sem policy_class"
+  - "não-admin recebe 403: authentication_method = :require_authentication (só sessão) e Pundit nega; on_unauthorized_access = proc → ApplicationController#render_forbidden (HTML errors/forbidden ou JSON, status 403). Proc porque Symbol#to_proc não alcança método privado"
+  - "custom pages autorizadas pelo PunditAdapter: page → ActiveAdmin::PagePolicy (index? = admin?), page_action pelo próprio nome (finalize?, revert?); além disso cada página autoriza o recurso real (authorize! :preview/:finalize/:revert no Core::Match, :test em Bolao::ScoringRule, READ em Core::AuditLog + scope_collection)"
+  - "URLs das páginas = name.parameterize.underscore: /admin/bolaopreview, /admin/matchfinalizer (+ POST finalize), /admin/matchreversal (+ POST revert), /admin/scoringruletester, /admin/audithistory"
+  - "finalização via FinalizeMatchService (with_lock: placar → start_match! se ainda scheduled com kickoff passado → finish_match! → AuditLog 'finalize'; depois do lock enfileira ProcessMatchPointsJob) — resolve o aviso do TIER-3 sobre quem enfileira a pontuação"
+  - "confirmação da finalização = digitar o placar ('3x2', aceita espaços e ×) no campo score_confirmation; diferente → 422 sem mudanças"
+  - "reversão enfileira RevertMatchPointsJob (o ticket pede enqueue); motivo obrigatório (presence, máx. 500) no form e required no textarea; o motivo vai para AuditLog.metadata.reason junto de ator e ip_address"
+  - "preview Bolão no admin recebe candidate_home/candidate_away por GET e só então oferece 'Confirmar este placar', que abre o finalizador pré-preenchido (a confirmação continua exigida lá)"
+  - "Ransack 4 exige allowlist: ApplicationRecord de cada engine devolve [] por padrão; cada model libera só os filtros usados no admin"
+  - "resources extras do ticket: CsvImport (upload → save(context: :upload) exige arquivo → ProcessCsvImportJob), Pool, Squad, AuditLog (read-only, fora do menu); dashboard virou painel de pontuação (ao vivo, finalizadas aguardando pontuação, últimos logs)"
+  - "form objects com model_name 'Finalization'/'Reversal' (namespace Admin:: evitado: é dos controllers do ActiveAdmin)"
+  - "Naming/PredicateMethod: AllowedMethods [call, save] no .rubocop.yml (save booleano é convenção ActiveModel)"
+tickets:
+  - id: TICKET-0010
+    status: ok
+    branch: ticket/0010-active-admin-pundit
+    commits:
+      - "2831cc9 parte 1: PunditAdapter + 403 + policies namespaced + PagePolicy"
+      - "5df88e5 parte 2: resources ActiveAdmin sob Pundit + allowlists Ransack"
+      - "36a6ef2 parte 3: 5 custom pages + FinalizeMatchService + forms"
+      - "d2593a0 parte 4: specs de upload CSV, FinalizeMatchService e motivo da reversão"
+    merge: "b7d1461 (tier/5, --no-ff, assinado)"
+    failures: 0
+    evidence:
+      - "config/initializers/active_admin.rb: authorization_adapter = ActiveAdmin::PunditAdapter, pundit_default_policy = 'ApplicationPolicy', on_unauthorized_access → 403"
+      - "5 policies pedidas: app/policies/core/{match,championship,team,player,scoring_rule}_policy.rb (+ audit_log, csv_import, bolao/{pool,scoring_rule}, cartola/{squad,scoring_rule}, active_admin/page); specs em spec/policies/** checam que Pundit.policy(nil, Model.new) resolve a classe certa"
+      - "5 custom pages: app/admin/{bolao_preview,match_finalizer,match_reversal,scoring_rule_tester,audit_history}.rb (register_page 'BolaoPreview', 'MatchFinalizer', 'MatchReversal', 'ScoringRuleTester', 'AuditHistory')"
+      - "resources: app/admin/{matches,championships,teams,players,bolao_scoring_rules,cartola_scoring_rules,csv_imports,pools,squads,audit_logs}.rb; Match só index/show com action items Preview/Finalizar/Reverter/Histórico"
+      - "app/services/finalize_match_service.rb, app/forms/match_finalization_form.rb, app/forms/match_reversal_form.rb, app/controllers/concerns/admin_page_form.rb (re-render 422 com o presenter de :index)"
+      - "RevertMatchPointsService/Job aceitam reason:; Scoring::BolaoScorer.outcome usado pelo testador de regras"
+      - "spec/requests/admin → 37 examples em 9 arquivos (resources 11, match_finalizer 6, match_reversal 5, bolao_preview 4, scoring_rule_tester 4, audit_history 3, csv_imports 3, dashboard 1, dashboard_scoring 1)"
+      - "spec/services/finalize_match_service_spec.rb (3) e revert_spec +1 (motivo no metadata)"
+      - "bin/rails assets:precompile → exit 0 (tailwind v4.3.3, active_admin-*.css com data-table, panel-title, action-item-button e classes do AdminHelper); public/assets removido com assets:clobber"
+test_command: "bundle exec rspec && bundle exec rubocop && bundle exec packwerk check && bin/rails zeitwerk:check"
+test_results:
+  - {after: "parte 1 (2831cc9)", exit: 0, rspec: "558 examples, 0 failures", rubocop: "236 files, no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: "parte 2 (5df88e5)", exit: 0, rspec: "566 examples, 0 failures", rubocop: "248 files, no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: "parte 3", exit: 1, rspec: "596 examples, 0 failures", rubocop: "AbcSize em 3 pages, alinhamento, linha longa, Naming/PredicateMethod em save", note: "defeito 1, corrigido (métodos extraídos, AllowedMethods)"}
+  - {after: "parte 3", exit: 1, rspec: "596 examples, 0 failures", rubocop: "AllowedMethods sobrescreveu o default call + alinhamento", note: "defeito distinto, corrigido"}
+  - {after: "parte 3 + 4 (36a6ef2, d2593a0)", exit: 0, rspec: "596 examples, 0 failures", rubocop: "265 files, no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: "tier/5 merge (b7d1461)", exit: 0, rspec: "596 examples, 0 failures", rubocop: "265 files, no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: "assets:precompile", exit: 0}
+acceptance:
+  - {name: "spec/requests/admin/ com >= 6 exemplos", result: pass, evidence: "37 examples, 0 failures"}
+  - {name: "admin acessa /admin/matches → 200", result: pass, evidence: "resources_spec"}
+  - {name: "não-admin → 403 (Pundit)", result: pass, evidence: "resources_spec, dashboard_spec e todas as pages/page_actions"}
+  - {name: "preview Bolão renderiza com candidate scores", result: pass, evidence: "bolao_preview_spec: placar real 0x0, candidato 2x1 → pontos 10 (palpite exato) e 0 (erro), total 10, nenhum PredictionScore gravado, link de confirmação com o candidato"}
+  - {name: "finalização exige confirmação com placar", result: pass, evidence: "match_finalizer_spec: confirmação vazia/errada → 422 sem mudança; correta → finished + AuditLog + ProcessMatchPointsJob"}
+  - {name: "reversão com motivo vazio → erro", result: pass, evidence: "match_reversal_spec: 422 'Motivo é obrigatório', nada enfileirado"}
+  - {name: "AuditLog criado após reversão", result: pass, evidence: "match_reversal_spec com perform_enqueued_jobs: AuditLog revert com motivo, ator e ip_address"}
+  - {name: "5 custom pages registradas (BolaoPreview, MatchFinalizer, MatchReversal, ScoringRuleTester, AuditHistory)", result: pass}
+  - {name: "5 policies Core::Match, Core::Championship, Core::Team, Core::Player, Core::ScoringRule", result: pass}
+  - {name: "custom pages usam ActiveAdmin::PunditAdapter", result: pass}
+  - {name: "bin/rails assets:precompile passa sem erro", result: pass}
+  - {name: "TICKET-0010 status ok", result: pass}
+warnings:
+  - "Core::ScoringRulePolicy não tem model Core::ScoringRule correspondente; é base herdada pelas policies Bolão/Cartola (ver decisions)"
+  - "reversão é assíncrona: o redirect mostra 'enfileirada' e o AuditLog aparece quando o RevertMatchPointsJob roda (Solid Queue)"
+  - "finalização só lista partidas ao vivo ou agendadas com kickoff já passado; partidas futuras não podem ser finalizadas"
+  - "bin/rails assets:precompile em development deixa public/assets servindo CSS antigo; rodar bin/rails assets:clobber depois"

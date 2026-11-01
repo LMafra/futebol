@@ -1,0 +1,64 @@
+<div class="grid gap-6 lg:grid-cols-12">
+  <div class="flex flex-col gap-6 lg:col-span-8">
+    <section class="panel" aria-labelledby="live-title">
+      <h3 class="panel-title" id="live-title">Ao vivo: aguardando placar final (<%= live.size %>)</h3>
+      <div class="panel-body">
+        <% if live.empty? %>
+          <p class="text-gray-600 dark:text-gray-400">Nenhuma partida ao vivo.</p>
+        <% else %>
+          <table class="data-table">
+            <thead><tr><th>Partida</th><th>Início</th><th>Placar</th><th></th></tr></thead>
+            <tbody>
+              <% live.each do |match| %>
+                <tr>
+                  <td><%= link_to match, admin_match_path(match) %></td>
+                  <td class="tabular-nums"><%= l(match.match_date, format: "%d/%m %H:%M") %></td>
+                  <td class="tabular-nums"><%= admin_score(match) %></td>
+                  <td class="whitespace-nowrap text-right">
+                    <%= link_to "Preview", admin_bolaopreview_path(match_id: match.id), class: "font-semibold underline underline-offset-2" %>
+                    · <%= link_to "Finalizar", admin_matchfinalizer_path(match_id: match.id), class: "font-semibold underline underline-offset-2" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="pending-title">
+      <h3 class="panel-title" id="pending-title">Encerradas com pontuação pendente (<%= pending.size %>)</h3>
+      <div class="panel-body">
+        <% if pending.empty? %>
+          <p class="text-gray-600 dark:text-gray-400">Nada pendente: toda partida encerrada já foi pontuada.</p>
+        <% else %>
+          <ul class="flex flex-col gap-1">
+            <% pending.each do |match| %>
+              <li><%= link_to match, admin_match_path(match) %> · <span class="tabular-nums"><%= admin_score(match) %></span></li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel lg:col-span-4" aria-labelledby="log-title">
+    <h3 class="panel-title" id="log-title">Últimas ações</h3>
+    <div class="panel-body">
+      <% if recent_logs.empty? %>
+        <p class="text-gray-600 dark:text-gray-400">Nenhum registro ainda.</p>
+      <% else %>
+        <ul class="flex flex-col gap-2 text-sm">
+          <% recent_logs.each do |log| %>
+            <li>
+              <span class="status-tag"><%= log.action %></span>
+              <%= admin_auditable_link(log) %>
+              <span class="block text-gray-600 dark:text-gray-400"><%= log.user || "sistema" %> · <%= l(log.created_at, format: "%d/%m %H:%M") %></span>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+      <%= link_to "Ver histórico completo", admin_audithistory_path, class: "mt-4 inline-block font-semibold underline underline-offset-2" %>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,97 @@
+tier: 6
+status: partial  # TICKET-0021 ok; TICKET-0012 partial (deploy Render sem RENDER_DEPLOY_HOOK_URL, condição de parada do tier)
+branch: tier/6
+base: tier/5
+pr: https://github.com/LMafra/futebol/pull/8
+signed_commits: true  # SSH ed25519, git log %G? = G em todos os commits do tier
+context_read:
+  - AGENTS.md
+  - docs/tickets/INDEX.md (0021 depende de 0012 no INDEX; ordem do tier = 0021 → 0012, seguida)
+  - docs/spec-v2.md (§1 sentry ~> 7.2, §9 não-funcionais: Sentry DSN via ENV, Render web + worker, Neon, R2, Resend, keep-alive /up)
+  - docs/checkpoints/TIER-5.yaml (TICKET-0010 ok → tier executado)
+failure_policy: "falha = mesmo defeito falhar 2x consecutivas; execuções vermelhas com defeitos distintos são registradas, não bloqueiam"
+decisions:
+  - "critério do tier prevalece sobre o ticket: dashboard em /admin/jobs (ticket dizia /jobs)"
+  - "/admin/jobs: base_controller_class = JobsDashboardController (< ApplicationController) com authorize :jobs_dashboard (JobsDashboardPolicy, admin-only); visitante → login, não-admin → 403 'Acesso negado' (mesma resposta do ActiveAdmin no TIER-5, em vez do 404 sugerido no ticket); HTTP basic auth do mission_control desligado"
+  - "mission_control.jobs.adapters = [:solid_queue]; development usa :solid_queue (bin/jobs no Procfile.dev) e development/test ganham banco de fila (futebol_*_queue), espelhando produção; test mantém o adapter :test para os jobs"
+  - "Sentry sem DSN real: development usa DSN local stub + Sentry::DebugTransport (eventos em log/sentry_debug_events.log); test/production não enviam nada sem SENTRY_DSN. send_default_pii = false, traces 0.05 em produção (0 fora), release = RENDER_GIT_COMMIT"
+  - "bin/rails sentry:fake_exception = exception fake capturada (imprime event_id e destino)"
+  - "Neon free = um banco: Solid Cache/Queue/Cable usam bancos irmãos derivados do DATABASE_URL (<db>_cache/_queue/_cable, criados pelo db:prepare); compartilhar o mesmo banco foi testado e NÃO carrega os schemas Solid (db:prepare vê o banco já preparado). CACHE_/QUEUE_/CABLE_DATABASE_URL sobrescrevem"
+  - "seeds: false no primary de production e test: db:prepare do entrypoint não semeia produção (seeds criariam admin com senha padrão; db:seed manual continua bloqueado pelo guard do TICKET-0022) e o CI não semeia o banco de test"
+  - "Render via Docker (Dockerfile existente): web free com HTTP_PORT=10000 + healthCheckPath /up, worker starter com ./bin/jobs; autoDeploy false, deploy pelo job deploy do CI (main) com RENDER_DEPLOY_HOOK_URL. Plano free sem worker: SOLID_QUEUE_IN_PUMA=1"
+  - "/up fora do redirect HTTPS (ssl_options) e da host authorization: health check do Render e keep-alive (cron-job.org a cada 10 min) funcionam por HTTP e com qualquer Host"
+  - "Resend por SMTP (smtp.resend.com:465, TLS, user 'resend', senha RESEND_API_KEY), sem gem extra; remetente RESEND_FROM"
+  - "CI em ubuntu-24.04: ubuntu-latest (26.04) não tem Ruby 3.3.6 pré-compilado no setup-ruby"
+tickets:
+  - id: TICKET-0021
+    status: ok
+    branch: ticket/0021-solid-queue-sentry
+    commits:
+      - "177e459 mission_control-jobs em /admin/jobs + Sentry"
+    merge: "f54e4ef (tier/6, --no-ff, assinado)"
+    failures: 0
+    evidence:
+      - "Gemfile: mission_control-jobs ~> 1.3 (1.3.1); sentry-ruby/sentry-rails ~> 7.2 (7.2.0) já presentes"
+      - "config/routes.rb: mount MissionControl::Jobs::Engine, at: '/admin/jobs'; config/application.rb: adapters [:solid_queue], base_controller_class 'JobsDashboardController', http_basic_auth_enabled false"
+      - "app/controllers/jobs_dashboard_controller.rb + app/policies/jobs_dashboard_policy.rb"
+      - "config/initializers/sentry.rb: DSN ENV.fetch('SENTRY_DSN'), environment, enabled_environments production/development, send_default_pii false, traces baixo, stub DebugTransport em development"
+      - "jobs com rescue reportam ao Sentry: ProcessMatchPointsJob, ProcessCsvImportJob (e RevertMatchPointsJob)"
+      - "spec/requests/admin/jobs_dashboard_spec.rb (4): visitante → /session/new, não-admin 403 (raiz e páginas internas), admin 200 com a fila 'scoring' lida do banco de fila"
+      - "spec/policies/jobs_dashboard_policy_spec.rb (4) e spec/lib/sentry_spec.rb (4, Sentry::TestHelper + DummyTransport: config, ProcessMatchPointsJob, ProcessCsvImportJob, sentry:fake_exception)"
+      - "runtime dev: bin/rails sentry:fake_exception → 'Sentry event 1ca0c09e07bd4aff9f5ecbf1ee1db445 sent to log/sentry_debug_events.log (environment: development)'; log com exception RuntimeError, tag source, user vazio"
+      - "runtime dev (bin/rails server): /up 200; /admin/jobs anônimo 302 → /session/new; admin logado 200 '<title>Mission control - Queues</title>'"
+  - id: TICKET-0012
+    status: partial
+    partial_reason: "deploy Render não executado: RENDER_DEPLOY_HOOK_URL ausente (env, .env e secrets do repo vazios; sem Render CLI/API key/MCP). Registrado como 'manual' no README; sem credenciais R2/Resend, upload em futebol-dev e e-mail recebido também ficam manuais"
+    branch: ticket/0012-ci-deploy
+    commits:
+      - "f6fc606 CI + render.yaml + R2 + Resend + Dockerfile + docs"
+      - "89e9d86 ci: runner ubuntu-24.04"
+      - "cd9876d fix(ci): seeds: false no banco de test"
+    merges: ["6e891c4", "e12a8fa", "e8486cc"]
+    failures: 0  # dois CIs vermelhos com defeitos distintos (Ruby indisponível no runner; seeds no banco de test), ambos corrigidos
+    evidence:
+      - ".github/workflows/ci.yml: on pull_request + push (main, tier/**); lint = rubocop, packwerk, zeitwerk:check, brakeman, design grep; test = Postgres 18, db:prepare, tailwindcss:build, rspec; deploy = só push main, RENDER_DEPLOY_HOOK_URL ou aviso 'manual'. actionlint sem erros"
+      - "CI no GitHub: run 41256682244 (push tier/6, e8486cc) → Lint success, RSpec success, Deploy skipped"
+      - "render.yaml: futebol-web (docker, free, healthCheckPath /up, HTTP_PORT 10000) + futebol-worker (docker, ./bin/jobs) + envVarGroup futebol"
+      - "config/storage.yml: serviço r2 (S3, endpoint https://<R2_ACCOUNT_ID>.r2.cloudflarestorage.com ou R2_ENDPOINT, region auto, bucket futebol-prod/futebol-dev, checksums when_required); production active_storage.service = r2; gem aws-sdk-s3"
+      - "config/environments/production.rb: Action Mailer smtp smtp.resend.com:465 tls, user resend, password RESEND_API_KEY; ApplicationMailer from RESEND_FROM; hosts APP_HOST/RENDER_EXTERNAL_HOSTNAME"
+      - "Dockerfile: COPY engines antes do bundle install (build quebrava: 'The path /rails/engines/bolao does not exist')"
+      - "docker build OK; container web (HTTP_PORT=10000, DATABASE_URL local) → entrypoint cria <db>, <db>_cache, <db>_queue, <db>_cable, 0 seeds, /up 200, Host do app 302 → https://futebol.onrender.com/session/new, Host desconhecido 403; container worker ./bin/jobs → Supervisor, Dispatcher, Worker, Scheduler registrados em solid_queue_processes"
+      - "RAILS_ENV=production local (bin/rails server): /up 200 por HTTP; db:prepare 2x idempotente"
+      - "spec/requests/health_check_spec.rb (/up 200), spec/config/storage_spec.rb (2, endpoint R2), spec/config/production_spec.rb (boot production em subprocesso: storage r2, smtp Resend, from, hosts, force_ssl, /up fora do redirect e do host check); mutação porta 465→587 detectada"
+      - "README: badge CI, seções CI, Deploy (Render + Neon), Keep-alive (cron-job.org, GET /up a cada 10 min), Storage (R2), E-mail (Resend) e passos 'manual: <comando>'"
+      - ".githooks/pre-commit: rubocop nos arquivos staged (já existente, usado em todos os commits do tier)"
+test_command: "bundle exec rspec && bundle exec rubocop && bundle exec packwerk check && bin/rails zeitwerk:check"
+test_results:
+  - {after: "TICKET-0021", exit: 1, rspec: "608 examples, 0 failures", rubocop: "TrailingEmptyLines no Gemfile + BlockLength em development.rb", note: "defeito 1, corrigido (config/environments/* fora do BlockLength)"}
+  - {after: "TICKET-0021 (177e459)", exit: 0, rspec: "608 examples, 0 failures", rubocop: "272 files, no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: "TICKET-0012", exit: 1, rspec: "612 examples, 0 failures", rubocop: "LineLength em spec/config/storage_spec.rb", note: "defeito distinto, corrigido"}
+  - {after: "TICKET-0012 (f6fc606)", exit: 0, rspec: "612 examples, 0 failures", rubocop: "275 files, no offenses", packwerk: "No offenses", zeitwerk: "all is good"}
+  - {after: "TICKET-0012 seeds fix (cd9876d, banco de test recriado com db:prepare)", exit: 0, rspec: "612 examples, 0 failures"}
+  - {after: "CI run 41256380941 (6e891c4)", exit: 1, note: "setup-ruby: 'Unavailable version 3.3.6 for ruby on ubuntu-26.04' → runner ubuntu-24.04"}
+  - {after: "CI run 41256454277 (e12a8fa)", exit: 1, note: "Lint ok; RSpec com unicidade violada: db:prepare semeou o banco de test novo → seeds: false"}
+  - {after: "CI run 41256682244 (e8486cc)", exit: 0, note: "Lint success, RSpec success, Deploy skipped"}
+acceptance:
+  - {name: ".github/workflows/ci.yml rodando em PR (rubocop + packwerk + rspec + zeitwerk)", result: pass, evidence: "on: pull_request; jobs lint/test; ver run do PR do tier"}
+  - {name: "ci.yml com badge verde no último commit", result: pass, evidence: "badge no README; último commit de tier/6 com Lint e RSpec success (repo privado: badge só renderiza para usuários logados)"}
+  - {name: "mission_control-jobs acessível em /admin/jobs (protegido por auth)", result: pass}
+  - {name: "Sentry captura exception fake em dev (DSN via ENV)", result: pass, evidence: "bin/rails sentry:fake_exception → event_id em log/sentry_debug_events.log"}
+  - {name: "/up retorna 200", result: pass, evidence: "request spec, dev server, production local e container Docker"}
+  - {name: "keep-alive documentado no README (cron-job.org a cada 10 min)", result: pass}
+  - {name: "Active Storage configurado para R2 (config/storage.yml com endpoint R2)", result: pass}
+  - {name: "Action Mailer configurado para Resend", result: pass}
+  - {name: "TICKET-0021 status ok", result: pass}
+  - {name: "TICKET-0012 status ok", result: partial, evidence: "condição de parada: deploy Render sem RENDER_DEPLOY_HOOK_URL → manual no README, ticket partial"}
+manual_pending:
+  - "criar Blueprint no Render a partir de render.yaml e preencher variáveis sync: false"
+  - "gh secret set RENDER_DEPLOY_HOOK_URL (ativa o job deploy) e curl -fsS https://<app>.onrender.com/up"
+  - "cron-job.org: GET https://<app>.onrender.com/up a cada 10 min"
+  - "wrangler r2 bucket create futebol-dev/futebol-prod + upload de teste com ACTIVE_STORAGE_SERVICE=r2"
+  - "e-mail de teste via Resend (RESEND_API_KEY)"
+  - "SENTRY_DSN real no Render"
+warnings:
+  - "bancos Solid irmãos exigem que o role do DATABASE_URL possa CREATE DATABASE (neondb_owner pode); senão, criar <db>_cache/_queue/_cable no console do Neon ou definir *_DATABASE_URL"
+  - "sem chaves R2 em produção o boot tenta credenciais de instância AWS (timeout); use ACTIVE_STORAGE_SERVICE=local para subir sem R2"
+  - "development passou a usar Solid Queue: rode bin/dev (inclui bin/jobs) ou os jobs ficam enfileirados; bancos locais precisam de bin/rails db:prepare para criar futebol_development_queue"
+  - "badge aponta para a branch padrão (main); o workflow só passa a reportar em main após o merge da cadeia de PRs"

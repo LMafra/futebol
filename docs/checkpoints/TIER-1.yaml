@@ -1,0 +1,78 @@
+tier: 1
+status: ok
+branch: tier/1
+base: tier/0
+pr: https://github.com/LMafra/futebol/pull/3
+signed_commits: true  # SSH ed25519, git log %G? = G em todos os commits do tier
+context_read:
+  - AGENTS.md
+  - docs/tickets/INDEX.md
+  - docs/spec-v2.md
+  - docs/design/0001-direction.md
+  - docs/checkpoints/STATUS.md
+  - docs/checkpoints/TIER-0.yaml
+failure_policy: "falha = mesmo defeito falhar 2x (confirmado pelo usuário); execuções vermelhas do test com defeitos distintos são registradas, não bloqueiam"
+tickets:
+  - id: TICKET-0014
+    status: ok
+    branch: ticket/0014-auth
+    commit: 8fe884f
+    failures: 1
+    evidence:
+      - "bin/rails generate authentication (Rails 8 nativo disponível → sem Devise); models movidos para a engine: Core::User (has_secure_password, admin boolean) e Core::Session"
+      - "migrations engines/core/db/migrate/20261031000003_create_core_users.rb + 20261031000013_create_core_sessions.rb"
+      - "app/controllers/concerns/current_user.rb (current_user, user_signed_in?, authenticate_admin_user!); SessionsController/PasswordsController/Authentication apontam para Core::*"
+      - "ActiveAdmin: authentication_method :authenticate_admin_user!, current_user_method :current_user, logout_link_path '/session'"
+      - "specs: spec/models/core/user_spec.rb (6), spec/requests/sessions_spec.rb (5), spec/requests/admin/dashboard_spec.rb (anônimo → login, não-admin → root, admin → 200)"
+  - id: TICKET-0002
+    status: ok
+    branch: ticket/0002-core-models
+    commit: 985743e
+    failures: 2
+    evidence:
+      - "migrations core_teams, core_championships, core_matches (spec §2: FKs, external_id unique, índice parcial scoring_token, 4 check constraints), core_audit_logs (inet not null, jsonb), core_csv_imports (status check), core_players (nova: 20261031000014)"
+      - "bin/rails db:migrate:reset (dev) → tabelas core_users, core_sessions, core_teams, core_players, core_championships, core_matches, core_audit_logs, core_csv_imports"
+      - "models Core::Team/Player/Championship/Match/AuditLog/CsvImport com validações espelhando as constraints"
+      - "bin/rails db:seed 2x → 'seeds ok (Teams=4, Players=8, Championships=1, Matches=2, Users=1)' nas duas execuções; spec/seeds_spec.rb (load_seed 2x sem mudança de contagem)"
+      - "seeds usam teams[0]/teams[1] (sem array em belongs_to); find_or_create_by!(external_id:); admin seed só em Rails.env.local?"
+      - "rspec spec/models/core/ → 35 examples, 0 failures (Match 11, Team 6, Player 6, User 6, Championship 2, AuditLog 2, CsvImport 2), inclui check constraints via update_columns"
+  - id: TICKET-0011
+    status: ok
+    branch: ticket/0011-design-system
+    commit: 1a00236
+    failures: 2
+    evidence:
+      - "config/tailwind.config.js = spec §4 (paper/pitch/cartola/ink/graphite/rule/night + tints win/draw/loss 15%; Fraunces display + Source Sans 3 sans; spacing 4/8; raios 4/8/16; sombras neutras; motion 120/150/180)"
+      - "app/assets/tailwind/application.css: @import tailwindcss + @config ../../../config/tailwind.config.js; CSS compilado: .h-16{height:64px}, .bg-win{#0b6b3a26}, html{bg #f4f1ea, Source Sans 3}"
+      - "Google Fonts Fraunces (opsz 9..144, 600..800) + Source Sans 3 (400/600/700) em layouts/_fonts"
+      - "app/components/ui/: BaseComponent (STATES default/loading/empty/error, ArgumentError) + ScoreboardComponent, StandingsTableComponent, PreviewPanelComponent, CsvImportStatusComponent"
+      - "spec/components/ui/*: 4 estados por componente + ArgumentError + 1 preview por estado; spec/design/design_system_spec.rb (paleta, fontes, @config, anti-AI, font-display ≥ text-xl)"
+      - "Lookbook: mount em /lookbook (só dev); previews spec/components/previews/ui (16 = 4×4); layout component_preview"
+      - "curl -s -o /dev/null -w '%{http_code}' localhost:3000/lookbook → 200 (<title>Futebol</title>); 16/16 previews 200 com data-ui-state correto"
+      - "config/ci.rb: step 'Design: anti-AI grep'"
+test_command: "bundle exec rspec && bundle exec rubocop && bundle exec packwerk check && bin/rails zeitwerk:check"
+test_results:
+  - {after: TICKET-0014, exit: 0, rspec: "26 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "All is good!"}
+  - {after: TICKET-0002, exit: 0, rspec: "57 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "All is good!"}
+  - {after: TICKET-0011, exit: 0, rspec: "101 examples, 0 failures", rubocop: "no offenses", packwerk: "No offenses", zeitwerk: "all is good (aviso: spec/components/previews não é eager loaded)"}
+acceptance:
+  - {name: bin/rails db:migrate passa (users, teams, players, championships, matches), result: pass, evidence: "db:migrate:reset dev; tabelas core_* listadas (prefixo core_ por isolate_namespace)"}
+  - {name: db:seed 2x sem duplicar, result: pass, evidence: "contagens idênticas nas 2 execuções + spec/seeds_spec.rb"}
+  - {name: "rspec spec/models/core/ ≥6 exemplos (Match, Team, Player)", result: pass, evidence: "35 examples, 0 failures"}
+  - {name: curl localhost:3000/lookbook = 200 em dev, result: pass, evidence: "200, título Futebol, 16/16 previews"}
+  - {name: tailwind.config.js com paleta 60-30-10 e fontes do design, result: pass, evidence: "config/tailwind.config.js + spec/design/design_system_spec.rb"}
+  - {name: User model + SessionsController + CurrentUser concern, result: pass, evidence: "engines/core/app/models/core/user.rb, app/controllers/sessions_controller.rb, app/controllers/concerns/current_user.rb"}
+  - {name: 4 ViewComponents em app/components/ui/ com 4 estados, result: pass, evidence: "spec/components/ui/* (shared example 'a ui component with four states')"}
+  - {name: 0002/0011/0014 status ok, result: pass, evidence: "este arquivo"}
+warnings:
+  - "TICKET-0014 falha 1: rubocop Lint/AssignmentInCondition no código gerado (sessions/passwords controllers, cable connection) → atribuição extraída"
+  - "TICKET-0002 falha 1: spec de check constraint com build não persistido batia NOT NULL antes → create + update_columns; falha 2: Metrics/MethodLength+AbcSize em migrations → excluídas em .rubocop.yml"
+  - "TICKET-0011 falha 1: ViewComponent 4 não expõe turbo_frame_tag → include Turbo::FramesHelper; falha 2: Layout/LineLength (3 linhas)"
+  - "TICKET-0014 pedia 422 para credenciais inválidas; generator Rails 8 redireciona para new_session com alert (mantido)"
+  - "TICKET-0011 lista 5 componentes; goal do tier pede 4 em app/components/ui/ → PredictionFormComponent adiado (depende de Bolao::Prediction, TICKET-0004)"
+  - "TICKET-0011 previa paths app/components/*_component; adotado app/components/ui/ (Ui::) conforme goal"
+  - "views de auth/home migradas para os tokens (cores gray/blue do generator deixam de existir com theme.colors substituído); textos em pt-BR"
+  - "porta 3000 ocupada pelo container galaticos-app-dev (outro projeto); parado com autorização do usuário, não religado"
+  - "grill (TICKET-0011): sessão registrada no PR do tier como auto-revisão do agente; revisão do usuário pendente"
+blocked: []
+failed: []

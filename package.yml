@@ -1,0 +1,8 @@
+# Root package: the host app (app/, config/, lib/) may use every engine.
+enforce_dependencies: true
+
+dependencies:
+  - engines/core
+  - engines/bolao
+  - engines/cartola
+  - engines/simulador
