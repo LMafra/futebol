@@ -9,6 +9,7 @@ module Core
     validates :shirt_number, numericality: { only_integer: true, in: 1..99 }, allow_nil: true
     validates :shirt_number, uniqueness: { scope: :team_id }, allow_nil: true
     validates :external_id, presence: true, uniqueness: true
+    validates :cost, numericality: { greater_than_or_equal_to: 0 }
 
     def self.ransackable_attributes(_auth_object = nil) = %w[name position team_id external_id]
     def self.ransackable_associations(_auth_object = nil) = %w[team]

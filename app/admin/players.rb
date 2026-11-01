@@ -1,7 +1,7 @@
 ActiveAdmin.register Core::Player, as: 'Player' do
   menu parent: 'Cadastros', label: 'Jogadores'
 
-  permit_params :team_id, :name, :position, :shirt_number, :external_id
+  permit_params :team_id, :name, :position, :shirt_number, :cost, :external_id
   includes :team
 
   filter :team
@@ -16,6 +16,7 @@ ActiveAdmin.register Core::Player, as: 'Player' do
     column :team
     column :position
     column :shirt_number
+    column :cost
     actions
   end
 
@@ -26,6 +27,7 @@ ActiveAdmin.register Core::Player, as: 'Player' do
       f.input :name
       f.input :position, as: :select, collection: Core::Player::POSITIONS
       f.input :shirt_number
+      f.input :cost
       f.input :external_id
     end
     f.actions
