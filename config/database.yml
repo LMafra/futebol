@@ -88,7 +88,7 @@ test:
 # the values provided in this file. Alternatively, you can specify a connection
 # URL environment variable explicitly:
 #
-# Production: Supabase (README "Banco (Supabase)"). SUPABASE_DATABASE_URL, falling back to DATABASE_URL, is the
+# Production: Supabase (docs/OPERATIONS.md "Banco (Supabase)"). SUPABASE_DATABASE_URL, falling back to DATABASE_URL, is the
 # runtime connection: the transaction pooler (port 6543) hands each transaction to any server connection, so
 # prepared statements and session advisory locks are off there. bin/docker-entrypoint runs db:prepare over
 # SUPABASE_DIRECT_URL (session pooler, port 5432), where both stay on.

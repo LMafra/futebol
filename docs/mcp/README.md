@@ -42,7 +42,7 @@ Servidor da comunidade, por stdio ([PyPI](https://pypi.org/project/supabase-mcp-
   - opcionais: `SUPABASE_ACCESS_TOKEN` (Management API) e `SUPABASE_SERVICE_ROLE_KEY` (Auth Admin; não precisamos).
   Instalado via pipx, o servidor **não lê** o `.env` do projeto: as variáveis vêm do Cursor ou do arquivo de config global do servidor.
 - **Conexão:** o servidor usa só o transaction pooler (6543). **Session pooling não é suportado.**
-- **Escopo: consultas e gestão, nunca a conexão do app.** O app conecta por `SUPABASE_DATABASE_URL`/`SUPABASE_DIRECT_URL` (README, seção "Banco (Supabase)"). Migrations rodam pelo `db:prepare` do entrypoint, não pelo MCP, para o histórico ficar em `db/migrate`.
+- **Escopo: consultas e gestão, nunca a conexão do app.** O app conecta por `SUPABASE_DATABASE_URL`/`SUPABASE_DIRECT_URL` (docs/OPERATIONS.md, seção "Banco (Supabase)"). Migrations rodam pelo `db:prepare` do entrypoint, não pelo MCP, para o histórico ficar em `db/migrate`.
 - **Smoke:** `get_schemas` deve listar `public` com as tabelas do app.
 - **Manual sem psql local:** `docker run --rm postgres:18 psql "$SUPABASE_DIRECT_URL" -c 'SELECT 1'`.
 - O plugin oficial do Supabase no Cursor (MCP hospedado) aparece neste ambiente como `needsAuth`. Autenticar exige login no IDE, então nada foi chamado.
