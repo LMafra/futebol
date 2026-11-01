@@ -15,14 +15,20 @@ ActiveAdmin.register_page 'BolaoPreview' do
     private
 
     def load_preview
-      @matches = Core::Match.where.not(status: 'scheduled').includes(:home_team, :away_team).order(match_date: :desc)
+      @matches = matches_with_teams.where.not(status: 'scheduled').order(match_date: :desc)
       return if params[:match_id].blank?
 
-      @match = Core::Match.find(params[:match_id])
+      @match = matches_with_teams.find(params[:match_id])
       authorize! :preview, @match
+      load_candidates
+    end
+
+    def load_candidates
       @candidate_home, @candidate_away = params.values_at(:candidate_home, :candidate_away)
       calculate_preview if @candidate_home.present? || @candidate_away.present?
     end
+
+    def matches_with_teams = Core::Match.includes(:home_team, :away_team)
 
     def calculate_preview
       @preview = Bolao::CalculatePreviewService.call(match: @match, candidate_home: @candidate_home,

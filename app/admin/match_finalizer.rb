@@ -8,7 +8,7 @@ ActiveAdmin.register_page 'MatchFinalizer' do
 
   page_action :finalize, method: :post do
     load_matches
-    @match = Core::Match.find(params.dig(:finalization, :match_id))
+    @match = Core::Match.includes(:home_team, :away_team).find(params.dig(:finalization, :match_id))
     authorize! :finalize, @match
     audit = { actor: current_user, ip_address: request.remote_ip }
     @form = MatchFinalizationForm.new(**finalization_params, **audit, match: @match)
@@ -32,7 +32,7 @@ ActiveAdmin.register_page 'MatchFinalizer' do
       load_matches
       return if params[:match_id].blank?
 
-      @match = Core::Match.find(params[:match_id])
+      @match = Core::Match.includes(:home_team, :away_team).find(params[:match_id])
       authorize! :finalize, @match
       @form = MatchFinalizationForm.new(match: @match, **params.permit(:home_score, :away_score).to_h.symbolize_keys)
     end

@@ -20,6 +20,14 @@ bin/rails db:prepare db:seed
 git config core.hooksPath .githooks
 ```
 
+## Ferramentas de qualidade
+
+- **N+1 (`prosopite` + `pg_query`, dev/test):** um N+1 faz a spec falhar com `Prosopite::NPlusOneQueriesError`. A varredura é feita por unidade de trabalho: cada request (middleware Rack mais externo em `config/environments/test.rb`), cada `perform` de job e cada `render_inline` de componente. Não é feita no exemplo inteiro, porque repetir uma unidade (dois requests, job rodado duas vezes) não é N+1. Configuração: [`spec/support/prosopite.rb`](spec/support/prosopite.rb); prova: `spec/lib/n_plus_one_detection_spec.rb`.
+- **Migrations (`strong_migrations`, development):** bloqueia operações perigosas (`remove_column`, índice sem `algorithm: :concurrently`, etc.) a partir da migration `20261031000031`; as versões aqui são sequenciais.
+- **Schema × models (`database_consistency`, dev/test):** `bundle exec database_consistency -c .database_consistency.todo.yml`. O todo lista os 19 achados existentes (índices redundantes, unique sem validação, `dependent` ausente); o CI falha só em achados novos.
+- **Componentes (`lookbook`, development):** [`/lookbook`](http://localhost:3000/lookbook), com os previews de `spec/components/previews` (4 estados por componente de `Ui::`).
+- **E-mail (`letter_opener`, development):** e-mails abrem no navegador em vez de sair; as cópias ficam em `tmp/letter_opener`.
+
 ## Login demo
 
 Em development e test, `db:seed` cria dados de demonstração. É idempotente: rodar de novo não duplica registros nem repontua.
