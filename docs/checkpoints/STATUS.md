@@ -141,3 +141,10 @@ cd /home/lmafra/projects/futebol && bin/setup && bin/rails db:prepare   # cria f
 - Bancos locais criados antes do TIER-3 têm versões órfãs dos stubs Bolão/Cartola (07..12): rodar `bin/rails db:reset`
 - TIER-4 adiciona migrations 25 (Active Storage) e 26 (`error_log`): `bin/rails db:migrate`
 - TIER-6: development roda jobs no Solid Queue (`bin/dev` inclui `bin/jobs`)
+
+## Correções e migrações de infra
+Uma branch, um commit assinado e um PR por bloco, empilhados: cada PR tem como base a branch do bloco anterior. `docs/adr/*` e as specs não foram alterados.
+
+| bloco | status | artefatos | observações |
+|---|---|---|---|
+| A — inconsistências factuais (P0) | ok (branch `fix/a-inconsistencias`) | `README.md`, `Gemfile`, `Gemfile.lock`, `engines/*/*.gemspec` | README cita **27** tickets, não os 32 do pedido: o INDEX tem 27 linhas (0001–0027) e o critério do bloco é não contradizer o INDEX; 0028/0029 só existem como derivados no ADR 0003. Link de spec → `docs/spec-v3.md`. `rails ~> 8.1.4` no Gemfile e nas 4 gemspecs (lock já era 8.1.4). ActiveAdmin já estava pinado em `4.0.0.beta23`; README ganhou a nota de risco de beta |
