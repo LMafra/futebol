@@ -33,6 +33,14 @@ RSpec.describe 'Sessions', type: :request do
     expect(user.sessions).to be_empty
   end
 
+  it 'rejects an inactive user even with the right password' do
+    user.update!(active: false)
+    sign_in(user)
+
+    expect(response).to redirect_to(new_session_path)
+    expect(user.sessions).to be_empty
+  end
+
   it 'signs out and destroys the session' do
     sign_in(user)
 

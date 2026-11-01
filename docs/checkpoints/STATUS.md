@@ -18,6 +18,7 @@
 | 0 | 3 (0001, 0013, 0020) | 0 | 0 | ok — [TIER-0.yaml](TIER-0.yaml) |
 | 1 | 3 (0014, 0002, 0011) | 0 | 0 | ok — [TIER-1.yaml](TIER-1.yaml) · [PR #3](https://github.com/LMafra/futebol/pull/3) |
 | 2 | 4 (0003, 0016, 0017, 0022) | 0 | 0 | ok — [TIER-2.yaml](TIER-2.yaml) · [PR #4](https://github.com/LMafra/futebol/pull/4) |
+| 3 | 5 (0015, 0019, 0018, 0007, 0004) | 0 | 0 | ok — [TIER-3.yaml](TIER-3.yaml) · [PR #5](https://github.com/LMafra/futebol/pull/5) |
 
 ## Correções aplicadas nesta rodada
 | correção | status | artefato | impacto |
@@ -48,8 +49,10 @@
 2. ~~Revisar `docs/spec-v2.md` (parágrafo AASM + regression specs)~~ — resolvido em `docs/spec-v3.md` (TICKET-0003-v3)
 3. ~~TIER-1: TICKET-0002, 0011, 0014~~ — concluídos (auth nativa em Core, schema core + seeds, design system + Lookbook)
 4. ~~TIER-2: TICKET-0003, 0016, 0017, 0022~~ — concluídos (AASM guard-first, ScoringRule Bolão + Cartola, Scoring::Engine, seeds reais)
-5. TIER-3 conforme `docs/tickets/INDEX.md` (base `tier/2`): 0004 desbloqueado (ProcessMatchPointsJob — adicionar FK `bolao_scoring_rules.pool_id` → `bolao_pools`)
+5. ~~TIER-3: TICKET-0015, 0019, 0018, 0007, 0004~~ — concluídos (Pundit, rate limit 5/3min, anonimização LGPD, preview Cartola dry-run, ProcessMatchPointsJob idempotente; FK `pool_id` adicionada)
+6. TIER-4 conforme `docs/tickets/INDEX.md` (base `tier/3`): 0005, 0006, 0008 desbloqueados por 0004; 0009 livre; depois 0010
 
 ```bash
-cd /home/lmafra/projects/futebol && bin/setup && git switch -c tier/3 tier/2
+cd /home/lmafra/projects/futebol && bin/setup && git switch -c tier/4 tier/3
 ```
+- Bancos locais criados antes do TIER-3 têm versões órfãs dos stubs Bolão/Cartola (07..12): rodar `bin/rails db:reset`

@@ -1,7 +1,7 @@
 module Scoring
   # Pure: no I/O besides the rules handed in (or the Bolão rules lookup when none are given).
   class Engine
-    SCORERS = { bolao: BolaoScorer, cartola: CartolaScorer }.freeze
+    SCORERS = { bolao: BolaoScorer, cartola: Cartola::Scorer }.freeze
 
     def self.scorer_for(game) = SCORERS.fetch(game&.to_sym, NullScorer)
 

@@ -1,3 +1,4 @@
+# Deny-all for regular users and visitors; admins may do everything a subclass does not narrow down.
 class ApplicationPolicy
   attr_reader :user, :record
 
@@ -6,9 +7,30 @@ class ApplicationPolicy
     @record = record
   end
 
-  def index? = false
-  def show? = false
-  def create? = false
-  def update? = false
-  def destroy? = false
+  def index? = admin?
+  def show? = admin?
+  def create? = admin?
+  def new? = create?
+  def update? = admin?
+  def edit? = update?
+  def destroy? = admin?
+
+  private
+
+  def admin? = user.present? && user.admin?
+
+  class Scope
+    attr_reader :user, :scope
+
+    def initialize(user, scope)
+      @user = user
+      @scope = scope
+    end
+
+    def resolve
+      return scope.all if user.present? && user.admin?
+
+      scope.none
+    end
+  end
 end
