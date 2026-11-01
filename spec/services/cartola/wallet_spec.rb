@@ -6,7 +6,10 @@ RSpec.describe Cartola::WalletService do
   let(:user) { squad.user }
 
   def new_lineup(players, round: 1)
-    Cartola::Lineup.new(squad:, championship:, round:, formation: '4-3-3').tap { |lineup| lineup.assign_players(players) }
+    Cartola::Lineup.new(squad:, championship:, round:, formation: '4-3-3').tap do |lineup|
+      lineup.assign_players(players)
+      lineup.assign_captain(players.first&.id)
+    end
   end
 
   def wallet = Cartola::Wallet.find_by!(user:, championship:)

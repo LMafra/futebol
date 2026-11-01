@@ -19,7 +19,7 @@ RSpec.describe 'Esquadrão rankings', type: :request do
   context 'with a session' do
     before { sign_in(create(:user, name: 'Visitante')) }
 
-    it 'mostra o ranking de pontos por padrão' do
+    it 'mostra o ranking de pontos por padrão, com os pontos do capitão em dobro' do
       player = create(:player, position: 'ATA')
       create(:cartola_player_score, player:, match: create(:match, championship:, round: 1), points: 9)
       create(:cartola_lineup, squad: create(:cartola_squad, user: create(:user, name: 'Ana')), championship:,
@@ -32,7 +32,7 @@ RSpec.describe 'Esquadrão rankings', type: :request do
       expect(page.at_css('p.uppercase').text).to start_with('Esquadrão')
       expect(page.at_css('thead').text).to include('Técnico')
       expect(page.at_css('[role="tab"][aria-selected="true"]').text).to eq('Pontos')
-      expect(page.css('[data-role="ranking-row"]').map { |row| row.text.squish }).to eq(['1 Ana 9.00'])
+      expect(page.css('[data-role="ranking-row"]').map { |row| row.text.squish }).to eq(['1 Ana 18.00'])
     end
 
     it 'mostra o ranking de moedas na outra aba' do

@@ -18,6 +18,7 @@
                                                      state: @lineup.errors[:formation].any? ? :error : :default) %>
     <%= render Cartola::BudgetBarComponent.new(spent: @spent, budget: @budget) %>
     <%= render Cartola::PlayerPickerComponent.new(players: @players, selected_ids: @lineup.selected_players.map(&:id), prices: @prices,
+                                                  captain_id: @lineup.captain_id,
                                                   state: @lineup.errors[:players].any? || @lineup.errors[:base].any? ? :error : :default) %>
     <div class="flex items-center gap-4">
       <button type="submit" class="cursor-pointer rounded-sm bg-cartola px-4 py-2 font-semibold text-ink hover:bg-ink hover:text-white">Salvar escalação</button>

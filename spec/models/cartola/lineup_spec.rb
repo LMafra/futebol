@@ -120,4 +120,31 @@ RSpec.describe Cartola::Lineup do
       expect(lineup.reload.players).to match_array(kept[0..7] + [substitute])
     end
   end
+
+  describe 'captain' do
+    it 'is required among the selected players' do
+      lineup = build(:cartola_lineup)
+      lineup.assign_captain(nil)
+
+      expect(lineup).not_to be_valid
+      expect(lineup.errors[:base]).to include('Escolha um capitão entre os escalados')
+    end
+
+    it 'moves to another player on save, keeping a single captain' do
+      lineup = create(:cartola_lineup)
+      new_captain = lineup.players.last
+
+      lineup.assign_captain(new_captain.id)
+      lineup.save!
+
+      expect(lineup.lineup_players.where(captain: true).pluck(:player_id)).to eq([new_captain.id])
+    end
+
+    it 'allows a single captain per lineup in the database' do
+      lineup = create(:cartola_lineup)
+
+      expect { lineup.lineup_players.where(captain: false).first.update_columns(captain: true) }
+        .to raise_error(ActiveRecord::RecordNotUnique)
+    end
+  end
 end

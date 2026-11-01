@@ -70,9 +70,10 @@ module Cartola
     end
 
     def assign_lineup
-      attributes = params.expect(lineup: [:formation, { player_ids: [] }])
+      attributes = params.expect(lineup: [:formation, :captain_id, { player_ids: [] }])
       @lineup.formation = attributes[:formation]
       @lineup.assign_players(Core::Player.includes(:team).where(id: attributes[:player_ids]).to_a)
+      @lineup.assign_captain(attributes[:captain_id])
     end
 
     def load_players
