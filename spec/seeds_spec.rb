@@ -95,19 +95,27 @@ RSpec.describe 'db/seeds.rb' do
     end
 
     describe 'small championships' do
-      it 'seeds at least 5 public championships of 6 to 12 teams, each a single round robin' do
+      it 'seeds at least 5 championships of 6 to 12 teams, each a single round robin' do
         expect(small_championships.size).to be >= 5
         small_championships.each do |championship|
           teams = championship.matches.flat_map { |match| [match.home_team_id, match.away_team_id] }.uniq
           pairings = championship.matches.map { |match| [match.home_team_id, match.away_team_id].sort }
 
-          expect(championship).not_to be_private
           expect(teams.size).to be_between(6, 12)
           expect(pairings.uniq.size).to eq(pairings.size).and eq(teams.size * (teams.size - 1) / 2)
           championship.matches.group_by(&:round).each_value do |round|
             expect(round.flat_map { |match| [match.home_team_id, match.away_team_id] }).to match_array(teams)
           end
         end
+      end
+
+      it 'mixes public and private ones, so the public pages show only part of them' do
+        public_ones, private_ones = small_championships.partition { |championship| !championship.private? }
+
+        expect(public_ones.size).to be >= 3
+        expect(private_ones.map(&:name)).to contain_exactly('Liga Amadora Carioca', 'Liga Sulista Sub-20')
+        expect(Core::Championship.publicly_visible).to include(*public_ones)
+        expect(Core::Championship.publicly_visible).not_to include(*private_ones)
       end
 
       it 'plays the middle round today: earlier rounds finished, later ones scheduled' do
@@ -186,10 +194,19 @@ RSpec.describe 'db/seeds.rb' do
     end
   end
 
-  describe 'small championships on a later day' do
+  describe 'small championships' do
     include ActiveSupport::Testing::TimeHelpers
 
-    it 'moves their calendar so the middle round is today again' do
+    it 'turns a championship seeded as public private when the YAML says so' do
+      load_seed
+      Core::Championship.where.not(external_id: 'brasileirao-2026').update_all(private: false)
+
+      load_seed
+
+      expect(Core::Championship.find_by!(external_id: 'amadora-carioca-2026')).to be_private
+    end
+
+    it 'moves their calendar on a later day so the middle round is today again' do
       travel_to(3.days.ago) { load_seed }
 
       load_seed

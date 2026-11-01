@@ -35,7 +35,7 @@ Em development e test, `db:seed` cria dados de demonstração. É idempotente: r
 - Bolão `DEMO01` ([`/pools`](http://localhost:3000/pools)), dono `demo1`, com os 5 usuários e 150 palpites nas rodadas 1–10.
 - Rodadas 1–4 e 6 finalizadas e pontuadas; rodada 5 ao vivo; rodadas 7–10 agendadas para os próximos domingos (as datas avançam se já tiverem passado).
 - Escalação 4-3-3 de `demo1` na rodada 7: [`/lineup?round=7`](http://localhost:3000/lineup?round=7).
-- 5 campeonatos públicos fictícios de 6 a 12 times (`db/seeds/small_championships.yml`), em turno único, com a rodada do meio hoje: alimentam "Jogos de hoje" na home. Rodar o seed em outro dia traz essa rodada para o dia corrente. Os times não têm elenco.
+- 5 campeonatos fictícios de 6 a 12 times (`db/seeds/small_championships.yml`), em turno único, com a rodada do meio hoje: os 3 públicos alimentam "Jogos de hoje" na home; Liga Amadora Carioca e Liga Sulista Sub-20 são privados (só aparecem para quem está logado, como no Simulador). Rodar o seed em outro dia traz essa rodada para o dia corrente. Os times não têm elenco.
 
 Fora de development/test, os dados demo não são criados: a senha acima é pública.
 

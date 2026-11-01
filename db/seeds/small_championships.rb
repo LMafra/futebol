@@ -1,5 +1,6 @@
-# Small amateur championships (6-12 teams, single round robin) with their middle round today, so the home's
-# "Jogos de hoje" mixes several championships. Dates use the app time zone, the same one the home filters by.
+# Small amateur championships (6-12 teams, single round robin, public and private) with their middle round
+# today, so the home's "Jogos de hoje" mixes several championships. Dates use the app time zone, the same one
+# the home filters by.
 # The teams get no squads: the Esquadrão picker lists every player in the database, not only the championship's.
 module Seeds
   def self.small_championships
@@ -15,10 +16,13 @@ module Seeds
     end
   end
 
+  # Visibility follows the YAML on every load, so databases seeded before the flag existed catch up.
   def self.small_championship(attributes)
-    Core::Championship.find_or_create_by!(external_id: attributes.fetch('external_id')) do |championship|
-      championship.assign_attributes(name: attributes.fetch('name'), season: 2026, private: false)
+    championship = Core::Championship.find_or_create_by!(external_id: attributes.fetch('external_id')) do |record|
+      record.assign_attributes(name: attributes.fetch('name'), season: 2026)
     end
+    championship.update!(private: attributes.fetch('private', false))
+    championship
   end
 
   def self.small_team(attributes)

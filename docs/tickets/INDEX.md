@@ -43,7 +43,7 @@
 | [0039](TICKET-0039.md) | — | Scouts oficiais do Esquadrão | 0004, 0010, 0030 | — |
 | [0040](TICKET-0040.md) | — | Capitão + valorização por regressão à média (ADR 0005) | 0030, 0039 | — |
 | [0041](TICKET-0041.md) | — | Simulador por campeonato (lista + carrossel de rodadas) + rodapé com autor e Pix | 0031, 0032, 0035 | — |
-| [0042](TICKET-0042.md) | — | Jogos de hoje agrupados por campeonato + 5 campeonatos pequenos (6–12 times) no seed local | 0035, 0041 | — |
+| [0042](TICKET-0042.md) | — | Jogos de hoje agrupados por campeonato + 5 campeonatos pequenos (6–12 times, públicos e privados) no seed local | 0035, 0041 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
