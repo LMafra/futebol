@@ -11,7 +11,7 @@ else
   echo "pre-commit: rubocop skipped (no staged Ruby files or bundle not installed)"
 fi
 
-if git diff --cached --name-only | grep -qE '(^|/)\.env(\.|$)|master\.key$|credentials/.*\.key$'; then
+if git diff --cached --name-only | grep -vE '(^|/)\.env\.example$' | grep -qE '(^|/)\.env(\.|$)|master\.key$|credentials/.*\.key$'; then
   echo "pre-commit: refusing to commit secrets (.env / *.key)" >&2
   exit 1
 fi

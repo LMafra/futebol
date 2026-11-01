@@ -1,35 +1,89 @@
 #!/usr/bin/env ruby
-require "fileutils"
+require 'fileutils'
 
-APP_ROOT = File.expand_path("..", __dir__)
+APP_ROOT = File.expand_path('..', __dir__)
 
 def system!(*args)
   system(*args, exception: true)
 end
 
+def load_env_file(path)
+  return unless File.exist?(path)
+
+  File.foreach(path) do |line|
+    key, value = line.strip.split('=', 2)
+    next if key.nil? || key.start_with?('#') || value.to_s.empty?
+
+    ENV[key] ||= value
+  end
+end
+
+def local_database?
+  ENV['DATABASE_URL'].to_s.empty? && %w[localhost 127.0.0.1].include?(ENV.fetch('DB_HOST', 'localhost'))
+end
+
+def ensure_postgres_container
+  name = ENV.fetch('DB_CONTAINER', 'futebol-pg')
+  port = ENV.fetch('DB_PORT', '5440')
+  password = ENV.fetch('DB_PASSWORD', 'postgres')
+
+  unless system('docker', 'info', out: File::NULL, err: File::NULL)
+    puts "docker unavailable: start Postgres on localhost:#{port} yourself or set DATABASE_URL"
+    return
+  end
+
+  state = `docker inspect -f '{{.State.Running}}' #{name} 2>/dev/null`.strip
+  case state
+  when 'true' then puts "#{name} already running on port #{port}"
+  when 'false' then system!('docker', 'start', name)
+  else system!('docker', 'run', '-d', '--name', name, '-e', "POSTGRES_PASSWORD=#{password}",
+               '-p', "#{port}:5432", 'postgres:18')
+  end
+
+  # The image's init server listens only on the unix socket, so probe TCP to wait for the real one.
+  60.times do
+    return if system('docker', 'exec', name, 'pg_isready', '-h', '127.0.0.1', '-U', 'postgres',
+                     out: File::NULL, err: File::NULL)
+
+    sleep 1
+  end
+  abort "#{name} did not become ready in 60s"
+end
+
 FileUtils.chdir APP_ROOT do
-  # This script is a way to set up or update your development environment automatically.
-  # This script is idempotent, so that you can run it at any time and get an expectable outcome.
-  # Add necessary setup steps to this file.
+  # This script is idempotent: run it any time to set up or update the development environment.
 
-  puts "== Installing dependencies =="
-  system("bundle check") || system!("bundle install")
+  puts '== Installing dependencies =='
+  system('bundle check') || system!('bundle install')
 
-  # puts "\n== Copying sample files =="
-  # unless File.exist?("config/database.yml")
-  #   FileUtils.cp "config/database.yml.sample", "config/database.yml"
-  # end
+  puts "\n== Environment =="
+  FileUtils.cp('.env.example', '.env') unless File.exist?('.env')
+  load_env_file('.env')
+
+  if local_database?
+    puts "\n== Local Postgres (docker) =="
+    ensure_postgres_container
+  end
 
   puts "\n== Preparing database =="
-  system! "bin/rails db:prepare"
-  system! "bin/rails db:reset" if ARGV.include?("--reset")
+  system! 'bin/rails db:prepare'
+  system! 'bin/rails db:reset' if ARGV.include?('--reset')
+  system! 'bin/rails db:seed'
+
+  puts "\n== Building CSS (app + ActiveAdmin) =="
+  system! 'bin/rails tailwindcss:build'
+
+  puts "\n== Git hooks =="
+  system!('git', 'config', 'core.hooksPath', '.githooks') if File.directory?('.git')
 
   puts "\n== Removing old logs and tempfiles =="
-  system! "bin/rails log:clear tmp:clear"
+  system! 'bin/rails log:clear tmp:clear'
 
-  unless ARGV.include?("--skip-server")
+  if ARGV.include?('--server')
     puts "\n== Starting development server =="
-    STDOUT.flush # flush the output before exec(2) so that it displays
-    exec "bin/dev"
+    $stdout.flush
+    exec 'bin/dev'
+  else
+    puts "\n== Done. Start the app with bin/dev =="
   end
 end
