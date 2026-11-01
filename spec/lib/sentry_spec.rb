@@ -15,7 +15,7 @@ RSpec.describe 'Sentry' do
       expect(config.send_default_pii).to be(false)
       expect(config.enabled_environments).to include('production', 'development')
       expect(config.traces_sample_rate).to be <= 0.1
-      expect(File.read(Rails.root.join('config/initializers/sentry.rb'))).to include("ENV.fetch('SENTRY_DSN', nil)")
+      expect(File.read(Rails.root.join('config/initializers/sentry.rb'))).to include("ENV['SENTRY_DSN'].presence")
     end
   end
 
