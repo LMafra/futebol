@@ -7,7 +7,7 @@
 | 2 Design | ok | `docs/design/0001-direction.md` | — | — |
 | 2.5 Critique | ok | `docs/design/0001-critique.md` | — | 1 violação tratada na spec |
 | 3 Spec | ok (v3) | `docs/spec-v3.md` | — | 4 conflitos do revert_match! resolvidos no TIER-2 (spec-v2 preservada) |
-| 4 Tickets | ok (v3) | `docs/tickets/INDEX.md` (22) | — | 0003-v2 herda conflitos; sobreposições 0015×0010, 0017×0004, 0022×0002 |
+| 4 Tickets | ok (v4) | `docs/tickets/INDEX.md` (27) | — | 0003-v2 herda conflitos; sobreposições 0015×0010, 0017×0004, 0022×0002; +5 tickets de UI/demo (0023–0027) não implementados |
 | 5 Scaffold | ok | `engines/*`, `app/*` | — | lock = Rails 8.1.4 (checkpoint dizia 8.1.2) |
 | 6 PR | ok | [PR #1](https://github.com/LMafra/futebol/pull/1) | — | 4 MCPs manual |
 | 7 Compress | ok | `docs/handoffs/PHASE-7.md` | — | tabela de tickets desatualizada (13 → 22), não regenerada |
@@ -87,6 +87,17 @@ Por que não é bug: `scheduled` e `live` não aceitam timestamp; as 4 regras pe
   - `render.yaml`, linha 3: "Free plan without workers: drop futebol-worker and set SOLID_QUEUE_IN_PUMA=1 on futebol-web."
   - `README.md` → "Deploy (Render + Neon)": "No plano free, sem worker: remova `futebol-worker` e defina `SOLID_QUEUE_IN_PUMA=1` no web."
 - O fallback funciona: `config/puma.rb` tem `plugin :solid_queue if ENV['SOLID_QUEUE_IN_PUMA']`. Smoke local em production (`SOLID_QUEUE_IN_PUMA=1 bin/rails server`, Postgres local): log com `Started Supervisor(fork)`, `Started Dispatcher`, `Started Worker` e `Started Scheduler`; os 4 processos registrados em `solid_queue_processes`; `/up` 200.
+
+## Tickets de UI/demo adicionados
+Só documentos: nenhum ticket foi implementado e nenhum arquivo de código mudou. O pedido citava 27 tickets atuais e numeração 0029–0033; o INDEX tinha 22 (0001–0022, sem 0023–0028 em nenhuma branch ou no histórico), então os novos foram numerados 0023–0027 com aprovação do usuário, e as deps internas foram remapeadas (0030→0024, 0031→0025, 0033→0027).
+
+| ticket | título | deps | observação |
+|---|---|---|---|
+| [0023](../tickets/TICKET-0023.md) | Bolão: criar e entrar em pool | 0011, 0014 | migrations `bolao_pool_memberships` + `bolao_pools.code`; `Bolao::PoolPolicy` é compartilhada com o ActiveAdmin |
+| [0024](../tickets/TICKET-0024.md) | Bolão: palpites | 0006, 0023 | palpite = `Bolao::Prediction` (sem model `Bet`); `PredictionFormComponent` da spec §5 ainda não existe |
+| [0025](../tickets/TICKET-0025.md) | Cartola: escalação | 0007, 0011 | `Lineup`/`LineupPlayer` já existem; migrations `core_players.cost` + `cartola_lineups.formation` |
+| [0026](../tickets/TICKET-0026.md) | Simulador: definir escopo (ADR) | — | cria `docs/adr/0003-simulador.md`; confirmar exceção à regra "nunca alterar `docs/adr/*`" |
+| [0027](../tickets/TICKET-0027.md) | Seeds de demonstração | 0023, 0024, 0025 | `core_matches` sem coluna `round` (vem do `external_id`); datas das rodadas 7–10 do seed estão no passado |
 
 ## Correções aplicadas nesta rodada
 | correção | status | artefato | impacto |
