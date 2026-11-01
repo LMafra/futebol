@@ -98,6 +98,17 @@ Development usa Docker só para o Postgres (`futebol-pg`) e, opcionalmente, o Op
 
 ## Deploy (Render + Supabase)
 
+### Estado deste deploy (2026-11-01)
+
+- Web: [https://futebol-web.onrender.com](https://futebol-web.onrender.com). `GET /up` responde 200; `GET /` redireciona para `/session/new`. Serviço `futebol-web`, id `srv-dbjlfmk9v7es73aeuikg`, plano free, Ohio, Docker, `autoDeploy` desligado. Dashboard: [futebol-web](https://dashboard.render.com/web/srv-dbjlfmk9v7es73aeuikg).
+- Supabase: projeto `futebol`, ref `vopkagghssgdjmkhisrk`, API `https://vopkagghssgdjmkhisrk.supabase.co`, região `sa-east-1`. O pooler que responde é `aws-1-sa-east-1.pooler.supabase.com` (o host `aws-0` devolve `tenant/user not found`). Runtime na porta **6543**, `db:prepare` na **5432**. Bancos no mesmo projeto: `postgres`, `postgres_cache`, `postgres_queue`, `postgres_cable`.
+- `income-expenses` (`algniphsdcrcquvlxjfu`) foi pausado para caber no free tier, que limita a organização a 2 projetos ativos. `supabase-citrine-arrow` continua ativo. Retomar um projeto pausado: Dashboard do Supabase → Restore project. A URL e a senha não mudam.
+- Disparar um deploy: MCP `trigger_deploy` com `serviceId` `srv-dbjlfmk9v7es73aeuikg` (opcional `clearCache: true`) ou Dashboard → Manual Deploy. O serviço não faz auto-deploy.
+- Free tier do Render: a instância hiberna após 15 min sem tráfego e tem 512 MB. Com a instância já ligada, `/up` levou 0,29 s. O tempo de acordar depois da hibernação não foi medido.
+- Free tier do Supabase: o projeto pausa após 7 dias sem atividade. O keep-alive de `/up` não conta como atividade no banco.
+- Ainda manual: `R2_*`, `RESEND_*`, o secret `RENDER_DEPLOY_HOOK_URL` e o cron de keep-alive. `OPENOBSERVE_*` não foi definido (não há instância hospedada; vazio = sem export).
+- RLS do schema `public` está desligado. A role `postgres`, que o Rails usa, ignora RLS. A chave anon do Supabase, pela API REST, leria essas tabelas. RLS não foi ligado: sem política, a API do Supabase deixa de enxergar os dados, e isso é uma decisão à parte.
+
 [`render.yaml`](../render.yaml) define `futebol-web` (Docker, Puma + Thruster, health check `/up`) e `futebol-worker` (`./bin/jobs`, Solid Queue). O `bin/docker-entrypoint` roda `db:prepare` no boot do web pela `SUPABASE_DIRECT_URL` e cria `<db>_cache`, `<db>_queue` e `<db>_cable` ao lado do banco principal no Supabase.
 
 Variáveis (grupo `futebol` no Render): `RAILS_MASTER_KEY`, `SUPABASE_DATABASE_URL`, `SUPABASE_DIRECT_URL`, `APP_HOST`, `R2_*`, `RESEND_*`, `OPENOBSERVE_OTLP_ENDPOINT`, `OPENOBSERVE_AUTH` (ver [.env.example](../.env.example)). No plano free, sem worker: remova `futebol-worker` e defina `SOLID_QUEUE_IN_PUMA=1` no web.
@@ -132,9 +143,9 @@ Ensaio local do fluxo (Postgres 18 com SSL + PgBouncer em modo transaction na po
 - `db:prepare` pela URL de sessão criou os 3 bancos irmãos e rodou as migrations.
 - Pelo pooler: `db:seed` 2× com contagens iguais, `prepared_statements=false`, `ssl=true`, e Solid Cache, Queue e Cable funcionando.
 
-Passos manuais (o agente não cria o projeto: o MCP do Supabase não está autenticado e não há credenciais no ambiente):
+O deploy de 2026-11-01 já criou o projeto `futebol` (ver [Estado deste deploy](#estado-deste-deploy-2026-11-01)). Para recriar do zero:
 
-- manual: criar o projeto no [Supabase](https://supabase.com/dashboard) (na região do Render: o `render.yaml` não fixa região, então o padrão é Oregon e o par é `us-west-2`) e guardar a senha do banco.
+- manual: criar o projeto no [Supabase](https://supabase.com/dashboard). Neste deploy a região foi `sa-east-1` e o web ficou em Ohio; o `render.yaml` não fixa região. Guardar a senha fora do repositório. O pooler deste projeto é `aws-1-<region>.pooler.supabase.com`, não `aws-0`.
 - manual: em Connect, copiar a URL do **Transaction pooler** (6543) para `SUPABASE_DATABASE_URL` e a do **Session pooler** (5432) para `SUPABASE_DIRECT_URL` no grupo `futebol` do Render, com `?sslmode=require`.
 - manual: `SUPABASE_DATABASE_URL="$SUPABASE_DIRECT_URL" RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 bin/rails db:prepare` (ou o primeiro deploy, que roda o mesmo pelo entrypoint).
 - manual: `for i in 1 2; do ALLOW_PRODUCTION_SEED=1 SEED_ADMIN_PASSWORD=<senha forte> RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 bin/rails db:seed | grep '^seeds ok'; done` (as duas linhas devem ser iguais).
@@ -204,20 +215,20 @@ bin/dev   # cada request vira um trace (stream "default", aba Traces)
 
 | Nome | Instalação | Escopo | Configurado? |
 |------|------------|--------|--------------|
-| render | MCP hospedado `https://mcp.render.com/mcp` (OAuth via `/add-plugin render` ou `Bearer RENDER_API_KEY`) | serviços, deploys, logs, métricas, env vars | não |
-| supabase | `pipx install supabase-mcp-server` (stdio) | consultas e gestão do projeto; não substitui `SUPABASE_DATABASE_URL` | não |
+| render | MCP hospedado `https://mcp.render.com/mcp` (OAuth via `/add-plugin render` ou `Bearer RENDER_API_KEY`) | serviços, deploys, logs, métricas, env vars | sim (plugin do Cursor, 2026-11-01) |
+| supabase | plugin oficial do Cursor; alternativa stdio `pipx install supabase-mcp-server` | consultas e gestão do projeto; não substitui `SUPABASE_DATABASE_URL` | sim (plugin do Cursor, 2026-11-01) |
 | openobserve | MCP `https://<instância>/api/<org>/mcp` (Basic auth) | traces/logs/alertas — opcional, **não usado nesta fase** | não |
 | r2 | `s3-mcp-server` apontando para o endpoint R2 (`AWS_ENDPOINT_URL=https://<account>.r2.cloudflarestorage.com`) | listar/upload/delete em buckets | não |
 | resend | MCP remoto `https://mcp.resend.com` (`RESEND_API_KEY`) | envio/teste de e-mail | não |
 
 Smoke tests, variáveis e comandos manuais por MCP: [docs/mcp/README.md](mcp/README.md) · config exemplo: `.cursor/mcp.json.example`.
 
-### Status MCP (nenhum MCP utilizável no ambiente do agente; o plugin Supabase está em `needsAuth`)
+### Status MCP
 
 | MCP | status | ação |
 |---|---|---|
-| render | manual | manual: `curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL"` (sem `RENDER_DEPLOY_HOOK_URL`: deploy não executado) |
-| supabase | manual | manual: `psql "$SUPABASE_DIRECT_URL" -c 'SELECT 1'` |
+| render | conectado (workspace `tea-cspqio56l47c739ns4ug`) | `list_services`, `create_web_service`, `trigger_deploy`, `list_deploys`, `list_logs`. Env vars secretas foram pela API (`PUT /v1/services/{id}/env-vars`) para não entrarem no transcript. Sem o hook: Dashboard → Manual Deploy |
+| supabase | conectado (org `vercel_icfg_nHFSDYJMtBIhkEFtOG8I3jmE`) | `list_projects`, `create_project`, `execute_sql`, `list_tables`, `list_extensions`. `create_project` não devolve a senha; ela foi definida com `PATCH /v1/projects/{ref}/database/password` e ficou fora do repo. Sem o MCP: SQL Editor do Dashboard |
 | openobserve | não usado | UI do OpenObserve (aba Traces/Logs) |
 | r2 | manual | manual: `npx wrangler r2 bucket create futebol-dev && npx wrangler r2 bucket create futebol-prod` |
 | resend | manual | manual: `curl https://api.resend.com/emails` (ver [docs/mcp](mcp/README.md)) |
