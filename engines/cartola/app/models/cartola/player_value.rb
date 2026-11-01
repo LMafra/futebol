@@ -5,6 +5,7 @@ module Cartola
     belongs_to :championship, class_name: 'Core::Championship'
 
     validates :value, numericality: { greater_than: 0 }
+    validates :changed_at, presence: true
     validates :player_id, uniqueness: { scope: :championship_id }
 
     # { player_id => value } in one query: the current value, else Core::Player#base_value_in(championship).

@@ -15,9 +15,11 @@ class AddRoundToCoreMatches < ActiveRecord::Migration[8.1]
     end
     validate_check_constraint :core_matches, name: 'matches_round_range'
     add_index :core_matches, %i[championship_id round], algorithm: :concurrently
+    remove_index :core_matches, :championship_id, algorithm: :concurrently
   end
 
   def down
+    add_index :core_matches, :championship_id, algorithm: :concurrently
     remove_index :core_matches, %i[championship_id round], algorithm: :concurrently
     remove_column :core_matches, :round
   end

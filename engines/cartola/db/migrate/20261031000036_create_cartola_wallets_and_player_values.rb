@@ -33,5 +33,7 @@ class CreateCartolaWalletsAndPlayerValues < ActiveRecord::Migration[8.1]
     end
     add_index :cartola_player_value_histories, %i[player_id scoring_token], unique: true
     add_index :cartola_player_value_histories, :scoring_token
+    add_check_constraint :cartola_player_value_histories, 'previous_value > 0 AND value > 0',
+                         name: 'cartola_player_value_histories_values_positive'
   end
 end

@@ -163,6 +163,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000036) do
     t.index ["match_id"], name: "index_cartola_player_value_histories_on_match_id"
     t.index ["player_id", "scoring_token"], name: "idx_on_player_id_scoring_token_73a634962b", unique: true
     t.index ["scoring_token"], name: "index_cartola_player_value_histories_on_scoring_token"
+    t.check_constraint "previous_value > 0::numeric AND value > 0::numeric", name: "cartola_player_value_histories_values_positive"
   end
 
   create_table "cartola_player_values", force: :cascade do |t|
@@ -273,7 +274,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000036) do
     t.integer "round"
     t.index ["away_team_id"], name: "index_core_matches_on_away_team_id"
     t.index ["championship_id", "round"], name: "index_core_matches_on_championship_id_and_round"
-    t.index ["championship_id"], name: "index_core_matches_on_championship_id"
     t.index ["external_id"], name: "index_core_matches_on_external_id", unique: true
     t.index ["home_team_id"], name: "index_core_matches_on_home_team_id"
     t.index ["match_date"], name: "index_core_matches_on_match_date"

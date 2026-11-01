@@ -8,10 +8,14 @@ module Cartola
       @championships = Core::Championship.order(season: :desc, name: :asc).to_a
       @championship = selected_championship
       @tab = TABS.key?(params[:tab]) ? params[:tab] : TABS.keys.first
-      @rows = @championship ? Cartola::RankingsService.public_send(@tab, @championship) : []
+      @rows = @championship ? ranking_rows : []
     end
 
     private
+
+    def ranking_rows
+      @tab == 'coins' ? Cartola::RankingsService.coins(@championship) : Cartola::RankingsService.points(@championship)
+    end
 
     def selected_championship
       return @championships.first if params[:championship_id].blank?

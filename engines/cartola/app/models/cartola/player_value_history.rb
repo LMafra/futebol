@@ -6,5 +6,6 @@ module Cartola
 
     validates :scoring_token, presence: true, uniqueness: { scope: :player_id }
     validates :previous_value, :value, numericality: { greater_than: 0 }
+    validates :score, :average_score, :changed_at, presence: true
   end
 end
