@@ -48,6 +48,9 @@
   <% end %>
 
   <div class="flex flex-wrap items-center gap-4">
+    <% if pool&.persisted? %>
+      <%= link_to "Palpites", pool_bets_path(pool), class: "rounded-sm bg-pitch px-4 py-2 font-semibold text-white hover:bg-night" %>
+    <% end %>
     <%= link_to "Voltar para meus bolões", pools_path, class: "font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
     <% if can_destroy? %>
       <%= button_to "Excluir bolão", pool_path(pool), method: :delete, form: { data: { turbo_confirm: "Excluir o bolão #{pool.name}?" } },

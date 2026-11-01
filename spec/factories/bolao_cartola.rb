@@ -11,6 +11,9 @@ FactoryBot.define do
     match
     home_guess { 1 }
     away_guess { 0 }
+
+    # Specs hand in matches that already kicked off: the prediction itself was placed before kickoff.
+    to_create { |prediction| prediction.save!(context: :backfill) }
   end
 
   factory :bolao_prediction_score, class: 'Bolao::PredictionScore' do
