@@ -61,7 +61,9 @@ Fora de development/test, os dados demo não são criados: a senha acima é púb
 | `bin/rails db:reset` | recria o banco local do zero |
 | `bin/jobs` | só o worker do Solid Queue |
 | `bin/rails tailwindcss:build` | compila o CSS do app |
+| `docker compose -f docker/openobserve/docker-compose.yml up -d` | sobe o OpenObserve self-hosted local (UI em `localhost:5080`) |
 | `bin/rails observability:fake_exception` | gera um span de erro e imprime o `trace_id` |
+| `gh workflow run keep-alive.yml` | dispara o ping de keep-alive à mão |
 | `bin/ci` | checagens locais antes do PR |
 
 ## CI
@@ -108,7 +110,9 @@ Development usa Docker só para o Postgres (`futebol-pg`) e, opcionalmente, o Op
 - Disparar um deploy: MCP `trigger_deploy` com `serviceId` `srv-dbjlfmk9v7es73aeuikg` (opcional `clearCache: true`) ou Dashboard → Manual Deploy. Com o auto-deploy ligado, isso só é preciso para refazer um deploy sem commit novo. O `db:prepare` do entrypoint roda as migrations pendentes; se uma falhar, o deploy fica `update_failed` e o anterior continua no ar.
 - Free tier do Render: a instância hiberna após 15 min sem tráfego e tem 512 MB. Com a instância já ligada, `/up` levou 0,29 s. O tempo de acordar depois da hibernação não foi medido.
 - Free tier do Supabase: o projeto pausa após 7 dias sem atividade. O keep-alive de `/up` não conta como atividade no banco.
-- Ainda manual: `R2_*`, `RESEND_*`, o secret `RENDER_DEPLOY_HOOK_URL` e o cron de keep-alive. `OTEL_EXPORTER_OTLP_*` não foi definido (ainda não há host para o OpenObserve self-hosted; vazio = sem export).
+- Keep-alive: workflow [`keep-alive.yml`](../.github/workflows/keep-alive.yml) a cada 14 min, com o secret `RENDER_APP_HOST` já cadastrado; passa a rodar depois do merge na `main` (ver [Keep-alive](#keep-alive)).
+- R2: habilitado, com os buckets `futebol-dev` e `futebol-prod` criados. Ainda manual: gerar o token S3 e definir `R2_*` no Render (ver [Storage](#storage-cloudflare-r2)).
+- Ainda manual: domínio verificado no Resend e `RESEND_*` no Render (ver [E-mail](#e-mail-resend)); o secret `RENDER_DEPLOY_HOOK_URL`. `OTEL_EXPORTER_OTLP_*` não foi definido: ainda não há host para o OpenObserve self-hosted, e vazio significa sem export (ver [Observabilidade](#observabilidade-opentelemetry--openobserve)).
 - RLS do schema `public` está desligado. A role `postgres`, que o Rails usa, ignora RLS. A chave anon do Supabase, pela API REST, leria essas tabelas. RLS não foi ligado: sem política, a API do Supabase deixa de enxergar os dados, e isso é uma decisão à parte.
 
 [`render.yaml`](../render.yaml) define `futebol-web` (Docker, Puma + Thruster, health check `/up`) e `futebol-worker` (`./bin/jobs`, Solid Queue). O `bin/docker-entrypoint` roda `db:prepare` no boot do web pela `SUPABASE_DIRECT_URL` e cria `<db>_cache`, `<db>_queue` e `<db>_cable` ao lado do banco principal no Supabase.
@@ -189,10 +193,9 @@ Buckets R2: `futebol-dev` e `futebol-prod`.
 | `R2_ENDPOINT` | opcional; padrão `https://<R2_ACCOUNT_ID>.r2.cloudflarestorage.com` |
 | `R2_BUCKET_DEV`, `R2_BUCKET_PROD` | `futebol-dev` e `futebol-prod` (já com esses padrões no `storage.yml`) |
 
-Estado em 2026-11-01: o MCP da Cloudflare (plugin do Cursor, `mcp.cloudflare.com`) está autenticado na única conta, mas a API de R2 responde `10042 Please enable R2 through the Cloudflare Dashboard`. Habilitar o R2 exige aceitar o plano no Dashboard, com meio de pagamento, mesmo no free tier (10 GB). Por isso os buckets ainda não existem.
+Estado em 2026-11-01: R2 habilitado na conta `cc34835f876bca3a000894f17b6da890`, a única do MCP da Cloudflare (plugin do Cursor, `mcp.cloudflare.com`). Os buckets `futebol-dev` e `futebol-prod` foram criados pelo MCP (`POST /accounts/{account_id}/r2/buckets`), com location hint ENAM e classe Standard. Habilitar o R2 exigiu aceitar o plano no Dashboard, com meio de pagamento, mesmo no free tier (10 GB). Ainda faltam as credenciais S3.
 
-- manual: configurar R2 via dashboard: Cloudflare Dashboard → R2 Object Storage → habilitar (Purchase/Enable R2).
-- manual: criar os buckets, pelo Dashboard (R2 → Create bucket) ou com `npx wrangler r2 bucket create futebol-dev && npx wrangler r2 bucket create futebol-prod`; conferir com `npx wrangler r2 bucket list`. Depois de habilitado, o agente consegue criá-los pelo MCP da Cloudflare (`POST /accounts/{account_id}/r2/buckets`).
+- Recriar os buckets, se preciso: Dashboard (R2 → Create bucket), `npx wrangler r2 bucket create futebol-dev && npx wrangler r2 bucket create futebol-prod` ou o MCP da Cloudflare; conferir com `npx wrangler r2 bucket list`.
 - manual: gerar o token S3 e preencher `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID` e `R2_SECRET_ACCESS_KEY` no grupo `futebol` do Render. Sem elas, o boot de production loga `Error retrieving instance profile credentials` (o SDK da AWS procura credenciais no metadata service), mas o `/up` continua 200.
 - manual: `ACTIVE_STORAGE_SERVICE=r2 bin/rails runner 'puts ActiveStorage::Blob.create_and_upload!(io: StringIO.new("ok"), filename: "smoke.txt").key'` (arquivo visível em `futebol-dev`)
 
@@ -206,7 +209,7 @@ Production envia por SMTP (`smtp.resend.com:465`, TLS implícito, usuário `rese
 | `RESEND_FROM` | remetente num domínio verificado, ex.: `Futebol <bolao@seu-dominio.com>` |
 | `APP_HOST` | `futebol-web.onrender.com` (ou o domínio próprio) |
 
-Estado em 2026-11-01: a chave não está definida no Render. Sem ela, um envio em production falha com erro de autenticação SMTP (`raise_delivery_errors` está ligado).
+Estado em 2026-11-01: a chave do Resend (permissão só de envio) foi validada a partir do `.env` local, com login SMTP em `smtp.resend.com:465` ok e envio para `delivered@resend.dev` aceito. O remetente ainda é `onboarding@resend.dev`, sem domínio verificado. A presença das variáveis no Render não foi conferida, porque o MCP do Render não lista env vars. Sem a chave no Render, um envio em production falha com erro de autenticação SMTP (`raise_delivery_errors` está ligado).
 
 - manual: criar a conta em [resend.com](https://resend.com) e gerar a chave em API Keys → Create API Key (Sending access, de preferência restrita ao domínio).
 - manual: em Domains → Add Domain, cadastrar o domínio do remetente e publicar no DNS os registros SPF e DKIM (e, opcionalmente, DMARC) indicados pelo Resend até o status `Verified`. Sem domínio verificado, `onboarding@resend.dev` só entrega para o e-mail do dono da conta, o que serve para teste e não para usuários.
@@ -264,9 +267,9 @@ Smoke tests, variáveis e comandos manuais por MCP: [docs/mcp/README.md](mcp/REA
 | render | conectado (workspace `tea-cspqio56l47c739ns4ug`) | `list_services`, `create_web_service`, `trigger_deploy`, `list_deploys`, `list_logs`. Env vars secretas foram pela API (`PUT /v1/services/{id}/env-vars`) para não entrarem no transcript. Sem o hook: Dashboard → Manual Deploy |
 | supabase | conectado (org `vercel_icfg_nHFSDYJMtBIhkEFtOG8I3jmE`) | `list_projects`, `create_project`, `execute_sql`, `list_tables`, `list_extensions`. `create_project` não devolve a senha; ela foi definida com `PATCH /v1/projects/{ref}/database/password` e ficou fora do repo. Sem o MCP: SQL Editor do Dashboard |
 | openobserve | não usado | UI do OpenObserve (aba Traces/Logs) |
-| cloudflare | conectado (1 conta) | `execute` com `GET/POST /accounts/{account_id}/r2/buckets`. Hoje a API devolve `10042` (R2 não habilitado na conta): manual: habilitar o R2 no Dashboard |
-| r2 | manual | manual: `npx wrangler r2 bucket create futebol-dev && npx wrangler r2 bucket create futebol-prod` (ou o MCP da Cloudflare, depois de habilitar o R2) |
-| resend | manual | manual: `curl https://api.resend.com/emails` (ver [docs/mcp](mcp/README.md)) |
+| cloudflare | conectado (1 conta) | `execute` com `GET/POST /accounts/{account_id}/r2/buckets`; criou `futebol-dev` e `futebol-prod` |
+| r2 | buckets criados pelo MCP da Cloudflare | alternativa: `npx wrangler r2 bucket create futebol-dev && npx wrangler r2 bucket create futebol-prod` |
+| resend | MCP não usado; chave validada por SMTP (2026-11-01) | teste: envio SMTP para `delivered@resend.dev` (ver [E-mail](#e-mail-resend)). A chave só tem permissão de envio, então o `curl https://api.resend.com/emails` funciona e `GET /domains` responde 401 `restricted_api_key` |
 
 ### Fluxo de deploy com MCP
 

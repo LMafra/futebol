@@ -20,4 +20,10 @@
 ## Operações
 - [MCPs configurados](mcp/README.md)
 - [Guia de operações](OPERATIONS.md)
+  - [Deploy (Render + Supabase)](OPERATIONS.md#deploy-render--supabase)
+  - [Storage (Cloudflare R2)](OPERATIONS.md#storage-cloudflare-r2)
+  - [E-mail (Resend)](OPERATIONS.md#e-mail-resend)
+  - [Keep-alive](OPERATIONS.md#keep-alive)
+  - [Observabilidade (OpenTelemetry → OpenObserve self-hosted)](OPERATIONS.md#observabilidade-opentelemetry--openobserve)
+- [Infraestrutura de produção (resumo no README)](../README.md#infraestrutura-de-produção)
 - [Qualidade e ferramentas](QUALITY.md)
