@@ -10,6 +10,7 @@ Plataforma Rails 8 com engines `core`, `bolao`, `cartola` e `simulador`.
 - Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 27 tickets ([INDEX](docs/tickets/INDEX.md))
 - Admin em ActiveAdmin `4.0.0.beta23`, pinado no Gemfile ([ADR 0002](docs/adr/0002-activeadmin-rails81.md)). É um pré-release: a API pode mudar entre betas, então atualize só de forma deliberada (Gemfile + `bundle update activeadmin` + suíte de `spec/requests/admin`). O fallback estável é a 3.5.x, com Sass/sprockets só para o admin.
 - Infra: Render + Supabase (Postgres) + R2 + Resend + OpenObserve ([MCPs](docs/mcp/README.md)); status das fases em [STATUS](docs/checkpoints/STATUS.md)
+- Índice da documentação: [docs/README.md](docs/README.md)
 
 ## Setup local
 
