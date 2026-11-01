@@ -3,21 +3,31 @@
   <% if matches.empty? %>
     <p class="text-graphite">Nenhum jogo hoje nos campeonatos públicos.</p>
   <% else %>
-    <ul class="flex gap-3 overflow-x-auto pb-2">
-      <% matches.each do |match| %>
-        <li class="flex min-w-48 flex-col gap-2 rounded-md border border-rule bg-white px-4 py-3" data-role="today-match">
-          <p class="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-graphite">
-            <span><%= Ui::ScoreboardComponent::STATUS_LABELS.fetch(match.status, match.status) %></span>
-            <span class="tabular-nums"><%= l(match.match_date, format: "%H:%M") %></span>
-          </p>
-          <% [[match.home_team, match.home_score], [match.away_team, match.away_score]].each do |team, score| %>
-            <p class="flex items-center justify-between gap-4 font-semibold">
-              <span><%= team.name %></span>
-              <span class="tabular-nums"><%= score || "–" %></span>
-            </p>
-          <% end %>
-        </li>
+    <div class="flex flex-col gap-6">
+      <% matches.group_by(&:championship).each do |championship, championship_matches| %>
+        <section class="flex flex-col gap-2" aria-label="<%= championship.name %>" data-role="today-championship">
+          <h3 class="flex items-baseline justify-between gap-4 text-sm font-bold uppercase tracking-widest text-graphite">
+            <%= link_to championship.name, public_championship_path(championship), class: "hover:text-ink" %>
+            <span class="tabular-nums"><%= pluralize(championship_matches.size, "jogo", plural: "jogos") %></span>
+          </h3>
+          <ul class="flex gap-3 overflow-x-auto pb-2">
+            <% championship_matches.each do |match| %>
+              <li class="flex min-w-48 flex-col gap-2 rounded-md border border-rule bg-white px-4 py-3" data-role="today-match">
+                <p class="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-graphite">
+                  <span><%= Ui::ScoreboardComponent::STATUS_LABELS.fetch(match.status, match.status) %></span>
+                  <span class="tabular-nums"><%= l(match.match_date, format: "%H:%M") %></span>
+                </p>
+                <% [[match.home_team, match.home_score], [match.away_team, match.away_score]].each do |team, score| %>
+                  <p class="flex items-center justify-between gap-4 font-semibold">
+                    <span><%= team.name %></span>
+                    <span class="tabular-nums"><%= score || "–" %></span>
+                  </p>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </section>
       <% end %>
-    </ul>
+    </div>
   <% end %>
 </section>

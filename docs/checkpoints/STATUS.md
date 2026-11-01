@@ -304,3 +304,9 @@ Branch `craquefy/h-ajustes`, empilhada sobre `craquefy/g-docs`, com um commit as
 - `/simulador` virou a lista de campeonatos para escolher (privados só para quem está logado); o simulador abre em `/simulador/:id`, sem login, e a página do campeonato ganhou o botão "Simular". Diverge do ADR 0003, que descrevia `GET /simulador` abrindo o simulador direto; o ADR não foi editado.
 - Jogos em aberto em carrossel: uma rodada por vez, com "Anterior" e "Próxima". As rodadas ocultas continuam no formulário, e sem JS ficam empilhadas.
 - Rodapé: "Desenvolvido por LMafra" (GitHub) e "Pague o Café" com a chave Pix e botão de copiar. A chave Pix é um e-mail publicado de propósito; as specs de privacidade checam os e-mails dos usuários, não qualquer `@` na página.
+
+### Jogos de hoje com vários campeonatos (TICKET-0042)
+Branch `craquefy/i-campeonatos-seed`, empilhada sobre `craquefy/h-ajustes`, com um commit assinado.
+- "Jogos de hoje" agrupa por campeonato, com o nome (link) e a contagem de jogos de cada um.
+- Seed local com 5 campeonatos fictícios de 6, 8, 10, 12 e 6 times, em turno único, com a rodada do meio hoje. Só em development/test, como a demo: as datas acompanham o dia em que o seed roda, o que não faz sentido em produção.
+- Os 42 times novos não têm elenco, porque o seletor do Esquadrão lista todos os jogadores do banco. Filtrar o seletor pelos times do campeonato fica como melhoria futura.

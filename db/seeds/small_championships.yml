@@ -1,0 +1,58 @@
+# Campeonatos amadores fictícios (demo local). Siglas únicas no banco inteiro (core_teams.short_name).
+- external_id: varzea-paulista-2026
+  name: Copa da Várzea Paulista
+  teams:
+    - { name: Unidos da Vila, short_name: UDV }
+    - { name: Juventude do Morro, short_name: JDM }
+    - { name: Estrela da Zona Leste, short_name: EZL }
+    - { name: Ajax da Brasilândia, short_name: AJB }
+    - { name: Botafogo do Capão, short_name: BDC }
+    - { name: Real Paraisópolis, short_name: RPA }
+- external_id: amadora-carioca-2026
+  name: Liga Amadora Carioca
+  teams:
+    - { name: Madureira da Serra, short_name: MDS }
+    - { name: Leões de Realengo, short_name: LRE }
+    - { name: Grêmio Recreativo Penha, short_name: GRP }
+    - { name: Tigres do Méier, short_name: TDM }
+    - { name: Unidos de Campo Grande, short_name: UCG }
+    - { name: Esporte Clube Ilha, short_name: ECI }
+    - { name: Atlético Rocinha, short_name: ATR }
+    - { name: Canarinho de Bonsucesso, short_name: CBO }
+- external_id: interior-mineiro-2026
+  name: Copa do Interior Mineiro
+  teams:
+    - { name: União Sabará, short_name: USB }
+    - { name: Ferroviário de Divinópolis, short_name: FDV }
+    - { name: Esporte Clube Lavras, short_name: ECL }
+    - { name: Atlético Ouro Preto, short_name: AOP }
+    - { name: Juventus de Itabira, short_name: JIT }
+    - { name: Mangueira de Barbacena, short_name: MBA }
+    - { name: Cruzeirinho de Formiga, short_name: CFO }
+    - { name: Democrata de Sete Lagoas, short_name: DSL }
+    - { name: Tupi de Juiz de Fora, short_name: TJF }
+    - { name: Guarani de Uberaba, short_name: GUB }
+- external_id: litoral-nordestino-2026
+  name: Taça do Litoral Nordestino
+  teams:
+    - { name: Praia Clube Maceió, short_name: PCM }
+    - { name: Atlético Porto de Galinhas, short_name: APG }
+    - { name: Jangadeiros de Fortaleza, short_name: JFO }
+    - { name: Coqueiros de Natal, short_name: CNA }
+    - { name: Maré Alta do Recife, short_name: MAR }
+    - { name: Farol de Aracaju, short_name: FAR }
+    - { name: Sereias de Salvador, short_name: SSA }
+    - { name: Ondas de João Pessoa, short_name: OJP }
+    - { name: Corais de Maragogi, short_name: CMG }
+    - { name: Barreira de São Luís, short_name: BSL }
+    - { name: Dunas de Jericoacoara, short_name: DJE }
+    - { name: Pescadores de Ilhéus, short_name: PIL }
+- external_id: sulista-sub20-2026
+  name: Liga Sulista Sub-20
+  teams:
+    - { name: Gaúcho de Pelotas, short_name: GPE }
+    - { name: Pinheiros de Curitiba, short_name: PCU }
+    - { name: Atlético Blumenau, short_name: ABL }
+    - { name: Farroupilha de Caxias, short_name: FCX }
+    - { name: Araucária de Lages, short_name: ALA }
+    - { name: Brasil de Santa Maria, short_name: BSM }

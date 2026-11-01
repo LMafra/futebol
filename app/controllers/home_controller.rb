@@ -21,7 +21,8 @@ class HomeController < ApplicationController
   private
 
   def matches_today(matches)
-    matches.where(match_date: Date.current.all_day).includes(:home_team, :away_team).order(:match_date, :id).to_a
+    matches.where(match_date: Date.current.all_day).includes(:championship, :home_team, :away_team)
+           .order(:match_date, :id).to_a
   end
 
   # { championship_id => { teams:, status: } }

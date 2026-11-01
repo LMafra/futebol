@@ -71,6 +71,20 @@ RSpec.describe 'Public home', type: :request do
     expect(page.at_css('[data-role="today-match"]').text).to include(today.home_team.name, '21:00')
   end
 
+  it 'agrupa os jogos de hoje por campeonato, com link para cada um' do
+    varzea = create(:championship, name: 'Copa da Várzea')
+    create_list(:match, 2, championship: varzea, match_date: Time.current.change(hour: 10))
+    create(:match, championship: public_championship, match_date: Time.current.change(hour: 21))
+
+    get root_path
+
+    groups = page.css('[data-role="today-championship"]')
+    expect(groups.map { |group| group.at_css('h3 a').text }).to eq(['Copa da Várzea', public_championship.name])
+    expect(groups.first.at_css('h3 a')['href']).to eq(public_championship_path(varzea))
+    expect(groups.map { |group| group.css('[data-role="today-match"]').size }).to eq([2, 1])
+    expect(groups.first.at_css('h3').text).to include('2 jogos')
+  end
+
   it 'mostra o top de atletas com J, G, A e Pts' do
     match = create(:match, championship: public_championship)
     star = create(:player, name: 'Craque')
