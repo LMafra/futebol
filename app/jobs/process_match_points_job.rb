@@ -5,17 +5,22 @@ class ProcessMatchPointsJob < ApplicationJob
     match = Core::Match.find(match_id)
     return if match.scoring_token == scoring_token
 
-    Core::Match.transaction do
-      rows = score_rows(match, scoring_token)
-      Bolao::PredictionScore.insert_all(rows, unique_by: %i[prediction_id scoring_token]) if rows.any?
-      match.mark_scored!(scoring_token)
-    end
+    score!(match, scoring_token)
+    BroadcastUpdateService.call(match:)
   rescue StandardError => e
     report_failure(e, match_id:, scoring_token:)
     raise
   end
 
   private
+
+  def score!(match, scoring_token)
+    Core::Match.transaction do
+      rows = score_rows(match, scoring_token)
+      Bolao::PredictionScore.insert_all(rows, unique_by: %i[prediction_id scoring_token]) if rows.any?
+      match.mark_scored!(scoring_token)
+    end
+  end
 
   def report_failure(error, match_id:, scoring_token:)
     Rails.logger.error("ProcessMatchPointsJob failed match_id=#{match_id} scoring_token=#{scoring_token}: " \

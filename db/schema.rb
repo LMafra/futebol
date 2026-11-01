@@ -10,9 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000024) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000026) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "bolao_pools", force: :cascade do |t|
     t.bigint "championship_id", null: false
@@ -151,7 +179,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000024) do
     t.integer "rows_processed", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "error_log"
     t.check_constraint "rows_processed >= 0", name: "csv_imports_rows_non_negative"
+    t.check_constraint "status::text <> 'failed'::text OR error_message IS NOT NULL AND error_log IS NOT NULL", name: "csv_imports_failed_has_error"
     t.check_constraint "status::text = ANY (ARRAY['pending'::character varying::text, 'processing'::character varying::text, 'completed'::character varying::text, 'failed'::character varying::text])", name: "csv_imports_status_valid"
   end
 
@@ -234,6 +264,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000024) do
     t.check_constraint "cpf IS NULL OR cpf::text ~ '^[0-9]{11}$'::text", name: "core_users_cpf_digits"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "bolao_pools", "core_championships", column: "championship_id"
   add_foreign_key "bolao_pools", "core_users", column: "owner_id"
   add_foreign_key "bolao_prediction_scores", "bolao_predictions", column: "prediction_id"

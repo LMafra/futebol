@@ -41,6 +41,10 @@ RSpec.describe ProcessMatchPointsJob do
     expect(match.scores_calculated_at).to be_present
   end
 
+  it 'broadcasts the updated scoreboard once, after scoring' do
+    expect { 2.times { perform } }.to have_broadcasted_to(match.to_gid_param).once
+  end
+
   it 'uses pool overrides of the scoring rules' do
     create(:bolao_scoring_rule, pool_id: pool.id, kind: 'exact_score', points: 20)
 
