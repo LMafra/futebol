@@ -184,16 +184,31 @@ Workspace Render `tea-cspqio56l47c739ns4ug` (o único da conta). Organização S
 
 ## Lacunas de produto resolvidas
 
-Um ticket, uma branch e um commit assinado por bloco, empilhados a partir de `deploy/g-docs`. Gate `test` de `.cursor/environment.json` (RSpec, RuboCop, Packwerk, Zeitwerk) verde depois de cada bloco, sem nenhuma falha repetida; nenhum bloco ficou `blocked`. ADRs 0001, 0002 e 0003 não foram alterados; o ADR 0004 é novo, a pedido. MCP Supabase usado só para leitura (`execute_sql`); MCP Render não foi usado: nenhum bloco precisa de env var nova e não houve deploy.
+Um ticket, uma branch e um commit assinado por bloco, empilhados a partir de `deploy/g-docs`. Gate `test` de `.cursor/environment.json` (RSpec, RuboCop, Packwerk, Zeitwerk) verde depois de cada bloco, sem nenhuma falha repetida; nenhum bloco ficou `blocked`. ADRs 0001, 0002 e 0003 não foram alterados; o ADR 0004 é novo, a pedido. MCP Supabase usado só para leitura (`execute_sql`); MCP Render usado só para acompanhar deploys e logs: nenhum bloco precisa de env var nova. Os PRs foram empilhados ([#36](https://github.com/LMafra/futebol/pull/36) docs do deploy → #37 → #40) e entraram na `main` por merge commit; o restack do GitHub reescreveu os commits, por isso os hashes da `main` diferem dos originais.
 
 | bloco | status | ticket | branch · commit | gate | observações |
 |---|---|---|---|---|---|
-| A — signup público | ok | [0028](../tickets/TICKET-0028.md) | `lacuna/a-signup` · `4ba06d7` | 764 ex., 0 falhas | `/signup` com `Ui::SignupFormComponent`, rate limit 5/3 min, `name` obrigatório só na criação; e-mails `@invalid` (contas anonimizadas) recusados |
-| B — Bolão 2 faixas | ok | [0029](../tickets/TICKET-0029.md) | `lacuna/b-bolao-2-faixas` · `d1b53c5` | 760 ex., 0 falhas | [ADR 0004](../adr/0004-bolao-scoring.md). Produção antes da migração: 4 linhas globais 10/7/5/3 e 0 bolões → vira 1 global 10/5 (`winner_and_goal_diff` 7 e `draw` 3 passam a valer `winner_points`) |
-| C — Cartola por campeonato | ok | [0030](../tickets/TICKET-0030.md) | `lacuna/c-cartola-config` · `215a456` | 812 ex., 0 falhas | Produção antes da migração: 1 campeonato, 0 escalações, 220 jogadores com `cost > 0` (viram `base_value`), 380 partidas com `-rNN-` (viram `round`) |
-| D — Simulador v1 | ok | [0031](../tickets/TICKET-0031.md) | `lacuna/d-simulador` · este commit | 831 ex., 0 falhas | Escopo do ADR 0003 seguido; rotas do ticket e do ADR coexistem |
+| A — signup público | ok | [0028](../tickets/TICKET-0028.md) | [#37](https://github.com/LMafra/futebol/pull/37) · `d565500` | 764 ex., 0 falhas | `/signup` com `Ui::SignupFormComponent`, rate limit 5/3 min, `name` obrigatório só na criação; e-mails `@invalid` (contas anonimizadas) recusados |
+| B — Bolão 2 faixas | ok | [0029](../tickets/TICKET-0029.md) | [#38](https://github.com/LMafra/futebol/pull/38) · `67f71be` + `1482f5d` | 760 ex., 0 falhas | [ADR 0004](../adr/0004-bolao-scoring.md). Produção antes da migração: 4 linhas globais 10/7/5/3 e 0 bolões → vira 1 global 10/5 (`winner_and_goal_diff` 7 e `draw` 3 passam a valer `winner_points`) |
+| C — Cartola por campeonato | ok | [0030](../tickets/TICKET-0030.md) | [#39](https://github.com/LMafra/futebol/pull/39) · `48be641` + `ceb6f0e` | 812 ex., 0 falhas | Produção antes da migração: 1 campeonato, 0 escalações, 220 jogadores com `cost > 0` (viram `base_value`), 380 partidas com `-rNN-` (viram `round`) |
+| D — Simulador v1 | ok | [0031](../tickets/TICKET-0031.md) | [#40](https://github.com/LMafra/futebol/pull/40) · `95e6929` | 831 ex., 0 falhas | Escopo do ADR 0003 seguido; rotas do ticket e do ADR coexistem |
 
-Pendências: as 6 migrations novas (`20261031000031`…`036`) ainda não rodaram em produção (última lá: `20261031000030`); rodam no próximo deploy pelo `db:prepare` do entrypoint. O primeiro deploy (`dep-dbjnj57f3r2c73ckg2jg`, commit `2dd98d0`) falhou na 031 com `undefined method 'safety_assured'`: o `strong_migrations` estava só no grupo `development`, e o Dockerfile instala com `BUNDLE_WITHOUT="development"`. O CI não pegou porque o banco de teste carrega o `schema.rb` em vez de rodar as migrations. A transação da 031 foi desfeita (produção segue na 030) e o deploy anterior continuou no ar. Correção: a gem foi para o grupo padrão (branch `fix/strong-migrations-producao`). Os 2 exemplos `pending` são os system specs que precisam do Chrome.
+Os commits `1482f5d` (B) e `ceb6f0e` (C) corrigem o CI dos PRs: `database_consistency` (exceções no todo para `belongs_to` de models do core, que o Packwerk impede de ganhar `has_many`; checks e validações de presença no histórico de valores; índice redundante `index_core_matches_on_championship_id` removido na 034) e Brakeman (`public_send` com `params[:tab]` no `RankingsController`). As migrations 034 e 036 foram ajustadas antes de rodar em produção.
+
+Deploy:
+
+- O primeiro deploy (`dep-dbjnj57f3r2c73ckg2jg`, commit `2dd98d0`) falhou na 031 com `undefined method 'safety_assured'`: o `strong_migrations` estava só no grupo `development`, e o Dockerfile instala com `BUNDLE_WITHOUT="development"`. O CI não pegou porque o banco de teste carrega o `schema.rb` em vez de rodar as migrations. A transação da 031 foi desfeita (produção ficou na 030) e o deploy anterior continuou no ar.
+- [#42](https://github.com/LMafra/futebol/pull/42) (`fix/strong-migrations-producao`): a gem foi para o grupo padrão, e o CI ganhou o passo "Recent migrations, production bundle", que desce até `StrongMigrations.start_after` e sobe de novo com `BUNDLE_WITHOUT=development`, depois do seed.
+- Deploy `dep-dbjnvbnb9u1s73buhsb0` (commit `69bb65e`, disparado pelo commit novo na `main`) `live` em 2026-11-01 18:09 UTC. Supabase (só leitura) confirma `20261031000031`…`036` aplicadas:
+  - 1 regra global do Bolão com 10/5, sem `kind`/`points`;
+  - `core_players.cost` removido, 220 jogadores com `base_value`;
+  - 380/380 partidas com `round`;
+  - 0 escalações, carteiras e valores.
+- Smoke test em produção: `/up`, `/signup`, `/simulador` e `/session/new` → 200; `/cartola/rankings` → 302 (login).
+- O único erro nos logs depois do deploy (`Error retrieving instance profile credentials`, SDK da AWS no boot) já aparecia no deploy anterior.
+- O `futebol-web` agora tem `autoDeploy: yes` com gatilho `commit` (antes era manual): cada commit na `main` vira deploy, sem esperar o CI. O job `Deploy (Render)` do CI segue sem efeito, porque `RENDER_DEPLOY_HOOK_URL` não está configurado e o job só emite um aviso.
+
+Os 2 exemplos `pending` são os system specs que precisam do Chrome.
 
 ### Decisões e desvios registrados
 - **Numeração do ADR 0003.** O ADR chama de 0028 o `core_matches.round` e de 0029 o Simulador v1. O pedido reservou 0028–0031 para signup, Bolão, Cartola e Simulador. O `core_matches.round` entrou no TICKET-0030, que precisa dele para o ranking por rodada, e o Simulador é o TICKET-0031. O ADR não foi editado.

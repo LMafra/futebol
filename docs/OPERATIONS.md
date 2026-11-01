@@ -100,10 +100,10 @@ Development usa Docker só para o Postgres (`futebol-pg`) e, opcionalmente, o Op
 
 ### Estado deste deploy (2026-11-01)
 
-- Web: [https://futebol-web.onrender.com](https://futebol-web.onrender.com). `GET /up` responde 200; `GET /` redireciona para `/session/new`. Serviço `futebol-web`, id `srv-dbjlfmk9v7es73aeuikg`, plano free, Ohio, Docker, `autoDeploy` desligado. Dashboard: [futebol-web](https://dashboard.render.com/web/srv-dbjlfmk9v7es73aeuikg).
+- Web: [https://futebol-web.onrender.com](https://futebol-web.onrender.com). `GET /up` responde 200; `GET /` redireciona para `/session/new`. Serviço `futebol-web`, id `srv-dbjlfmk9v7es73aeuikg`, plano free, Ohio, Docker, `autoDeploy` ligado com gatilho `commit` (cada commit na `main` vira deploy, sem esperar o CI). Dashboard: [futebol-web](https://dashboard.render.com/web/srv-dbjlfmk9v7es73aeuikg).
 - Supabase: projeto `futebol`, ref `vopkagghssgdjmkhisrk`, API `https://vopkagghssgdjmkhisrk.supabase.co`, região `sa-east-1`. O pooler que responde é `aws-1-sa-east-1.pooler.supabase.com` (o host `aws-0` devolve `tenant/user not found`). Runtime na porta **6543**, `db:prepare` na **5432**. Bancos no mesmo projeto: `postgres`, `postgres_cache`, `postgres_queue`, `postgres_cable`.
 - `income-expenses` (`algniphsdcrcquvlxjfu`) foi pausado para caber no free tier, que limita a organização a 2 projetos ativos. `supabase-citrine-arrow` continua ativo. Retomar um projeto pausado: Dashboard do Supabase → Restore project. A URL e a senha não mudam.
-- Disparar um deploy: MCP `trigger_deploy` com `serviceId` `srv-dbjlfmk9v7es73aeuikg` (opcional `clearCache: true`) ou Dashboard → Manual Deploy. O serviço não faz auto-deploy.
+- Disparar um deploy: MCP `trigger_deploy` com `serviceId` `srv-dbjlfmk9v7es73aeuikg` (opcional `clearCache: true`) ou Dashboard → Manual Deploy. Com o auto-deploy ligado, isso só é preciso para refazer um deploy sem commit novo. O `db:prepare` do entrypoint roda as migrations pendentes; se uma falhar, o deploy fica `update_failed` e o anterior continua no ar.
 - Free tier do Render: a instância hiberna após 15 min sem tráfego e tem 512 MB. Com a instância já ligada, `/up` levou 0,29 s. O tempo de acordar depois da hibernação não foi medido.
 - Free tier do Supabase: o projeto pausa após 7 dias sem atividade. O keep-alive de `/up` não conta como atividade no banco.
 - Ainda manual: `R2_*`, `RESEND_*`, o secret `RENDER_DEPLOY_HOOK_URL` e o cron de keep-alive. `OPENOBSERVE_*` não foi definido (não há instância hospedada; vazio = sem export).
