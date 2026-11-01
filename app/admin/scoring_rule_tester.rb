@@ -40,13 +40,19 @@ ActiveAdmin.register_page 'ScoringRuleTester' do
     end
 
     def test_cartola
-      input = params.expect(cartola: %i[rule_id goals assists yellow_cards red_cards])
+      input = params.expect(cartola: [:rule_id, *Cartola::PlayerScore::SCOUTS, *cartola_flags])
       rule = @cartola_rules.find_by(id: input[:rule_id])
-      stats = input.slice(:goals, :assists, :yellow_cards, :red_cards).to_h.symbolize_keys
-                   .transform_values { goals(_1) }
+      stats = cartola_stats(input)
       return invalid_cartola(input) if rule.nil? || stats.value?(nil)
 
       { input:, rule:, points: Scoring::Engine.score(:cartola, stats:, rules: rule) }
+    end
+
+    def cartola_flags = %i[clean_sheet played highlight]
+
+    def cartola_stats(input)
+      scouts = Cartola::PlayerScore::SCOUTS.index_with { |scout| goals(input.fetch(scout, 0)) }
+      scouts.merge(cartola_flags.index_with { |flag| input[flag] == '1' })
     end
 
     def invalid_cartola(input) = { input:, error: 'Escolha uma regra e informe números inteiros, a partir de 0.' }

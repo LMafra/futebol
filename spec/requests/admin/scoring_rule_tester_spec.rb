@@ -35,6 +35,28 @@ RSpec.describe 'Admin ScoringRuleTester page', type: :request do
     expect(result_text('cartola-result')).to eq("20.0 pontos · regra: #{rule.name}")
   end
 
+  it 'covers the new scouts, SG, Jogou and Destaque' do
+    rule = create(:cartola_scoring_rule, goal_points: 8, clean_sheet_points: 5, penalty_save_points: 7, save_points: 1,
+                                         own_goal_penalty: 3, played_points: 1, highlight_points: 5)
+
+    get '/admin/scoringruletester', params: { cartola: { rule_id: rule.id, goals: 0, assists: 0, penalty_saves: 1,
+                                                         saves: 4, yellow_cards: 0, red_cards: 0, own_goals: 1,
+                                                         clean_sheet: '1', played: '1', highlight: '1' } }
+
+    expect(result_text('cartola-result')).to eq("19.0 pontos · regra: #{rule.name}")
+  end
+
+  it 'edits the six new columns of a Cartola rule in the admin form' do
+    get '/admin/esquadrao_scoring_rules/new'
+
+    page = Nokogiri::HTML(response.body)
+    %w[clean_sheet_points penalty_save_points save_points own_goal_penalty played_points
+       highlight_points].each do |column|
+      expect(page.at_css("input[name='scoring_rule[#{column}]']")).to be_present, column
+    end
+    expect(response.body).to include('Jogo sem sofrer gols (SG)', 'Destaque', 'Gol contra (GC, desconta)')
+  end
+
   it 'reports invalid input' do
     get '/admin/scoringruletester',
         params: { bolao: { pool_id: '', guess_home: -1, guess_away: 0, result_home: 1, result_away: 0 } }

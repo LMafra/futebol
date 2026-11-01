@@ -4,33 +4,34 @@
   <section class="panel" aria-labelledby="finalize-title">
     <h3 class="panel-title" id="finalize-title">Placar final · <%= match %></h3>
     <div class="panel-body">
-      <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        Encerra a partida e enfileira o cálculo dos pontos. Para confirmar, digite o placar novamente no formato <strong>2x1</strong>.
-        <%= link_to "Simular antes no Preview do Bolão", admin_bolaopreview_path(match_id: match.id, candidate_home: form.home_score, candidate_away: form.away_score), class: "font-semibold underline underline-offset-2" %>
-      </p>
+      <% if form.scouts? %>
+        <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+          O placar vem dos scouts da partida. Encerra a partida e enfileira o cálculo dos pontos. Para confirmar, digite o placar no formato <strong>2x1</strong>.
+          <%= link_to "Revisar os scouts", admin_matchscouts_path(match_id: match.id), class: "font-semibold underline underline-offset-2" %>
+          ·
+          <%= link_to "Simular no Preview do Bolão", admin_bolaopreview_path(match_id: match.id, candidate_home: form.home_score, candidate_away: form.away_score), class: "font-semibold underline underline-offset-2" %>
+        </p>
 
-      <%= render "admin/shared/errors", form: form %>
+        <%= render "admin/shared/errors", form: form %>
 
-      <%= form_with model: form, url: admin_matchfinalizer_finalize_path, method: :post, class: "flex flex-col gap-4", data: { turbo: false } do |f| %>
-        <%= hidden_field_tag "finalization[match_id]", match.id %>
-        <div class="flex flex-wrap items-end gap-3">
-          <div class="w-32">
-            <%= f.label :home_score, match.home_team.name, class: AdminHelper::ADMIN_LABEL_CLASSES %>
-            <%= f.number_field :home_score, min: 0, max: 99, step: 1, required: true, class: AdminHelper::ADMIN_INPUT_CLASSES %>
+        <%= form_with model: form, url: admin_matchfinalizer_finalize_path, method: :post, class: "flex flex-col gap-4", data: { turbo: false } do |f| %>
+          <%= hidden_field_tag "finalization[match_id]", match.id %>
+          <p class="text-2xl font-bold tabular-nums" data-role="derived-score">
+            <%= match.home_team.name %> <%= form.home_score %> × <%= form.away_score %> <%= match.away_team.name %>
+          </p>
+          <div class="w-64">
+            <%= f.label :score_confirmation, "Confirme o placar (ex.: 2x1)", class: AdminHelper::ADMIN_LABEL_CLASSES %>
+            <%= f.text_field :score_confirmation, required: true, autocomplete: "off", class: AdminHelper::ADMIN_INPUT_CLASSES %>
           </div>
-          <span class="pb-2 text-lg font-bold" aria-hidden="true">×</span>
-          <div class="w-32">
-            <%= f.label :away_score, match.away_team.name, class: AdminHelper::ADMIN_LABEL_CLASSES %>
-            <%= f.number_field :away_score, min: 0, max: 99, step: 1, required: true, class: AdminHelper::ADMIN_INPUT_CLASSES %>
+          <div>
+            <%= f.submit "Finalizar partida", class: AdminHelper::ADMIN_BUTTON_CLASSES %>
           </div>
-        </div>
-        <div class="w-64">
-          <%= f.label :score_confirmation, "Confirme o placar (ex.: 2x1)", class: AdminHelper::ADMIN_LABEL_CLASSES %>
-          <%= f.text_field :score_confirmation, required: true, autocomplete: "off", class: AdminHelper::ADMIN_INPUT_CLASSES %>
-        </div>
-        <div>
-          <%= f.submit "Finalizar partida", class: AdminHelper::ADMIN_BUTTON_CLASSES %>
-        </div>
+        <% end %>
+      <% else %>
+        <p class="text-sm" data-role="no-scouts" role="status">
+          <strong><%= MatchFinalizationForm::NO_SCOUTS %>.</strong>
+          <%= link_to "Abrir os scouts da partida", admin_matchscouts_path(match_id: match.id), class: "font-semibold underline underline-offset-2" %>
+        </p>
       <% end %>
     </div>
   </section>

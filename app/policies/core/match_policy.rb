@@ -9,5 +9,6 @@ module Core
     def preview? = admin?
     def finalize? = admin?
     def revert? = admin?
+    def record_scouts? = admin?
   end
 end

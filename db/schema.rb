@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000038) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000040) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -141,10 +141,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000038) do
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "team_id", null: false
+    t.integer "goals", default: 0, null: false
+    t.integer "assists", default: 0, null: false
+    t.integer "own_goals", default: 0, null: false
+    t.integer "saves", default: 0, null: false
+    t.integer "penalty_saves", default: 0, null: false
+    t.integer "yellow_cards", default: 0, null: false
+    t.integer "red_cards", default: 0, null: false
+    t.boolean "played", default: false, null: false
+    t.boolean "highlight", default: false, null: false
+    t.boolean "clean_sheet", default: false, null: false
     t.index ["discarded_at"], name: "index_cartola_player_scores_on_discarded_at"
     t.index ["match_id"], name: "index_cartola_player_scores_on_match_id"
+    t.index ["match_id"], name: "index_cartola_player_scores_one_highlight", unique: true, where: "(highlight AND (discarded_at IS NULL))"
     t.index ["player_id", "match_id"], name: "index_cartola_player_scores_kept_unique", unique: true, where: "(discarded_at IS NULL)"
     t.index ["player_id"], name: "index_cartola_player_scores_on_player_id"
+    t.index ["team_id"], name: "index_cartola_player_scores_on_team_id"
+    t.check_constraint "assists >= 0 AND assists <= 20", name: "cartola_player_scores_assists_range"
+    t.check_constraint "goals >= 0 AND goals <= 20", name: "cartola_player_scores_goals_range"
+    t.check_constraint "own_goals >= 0 AND own_goals <= 20", name: "cartola_player_scores_own_goals_range"
+    t.check_constraint "penalty_saves >= 0 AND penalty_saves <= 3", name: "cartola_player_scores_penalty_saves_range"
+    t.check_constraint "red_cards >= 0 AND red_cards <= 1", name: "cartola_player_scores_red_cards_range"
+    t.check_constraint "saves >= 0 AND saves <= 20", name: "cartola_player_scores_saves_range"
+    t.check_constraint "yellow_cards >= 0 AND yellow_cards <= 2", name: "cartola_player_scores_yellow_cards_range"
   end
 
   create_table "cartola_player_value_histories", force: :cascade do |t|
@@ -186,10 +206,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000038) do
     t.decimal "red_card_penalty", precision: 5, scale: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "clean_sheet_points", precision: 5, scale: 2, default: "0.0", null: false
+    t.decimal "penalty_save_points", precision: 5, scale: 2, default: "0.0", null: false
+    t.decimal "save_points", precision: 5, scale: 2, default: "0.0", null: false
+    t.decimal "own_goal_penalty", precision: 5, scale: 2, default: "0.0", null: false
+    t.decimal "played_points", precision: 5, scale: 2, default: "0.0", null: false
+    t.decimal "highlight_points", precision: 5, scale: 2, default: "0.0", null: false
     t.index ["name"], name: "index_cartola_scoring_rules_on_name", unique: true
     t.check_constraint "assist_points >= 0::numeric", name: "cartola_scoring_rules_assist_points_non_negative"
+    t.check_constraint "clean_sheet_points >= 0::numeric", name: "cartola_scoring_rules_clean_sheet_points_non_negative"
     t.check_constraint "goal_points >= 0::numeric", name: "cartola_scoring_rules_goal_points_non_negative"
+    t.check_constraint "highlight_points >= 0::numeric", name: "cartola_scoring_rules_highlight_points_non_negative"
+    t.check_constraint "own_goal_penalty >= 0::numeric", name: "cartola_scoring_rules_own_goal_penalty_non_negative"
+    t.check_constraint "penalty_save_points >= 0::numeric", name: "cartola_scoring_rules_penalty_save_points_non_negative"
+    t.check_constraint "played_points >= 0::numeric", name: "cartola_scoring_rules_played_points_non_negative"
     t.check_constraint "red_card_penalty >= 0::numeric", name: "cartola_scoring_rules_red_card_penalty_non_negative"
+    t.check_constraint "save_points >= 0::numeric", name: "cartola_scoring_rules_save_points_non_negative"
     t.check_constraint "yellow_card_penalty >= 0::numeric", name: "cartola_scoring_rules_yellow_card_penalty_non_negative"
   end
 
@@ -361,6 +393,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000038) do
   add_foreign_key "cartola_lineups", "core_championships", column: "championship_id"
   add_foreign_key "cartola_player_scores", "core_matches", column: "match_id"
   add_foreign_key "cartola_player_scores", "core_players", column: "player_id"
+  add_foreign_key "cartola_player_scores", "core_teams", column: "team_id"
   add_foreign_key "cartola_player_value_histories", "core_championships", column: "championship_id"
   add_foreign_key "cartola_player_value_histories", "core_matches", column: "match_id"
   add_foreign_key "cartola_player_value_histories", "core_players", column: "player_id"

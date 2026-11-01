@@ -32,6 +32,11 @@ ActiveAdmin.register Core::Match, as: 'Match' do
     link_to 'Preview do Bolão', admin_bolaopreview_path(match_id: resource.id), class: 'action-item-button'
   end
 
+  scouts_open = -> { authorized?(:record_scouts, resource) && (!resource.scheduled? || resource.may_start_match?) }
+  action_item :scouts, only: :show, if: scouts_open do
+    link_to 'Scouts', admin_matchscouts_path(match_id: resource.id), class: 'action-item-button'
+  end
+
   action_item :finalize, only: :show,
                          if: -> { authorized?(:finalize, resource) && (resource.live? || resource.may_start_match?) } do
     link_to 'Finalizar', admin_matchfinalizer_path(match_id: resource.id), class: 'action-item-button'

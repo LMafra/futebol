@@ -276,3 +276,11 @@ ActiveAdmin.setup do |config|
   #
   # config.order_clause = MyOrderClause
 end
+
+# The admin has its own importmap (ActiveAdmin 4): Stimulus and app/javascript/admin.js, imported by the
+# app/views/active_admin/_html_head.html.erb override.
+ActiveAdmin.importmap.draw do
+  pin '@hotwired/stimulus', to: 'stimulus.min.js'
+  pin 'admin', to: 'admin.js'
+  pin 'controllers/scouts_controller', to: 'controllers/scouts_controller.js'
+end
