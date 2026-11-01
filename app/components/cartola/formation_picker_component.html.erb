@@ -1,0 +1,28 @@
+<fieldset class="w-full rounded-md border border-rule bg-white p-4" <%= tag.attributes(root_attributes(label: "Formação")) %>>
+  <legend class="px-1 text-xs font-bold uppercase tracking-widest text-graphite">Formação</legend>
+
+  <% if error? %>
+    <div class="mb-3 <%= error_classes %>" role="alert">
+      <span class="font-bold"><%= error_message.presence || "Formação inválida." %></span>
+    </div>
+  <% end %>
+
+  <% if options? %>
+    <div class="flex flex-wrap gap-2">
+      <% formations.each do |formation| %>
+        <label class="cursor-pointer">
+          <input type="radio" name="lineup[formation]" value="<%= formation %>" class="peer sr-only" <%= "checked" if formation == selected %>>
+          <span class="inline-block rounded-sm border border-rule px-3 py-2 font-semibold tabular-nums peer-checked:border-cartola peer-checked:bg-cartola peer-checked:text-ink peer-focus-visible:ring-2 peer-focus-visible:ring-ink"><%= formation %></span>
+        </label>
+      <% end %>
+    </div>
+  <% elsif loading? %>
+    <div class="flex gap-2" aria-hidden="true">
+      <% 4.times do %>
+        <span class="h-10 w-16 <%= skeleton_classes %>" data-role="skeleton"></span>
+      <% end %>
+    </div>
+  <% elsif empty? %>
+    <%= empty_notice("Nenhuma formação disponível.") %>
+  <% end %>
+</fieldset>

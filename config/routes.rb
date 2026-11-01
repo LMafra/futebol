@@ -9,6 +9,10 @@ Rails.application.routes.draw do
     end
   end
 
+  scope module: :cartola do
+    resource :lineup, only: %i[show edit update]
+  end
+
   mount MissionControl::Jobs::Engine, at: '/admin/jobs'
   ActiveAdmin.routes(self)
   mount Lookbook::Engine, at: '/lookbook' if defined?(Lookbook::Engine)

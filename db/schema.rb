@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000028) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000030) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -121,8 +121,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000028) do
     t.integer "round", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "formation", default: "4-3-3", null: false
     t.index ["squad_id", "round"], name: "index_cartola_lineups_on_squad_id_and_round", unique: true
     t.index ["squad_id"], name: "index_cartola_lineups_on_squad_id"
+    t.check_constraint "formation::text = ANY (ARRAY['3-4-3'::character varying, '3-5-2'::character varying, '4-3-3'::character varying, '4-4-2'::character varying, '4-5-1'::character varying, '5-3-2'::character varying, '5-4-1'::character varying]::text[])", name: "cartola_lineups_formation_valid"
     t.check_constraint "round >= 1 AND round <= 38", name: "cartola_lineups_round_range"
   end
 
@@ -233,10 +235,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000028) do
     t.string "external_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "cost", precision: 5, scale: 2, default: "0.0", null: false
     t.index ["external_id"], name: "index_core_players_on_external_id", unique: true
     t.index ["team_id", "shirt_number"], name: "index_core_players_on_team_id_and_shirt_number", unique: true, where: "(shirt_number IS NOT NULL)"
     t.index ["team_id"], name: "index_core_players_on_team_id"
     t.check_constraint "\"position\"::text = ANY (ARRAY['GOL'::character varying::text, 'LAT'::character varying::text, 'ZAG'::character varying::text, 'MEI'::character varying::text, 'ATA'::character varying::text])", name: "players_position_valid"
+    t.check_constraint "cost >= 0::numeric", name: "players_cost_non_negative"
     t.check_constraint "shirt_number >= 1 AND shirt_number <= 99", name: "players_shirt_number_range"
   end
 

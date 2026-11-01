@@ -7,7 +7,7 @@ RSpec.describe Cartola::CalculatePreviewService do
   let(:striker) { create(:player, position: 'ATA') }
   let(:midfielder) { create(:player, position: 'MEI') }
   let(:keeper) { create(:player, position: 'GOL') }
-  let(:lineup) { create(:cartola_lineup, players: [striker, midfielder, keeper]) }
+  let(:lineup) { create(:cartola_lineup, include_players: [striker, midfielder, keeper]) }
   let(:stats) do
     {
       striker.id => { goals: 2, yellow_cards: 1 },
@@ -30,7 +30,8 @@ RSpec.describe Cartola::CalculatePreviewService do
   it 'scores every lineup player and sums the total' do
     result = preview
 
-    expect(result.player_points).to eq(striker.id => 15, midfielder.id => 2, keeper.id => 0)
+    expect(result.player_points).to include(striker.id => 15, midfielder.id => 2, keeper.id => 0)
+    expect(result.player_points.keys).to match_array(lineup.players.ids)
     expect(result.total).to eq(17)
   end
 

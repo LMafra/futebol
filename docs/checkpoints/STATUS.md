@@ -95,7 +95,7 @@ Só documentos: nenhum ticket foi implementado e nenhum arquivo de código mudou
 |---|---|---|---|
 | [0023](../tickets/TICKET-0023.md) | Bolão: criar e entrar em pool | 0011, 0014 | **implementado** (branch `ticket/0023-bolao-pools`); `Bolao::PoolPolicy` é compartilhada com o ActiveAdmin, que agora exige admin no `authentication_method` |
 | [0024](../tickets/TICKET-0024.md) | Bolão: palpites | 0006, 0023 | **implementado** (branch `ticket/0024-bolao-bets`); palpite = `Bolao::Prediction` (sem model `Bet`); `Ui::PredictionFormComponent` da spec §5 criado; seeds de palpites passados salvam com `context: :backfill` |
-| [0025](../tickets/TICKET-0025.md) | Cartola: escalação | 0007, 0011 | `Lineup`/`LineupPlayer` já existem; migrations `core_players.cost` + `cartola_lineups.formation` |
+| [0025](../tickets/TICKET-0025.md) | Cartola: escalação | 0007, 0011 | **implementado** (branch `ticket/0025-cartola-lineup`); migrations `core_players.cost` + `cartola_lineups.formation`; seeds de jogadores ainda com `cost` 0 (custo editável no admin) |
 | [0026](../tickets/TICKET-0026.md) | Simulador: definir escopo (ADR) | — | cria `docs/adr/0003-simulador.md`; confirmar exceção à regra "nunca alterar `docs/adr/*`" |
 | [0027](../tickets/TICKET-0027.md) | Seeds de demonstração | 0023, 0024, 0025 | `core_matches` sem coluna `round` (vem do `external_id`); datas das rodadas 7–10 do seed estão no passado |
 
