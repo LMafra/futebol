@@ -75,7 +75,7 @@ Decisões de arquitetura:
 [![OpenObserve][openobserve-badge]][openobserve-url]
 [![Render][render-badge]][render-url]
 
-Infra: Render + Supabase (Postgres) + R2 + Resend + OpenObserve ([MCPs](docs/mcp/README.md)). Em produção: [futebol-web.onrender.com](https://futebol-web.onrender.com) no Render (plano free, Ohio) com Postgres no Supabase (`sa-east-1`).
+Infra: Render + Supabase (Postgres) + R2 + Resend + OpenObserve self-hosted ([infraestrutura](#infraestrutura-de-produção), [MCPs](docs/mcp/README.md)). Em produção: [futebol-web.onrender.com](https://futebol-web.onrender.com) no Render (plano free, Ohio) com Postgres no Supabase (`sa-east-1`).
 
 ## Começando
 
@@ -111,7 +111,14 @@ No free tier, o Render hiberna o web após 15 min sem tráfego, e o Supabase pau
 
 ## Infraestrutura de produção
 
-As variáveis ficam documentadas em [`.env.example`](.env.example) e, em produção, no grupo `futebol` do Render. Nenhum valor real entra no repositório.
+As variáveis ficam documentadas em [`.env.example`](.env.example) e, em produção, nas env vars do `futebol-web` no Render (ou no grupo `futebol`, se o Blueprint do [`render.yaml`](render.yaml) estiver em uso). Nenhum valor real entra no repositório.
+
+| Peça | Onde está | Passo manual pendente |
+|---|---|---|
+| [OpenObserve self-hosted](#openobserve-self-hosted) | `docker/openobserve/docker-compose.yml` + `OTEL_EXPORTER_OTLP_*` | escolher o host (VPS) e definir `OTEL_EXPORTER_OTLP_*` no Render |
+| [Cloudflare R2](#cloudflare-r2) | serviço `r2` em `config/storage.yml` | habilitar o R2 no Dashboard, criar os buckets e definir `R2_*` |
+| [Resend](#resend) | SMTP em `config/environments/production.rb` | conta, API key, domínio verificado e `RESEND_*` |
+| [Keep-alive](#keep-alive) | `.github/workflows/keep-alive.yml` | nenhum: o secret `RENDER_APP_HOST` já está no GitHub; começa a valer com o merge na `main` |
 
 ### OpenObserve self-hosted
 
@@ -193,7 +200,8 @@ Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 31 tickets ([INDEX
 - [x] 0028: cadastro público em `/signup`
 - [x] 0029: Bolão com 2 faixas configuráveis por campeonato ([ADR 0004](docs/adr/0004-bolao-scoring.md))
 - [x] 0030: Cartola configurável por campeonato (limites por posição, carteira, valorização, rankings; inclui `core_matches.round`)
-- [ ] Pendências de produção: R2, Resend, host do OpenObserve self-hosted, `RENDER_DEPLOY_HOOK_URL` e keep-alive (manual)
+- [x] Infra de produção: OpenObserve self-hosted (Docker + OTLP), R2 (`storage.yml`), Resend (SMTP) e keep-alive (GitHub Actions)
+- [ ] Pendências manuais de produção: habilitar o R2 e criar os buckets, conta e domínio do Resend, host do OpenObserve e `RENDER_DEPLOY_HOOK_URL`
 - [x] 0031: Simulador v1 "e se" em [`/simulador`](http://localhost:3000/simulador) (ADR 0003, que o numerava 0029; `core_matches.round` entrou no 0030)
 - [ ] Backlog: salvar/compartilhar simulação, Monte Carlo da temporada
 
