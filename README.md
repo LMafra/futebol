@@ -116,7 +116,7 @@ As variáveis ficam documentadas em [`.env.example`](.env.example) e, em produç
 | Peça | Onde está | Passo manual pendente |
 |---|---|---|
 | [OpenObserve self-hosted](#openobserve-self-hosted) | `docker/openobserve/docker-compose.yml` + `OTEL_EXPORTER_OTLP_*` | escolher o host (VPS) e definir `OTEL_EXPORTER_OTLP_*` no Render |
-| [Cloudflare R2](#cloudflare-r2) | serviço `r2` em `config/storage.yml` | habilitar o R2 no Dashboard, criar os buckets e definir `R2_*` |
+| [Cloudflare R2](#cloudflare-r2) | serviço `r2` em `config/storage.yml` | buckets criados; falta gerar o token S3 e definir `R2_*` |
 | [Resend](#resend) | SMTP em `config/environments/production.rb` | conta, API key, domínio verificado e `RESEND_*` |
 | [Keep-alive](#keep-alive) | `.github/workflows/keep-alive.yml` | nenhum: o secret `RENDER_APP_HOST` já está no GitHub; começa a valer com o merge na `main` |
 
@@ -147,7 +147,7 @@ Buckets R2: `futebol-dev` e `futebol-prod`. O Active Storage usa o serviço `r2`
 | `R2_ENDPOINT` | opcional, sobrescreve o endpoint montado |
 | `R2_BUCKET_DEV`, `R2_BUCKET_PROD` | `futebol-dev` e `futebol-prod` |
 
-Passo manual: o R2 ainda precisa ser habilitado no Dashboard da Cloudflare antes da criação dos buckets ([OPERATIONS.md → Storage](docs/OPERATIONS.md#storage-cloudflare-r2)).
+Os dois buckets já existem (região ENAM). Passo manual: gerar o token S3 (R2 → Manage API tokens) e definir `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID` e `R2_SECRET_ACCESS_KEY` ([OPERATIONS.md → Storage](docs/OPERATIONS.md#storage-cloudflare-r2)).
 
 ### Resend
 
@@ -201,7 +201,7 @@ Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 31 tickets ([INDEX
 - [x] 0029: Bolão com 2 faixas configuráveis por campeonato ([ADR 0004](docs/adr/0004-bolao-scoring.md))
 - [x] 0030: Cartola configurável por campeonato (limites por posição, carteira, valorização, rankings; inclui `core_matches.round`)
 - [x] Infra de produção: OpenObserve self-hosted (Docker + OTLP), R2 (`storage.yml`), Resend (SMTP) e keep-alive (GitHub Actions)
-- [ ] Pendências manuais de produção: habilitar o R2 e criar os buckets, conta e domínio do Resend, host do OpenObserve e `RENDER_DEPLOY_HOOK_URL`
+- [ ] Pendências manuais de produção: token S3 do R2, domínio do Resend e `R2_*`/`RESEND_*` no Render, host do OpenObserve e `RENDER_DEPLOY_HOOK_URL`
 - [x] 0031: Simulador v1 "e se" em [`/simulador`](http://localhost:3000/simulador) (ADR 0003, que o numerava 0029; `core_matches.round` entrou no 0030)
 - [ ] Backlog: salvar/compartilhar simulação, Monte Carlo da temporada
 
