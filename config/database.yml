@@ -92,9 +92,8 @@ test:
 # named after the primary (neondb → neondb_cache, …) and created by db:prepare; CACHE_/QUEUE_/CABLE_DATABASE_URL
 # override them.
 <% sibling_url = lambda do |name|
-     ENV.fetch("#{name.upcase}_DATABASE_URL") do
+     ENV["#{name.upcase}_DATABASE_URL"].presence ||
        ENV["DATABASE_URL"].presence&.then { |url| URI.parse(url).tap { |uri| uri.path = "#{uri.path}_#{name}" }.to_s }
-     end
    end %>
 production:
   primary: &primary_production

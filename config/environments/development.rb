@@ -30,7 +30,7 @@ Rails.application.configure do
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   # ACTIVE_STORAGE_SERVICE=r2 uploads to the futebol-dev bucket (R2_* in .env).
-  config.active_storage.service = ENV.fetch('ACTIVE_STORAGE_SERVICE', 'local').to_sym
+  config.active_storage.service = (ENV['ACTIVE_STORAGE_SERVICE'].presence || 'local').to_sym
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false

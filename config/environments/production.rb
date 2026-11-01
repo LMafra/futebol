@@ -22,7 +22,7 @@ Rails.application.configure do
   # config.asset_host = "http://assets.example.com"
 
   # Cloudflare R2 (S3-compatible, see config/storage.yml); ACTIVE_STORAGE_SERVICE=local for a credential-less boot.
-  config.active_storage.service = ENV.fetch('ACTIVE_STORAGE_SERVICE', 'r2').to_sym
+  config.active_storage.service = (ENV['ACTIVE_STORAGE_SERVICE'].presence || 'r2').to_sym
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = true
@@ -53,7 +53,7 @@ Rails.application.configure do
   config.active_job.queue_adapter = :solid_queue
   config.solid_queue.connects_to = { database: { writing: :queue } }
 
-  app_host = ENV.fetch('APP_HOST') { ENV.fetch('RENDER_EXTERNAL_HOSTNAME', 'futebol.onrender.com') }
+  app_host = ENV['APP_HOST'].presence || ENV['RENDER_EXTERNAL_HOSTNAME'].presence || 'futebol.onrender.com'
 
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: app_host, protocol: 'https' }
