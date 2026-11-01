@@ -11,10 +11,9 @@
       }
     },
     "render": {
-      "command": "npx",
-      "args": ["-y", "render-useful-mcp"],
-      "env": {
-        "RENDER_API_KEY": "${env:RENDER_API_KEY}"
+      "url": "https://mcp.render.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${env:RENDER_API_KEY}"
       }
     },
     "r2": {

@@ -158,21 +158,39 @@ Production envia por SMTP (`smtp.resend.com:465`, TLS, usuário `resend`, senha 
 
 | Nome | Instalação | Escopo | Configurado? |
 |------|------------|--------|--------------|
+| render | MCP hospedado `https://mcp.render.com/mcp` (OAuth via `/add-plugin render` ou `Bearer RENDER_API_KEY`) | serviços, deploys, logs, métricas, env vars | não |
 | supabase | `pipx install supabase-mcp-server` (stdio) | consultas e gestão do projeto; não substitui `SUPABASE_DATABASE_URL` | não |
-| render | `render-useful-mcp` (servidor MCP com `RENDER_API_KEY`) | deploy, logs, serviços | não |
+| openobserve | MCP `https://<instância>/api/<org>/mcp` (Basic auth) | traces/logs/alertas — opcional, **não usado nesta fase** | não |
 | r2 | `s3-mcp-server` apontando para o endpoint R2 (`AWS_ENDPOINT_URL=https://<account>.r2.cloudflarestorage.com`) | listar/upload/delete em buckets | não |
 | resend | MCP remoto `https://mcp.resend.com` (`RESEND_API_KEY`) | envio/teste de e-mail | não |
 
 Smoke tests, variáveis e comandos manuais por MCP: [docs/mcp/README.md](docs/mcp/README.md) · config exemplo: `.cursor/mcp.json.example`.
 
-### Status MCP (TIER-6 — nenhum MCP disponível no ambiente do agente)
+### Status MCP (nenhum MCP utilizável no ambiente do agente; o plugin Supabase está em `needsAuth`)
 
 | MCP | status | ação |
 |---|---|---|
-| supabase | manual | manual: `psql "$SUPABASE_DIRECT_URL" -c 'SELECT 1'` |
 | render | manual | manual: `curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL"` (sem `RENDER_DEPLOY_HOOK_URL`: deploy não executado) |
+| supabase | manual | manual: `psql "$SUPABASE_DIRECT_URL" -c 'SELECT 1'` |
+| openobserve | não usado | UI do OpenObserve (aba Traces/Logs) |
 | r2 | manual | manual: `npx wrangler r2 bucket create futebol-dev && npx wrangler r2 bucket create futebol-prod` |
 | resend | manual | manual: `curl https://api.resend.com/emails` (ver [docs/mcp](docs/mcp/README.md)) |
+
+### Fluxo de deploy com MCP
+
+O deploy em si não depende de MCP. Merge em `main` dispara o CI (`lint`, `test`, `secrets`), e o job `deploy` chama `RENDER_DEPLOY_HOOK_URL`. Os MCPs entram para acompanhar e diagnosticar:
+
+1. **Antes do merge:** o PR precisa estar verde. Se o merge tiver migrations, confira no Supabase MCP o espaço livre (`select pg_size_pretty(sum(pg_database_size(datname))) from pg_database where datname like 'postgres%'`, limite de 500 MB no free tier) e se o projeto não está pausado. Retomar um projeto pausado só é possível no Dashboard.
+2. **Deploy:** depois do job `deploy`, peça ao Render MCP o histórico de deploys do `futebol-web` (`list_deploys`) até o status `live`. O `bin/docker-entrypoint` roda `db:prepare` (migrations) por `SUPABASE_DIRECT_URL` antes do Puma subir. O hook é só do `futebol-web`. O `futebol-worker` (`autoDeploy: false`) precisa de um deploy próprio depois que o web estiver `live`: peça ao Render MCP o deploy do `futebol-worker` (ou use o Dashboard) e acompanhe da mesma forma.
+3. **Verificação:**
+   - Render MCP: logs de erro dos últimos 15 min do `futebol-web` e do `futebol-worker`, e métricas de respostas por status code (5xx);
+   - Supabase MCP, só leitura: `select max(version) from schema_migrations` igual à última migration de `db/migrate`;
+   - `curl -fsS https://<app>.onrender.com/up` responde 200;
+   - OpenObserve, pela UI: spans `exception *` com status `ERROR` desde o deploy.
+4. **Problema:** rollback pelo Dashboard do Render (Deploys → Rollback). O MCP só dispara deploys novos. Migration destrutiva não tem rollback automático, por isso o `strong_migrations` bloqueia as perigosas.
+5. **Configuração:** env vars novas entram pelo Dashboard do Render (grupo `futebol`). O MCP também consegue, mas substitui o conjunto inteiro do serviço e pode expor valores no contexto do agente.
+
+**Secrets:** nenhum secret fica no repositório. As credenciais dos MCPs (`RENDER_API_KEY`, `SUPABASE_*`, `QUERY_API_KEY`) ficam no dashboard do Cursor: Settings → MCP, ou OAuth do plugin, no IDE; Cloud Agents → Secrets para agentes na nuvem. As do app (`RAILS_MASTER_KEY`, `SUPABASE_DATABASE_URL`, `OPENOBSERVE_AUTH`, …) ficam no Render. O `.cursor/mcp.json.example` só referencia `${env:VAR}`, e o gitleaks do CI barra commits com credenciais. Detalhes por MCP: [docs/mcp/README.md](docs/mcp/README.md).
 
 ## Hooks
 
