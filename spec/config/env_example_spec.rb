@@ -11,6 +11,8 @@ RSpec.describe '.env.example' do
         otel_service: OpenTelemetry.tracer_provider.resource.attribute_enumerator.to_h['service.name'],
         otel_traces_uri: OpenTelemetry.tracer_provider.instance_variable_get(:@span_processors)
                                       .filter_map { |p| p.instance_variable_get(:@exporter)&.instance_variable_get(:@uri)&.to_s }.first,
+        otel_traces_auth: OpenTelemetry.tracer_provider.instance_variable_get(:@span_processors)
+                                       .filter_map { |p| p.instance_variable_get(:@exporter)&.instance_variable_get(:@headers)&.fetch('authorization', nil) }.first,
         queue_url: ActiveRecord::Base.configurations.configs_for(env_name: Rails.env, name: 'queue').try(:url),
         primary: ActiveRecord::Base.configurations.configs_for(env_name: Rails.env, name: 'primary')
                                    .configuration_hash.slice(:prepared_statements, :advisory_locks, :sslmode)
@@ -53,6 +55,17 @@ RSpec.describe '.env.example' do
       expect(settings).to include(storage: 'r2', otel_service: 'futebol', otel_traces_uri: nil,
                                   queue_url: "#{pooler}:6543/postgres_queue",
                                   primary: { prepared_statements: false, advisory_locks: false, sslmode: 'require' })
+    end
+
+    it 'exports to a self-hosted OpenObserve from the standard OTEL_EXPORTER_OTLP_* variables' do
+      settings = boot('production', production_env.merge(
+                                      'SUPABASE_DATABASE_URL' => "#{pooler}:6543/postgres",
+                                      'OTEL_EXPORTER_OTLP_ENDPOINT' => 'https://oo.example.com/api/default/',
+                                      'OTEL_EXPORTER_OTLP_HEADERS' => 'authorization=Basic%20dTpw,organization=default'
+                                    ))
+
+      expect(settings).to include(otel_traces_uri: 'https://oo.example.com/api/default/v1/traces',
+                                  otel_traces_auth: 'Basic dTpw')
     end
 
     it 'keeps prepared statements on the session pooler (db:prepare) and accepts DATABASE_URL as fallback' do

@@ -48,10 +48,11 @@ envVarGroups:
         sync: false
       - key: RESEND_FROM
         sync: false
-      # OpenTelemetry → OpenObserve (traces + logs); unset = nothing exported
-      - key: OPENOBSERVE_OTLP_ENDPOINT
+      # OpenTelemetry → self-hosted OpenObserve (traces + logs): base URL https://<host>:5080/api/<org> and
+      # "authorization=Basic <base64 email:password>,organization=<org>"; unset = nothing exported
+      - key: OTEL_EXPORTER_OTLP_ENDPOINT
         sync: false
-      - key: OPENOBSERVE_AUTH
+      - key: OTEL_EXPORTER_OTLP_HEADERS
         sync: false
       - key: RAILS_LOG_LEVEL
         value: info

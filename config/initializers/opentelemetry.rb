@@ -1,16 +1,15 @@
-# Traces and log records go to OpenObserve over OTLP/HTTP. OPENOBSERVE_OTLP_ENDPOINT is the OTLP base URL of an
-# OpenObserve organization (http://host:5080/api/<org>); /v1/traces and /v1/logs are appended. Development
-# defaults to a local OpenObserve (docs/OPERATIONS.md "Observabilidade"); production exports only when the variable
-# is set; test never exports (spec/support/opentelemetry.rb keeps spans in memory).
-otlp_endpoint = ENV['OPENOBSERVE_OTLP_ENDPOINT'].presence&.delete_suffix('/')
+# Traces and log records go to a self-hosted OpenObserve over OTLP/HTTP. OTEL_EXPORTER_OTLP_ENDPOINT is the OTLP
+# base URL of an OpenObserve organization (http://host:5080/api/<org>); /v1/traces and /v1/logs are appended, as
+# in the OTel spec. Development defaults to the local OpenObserve (docker/openobserve/docker-compose.yml);
+# production exports only when the variable is set; test never exports (spec/support/opentelemetry.rb keeps spans
+# in memory). OTEL_EXPORTER_OTLP_HEADERS uses the OTel "key=value,key=value" format (values URL-decoded), e.g.
+# "authorization=Basic <base64 email:password>,organization=default".
+otlp_endpoint = ENV['OTEL_EXPORTER_OTLP_ENDPOINT'].presence&.delete_suffix('/')
 otlp_endpoint ||= 'http://localhost:5080/api/default' if Rails.env.development?
 otlp_endpoint = nil if Rails.env.test?
 
-otlp_headers = ENV['OPENOBSERVE_AUTH'].presence.then do |auth|
-  next {} unless auth
-
-  { 'Authorization' => auth.match?(/\A(Basic|Bearer) /) ? auth : "Basic #{auth}" }
-end
+# The exporter rejects a blank string, which is what foreman loads from an empty KEY= in .env.
+otlp_headers = ENV['OTEL_EXPORTER_OTLP_HEADERS'].presence || {}
 
 # Without explicit processors the SDK would build OTLP exporters from OTEL_* env (default localhost:4318).
 unless otlp_endpoint

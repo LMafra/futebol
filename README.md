@@ -40,6 +40,7 @@
       <ul><li><a href="#construído-com">Construído com</a></li></ul>
     </li>
     <li><a href="#começando">Começando</a></li>
+    <li><a href="#infraestrutura-de-produção">Infraestrutura de produção</a></li>
     <li><a href="#uso">Uso</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contribuindo">Contribuindo</a></li>
@@ -108,6 +109,28 @@ No free tier, o Render hiberna o web após 15 min sem tráfego, e o Supabase pau
 
 <p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
 
+## Infraestrutura de produção
+
+As variáveis ficam documentadas em [`.env.example`](.env.example) e, em produção, no grupo `futebol` do Render. Nenhum valor real entra no repositório.
+
+### OpenObserve self-hosted
+
+Traces e logs saem por OTLP/HTTP para um OpenObserve self-hosted ([`config/initializers/opentelemetry.rb`](config/initializers/opentelemetry.rb)). Para subir localmente (UI em [localhost:5080](http://localhost:5080), login `root@example.com` / `Complexpass#123`, ou `ZO_ROOT_USER_*`):
+
+```bash
+docker compose -f docker/openobserve/docker-compose.yml up -d
+```
+
+| Variável | Valor |
+|---|---|
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | URL base da organização: `http://localhost:5080/api/default`. O app acrescenta `/v1/traces` e `/v1/logs`. Vazia: development usa esse padrão e production não exporta. |
+| `OTEL_EXPORTER_OTLP_HEADERS` | `authorization=Basic <base64>,organization=default`, com o base64 gerado por `echo -n 'email:password' \| base64` |
+| `ZO_ROOT_USER_EMAIL`, `ZO_ROOT_USER_PASSWORD` | usuário root do container |
+
+Para usar uma instância remota (um VPS com o mesmo `docker-compose.yml` e a porta 5080 exposta), basta trocar o endpoint, por exemplo `https://<host>:5080/api/default`, e as credenciais no header. O Render free não roda Docker Compose, então o OpenObserve de produção fica num host separado. A edição open-source é gratuita; a Enterprise é gratuita até 50 GB/dia de ingestão. Detalhes: [OPERATIONS.md → Observabilidade](docs/OPERATIONS.md#observabilidade-opentelemetry--openobserve).
+
+<p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
+
 ## Uso
 
 1. **Campeonato:** em [`/admin`](http://localhost:3000/admin), cadastre o campeonato e os times (Cadastros) e importe as partidas por CSV (Cadastros → Importações CSV).
@@ -137,7 +160,7 @@ Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 31 tickets ([INDEX
 - [x] 0028: cadastro público em `/signup`
 - [x] 0029: Bolão com 2 faixas configuráveis por campeonato ([ADR 0004](docs/adr/0004-bolao-scoring.md))
 - [x] 0030: Cartola configurável por campeonato (limites por posição, carteira, valorização, rankings; inclui `core_matches.round`)
-- [ ] Pendências de produção: R2, Resend, OpenObserve Cloud, `RENDER_DEPLOY_HOOK_URL` e keep-alive (manual)
+- [ ] Pendências de produção: R2, Resend, host do OpenObserve self-hosted, `RENDER_DEPLOY_HOOK_URL` e keep-alive (manual)
 - [x] 0031: Simulador v1 "e se" em [`/simulador`](http://localhost:3000/simulador) (ADR 0003, que o numerava 0029; `core_matches.round` entrou no 0030)
 - [ ] Backlog: salvar/compartilhar simulação, Monte Carlo da temporada
 

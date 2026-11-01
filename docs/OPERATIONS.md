@@ -94,7 +94,7 @@ docker build -t futebol .
 docker run -d -p 80:80 -e RAILS_MASTER_KEY=<valor de config/master.key> --name futebol futebol
 ```
 
-Development usa Docker só para o Postgres (`futebol-pg`) e, opcionalmente, o OpenObserve (`futebol-openobserve`, ver [Observabilidade](#observabilidade-opentelemetry--openobserve)).
+Development usa Docker só para o Postgres (`futebol-pg`) e, opcionalmente, o OpenObserve (`docker/openobserve/docker-compose.yml`, container `futebol-openobserve`, ver [Observabilidade](#observabilidade-opentelemetry--openobserve)).
 
 ## Deploy (Render + Supabase)
 
@@ -106,12 +106,12 @@ Development usa Docker só para o Postgres (`futebol-pg`) e, opcionalmente, o Op
 - Disparar um deploy: MCP `trigger_deploy` com `serviceId` `srv-dbjlfmk9v7es73aeuikg` (opcional `clearCache: true`) ou Dashboard → Manual Deploy. Com o auto-deploy ligado, isso só é preciso para refazer um deploy sem commit novo. O `db:prepare` do entrypoint roda as migrations pendentes; se uma falhar, o deploy fica `update_failed` e o anterior continua no ar.
 - Free tier do Render: a instância hiberna após 15 min sem tráfego e tem 512 MB. Com a instância já ligada, `/up` levou 0,29 s. O tempo de acordar depois da hibernação não foi medido.
 - Free tier do Supabase: o projeto pausa após 7 dias sem atividade. O keep-alive de `/up` não conta como atividade no banco.
-- Ainda manual: `R2_*`, `RESEND_*`, o secret `RENDER_DEPLOY_HOOK_URL` e o cron de keep-alive. `OPENOBSERVE_*` não foi definido (não há instância hospedada; vazio = sem export).
+- Ainda manual: `R2_*`, `RESEND_*`, o secret `RENDER_DEPLOY_HOOK_URL` e o cron de keep-alive. `OTEL_EXPORTER_OTLP_*` não foi definido (ainda não há host para o OpenObserve self-hosted; vazio = sem export).
 - RLS do schema `public` está desligado. A role `postgres`, que o Rails usa, ignora RLS. A chave anon do Supabase, pela API REST, leria essas tabelas. RLS não foi ligado: sem política, a API do Supabase deixa de enxergar os dados, e isso é uma decisão à parte.
 
 [`render.yaml`](../render.yaml) define `futebol-web` (Docker, Puma + Thruster, health check `/up`) e `futebol-worker` (`./bin/jobs`, Solid Queue). O `bin/docker-entrypoint` roda `db:prepare` no boot do web pela `SUPABASE_DIRECT_URL` e cria `<db>_cache`, `<db>_queue` e `<db>_cable` ao lado do banco principal no Supabase.
 
-Variáveis (grupo `futebol` no Render): `RAILS_MASTER_KEY`, `SUPABASE_DATABASE_URL`, `SUPABASE_DIRECT_URL`, `APP_HOST`, `R2_*`, `RESEND_*`, `OPENOBSERVE_OTLP_ENDPOINT`, `OPENOBSERVE_AUTH` (ver [.env.example](../.env.example)). No plano free, sem worker: remova `futebol-worker` e defina `SOLID_QUEUE_IN_PUMA=1` no web.
+Variáveis (grupo `futebol` no Render): `RAILS_MASTER_KEY`, `SUPABASE_DATABASE_URL`, `SUPABASE_DIRECT_URL`, `APP_HOST`, `R2_*`, `RESEND_*`, `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_EXPORTER_OTLP_HEADERS` (ver [.env.example](../.env.example)). No plano free, sem worker: remova `futebol-worker` e defina `SOLID_QUEUE_IN_PUMA=1` no web.
 
 Passos manuais (sem credenciais no ambiente do agente):
 
@@ -183,27 +183,28 @@ Production envia por SMTP (`smtp.resend.com:465`, TLS, usuário `resend`, senha 
 
 ## Observabilidade (OpenTelemetry → OpenObserve)
 
-Traces e logs saem por OTLP/HTTP para o [OpenObserve](https://openobserve.ai) ([`config/initializers/opentelemetry.rb`](../config/initializers/opentelemetry.rb)). Serviço `futebol`; `use_all` instrumenta Rails (Action Pack/View, Active Record, Active Job, e portanto Solid Queue), Rack, PG (SQL ofuscado), Faraday e Net::HTTP. O health check `/up` não gera trace.
+Traces e logs saem por OTLP/HTTP para um [OpenObserve](https://openobserve.ai) self-hosted ([`config/initializers/opentelemetry.rb`](../config/initializers/opentelemetry.rb)). Serviço `futebol`; `use_all` instrumenta Rails (Action Pack/View, Active Record, Active Job, e portanto Solid Queue), Rack, PG (SQL ofuscado), Faraday e Net::HTTP. O health check `/up` não gera trace.
 
 O Sentry foi removido (gems `sentry-*`, initializer, rake task, specs e `SENTRY_DSN`): erros agora viram spans no OpenObserve, descritos abaixo.
 
 | Variável | Uso |
 |---|---|
-| `OPENOBSERVE_OTLP_ENDPOINT` | URL base OTLP de uma organização do OpenObserve (`http://host:5080/api/<org>`); o app acrescenta `/v1/traces` e `/v1/logs`. Vazia: development usa `http://localhost:5080/api/default`, production não exporta e test nunca exporta. |
-| `OPENOBSERVE_AUTH` | Valor do header `Authorization`: `Basic <base64 de email:senha>`. Um token base64 sem prefixo recebe `Basic `. |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | URL base OTLP de uma organização do OpenObserve (`http://host:5080/api/<org>`); o app acrescenta `/v1/traces` e `/v1/logs`, como manda a especificação do OTel. Vazia: development usa `http://localhost:5080/api/default`, production não exporta e test nunca exporta. Não inclua `/v1/traces` no valor: os logs iriam para `.../v1/traces/v1/logs`. |
+| `OTEL_EXPORTER_OTLP_HEADERS` | Headers no formato do OTel (`chave=valor,chave=valor`, valores com URL-decode): `authorization=Basic <base64 de email:senha>,organization=default`. O base64 sai de `echo -n 'email:senha' \| base64`. |
 | `OTEL_SDK_DISABLED` | `true` desliga o SDK (ex.: development sem OpenObserve rodando). |
+| `ZO_ROOT_USER_EMAIL`, `ZO_ROOT_USER_PASSWORD` | Usuário root do container. O compose usa `root@example.com` / `Complexpass#123` como padrão; troque fora do development. |
 
 A porta é a 5080 (HTTP), não a 5081: a 5081 é o OTLP/gRPC do OpenObserve, e o exporter Ruby (`opentelemetry-exporter-otlp`) fala só OTLP/HTTP.
 
-OpenObserve local via Docker (UI em [localhost:5080](http://localhost:5080); a senha precisa ter maiúscula, minúscula, dígito e símbolo):
+OpenObserve local via [`docker/openobserve/docker-compose.yml`](../docker/openobserve/docker-compose.yml) (container `futebol-openobserve`, dados em `docker/openobserve/data/`, fora do git; UI em [localhost:5080](http://localhost:5080); a senha precisa ter maiúscula, minúscula, dígito e símbolo):
 
 ```bash
-docker run -d --name futebol-openobserve -p 5080:5080 -p 5081:5081 \
-  -e ZO_ROOT_USER_EMAIL=root@futebol.local -e 'ZO_ROOT_USER_PASSWORD=Futebol-local1' \
-  -v futebol-openobserve:/data public.ecr.aws/zinclabs/openobserve:latest
-export OPENOBSERVE_AUTH="Basic $(printf 'root@futebol.local:Futebol-local1' | base64)"
+docker compose -f docker/openobserve/docker-compose.yml up -d
+export OTEL_EXPORTER_OTLP_HEADERS="authorization=Basic $(echo -n 'root@example.com:Complexpass#123' | base64),organization=default"
 bin/dev   # cada request vira um trace (stream "default", aba Traces)
 ```
+
+**Produção:** o Render free não roda Docker Compose, então o OpenObserve fica num host separado (VPS como Hetzner ou Oracle Cloud free tier) com o mesmo compose, a porta 5080 exposta atrás de HTTPS e uma senha forte em `ZO_ROOT_USER_*`. No grupo `futebol` do Render, defina `OTEL_EXPORTER_OTLP_ENDPOINT=https://<host>/api/default` e `OTEL_EXPORTER_OTLP_HEADERS` com as credenciais desse host. A edição open-source é gratuita; a Enterprise é gratuita até 50 GB/dia de ingestão.
 
 - **Erros:** um subscriber do `Rails.error` ([`lib/observability/error_span_subscriber.rb`](../lib/observability/error_span_subscriber.rb)) transforma cada exceção reportada num span `exception <Classe>` com status `ERROR` e os atributos `exception.type`, `exception.message`, `exception.backtrace` (50 linhas), `exception.handled` e o contexto escalar em `error.context.*` (ex.: `match_id`, `scoring_token`). O span é filho do span da request ou do job. Cobre os `Rails.error.report` dos jobs com rescue e as exceções não tratadas que o próprio Rails reporta; cada exceção é reportada uma vez.
 - **Teste da integração:** `bin/rails observability:fake_exception` imprime o `trace_id` para buscar no OpenObserve.
@@ -247,4 +248,4 @@ O deploy em si não depende de MCP. Merge em `main` dispara o CI (`lint`, `test`
 4. **Problema:** rollback pelo Dashboard do Render (Deploys → Rollback). O MCP só dispara deploys novos. Migration destrutiva não tem rollback automático, por isso o `strong_migrations` bloqueia as perigosas.
 5. **Configuração:** env vars novas entram pelo Dashboard do Render (grupo `futebol`). O MCP também consegue, mas substitui o conjunto inteiro do serviço e pode expor valores no contexto do agente.
 
-**Secrets:** nenhum secret fica no repositório. As credenciais dos MCPs (`RENDER_API_KEY`, `SUPABASE_*`, `QUERY_API_KEY`) ficam no dashboard do Cursor: Settings → MCP, ou OAuth do plugin, no IDE; Cloud Agents → Secrets para agentes na nuvem. As do app (`RAILS_MASTER_KEY`, `SUPABASE_DATABASE_URL`, `OPENOBSERVE_AUTH`, …) ficam no Render. O `.cursor/mcp.json.example` só referencia `${env:VAR}`, e o gitleaks do CI barra commits com credenciais. Detalhes por MCP: [docs/mcp/README.md](mcp/README.md).
+**Secrets:** nenhum secret fica no repositório. As credenciais dos MCPs (`RENDER_API_KEY`, `SUPABASE_*`, `QUERY_API_KEY`) ficam no dashboard do Cursor: Settings → MCP, ou OAuth do plugin, no IDE; Cloud Agents → Secrets para agentes na nuvem. As do app (`RAILS_MASTER_KEY`, `SUPABASE_DATABASE_URL`, `OTEL_EXPORTER_OTLP_HEADERS`, …) ficam no Render. O `.cursor/mcp.json.example` só referencia `${env:VAR}`, e o gitleaks do CI barra commits com credenciais. Detalhes por MCP: [docs/mcp/README.md](mcp/README.md).
