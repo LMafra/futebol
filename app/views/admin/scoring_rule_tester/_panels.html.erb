@@ -23,17 +23,18 @@
           <% if bolao[:error] %>
             <p class="text-red-800 dark:text-red-300"><%= bolao[:error] %></p>
           <% else %>
-            <p><span class="text-2xl font-bold tabular-nums"><%= bolao[:points] %></span> pontos · regra: <strong><%= bolao[:kind] || "erro (nenhuma regra)" %></strong></p>
+            <p><span class="text-2xl font-bold tabular-nums"><%= bolao[:points] %></span> pontos · faixa: <strong><%= { exact: "placar exato", winner: "vencedor", miss: "erro" }.fetch(bolao[:kind]) %></strong></p>
           <% end %>
         </div>
       <% end %>
 
       <table class="data-table mt-4">
-        <thead><tr><th>Regra</th><th class="text-right">Pontos</th></tr></thead>
+        <caption class="text-left text-xs">Regra em vigor: <%= bolao_rule.scope_label %></caption>
+        <thead><tr><th>Faixa</th><th class="text-right">Pontos</th></tr></thead>
         <tbody>
-          <% Bolao::ScoringRule::KINDS.each do |kind| %>
-            <tr><td><%= kind %></td><td class="text-right tabular-nums"><%= bolao_rules.fetch(kind.to_sym, "—") %></td></tr>
-          <% end %>
+          <tr><td>Pontos por placar exato</td><td class="text-right tabular-nums"><%= bolao_rule.exact_score_points %></td></tr>
+          <tr><td>Pontos por vencedor</td><td class="text-right tabular-nums"><%= bolao_rule.winner_points %></td></tr>
+          <tr><td>Erro</td><td class="text-right tabular-nums">0</td></tr>
         </tbody>
       </table>
     </div>

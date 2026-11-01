@@ -3,7 +3,7 @@ ActiveAdmin.register_page 'ScoringRuleTester' do
 
   content title: 'Testar regras de pontuação' do
     render partial: 'admin/scoring_rule_tester/panels', locals: {
-      pools: assigns[:pools], pool: assigns[:pool], bolao_rules: assigns[:bolao_rules],
+      pools: assigns[:pools], pool: assigns[:pool], bolao_rule: assigns[:bolao_rule],
       bolao: assigns[:bolao], cartola_rules: assigns[:cartola_rules], cartola: assigns[:cartola]
     }
   end
@@ -24,7 +24,7 @@ ActiveAdmin.register_page 'ScoringRuleTester' do
       @pools = Bolao::Pool.order(:name)
       pool_id = params.dig(:bolao, :pool_id)
       @pool = @pools.find_by(id: pool_id) if pool_id.present?
-      @bolao_rules = Bolao::ScoringRule.for(@pool)
+      @bolao_rule = Bolao::ScoringRule.for(@pool)
       @cartola_rules = Cartola::ScoringRule.order(:name)
     end
 
@@ -35,10 +35,8 @@ ActiveAdmin.register_page 'ScoringRuleTester' do
 
       guess = goals.values_at('guess_home', 'guess_away')
       result = goals.values_at('result_home', 'result_away')
-      { input:, kind: Scoring::BolaoScorer.outcome(guess:, result:),
-        points: Scoring::Engine.score(:bolao, guess:, result:, rules: @bolao_rules) }
-    rescue KeyError => e
-      { input:, error: "Regra #{e.key} não cadastrada para este bolão." }
+      { input:, kind: Bolao::ScoringRule.result_for(*guess, *result),
+        points: Scoring::Engine.score(:bolao, guess:, result:, rules: @bolao_rule) }
     end
 
     def test_cartola

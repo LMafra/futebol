@@ -4,9 +4,7 @@ RSpec.describe Bolao::BetResults do
   let(:pool) { create(:bolao_pool) }
 
   before do
-    { exact_score: 10, winner_and_goal_diff: 7, winner: 5, draw: 3 }.each do |kind, points|
-      create(:bolao_scoring_rule, pool_id: nil, kind:, points:)
-    end
+    create(:bolao_scoring_rule, pool_id: nil, exact_score_points: 10, winner_points: 5)
   end
 
   def bet(match, home, away) = create(:bolao_prediction, pool:, match:, home_guess: home, away_guess: away)
@@ -21,7 +19,7 @@ RSpec.describe Bolao::BetResults do
     match = create(:match, status: 'finished', home_score: 2, away_score: 1)
     predictions = [bet(match, 2, 1), bet(match, 3, 2), bet(match, 1, 1)]
 
-    expect { expect(summary(predictions)).to eq([[:exact, 10], [:winner, 7], [:miss, 0]]) }
+    expect { expect(summary(predictions)).to eq([[:exact, 10], [:winner, 5], [:miss, 0]]) }
       .not_to change(Bolao::PredictionScore, :count)
   end
 
@@ -31,6 +29,6 @@ RSpec.describe Bolao::BetResults do
     ProcessMatchPointsJob.perform_now(match.id, SecureRandom.uuid)
 
     expect(match.reload).to be_scored
-    expect(summary(predictions.map(&:reload))).to eq([[:exact, 10], [:winner, 3], [:miss, 0]])
+    expect(summary(predictions.map(&:reload))).to eq([[:exact, 10], [:winner, 5], [:miss, 0]])
   end
 end

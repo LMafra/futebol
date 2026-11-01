@@ -111,8 +111,8 @@ Cartola::CalculatePreviewService.call(lineup:, stats:)                         #
 RevertMatchPointsService.call(match:, actor:, ip_address:)                     # transação: discard scores + AuditLog
 BroadcastUpdateService.call(match:)                                            # Rails.cache.write(key, 1, unless_exist: true, expires_in: 5.seconds)
 ```
-- Regra Bolão (Scoring::Engine): placar exato 10 · vencedor+saldo 7 · vencedor 5 · empate não exato 3 · erro 0
-- `CalculatePreviewService` reutiliza `Scoring::Engine` com `candidate_home/candidate_away` no lugar do placar real
+- Regra Bolão (2 faixas, [ADR 0004](adr/0004-bolao-scoring.md), TICKET-0029): placar exato = `exact_score_points` (padrão 10) · vencedor ou empate certo com placar errado = `winner_points` (padrão 5) · erro 0. Regra 10/7/5/3 anterior substituída
+- `CalculatePreviewService` e `ProcessMatchPointsJob` chamam `Bolao::ScoringRule#points_for` com `candidate_home/candidate_away` (preview) ou o placar real (job); ver §10
 
 ## 8. Jobs
 ```ruby
@@ -146,6 +146,14 @@ end
 ## 9. Não-funcionais
 - Lograge JSON; Sentry DSN via ENV; Stoplight em clientes Faraday
 - Deploy: Render (web + worker Solid Queue), Neon Postgres, R2 (ActiveStorage S3), Resend (ActionMailer), keep-alive em `/up`
+
+## 10. Produto (lacunas resolvidas nos TICKET-0028..0031)
+
+### Bolão
+- `bolao_scoring_rules(championship_id, pool_id, exact_score_points default 10, winner_points default 5)`: uma linha por escopo. Os dois nulos = global; `championship_id` = regra do campeonato; `pool_id` = override do bolão. Check `exact_score_points >= winner_points >= 0` e `pool_id IS NULL OR championship_id IS NULL`; unique `(championship_id, pool_id)` com `nulls_not_distinct`
+- Resolução: override do bolão → regra do campeonato → global → padrão 10/5 (`ScoringRule.by_pool(pools)`, 1 query)
+- `ScoringRule#points_for(prediction_home, prediction_away, actual_home, actual_away)` → `{ points:, result: :exact | :winner | :miss }`; empate certo com placar errado é `:winner`
+- Admin: "Regras do Bolão" (escopo + "Pontos por placar exato" + "Pontos por vencedor") e "Pontuação própria" no form do bolão
 
 ## Specs de regressão obrigatórias
 ```ruby

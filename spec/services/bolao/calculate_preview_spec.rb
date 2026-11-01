@@ -5,9 +5,7 @@ RSpec.describe Bolao::CalculatePreviewService do
   let(:pool) { create(:bolao_pool) }
 
   before do
-    { exact_score: 10, winner_and_goal_diff: 7, winner: 5, draw: 3 }.each do |kind, points|
-      create(:bolao_scoring_rule, pool_id: nil, kind:, points:)
-    end
+    create(:bolao_scoring_rule, pool_id: nil, exact_score_points: 10, winner_points: 5)
   end
 
   def predict(home_guess, away_guess, in_pool: pool)
@@ -19,11 +17,7 @@ RSpec.describe Bolao::CalculatePreviewService do
   def points_for(prediction) = preview.rows.find { |row| row.prediction_id == prediction.id }.points
 
   context 'com o bolão configurado em 5 (exato) / 3 (tendência) / 0 (erro), candidato 2x1' do
-    before do
-      { exact_score: 5, winner_and_goal_diff: 3, winner: 3, draw: 3 }.each do |kind, points|
-        create(:bolao_scoring_rule, pool:, kind:, points:)
-      end
-    end
+    before { create(:bolao_scoring_rule, pool:, exact_score_points: 5, winner_points: 3) }
 
     it 'placar exato → 5 pts' do
       expect(points_for(predict(2, 1))).to eq(5)
@@ -33,9 +27,20 @@ RSpec.describe Bolao::CalculatePreviewService do
       expect(points_for(predict(3, 0))).to eq(3)
     end
 
+    it 'empate certo com placar errado → 3 pts (mesma faixa do vencedor)' do
+      expect(points_for(predict(1, 1))).to eq(0)
+      expect(described_class.call(match:, candidate_home: 0, candidate_away: 0).total).to eq(3)
+    end
+
     it 'erro → 0 pts' do
       expect(points_for(predict(0, 2))).to eq(0)
     end
+  end
+
+  it 'usa a regra do campeonato quando o bolão não tem pontuação própria' do
+    create(:bolao_scoring_rule, championship: pool.championship, exact_score_points: 12, winner_points: 6)
+
+    expect(points_for(predict(2, 1))).to eq(12)
   end
 
   it 'usa candidate_home/away por parâmetro, nunca o placar real da partida (0x0)' do
@@ -49,14 +54,15 @@ RSpec.describe Bolao::CalculatePreviewService do
     expect(match).not_to have_received(:away_score)
   end
 
-  it 'reusa o Scoring::Engine com o placar candidato e as regras de cada bolão' do
-    prediction = predict(2, 1)
-    allow(Scoring::Engine).to receive(:points_for).and_call_original
+  it 'chama ScoringRule#points_for com o palpite e o placar candidato, pela regra de cada bolão' do
+    predict(2, 1)
+    rule = Bolao::ScoringRule.for(pool)
+    allow(Bolao::ScoringRule).to receive(:by_pool).and_return(pool.id => rule)
+    allow(rule).to receive(:points_for).and_call_original
 
     preview(3, 1)
 
-    expect(Scoring::Engine).to have_received(:points_for)
-      .with(prediction: prediction, home: 3, away: 1, rules: Bolao::ScoringRule.for(pool))
+    expect(rule).to have_received(:points_for).with(2, 1, 3, 1)
   end
 
   it 'retorna Preview (Data.define) imutável com rows e total' do
@@ -69,8 +75,8 @@ RSpec.describe Bolao::CalculatePreviewService do
     expect(Bolao::Preview.superclass).to eq(Data)
     expect(result).to be_frozen
     expect(result.rows).to be_frozen
-    expect(result.rows.map(&:points)).to eq([10, 7, 0])
-    expect(result.total).to eq(17)
+    expect(result.rows.map(&:points)).to eq([10, 5, 0])
+    expect(result.total).to eq(15)
   end
 
   it 'ignora palpites descartados' do

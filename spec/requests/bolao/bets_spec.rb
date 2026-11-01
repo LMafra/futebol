@@ -71,9 +71,7 @@ RSpec.describe 'Bolão bets', type: :request do
   end
 
   it 'mostra resultado e pontos depois que a partida termina e é pontuada' do
-    { exact_score: 10, winner_and_goal_diff: 7, winner: 5, draw: 3 }.each do |kind, points|
-      create(:bolao_scoring_rule, pool_id: nil, kind:, points:)
-    end
+    create(:bolao_scoring_rule, pool_id: nil, exact_score_points: 10, winner_points: 5)
     guesses = { 'exact' => [2, 1], 'winner' => [3, 1], 'miss' => [0, 1] }
     matches = guesses.to_h do |result, (home, away)|
       target = create(:match, championship: pool.championship)
