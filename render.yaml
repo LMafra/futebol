@@ -29,8 +29,12 @@ envVarGroups:
     envVars:
       - key: RAILS_MASTER_KEY
         sync: false
-      # Neon primary; db:prepare (bin/docker-entrypoint) creates <db>_cache, <db>_queue, <db>_cable next to it.
-      - key: DATABASE_URL
+      # Supabase transaction pooler (6543), the runtime connection of web and worker.
+      - key: SUPABASE_DATABASE_URL
+        sync: false
+      # Supabase session pooler (5432): db:prepare (bin/docker-entrypoint) migrates and creates <db>_cache,
+      # <db>_queue, <db>_cable next to the primary.
+      - key: SUPABASE_DIRECT_URL
         sync: false
       - key: R2_ACCOUNT_ID
         sync: false

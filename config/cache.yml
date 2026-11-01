@@ -14,3 +14,7 @@ test:
 production:
   database: cache
   <<: *default
+  # The Supabase free tier holds 500 MB for every database of the project (primary, cache, queue, cable).
+  store_options:
+    max_size: <%= 64.megabytes %>
+    namespace: production
