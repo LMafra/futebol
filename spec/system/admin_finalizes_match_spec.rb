@@ -9,9 +9,7 @@ RSpec.describe 'Admin finalizes a match', type: :system do
   let!(:wrong_bet) { create(:bolao_prediction, match:, home_guess: 0, away_guess: 3) }
 
   before do
-    { exact_score: 10, winner_and_goal_diff: 7, winner: 5, draw: 3 }.each do |kind, points|
-      create(:bolao_scoring_rule, pool_id: nil, kind:, points:)
-    end
+    create(:bolao_scoring_rule, pool_id: nil, exact_score_points: 10, winner_points: 5)
   end
 
   it 'previews a candidate score, confirms it on the finalizer and scores the bets' do

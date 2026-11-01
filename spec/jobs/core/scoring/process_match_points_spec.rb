@@ -11,9 +11,7 @@ RSpec.describe ProcessMatchPointsJob do
   end
 
   before do
-    { exact_score: 10, winner_and_goal_diff: 7, winner: 5, draw: 3 }.each do |kind, points|
-      create(:bolao_scoring_rule, pool_id: nil, kind:, points:)
-    end
+    create(:bolao_scoring_rule, pool_id: nil, exact_score_points: 10, winner_points: 5)
   end
 
   def perform = described_class.perform_now(match.id, token)
@@ -33,10 +31,10 @@ RSpec.describe ProcessMatchPointsJob do
     end
   end
 
-  it 'stores each prediction points with the Bolão rules (10/7/3/0) and marks the match scored' do
+  it 'stores the 2-band points (10 exact / 5 winner or draw / 0) and marks the match scored' do
     perform
 
-    expect(predictions.map { |prediction| Bolao::PredictionScore.find_by!(prediction:).points }).to eq([10, 7, 0, 0])
+    expect(predictions.map { |prediction| Bolao::PredictionScore.find_by!(prediction:).points }).to eq([10, 5, 0, 0])
     expect(match.reload).to have_attributes(status: 'scored', scoring_token: token)
     expect(match.scores_calculated_at).to be_present
   end
@@ -46,11 +44,20 @@ RSpec.describe ProcessMatchPointsJob do
   end
 
   it 'uses pool overrides of the scoring rules' do
-    create(:bolao_scoring_rule, pool_id: pool.id, kind: 'exact_score', points: 20)
+    create(:bolao_scoring_rule, pool_id: pool.id, exact_score_points: 20, winner_points: 8)
 
     perform
 
     expect(Bolao::PredictionScore.find_by!(prediction: predictions.first).points).to eq(20)
+    expect(Bolao::PredictionScore.find_by!(prediction: predictions.second).points).to eq(8)
+  end
+
+  it 'uses the championship rule when the pool has no override' do
+    create(:bolao_scoring_rule, championship: pool.championship, exact_score_points: 12, winner_points: 6)
+
+    perform
+
+    expect(predictions.map { |prediction| Bolao::PredictionScore.find_by!(prediction:).points }).to eq([12, 6, 0, 0])
   end
 
   it 'ignores discarded predictions' do
@@ -62,7 +69,7 @@ RSpec.describe ProcessMatchPointsJob do
   describe 'failure handling (rescue)' do
     before do
       allow(Rails.logger).to receive(:error).and_call_original
-      allow(Scoring::Engine).to receive(:points_for).and_raise(RuntimeError, 'engine exploded')
+      allow(Bolao::ScoringRule).to receive(:by_pool).and_raise(RuntimeError, 'engine exploded')
     end
 
     it 'logs the error, reports it as an OTel error span and re-raises' do

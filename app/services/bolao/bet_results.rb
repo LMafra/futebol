@@ -6,8 +6,6 @@ module Bolao
       def pending? = result == :pending
     end
 
-    WINNER_OUTCOMES = %i[winner_and_goal_diff winner draw].freeze
-
     def self.call(predictions) = new(predictions).call
 
     def initialize(predictions)
@@ -26,11 +24,7 @@ module Bolao
     private
 
     def result_for(prediction, match)
-      outcome = Scoring::BolaoScorer.outcome(guess: [prediction.home_guess, prediction.away_guess],
-                                             result: [match.home_score, match.away_score])
-      return :exact if outcome == :exact_score
-
-      WINNER_OUTCOMES.include?(outcome) ? :winner : :miss
+      Bolao::ScoringRule.result_for(prediction.home_guess, prediction.away_guess, match.home_score, match.away_score)
     end
 
     def points_for(prediction, match)

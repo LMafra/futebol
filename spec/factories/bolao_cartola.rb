@@ -23,8 +23,8 @@ FactoryBot.define do
   end
 
   factory :bolao_scoring_rule, class: 'Bolao::ScoringRule' do
-    kind { 'exact_score' }
-    points { 10 }
+    exact_score_points { 10 }
+    winner_points { 5 }
   end
 
   factory :cartola_squad, class: 'Cartola::Squad' do

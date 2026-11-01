@@ -72,8 +72,8 @@ RSpec.describe 'db/seeds.rb' do
       end
     end
 
-    it 'seeds the global Bolão rule 10/7/5/3 and the default Cartola rule' do
-      expect(Bolao::ScoringRule.for(nil)).to eq(exact_score: 10, winner_and_goal_diff: 7, winner: 5, draw: 3)
+    it 'seeds the global Bolão rule 10/5 and the default Cartola rule' do
+      expect(Bolao::ScoringRule.for(nil)).to have_attributes(persisted?: true, exact_score_points: 10, winner_points: 5)
       expect(Cartola::ScoringRule.default)
         .to have_attributes(goal_points: 8, assist_points: 5, yellow_card_penalty: 1, red_card_penalty: 3)
     end

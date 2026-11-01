@@ -8,9 +8,11 @@ module Bolao
     belongs_to :championship, class_name: 'Core::Championship'
     belongs_to :owner, class_name: 'Core::User'
     has_many :predictions, class_name: 'Bolao::Prediction', dependent: :restrict_with_error
-    has_many :scoring_rules, class_name: 'Bolao::ScoringRule', dependent: :destroy
+    has_one :scoring_rule, class_name: 'Bolao::ScoringRule', dependent: :destroy
     has_many :memberships, class_name: 'Bolao::PoolMembership', dependent: :destroy
     has_many :members, through: :memberships, source: :user
+
+    accepts_nested_attributes_for :scoring_rule, allow_destroy: true, reject_if: :all_blank
 
     before_validation :assign_code, on: :create
     after_create :add_owner_as_member

@@ -106,7 +106,7 @@ RSpec.describe RevertMatchPointsJob do
   let!(:predictions) { create_list(:bolao_prediction, 2, pool:, match:, home_guess: 2, away_guess: 1) }
 
   before do
-    create(:bolao_scoring_rule, pool_id: nil, kind: 'exact_score', points: 10)
+    create(:bolao_scoring_rule, pool_id: nil)
   end
 
   def score!(token = SecureRandom.uuid) = ProcessMatchPointsJob.perform_now(match.id, token)

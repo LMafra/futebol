@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000030) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000031) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -97,13 +97,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000030) do
 
   create_table "bolao_scoring_rules", force: :cascade do |t|
     t.bigint "pool_id"
-    t.string "kind", null: false
-    t.integer "points", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["pool_id", "kind"], name: "index_bolao_scoring_rules_on_pool_id_and_kind", unique: true, nulls_not_distinct: true
-    t.check_constraint "kind::text = ANY (ARRAY['exact_score'::character varying::text, 'winner_and_goal_diff'::character varying::text, 'winner'::character varying::text, 'draw'::character varying::text])", name: "bolao_scoring_rules_kind_valid"
-    t.check_constraint "points >= 0", name: "bolao_scoring_rules_points_non_negative"
+    t.integer "exact_score_points", default: 10, null: false
+    t.integer "winner_points", default: 5, null: false
+    t.bigint "championship_id"
+    t.index ["championship_id", "pool_id"], name: "index_bolao_scoring_rules_on_championship_id_and_pool_id", unique: true, nulls_not_distinct: true
+    t.index ["pool_id"], name: "index_bolao_scoring_rules_on_pool_id"
+    t.check_constraint "exact_score_points >= winner_points AND winner_points >= 0", name: "bolao_scoring_rules_bands_ordered"
+    t.check_constraint "pool_id IS NULL OR championship_id IS NULL", name: "bolao_scoring_rules_single_scope"
   end
 
   create_table "cartola_lineup_players", force: :cascade do |t|
@@ -124,7 +126,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000030) do
     t.string "formation", default: "4-3-3", null: false
     t.index ["squad_id", "round"], name: "index_cartola_lineups_on_squad_id_and_round", unique: true
     t.index ["squad_id"], name: "index_cartola_lineups_on_squad_id"
-    t.check_constraint "formation::text = ANY (ARRAY['3-4-3'::character varying, '3-5-2'::character varying, '4-3-3'::character varying, '4-4-2'::character varying, '4-5-1'::character varying, '5-3-2'::character varying, '5-4-1'::character varying]::text[])", name: "cartola_lineups_formation_valid"
+    t.check_constraint "formation::text = ANY (ARRAY['3-4-3'::character varying::text, '3-5-2'::character varying::text, '4-3-3'::character varying::text, '4-4-2'::character varying::text, '4-5-1'::character varying::text, '5-3-2'::character varying::text, '5-4-1'::character varying::text])", name: "cartola_lineups_formation_valid"
     t.check_constraint "round >= 1 AND round <= 38", name: "cartola_lineups_round_range"
   end
 
@@ -292,6 +294,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000030) do
   add_foreign_key "bolao_predictions", "core_matches", column: "match_id"
   add_foreign_key "bolao_predictions", "core_users", column: "user_id"
   add_foreign_key "bolao_scoring_rules", "bolao_pools", column: "pool_id"
+  add_foreign_key "bolao_scoring_rules", "core_championships", column: "championship_id"
   add_foreign_key "cartola_lineup_players", "cartola_lineups", column: "lineup_id"
   add_foreign_key "cartola_lineup_players", "core_players", column: "player_id"
   add_foreign_key "cartola_lineups", "cartola_squads", column: "squad_id"
