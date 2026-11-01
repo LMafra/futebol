@@ -39,7 +39,10 @@ RSpec.describe BroadcastUpdateService do
     target = ActionView::RecordIdentifier.dom_id(match, :scoreboard)
 
     expect { described_class.call(match:) }
-      .to(have_broadcasted_to(stream).with { |payload| expect(payload).to include('action="replace"', target) })
+      .to(have_broadcasted_to(stream).with do |payload|
+        expect(payload).to include('action="replace"', target)
+        expect(payload).not_to include('<html', '<header')
+      end)
   end
 
   it 'volta a transmitir depois que a janela de 5 segundos expira' do

@@ -17,7 +17,8 @@ class BroadcastUpdateService
     Turbo::StreamsChannel.broadcast_replace_to(
       @match,
       target: ActionView::RecordIdentifier.dom_id(@match, :scoreboard),
-      renderable: Ui::ScoreboardComponent.new(match: @match)
+      renderable: Ui::ScoreboardComponent.new(match: @match),
+      layout: false
     )
     true
   end
