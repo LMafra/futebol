@@ -164,6 +164,13 @@ end
 - `Cartola::ValueUpdateJob(match_id, scoring_token)`, enfileirado pelo `ProcessMatchPointsJob`: `novo = atual × (1 + (pontos − média da partida) / 100)`, limitado a ±20%; histórico em `cartola_player_value_histories` (unique `player_id, scoring_token`); o Reversal desfaz pelo mesmo token
 - `core_matches.round` (1..38; CSV aceita coluna `round` opcional). Rankings (`/cartola/rankings`, abas Pontos e Cartoletas): pontos = `PlayerScore` mantidos dos jogadores de cada escalação nas partidas da mesma rodada; moedas = saldo da carteira
 
+### Simulador
+- Escopo do [ADR 0003](adr/0003-simulador.md): público, sem persistência, síncrono
+- `Simulador::StandingsCalculator` (engine, puro): `call(matches:, teams:, overrides: { match_id => { home:, away: } })`; jogo sem placar fica fora; desempate por pontos, vitórias, saldo, gols pró e nome
+- `Simulador::Simulation = Data.define(:championship_id, :guesses, :errors)`: só partidas `scheduled`/`live` do campeonato, inteiros 0..99, erro por partida
+- Rotas: `GET /simulador` e `GET /simulador/:championship_id` (tabela atual + formulário por rodada; ETag); `POST /simulador/projecao` e `POST /simulador/:championship_id/preview` (Turbo Frame `simulador`; 422 com erros; `rate_limit` 30/min por IP → 429)
+- Saída: `Ui::StandingsTableComponent` com variação de posição (glifo + rótulo) e faixas Título, G4, G6, Z4; admin tem o botão "Simulador" no campeonato
+
 ## Specs de regressão obrigatórias
 ```ruby
 # spec/models/core/match_spec.rb
