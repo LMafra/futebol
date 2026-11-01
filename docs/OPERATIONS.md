@@ -172,7 +172,20 @@ O web free do Render dorme após 15 min sem tráfego. Crie um cron em [cron-job.
 
 Serviço `r2` em [`config/storage.yml`](../config/storage.yml) (S3 API, `endpoint: https://<R2_ACCOUNT_ID>.r2.cloudflarestorage.com`, `region: auto`). Production usa `r2` com o bucket `futebol-prod`; development usa disco, ou `ACTIVE_STORAGE_SERVICE=r2` para o bucket `futebol-dev`.
 
-- manual: `npx wrangler r2 bucket create futebol-dev && npx wrangler r2 bucket create futebol-prod`
+Buckets R2: `futebol-dev` e `futebol-prod`.
+
+| Variável | Valor |
+|---|---|
+| `R2_ACCOUNT_ID` | Account ID da Cloudflare (Dashboard → R2 → Overview) |
+| `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | token da API S3 do R2 (R2 → Manage API tokens → Create API token, permissão Object Read & Write, restrito aos dois buckets) |
+| `R2_ENDPOINT` | opcional; padrão `https://<R2_ACCOUNT_ID>.r2.cloudflarestorage.com` |
+| `R2_BUCKET_DEV`, `R2_BUCKET_PROD` | `futebol-dev` e `futebol-prod` (já com esses padrões no `storage.yml`) |
+
+Estado em 2026-11-01: o MCP da Cloudflare (plugin do Cursor, `mcp.cloudflare.com`) está autenticado na única conta, mas a API de R2 responde `10042 Please enable R2 through the Cloudflare Dashboard`. Habilitar o R2 exige aceitar o plano no Dashboard, com meio de pagamento, mesmo no free tier (10 GB). Por isso os buckets ainda não existem.
+
+- manual: configurar R2 via dashboard: Cloudflare Dashboard → R2 Object Storage → habilitar (Purchase/Enable R2).
+- manual: criar os buckets, pelo Dashboard (R2 → Create bucket) ou com `npx wrangler r2 bucket create futebol-dev && npx wrangler r2 bucket create futebol-prod`; conferir com `npx wrangler r2 bucket list`. Depois de habilitado, o agente consegue criá-los pelo MCP da Cloudflare (`POST /accounts/{account_id}/r2/buckets`).
+- manual: gerar o token S3 e preencher `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID` e `R2_SECRET_ACCESS_KEY` no grupo `futebol` do Render. Sem elas, o boot de production loga `Error retrieving instance profile credentials` (o SDK da AWS procura credenciais no metadata service), mas o `/up` continua 200.
 - manual: `ACTIVE_STORAGE_SERVICE=r2 bin/rails runner 'puts ActiveStorage::Blob.create_and_upload!(io: StringIO.new("ok"), filename: "smoke.txt").key'` (arquivo visível em `futebol-dev`)
 
 ### E-mail (Resend)
@@ -219,7 +232,8 @@ bin/dev   # cada request vira um trace (stream "default", aba Traces)
 | render | MCP hospedado `https://mcp.render.com/mcp` (OAuth via `/add-plugin render` ou `Bearer RENDER_API_KEY`) | serviços, deploys, logs, métricas, env vars | sim (plugin do Cursor, 2026-11-01) |
 | supabase | plugin oficial do Cursor; alternativa stdio `pipx install supabase-mcp-server` | consultas e gestão do projeto; não substitui `SUPABASE_DATABASE_URL` | sim (plugin do Cursor, 2026-11-01) |
 | openobserve | MCP `https://<instância>/api/<org>/mcp` (Basic auth) | traces/logs/alertas — opcional, **não usado nesta fase** | não |
-| r2 | `s3-mcp-server` apontando para o endpoint R2 (`AWS_ENDPOINT_URL=https://<account>.r2.cloudflarestorage.com`) | listar/upload/delete em buckets | não |
+| cloudflare | plugin oficial do Cursor (`https://mcp.cloudflare.com/mcp`, OAuth), instalado pelo [prompt de setup da Cloudflare](https://developers.cloudflare.com/agent-setup/prompt.md) | API da Cloudflare inteira, incluindo buckets R2 | sim (2026-11-01) |
+| r2 | `s3-mcp-server` apontando para o endpoint R2 (`AWS_ENDPOINT_URL=https://<account>.r2.cloudflarestorage.com`) | listar/upload/delete de objetos nos buckets | não |
 | resend | MCP remoto `https://mcp.resend.com` (`RESEND_API_KEY`) | envio/teste de e-mail | não |
 
 Smoke tests, variáveis e comandos manuais por MCP: [docs/mcp/README.md](mcp/README.md) · config exemplo: `.cursor/mcp.json.example`.
@@ -231,7 +245,8 @@ Smoke tests, variáveis e comandos manuais por MCP: [docs/mcp/README.md](mcp/REA
 | render | conectado (workspace `tea-cspqio56l47c739ns4ug`) | `list_services`, `create_web_service`, `trigger_deploy`, `list_deploys`, `list_logs`. Env vars secretas foram pela API (`PUT /v1/services/{id}/env-vars`) para não entrarem no transcript. Sem o hook: Dashboard → Manual Deploy |
 | supabase | conectado (org `vercel_icfg_nHFSDYJMtBIhkEFtOG8I3jmE`) | `list_projects`, `create_project`, `execute_sql`, `list_tables`, `list_extensions`. `create_project` não devolve a senha; ela foi definida com `PATCH /v1/projects/{ref}/database/password` e ficou fora do repo. Sem o MCP: SQL Editor do Dashboard |
 | openobserve | não usado | UI do OpenObserve (aba Traces/Logs) |
-| r2 | manual | manual: `npx wrangler r2 bucket create futebol-dev && npx wrangler r2 bucket create futebol-prod` |
+| cloudflare | conectado (1 conta) | `execute` com `GET/POST /accounts/{account_id}/r2/buckets`. Hoje a API devolve `10042` (R2 não habilitado na conta): manual: habilitar o R2 no Dashboard |
+| r2 | manual | manual: `npx wrangler r2 bucket create futebol-dev && npx wrangler r2 bucket create futebol-prod` (ou o MCP da Cloudflare, depois de habilitar o R2) |
 | resend | manual | manual: `curl https://api.resend.com/emails` (ver [docs/mcp](mcp/README.md)) |
 
 ### Fluxo de deploy com MCP
