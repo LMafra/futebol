@@ -1,0 +1,6 @@
+<section class="flex flex-col gap-3" aria-labelledby="bolao-title">
+  <h2 id="bolao-title" class="font-display text-2xl font-extrabold">Ranking do Bolão</h2>
+  <p class="text-sm text-graphite">Em cada partida vale o melhor palpite do participante, mesmo que ele esteja em vários bolões.</p>
+  <%= render Ui::LeaderboardTableComponent.new(rows: @ranking,
+                                               texts: { label: "Ranking do Bolão", empty: "Nenhum palpite pontuado ainda." }) %>
+</section>

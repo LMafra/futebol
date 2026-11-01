@@ -1,0 +1,47 @@
+<section class="w-full" <%= tag.attributes(root_attributes(label: text(:label))) %>>
+  <% case rendered_state %>
+  <% when :default %>
+    <table class="w-full border-collapse tabular-nums lining-nums <%= compact? ? "text-sm" : "text-sm md:text-base" %>">
+      <thead class="<%= compact? ? "sr-only" : "bg-pitch text-white" %>">
+        <tr class="text-xs font-bold uppercase tracking-widest">
+          <th scope="col" class="<%= cell_classes %> text-left">#</th>
+          <th scope="col" class="<%= cell_classes %> text-left"><%= text(:name_header) %></th>
+          <% columns.each_value do |abbreviation, title| %>
+            <th scope="col" class="<%= cell_classes %> text-right"><abbr title="<%= title %>"><%= abbreviation %></abbr></th>
+          <% end %>
+          <th scope="col" class="<%= cell_classes %> text-right"><abbr title="Pontos">Pts</abbr></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% rows.each do |row| %>
+          <tr class="border-b border-rule last:border-b-0 <%= "even:bg-white" unless compact? %>" data-role="leaderboard-row">
+            <td class="<%= cell_classes %> w-8 font-bold <%= "border-l-4 border-cartola" if row.position == 1 %>"><%= row.position %></td>
+            <th scope="row" class="<%= cell_classes %> text-left font-semibold">
+              <%= row.name %>
+              <% if row.try(:detail).present? %>
+                <span class="ml-1 text-xs font-bold tracking-wide text-graphite"><%= row.detail %></span>
+              <% end %>
+            </th>
+            <% columns.each_key do |attribute| %>
+              <td class="<%= cell_classes %> text-right"><%= row.public_send(attribute) %></td>
+            <% end %>
+            <td class="<%= cell_classes %> text-right font-bold"><%= points(row.points) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% when :loading %>
+    <span class="sr-only">Carregando ranking…</span>
+    <div class="flex flex-col gap-1" aria-hidden="true">
+      <% skeleton_rows.times do %>
+        <div class="h-7 w-full <%= skeleton_classes %>" data-role="skeleton"></div>
+      <% end %>
+    </div>
+  <% when :empty %>
+    <%= compact? ? tag.p(text(:empty), class: "py-2 text-sm text-graphite") : empty_notice(text(:empty)) %>
+  <% when :error %>
+    <div class="<%= error_classes %>" role="alert">
+      <span class="font-bold">Não foi possível montar o ranking.</span>
+    </div>
+  <% end %>
+</section>
