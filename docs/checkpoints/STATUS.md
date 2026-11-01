@@ -29,6 +29,7 @@ Fonte de verdade: `docs/adr/0001-arch.md` (o `0001-arch-v2.md` citado no pedido 
 | Desvio | Status | Ação tomada | Evidência |
 |---|---|---|---|
 | 1 — `re_finish` ausente no AASM | ok — semântica OK (não é bug) | nenhuma alteração de código | re-pontuação a partir de `reverted` termina em `scored`, o mesmo estado final da pontuação normal; coberta por `spec/models/core/match_spec.rb` ("can be scored again after a revert") e `spec/services/core/scoring/revert_spec.rb` ("token antigo após re_finish… a partida segue scored") — 44 examples, 0 failures |
+| 2 — check constraint de `scores_calculated_at` | ok — 4 regras já cobertas (não é bug) | nenhuma migration nova | `matches_timestamp_after_finish` (`scores_calculated_at IS NULL OR status IN ('finished','scored')`) já rejeita timestamp em `scheduled`, `live` e `reverted`; sondagem no banco de teste via `update_columns` confirma a tabela abaixo |
 
 ### Desvio 1 — `re_finish` ausente no AASM
 Eventos atuais (`engines/core/app/models/core/match.rb`, AASM 6.0.0, 5 estados: `scheduled live finished scored reverted`):
@@ -61,6 +62,23 @@ end
 ```
 
 Por que não é bug: o critério de bug do pedido era "estado final = `reverted`" ou "sem spec"; nenhum dos dois ocorre. O pedido assume 4 estados (sem `scored`); aqui `scored` é o estado "finalizada e pontuada" e o `re_finish` já existe como `mark_scored!` a partir de `reverted` (nome usado no próprio `revert_spec`). Um evento `reverted → finished` com guard `:scores_calculated?` deixaria a partida re-pontuada em `finished` com timestamp — estado final diferente do fluxo normal (`scored`) — e quebraria as duas specs acima.
+
+### Desvio 2 — check constraint de `scores_calculated_at`
+Migration do TICKET-0003: `engines/core/db/migrate/20261031000015_add_reverted_status_to_core_matches.rb` (substitui a `matches_scored_has_timestamp` original de `20261031000004_create_core_matches.rb`, que era `(status = 'scored') = (scores_calculated_at IS NOT NULL)` e proibia timestamp em `finished`). Constraints vigentes em `db/schema.rb`:
+- `matches_scored_has_timestamp`: `status <> 'scored' OR scores_calculated_at IS NOT NULL`
+- `matches_timestamp_after_finish`: `scores_calculated_at IS NULL OR status IN ('finished','scored')`
+
+Sondagem no banco de teste (`update_columns` por status, que pula as validações do model):
+
+| status | scores_calculated_at permitido | NULL | NOT NULL |
+|---|---|---|---|
+| scheduled | só NULL | aceito | rejeitado (`matches_timestamp_after_finish`) |
+| live | só NULL | aceito | rejeitado (`matches_timestamp_after_finish`) |
+| finished | NULL ou NOT NULL (janela `finish_match!` → `ProcessMatchPointsJob`) | aceito | aceito |
+| scored | só NOT NULL | rejeitado (`matches_scored_has_timestamp`) | aceito |
+| reverted | só NULL | aceito | rejeitado (`matches_timestamp_after_finish`) |
+
+Por que não é bug: `scheduled` e `live` não aceitam timestamp; as 4 regras pedidas (scheduled/live/reverted NULL, finished livre) já valem, mais `scored ⇒ NOT NULL`. A constraint única `chk_scores_calculated_at_by_status` seria só um renome das duas existentes. O model repete as regras (`validates :scores_calculated_at, presence: true, if: scored` e `absence: true, unless: finished/scored`), coberto em `spec/models/core/match_spec.rb`.
 
 ## Correções aplicadas nesta rodada
 | correção | status | artefato | impacto |
