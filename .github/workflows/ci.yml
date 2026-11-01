@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   lint:
-    name: Lint (rubocop, packwerk, zeitwerk, brakeman)
+    name: Lint (rubocop, packwerk, zeitwerk, brakeman, bundler-audit)
     runs-on: ubuntu-24.04
     env:
       RAILS_ENV: test
@@ -29,6 +29,9 @@ jobs:
       - name: RuboCop
         run: bundle exec rubocop --format github
 
+      - name: Packwerk validate (package.yml config)
+        run: bundle exec packwerk validate
+
       - name: Packwerk
         run: bundle exec packwerk check
 
@@ -37,6 +40,9 @@ jobs:
 
       - name: Brakeman
         run: bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error
+
+      - name: Bundler Audit (gem CVEs)
+        run: bundle exec bundler-audit check --update
 
       - name: Design lint (no gradient/blur/glow)
         run: |
@@ -80,9 +86,34 @@ jobs:
       - name: RSpec
         run: bundle exec rspec
 
+      # After RSpec: the seeded rows would otherwise leak into the transactional specs.
+      - name: Seeds are idempotent (db:seed twice, same counts)
+        run: |
+          first=$(bin/rails db:seed | grep '^seeds ok')
+          second=$(bin/rails db:seed | grep '^seeds ok')
+          echo "1st: $first"
+          echo "2nd: $second"
+          test -n "$first" && test "$first" = "$second"
+
+  secrets:
+    name: Secrets (gitleaks)
+    runs-on: ubuntu-24.04
+    env:
+      GITLEAKS_VERSION: 8.30.1
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: gitleaks detect (full history)
+        run: |
+          curl -fsSL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar xz -C /usr/local/bin gitleaks
+          gitleaks detect --source . --redact --verbose
+
   deploy:
     name: Deploy (Render)
-    needs: [lint, test]
+    needs: [lint, test, secrets]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     env:

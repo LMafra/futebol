@@ -1,0 +1,3 @@
+# Each line is a gitleaks fingerprint (commit:file:rule:line) reviewed by hand as a false positive.
+# render.yaml line 41 only names the R2 bucket variable; secret values live in the Render dashboard.
+f6fc60676f0adeb774199403981cbc9cef0db9e9:render.yaml:generic-api-key:41
