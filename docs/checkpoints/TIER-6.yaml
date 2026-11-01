@@ -2,7 +2,7 @@ tier: 6
 status: partial  # TICKET-0021 ok; TICKET-0012 partial (deploy Render sem RENDER_DEPLOY_HOOK_URL, condição de parada do tier)
 branch: tier/6
 base: tier/5
-pr: pending
+pr: https://github.com/LMafra/futebol/pull/8
 signed_commits: true  # SSH ed25519, git log %G? = G em todos os commits do tier
 context_read:
   - AGENTS.md
