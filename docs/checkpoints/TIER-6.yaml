@@ -5,7 +5,7 @@ base: tier/5
 pr: https://github.com/LMafra/futebol/pull/8
 signed_commits: true  # SSH ed25519, git log %G? = G em todos os commits do tier
 context_read:
-  - AGENTS.md
+  - docs/agents.md
   - docs/tickets/INDEX.md (0021 depende de 0012 no INDEX; ordem do tier = 0021 → 0012, seguida)
   - docs/spec-v2.md (§1 sentry ~> 7.2, §9 não-funcionais: Sentry DSN via ENV, Render web + worker, Neon, R2, Resend, keep-alive /up)
   - docs/checkpoints/TIER-5.yaml (TICKET-0010 ok → tier executado)

@@ -5,7 +5,7 @@ base: tier/4
 pr: https://github.com/LMafra/futebol/pull/7
 signed_commits: true  # SSH ed25519, git log %G? = G em todos os commits do tier
 context_read:
-  - AGENTS.md
+  - docs/agents.md
   - docs/tickets/INDEX.md
   - docs/spec-v2.md (§2 ActiveAdmin/Pundit, §7 regras, §8 jobs) + docs/spec-v3.md (§3 AASM)
   - docs/checkpoints/TIER-4.yaml (status ok)
