@@ -42,9 +42,12 @@ Fora de development/test, os dados demo não são criados: a senha acima é púb
 
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) roda em todo PR e em push para `main` e `tier/**`:
 
-- `lint`: RuboCop, Packwerk, `zeitwerk:check`, Brakeman e o grep de design (sem gradient/blur/glow).
-- `test`: `db:prepare` (primary + queue) no Postgres 18 e `bundle exec rspec`.
-- `deploy`: só em push para `main`, depois de `lint` e `test`; chama `RENDER_DEPLOY_HOOK_URL` (secret do repositório). Sem o secret, o job avisa e o deploy fica manual.
+- `lint`: RuboCop, `packwerk validate` + `packwerk check`, `zeitwerk:check`, Brakeman, `bundler-audit check --update` e o grep de design (sem gradient/blur/glow).
+- `test`: `db:prepare` (primary + queue) no Postgres 18, `bundle exec rspec` e depois `db:seed` duas vezes, falhando se a linha `seeds ok (...)` com as contagens mudar entre as cargas.
+- `secrets`: `gitleaks detect` no histórico inteiro. Falsos positivos revisados vão para [`.gitleaksignore`](.gitleaksignore) (fingerprint por linha).
+- `deploy`: só em push para `main`, depois de `lint`, `test` e `secrets`; chama `RENDER_DEPLOY_HOOK_URL` (secret do repositório). Sem o secret, o job avisa e o deploy fica manual.
+
+[Dependabot](.github/dependabot.yml) abre PRs semanais (segunda-feira) para gems e GitHub Actions. O ActiveAdmin fica de fora porque é um beta pinado. Vulnerabilidades: [SECURITY.md](SECURITY.md). Licença: [MIT](LICENSE).
 
 ## Deploy (Render + Neon)
 
