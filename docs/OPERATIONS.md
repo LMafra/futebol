@@ -190,8 +190,19 @@ Estado em 2026-11-01: o MCP da Cloudflare (plugin do Cursor, `mcp.cloudflare.com
 
 ### E-mail (Resend)
 
-Production envia por SMTP (`smtp.resend.com:465`, TLS, usuário `resend`, senha `RESEND_API_KEY`); remetente em `RESEND_FROM`.
+Production envia por SMTP (`smtp.resend.com:465`, TLS implícito, usuário `resend`, senha `RESEND_API_KEY`), configurado em [`config/environments/production.rb`](../config/environments/production.rb); remetente em `RESEND_FROM` ([`ApplicationMailer`](../app/mailers/application_mailer.rb), padrão `onboarding@resend.dev`). Os links dos e-mails usam `APP_HOST` (ou `RENDER_EXTERNAL_HOSTNAME`, que o Render define). Não há gem `resend` nem initializer de mailer: tudo passa pelo SMTP do Action Mailer. Development abre os e-mails no navegador (`letter_opener`).
 
+| Variável | Valor |
+|---|---|
+| `RESEND_API_KEY` | API key do Resend (`re_xxxxxxxxx`), permissão Sending access |
+| `RESEND_FROM` | remetente num domínio verificado, ex.: `Futebol <bolao@seu-dominio.com>` |
+| `APP_HOST` | `futebol-web.onrender.com` (ou o domínio próprio) |
+
+Estado em 2026-11-01: a chave não está definida no Render. Sem ela, um envio em production falha com erro de autenticação SMTP (`raise_delivery_errors` está ligado).
+
+- manual: criar a conta em [resend.com](https://resend.com) e gerar a chave em API Keys → Create API Key (Sending access, de preferência restrita ao domínio).
+- manual: em Domains → Add Domain, cadastrar o domínio do remetente e publicar no DNS os registros SPF e DKIM (e, opcionalmente, DMARC) indicados pelo Resend até o status `Verified`. Sem domínio verificado, `onboarding@resend.dev` só entrega para o e-mail do dono da conta, o que serve para teste e não para usuários.
+- manual: definir `RESEND_API_KEY` e `RESEND_FROM` nas env vars do `futebol-web` (Dashboard → futebol-web → Environment), ou no grupo `futebol` se o Blueprint do `render.yaml` estiver em uso. Pelo MCP do Render os valores entrariam no transcript, então prefira o Dashboard.
 - manual: `RAILS_ENV=production bin/rails runner 'ActionMailer::Base.mail(from: ENV["RESEND_FROM"], to: "<voce@exemplo.com>", subject: "Futebol: teste Resend", body: "ok").deliver_now'`
 
 ## Observabilidade (OpenTelemetry → OpenObserve)

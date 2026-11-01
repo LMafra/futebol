@@ -142,6 +142,16 @@ Buckets R2: `futebol-dev` e `futebol-prod`. O Active Storage usa o serviço `r2`
 
 Passo manual: o R2 ainda precisa ser habilitado no Dashboard da Cloudflare antes da criação dos buckets ([OPERATIONS.md → Storage](docs/OPERATIONS.md#storage-cloudflare-r2)).
 
+### Resend
+
+Production envia e-mail pelo SMTP do Resend ([`config/environments/production.rb`](config/environments/production.rb)): `smtp.resend.com`, porta 465 com TLS, usuário `resend` e a API key como senha.
+
+1. Crie a conta em [resend.com](https://resend.com) e gere uma API key (`re_xxxxxxxxx`) com permissão Sending access.
+2. Em Domains, cadastre e verifique o domínio do remetente (registros SPF/DKIM no DNS). Sem isso, `onboarding@resend.dev` só entrega para o e-mail do dono da conta.
+3. No Render (env vars do `futebol-web`), defina `RESEND_API_KEY` e `RESEND_FROM` (ex.: `Futebol <bolao@seu-dominio.com>`).
+
+Teste de envio e detalhes: [OPERATIONS.md → E-mail](docs/OPERATIONS.md#e-mail-resend).
+
 <p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
 
 ## Uso
