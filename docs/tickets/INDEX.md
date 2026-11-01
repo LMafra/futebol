@@ -1,4 +1,4 @@
-# Tickets — INDEX (22 tickets)
+# Tickets — INDEX (27 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -24,6 +24,11 @@
 | [0020](TICKET-0020.md) | — | bin/setup + .env.example | 0001 | — |
 | [0021](TICKET-0021.md) | — | Solid Queue dashboard + Sentry | 0012 | render (opc) |
 | [0022](TICKET-0022.md) | — | db/seeds.rb real | 0002 | neon (opc) |
+| [0023](TICKET-0023.md) | — | Bolão: criar e entrar em pool | 0011, 0014 | neon (opc) |
+| [0024](TICKET-0024.md) | — | Bolão: palpites | 0006, 0023 | — |
+| [0025](TICKET-0025.md) | — | Cartola: escalação | 0007, 0011 | neon (opc) |
+| [0026](TICKET-0026.md) | — | Simulador: definir escopo (ADR) | — | — |
+| [0027](TICKET-0027.md) | — | Seeds de demonstração | 0023, 0024, 0025 | neon (opc) |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -31,3 +36,5 @@
 - 0003 → 0004 → {0005, 0006, 0008} · 0016 → 0017
 - {0005, 0006, 0007, 0009} → 0010 → 0012 (+ 0014, 0015) → 0021
 - 0013 não bloqueia nenhum ticket
+- UI/demo: {0011, 0014} → 0023 → 0024 (+ 0006) · {0007, 0011} → 0025 · {0023, 0024, 0025} → 0027
+- 0026 sem deps e não bloqueia nenhum ticket (tickets derivados saem do ADR)
