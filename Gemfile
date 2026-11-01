@@ -50,6 +50,9 @@ gem 'lograge', '~> 0.15'
 gem 'mission_control-jobs', '~> 1.3'
 gem 'pundit', '~> 2.5'
 gem 'stoplight', '~> 6.0'
+# Blocks unsafe migrations (locks, rewrites); in every group because migrations call safety_assured and the
+# deploy runs them (db:prepare) [https://github.com/ankane/strong_migrations]
+gem 'strong_migrations', '~> 2.8'
 gem 'view_component', '~> 4.20'
 
 gem 'bolao', path: 'engines/bolao'
@@ -99,8 +102,6 @@ group :development do
   gem 'letter_opener', '~> 1.10'
   gem 'lookbook', '~> 2.3'
   gem 'packwerk', '~> 3.3'
-  # Blocks unsafe migrations (locks, rewrites) while they are written [https://github.com/ankane/strong_migrations]
-  gem 'strong_migrations', '~> 2.8'
 
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem 'web-console'
