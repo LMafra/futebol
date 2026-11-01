@@ -30,6 +30,9 @@
 /tmp/storage/*
 !/tmp/storage/.keep
 
+# OpenObserve self-hosted data (docker/openobserve/docker-compose.yml).
+/docker/openobserve/data/
+
 # Ignore assets.
 /node_modules/
 /app/assets/builds/*

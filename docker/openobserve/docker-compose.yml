@@ -1,0 +1,18 @@
+# OpenObserve self-hosted (UI + OTLP/HTTP on 5080, OTLP/gRPC on 5081). From the repo root:
+#   docker compose -f docker/openobserve/docker-compose.yml up -d
+# Credentials default to the .env.example values; override with ZO_ROOT_USER_* in the shell or with --env-file .env.
+# The password needs upper and lower case, a digit and a symbol.
+services:
+  openobserve:
+    image: public.ecr.aws/zinclabs/openobserve:latest
+    container_name: futebol-openobserve
+    restart: unless-stopped
+    ports:
+      - "5080:5080"
+      - "5081:5081"
+    environment:
+      ZO_DATA_DIR: /data
+      ZO_ROOT_USER_EMAIL: ${ZO_ROOT_USER_EMAIL:-root@example.com}
+      ZO_ROOT_USER_PASSWORD: ${ZO_ROOT_USER_PASSWORD:-Complexpass#123}
+    volumes:
+      - ./data:/data

@@ -20,7 +20,7 @@ RSpec.describe 'Observability (OpenTelemetry → OpenObserve)' do
     it 'reads the OpenObserve endpoint and auth from ENV' do
       source = Rails.root.join('config/initializers/opentelemetry.rb').read
 
-      expect(source).to include("ENV['OPENOBSERVE_OTLP_ENDPOINT']", "ENV['OPENOBSERVE_AUTH']",
+      expect(source).to include("ENV['OTEL_EXPORTER_OTLP_ENDPOINT']", "ENV['OTEL_EXPORTER_OTLP_HEADERS']",
                                 "c.service_name = 'futebol'")
     end
   end

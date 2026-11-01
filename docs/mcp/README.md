@@ -70,13 +70,13 @@ Plugins do Cursor, não o servidor stdio. Nenhum secret entra nestes comandos. F
 
 ## openobserve (opcional, não usado nesta fase)
 
-O OpenObserve expõe um MCP próprio ([docs](https://openobserve.ai/docs/integration/ai/mcp/)) em `https://<instância>/api/<org>/mcp` (Cloud: `https://api.openobserve.ai/api/<org>/mcp`), autenticado por `Authorization: Basic <base64 de email:senha>`, o mesmo valor de `OPENOBSERVE_AUTH`. Ele serve para consultar traces e logs em linguagem natural e para criar alertas.
+O OpenObserve expõe um MCP próprio ([docs](https://openobserve.ai/docs/integration/ai/mcp/)) em `https://<instância>/api/<org>/mcp` (a instância self-hosted de `docker/openobserve/docker-compose.yml`; localmente, `http://localhost:5080/api/default/mcp`), autenticado por `Authorization: Basic <base64 de email:senha>`, o mesmo valor do `authorization` em `OTEL_EXPORTER_OTLP_HEADERS`. Ele serve para consultar traces e logs em linguagem natural e para criar alertas.
 
 Nesta fase ele **não é usado nem configurado**, e não está no `.cursor/mcp.json.example`. Para ativar no futuro, adicione ao `.cursor/mcp.json` local:
 
 ```json
 "openobserve": {
-  "url": "https://api.openobserve.ai/api/<org>/mcp",
+  "url": "https://<instância>/api/<org>/mcp",
   "headers": { "Authorization": "Basic ${env:OPENOBSERVE_MCP_TOKEN}" }
 }
 ```
