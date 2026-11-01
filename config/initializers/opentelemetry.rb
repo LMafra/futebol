@@ -1,7 +1,7 @@
 # Traces and log records go to OpenObserve over OTLP/HTTP. OPENOBSERVE_OTLP_ENDPOINT is the OTLP base URL of an
 # OpenObserve organization (http://host:5080/api/<org>); /v1/traces and /v1/logs are appended. Development
-# defaults to a local OpenObserve (README "Observabilidade"); production exports only when the variable is set;
-# test never exports (spec/support/opentelemetry.rb keeps spans in memory).
+# defaults to a local OpenObserve (docs/OPERATIONS.md "Observabilidade"); production exports only when the variable
+# is set; test never exports (spec/support/opentelemetry.rb keeps spans in memory).
 otlp_endpoint = ENV['OPENOBSERVE_OTLP_ENDPOINT'].presence&.delete_suffix('/')
 otlp_endpoint ||= 'http://localhost:5080/api/default' if Rails.env.development?
 otlp_endpoint = nil if Rails.env.test?

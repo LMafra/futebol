@@ -140,7 +140,7 @@ jobs:
       - name: Trigger Render deploy hook
         run: |
           if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
-            echo "::notice::RENDER_DEPLOY_HOOK_URL not set; deploy is manual (see README)"
+            echo "::notice::RENDER_DEPLOY_HOOK_URL not set; deploy is manual (see docs/OPERATIONS.md)"
             exit 0
           fi
           curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL"
