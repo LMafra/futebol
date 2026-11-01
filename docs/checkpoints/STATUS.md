@@ -30,6 +30,7 @@ Fonte de verdade: `docs/adr/0001-arch.md` (o `0001-arch-v2.md` citado no pedido 
 |---|---|---|---|
 | 1 — `re_finish` ausente no AASM | ok — semântica OK (não é bug) | nenhuma alteração de código | re-pontuação a partir de `reverted` termina em `scored`, o mesmo estado final da pontuação normal; coberta por `spec/models/core/match_spec.rb` ("can be scored again after a revert") e `spec/services/core/scoring/revert_spec.rb` ("token antigo após re_finish… a partida segue scored") — 44 examples, 0 failures |
 | 2 — check constraint de `scores_calculated_at` | ok — 4 regras já cobertas (não é bug) | nenhuma migration nova | `matches_timestamp_after_finish` (`scores_calculated_at IS NULL OR status IN ('finished','scored')`) já rejeita timestamp em `scheduled`, `live` e `reverted`; sondagem no banco de teste via `update_columns` confirma a tabela abaixo |
+| 3 — `render.yaml` com worker starter (pago) | ok — fallback documentado (não é bug) | nenhuma alteração (`render.yaml` e README intactos) | worker `plan: starter` mantido; fallback free em `render.yaml` (linha 3) e `README.md` → "Deploy (Render + Neon)"; Puma em production com `SOLID_QUEUE_IN_PUMA=1` sobe Supervisor, Dispatcher, Worker e Scheduler e `/up` responde 200 |
 
 ### Desvio 1 — `re_finish` ausente no AASM
 Eventos atuais (`engines/core/app/models/core/match.rb`, AASM 6.0.0, 5 estados: `scheduled live finished scored reverted`):
@@ -79,6 +80,13 @@ Sondagem no banco de teste (`update_columns` por status, que pula as validaçõe
 | reverted | só NULL | aceito | rejeitado (`matches_timestamp_after_finish`) |
 
 Por que não é bug: `scheduled` e `live` não aceitam timestamp; as 4 regras pedidas (scheduled/live/reverted NULL, finished livre) já valem, mais `scored ⇒ NOT NULL`. A constraint única `chk_scores_calculated_at_by_status` seria só um renome das duas existentes. O model repete as regras (`validates :scores_calculated_at, presence: true, if: scored` e `absence: true, unless: finished/scored`), coberto em `spec/models/core/match_spec.rb`.
+
+### Desvio 3 — `render.yaml` com worker starter (pago)
+- Plano do worker: `futebol-worker` → `plan: starter` (`./bin/jobs`); `futebol-web` → `plan: free`. Decisão registrada em `TIER-6.yaml` ("worker starter com ./bin/jobs … Plano free sem worker: SOLID_QUEUE_IN_PUMA=1"); mantida como opção do usuário.
+- Fallback documentado nos dois lugares, sem divergência sobre o padrão:
+  - `render.yaml`, linha 3: "Free plan without workers: drop futebol-worker and set SOLID_QUEUE_IN_PUMA=1 on futebol-web."
+  - `README.md` → "Deploy (Render + Neon)": "No plano free, sem worker: remova `futebol-worker` e defina `SOLID_QUEUE_IN_PUMA=1` no web."
+- O fallback funciona: `config/puma.rb` tem `plugin :solid_queue if ENV['SOLID_QUEUE_IN_PUMA']`. Smoke local em production (`SOLID_QUEUE_IN_PUMA=1 bin/rails server`, Postgres local): log com `Started Supervisor(fork)`, `Started Dispatcher`, `Started Worker` e `Started Scheduler`; os 4 processos registrados em `solid_queue_processes`; `/up` 200.
 
 ## Correções aplicadas nesta rodada
 | correção | status | artefato | impacto |
