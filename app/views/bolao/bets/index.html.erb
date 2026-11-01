@@ -1,0 +1,14 @@
+<% content_for(:title, "Palpites · #{@pool.name} · Futebol") %>
+
+<div class="flex max-w-5xl flex-col gap-8">
+  <header class="border-b-4 border-ink pb-2">
+    <p class="text-xs font-bold uppercase tracking-widest text-graphite"><%= @pool.championship %></p>
+    <h1 class="mt-1 font-display text-4xl font-extrabold tracking-tight">Palpites · <%= @pool.name %></h1>
+    <%= link_to "Voltar para o bolão", main_app.pool_path(@pool), class: "mt-2 inline-block font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
+  </header>
+
+  <div><%= render "shared/flash" %></div>
+
+  <%= render Bolao::MatchListComponent.new(pool: @pool, matches: @matches, bets_by_match: @bets_by_match) %>
+  <%= render Bolao::MyBetsComponent.new(results: @bet_results) %>
+</div>

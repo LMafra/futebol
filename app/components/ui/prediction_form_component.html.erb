@@ -1,0 +1,36 @@
+<div class="flex flex-col gap-1" <%= tag.attributes(root_attributes(label: "Palpite")) %>>
+  <% if error? %>
+    <ul class="text-sm font-semibold text-ink" role="alert" data-role="errors">
+      <% base_errors.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <% if form? %>
+    <%= form_with model: prediction, scope: :prediction, url: form_url, class: "flex items-center gap-2" do |form| %>
+      <%= form.hidden_field :match_id unless prediction.persisted? %>
+      <%= form.number_field :home_guess, min: 0, required: true, class: guess_input_classes, aria: { label: "Gols do mandante" } %>
+      <span class="text-graphite" aria-hidden="true">×</span>
+      <%= form.number_field :away_guess, min: 0, required: true, class: guess_input_classes, aria: { label: "Gols do visitante" } %>
+      <%= form.submit submit_label, class: "cursor-pointer rounded-sm bg-pitch px-3 py-1 font-semibold text-white hover:bg-night" %>
+    <% end %>
+    <% %i[home_guess away_guess].filter_map { |attribute| field_error(attribute) }.uniq.each do |message| %>
+      <p class="text-sm text-ink" data-role="field-error"><%= message %></p>
+    <% end %>
+  <% elsif loading? %>
+    <div class="flex items-center gap-2" aria-hidden="true">
+      <span class="h-9 w-14 <%= skeleton_classes %>"></span>
+      <span class="text-graphite">×</span>
+      <span class="h-9 w-14 <%= skeleton_classes %>"></span>
+      <button type="button" disabled class="inline-flex items-center gap-2 rounded-sm bg-pitch px-3 py-1 font-semibold text-white opacity-60">
+        <span class="size-3 animate-spin rounded-full border-2 border-white border-t-transparent motion-reduce:animate-none" data-role="spinner"></span>
+        Salvando…
+      </button>
+    </div>
+  <% elsif empty? %>
+    <p class="text-sm font-semibold text-graphite" data-role="closed">
+      Palpites encerrados<% if saved_guess %> · seu palpite <span class="tabular-nums"><%= saved_guess %></span><% end %>
+    </p>
+  <% end %>
+</div>

@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   scope module: :bolao do
     resources :pools, only: %i[index new create show destroy] do
       post :join, on: :collection
+      resources :bets, only: %i[index create update]
     end
   end
 

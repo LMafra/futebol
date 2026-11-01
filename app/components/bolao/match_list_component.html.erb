@@ -1,0 +1,42 @@
+<section class="flex w-full flex-col gap-3" <%= tag.attributes(root_attributes(label: "Jogos abertos")) %>>
+  <h2 class="font-display text-2xl font-bold">Jogos abertos</h2>
+
+  <% case state %>
+  <% when :default %>
+    <% if matches.empty? %>
+      <%= empty_notice("Sem jogos abertos para palpite.") %>
+    <% else %>
+      <ul class="divide-y divide-rule rounded-md border border-rule bg-white" data-role="matches">
+        <% matches.each do |match| %>
+          <% bet = bet_for(match) %>
+          <li class="grid grid-cols-12 items-center gap-4 px-4 py-3" data-role="match" id="<%= dom_id(match, :bet) %>">
+            <div class="col-span-12 sm:col-span-5">
+              <p class="font-semibold"><%= match.home_team.name %> <span class="text-graphite">×</span> <%= match.away_team.name %></p>
+              <p class="text-sm tabular-nums text-graphite">
+                <%= kickoff(match) %> ·
+                <span data-controller="countdown" data-countdown-deadline-value="<%= match.match_date.iso8601 %>"
+                      data-countdown-closed-value="<%= CLOSED_LABEL %>"><%= countdown_label(match) %></span>
+              </p>
+            </div>
+            <div class="col-span-12 sm:col-span-7">
+              <%= render Ui::PredictionFormComponent.new(match:, prediction: bet, state: form_state(match, bet)) %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  <% when :loading %>
+    <span class="sr-only">Carregando jogos…</span>
+    <div class="flex flex-col gap-2" aria-hidden="true">
+      <% 3.times do %>
+        <div class="h-16 w-full <%= skeleton_classes %>" data-role="skeleton"></div>
+      <% end %>
+    </div>
+  <% when :empty %>
+    <%= empty_notice("Sem jogos abertos para palpite.") %>
+  <% when :error %>
+    <div class="<%= error_classes %>" role="alert">
+      <span class="font-bold">Não foi possível carregar os jogos.</span>
+    </div>
+  <% end %>
+</section>
