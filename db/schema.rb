@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000026) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000028) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -42,13 +42,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000026) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "bolao_pool_memberships", force: :cascade do |t|
+    t.bigint "pool_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "joined_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pool_id", "user_id"], name: "index_bolao_pool_memberships_on_pool_id_and_user_id", unique: true
+    t.index ["pool_id"], name: "index_bolao_pool_memberships_on_pool_id"
+    t.index ["user_id"], name: "index_bolao_pool_memberships_on_user_id"
+  end
+
   create_table "bolao_pools", force: :cascade do |t|
     t.bigint "championship_id", null: false
     t.bigint "owner_id", null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "code", limit: 6, null: false
     t.index ["championship_id"], name: "index_bolao_pools_on_championship_id"
+    t.index ["code"], name: "index_bolao_pools_on_code", unique: true
     t.index ["owner_id"], name: "index_bolao_pools_on_owner_id"
   end
 
@@ -266,6 +279,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000026) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "bolao_pool_memberships", "bolao_pools", column: "pool_id"
+  add_foreign_key "bolao_pool_memberships", "core_users", column: "user_id"
   add_foreign_key "bolao_pools", "core_championships", column: "championship_id"
   add_foreign_key "bolao_pools", "core_users", column: "owner_id"
   add_foreign_key "bolao_prediction_scores", "bolao_predictions", column: "prediction_id"

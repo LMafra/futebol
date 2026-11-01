@@ -1,6 +1,13 @@
 Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
+
+  scope module: :bolao do
+    resources :pools, only: %i[index new create show destroy] do
+      post :join, on: :collection
+    end
+  end
+
   mount MissionControl::Jobs::Engine, at: '/admin/jobs'
   ActiveAdmin.routes(self)
   mount Lookbook::Engine, at: '/lookbook' if defined?(Lookbook::Engine)

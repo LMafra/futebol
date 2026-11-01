@@ -61,8 +61,9 @@ ActiveAdmin.setup do |config|
   #
   # This setting changes the method which Active Admin calls
   # within the application controller.
-  # Only a session is required here; admin rights are checked by Pundit (403 for non-admins).
-  config.authentication_method = :require_authentication
+  # Session + admin flag (403 for non-admins) before Pundit runs: some policies (Bolao::PoolPolicy) also serve
+  # public screens and grant signed-in users.
+  config.authentication_method = :authenticate_admin_user!
 
   # == User Authorization
   #

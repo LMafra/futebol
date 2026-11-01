@@ -93,7 +93,7 @@ Só documentos: nenhum ticket foi implementado e nenhum arquivo de código mudou
 
 | ticket | título | deps | observação |
 |---|---|---|---|
-| [0023](../tickets/TICKET-0023.md) | Bolão: criar e entrar em pool | 0011, 0014 | migrations `bolao_pool_memberships` + `bolao_pools.code`; `Bolao::PoolPolicy` é compartilhada com o ActiveAdmin |
+| [0023](../tickets/TICKET-0023.md) | Bolão: criar e entrar em pool | 0011, 0014 | **implementado** (branch `ticket/0023-bolao-pools`); `Bolao::PoolPolicy` é compartilhada com o ActiveAdmin, que agora exige admin no `authentication_method` |
 | [0024](../tickets/TICKET-0024.md) | Bolão: palpites | 0006, 0023 | palpite = `Bolao::Prediction` (sem model `Bet`); `PredictionFormComponent` da spec §5 ainda não existe |
 | [0025](../tickets/TICKET-0025.md) | Cartola: escalação | 0007, 0011 | `Lineup`/`LineupPlayer` já existem; migrations `core_players.cost` + `cartola_lineups.formation` |
 | [0026](../tickets/TICKET-0026.md) | Simulador: definir escopo (ADR) | — | cria `docs/adr/0003-simulador.md`; confirmar exceção à regra "nunca alterar `docs/adr/*`" |
