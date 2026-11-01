@@ -23,6 +23,45 @@
 | 5 | 1 (0010) | 0 | 0 | ok — [TIER-5.yaml](TIER-5.yaml) · [PR #7](https://github.com/LMafra/futebol/pull/7) |
 | 6 | 1 (0021) + 1 partial (0012) | 0 | 0 | partial — deploy Render manual (sem `RENDER_DEPLOY_HOOK_URL`) — [TIER-6.yaml](TIER-6.yaml) · [PR #8](https://github.com/LMafra/futebol/pull/8) |
 
+## Desvios técnicos verificados
+Fonte de verdade: `docs/adr/0001-arch.md` (o `0001-arch-v2.md` citado no pedido não existe). Nenhum arquivo em `docs/spec-v2.md`, `docs/adr/*` ou `docs/design/*` foi alterado.
+
+| Desvio | Status | Ação tomada | Evidência |
+|---|---|---|---|
+| 1 — `re_finish` ausente no AASM | ok — semântica OK (não é bug) | nenhuma alteração de código | re-pontuação a partir de `reverted` termina em `scored`, o mesmo estado final da pontuação normal; coberta por `spec/models/core/match_spec.rb` ("can be scored again after a revert") e `spec/services/core/scoring/revert_spec.rb` ("token antigo após re_finish… a partida segue scored") — 44 examples, 0 failures |
+
+### Desvio 1 — `re_finish` ausente no AASM
+Eventos atuais (`engines/core/app/models/core/match.rb`, AASM 6.0.0, 5 estados: `scheduled live finished scored reverted`):
+
+| evento | de → para | guard | after |
+|---|---|---|---|
+| `start_match` | scheduled → live | `kickoff_reached?` | — |
+| `finish_match` | live → finished | `final_score_present?` | — |
+| `mark_scored` | finished, reverted → scored | `scores_pending?` | `stamp_scores` |
+| `revert_match` | scored, finished → reverted | `scores_calculated?` | `clear_scores` |
+
+- a) Existe transição `reverted → finished`? Não; `reverted` só sai por `mark_scored` (→ `scored`).
+- b) Estado final após re-pontuar a partir de `reverted`? `scored` — `ProcessMatchPointsJob` grava os pontos e chama `match.mark_scored!(scoring_token)` na mesma transação.
+- c) Existe spec "reverted → rescore → estado final"? Sim:
+
+```ruby
+# spec/models/core/match_spec.rb
+it 'can be scored again after a revert' do
+  match = create(:match, status: 'scored', scores_calculated_at: 1.hour.ago, scoring_token: SecureRandom.uuid)
+  match.revert_match!
+  match.mark_scored!(SecureRandom.uuid)
+  expect(match.reload).to be_scored
+end
+
+# spec/services/core/scoring/revert_spec.rb — score! → revert!(old_token) → score!
+it 'não re-reverte: os novos scores continuam kept e a partida segue scored' do
+  expect { revert!(old_token) }.not_to(change { Bolao::PredictionScore.kept.count })
+  expect(match.reload).to be_scored
+end
+```
+
+Por que não é bug: o critério de bug do pedido era "estado final = `reverted`" ou "sem spec"; nenhum dos dois ocorre. O pedido assume 4 estados (sem `scored`); aqui `scored` é o estado "finalizada e pontuada" e o `re_finish` já existe como `mark_scored!` a partir de `reverted` (nome usado no próprio `revert_spec`). Um evento `reverted → finished` com guard `:scores_calculated?` deixaria a partida re-pontuada em `finished` com timestamp — estado final diferente do fluxo normal (`scored`) — e quebraria as duas specs acima.
+
 ## Correções aplicadas nesta rodada
 | correção | status | artefato | impacto |
 |---|---|---|---|
