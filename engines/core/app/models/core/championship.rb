@@ -6,6 +6,8 @@ module Core
     validates :season, numericality: { only_integer: true, in: 1900..2100 }
     validates :external_id, presence: true, uniqueness: true
 
+    def self.ransackable_attributes(_auth_object = nil) = %w[name season external_id]
+
     def to_s = "#{name} #{season}"
   end
 end

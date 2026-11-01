@@ -6,5 +6,10 @@ module Bolao
     has_many :scoring_rules, class_name: 'Bolao::ScoringRule', dependent: :destroy
 
     validates :name, presence: true
+
+    def self.ransackable_attributes(_auth_object = nil) = %w[name championship_id]
+    def self.ransackable_associations(_auth_object = nil) = %w[championship]
+
+    def to_s = name
   end
 end
