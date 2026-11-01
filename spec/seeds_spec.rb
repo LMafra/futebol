@@ -2,7 +2,9 @@ require 'rails_helper'
 
 RSpec.describe 'db/seeds.rb' do
   def seeded_models
-    [Core::Team, Core::Player, Core::Championship, Core::Match, Core::User, Bolao::ScoringRule, Cartola::ScoringRule]
+    [Core::Team, Core::Player, Core::Championship, Core::Match, Core::User, Bolao::ScoringRule, Cartola::ScoringRule,
+     Bolao::Pool, Bolao::PoolMembership, Bolao::Prediction, Bolao::PredictionScore, Cartola::Squad, Cartola::Lineup,
+     Cartola::LineupPlayer]
   end
 
   def counts = seeded_models.to_h { |model| [model.name, model.count] }
@@ -10,6 +12,10 @@ RSpec.describe 'db/seeds.rb' do
   def load_seed = expect { Rails.application.load_seed }.to output(/seeds ok/).to_stdout
 
   def round_of(match) = match.external_id[/-r(\d+)-/, 1]
+
+  def matches_in_rounds(rounds) = Core::Match.select { |match| round_of(match).to_i.in?(rounds) }
+
+  def demo_users = Core::User.where('email_address LIKE ?', '%@demo.local')
 
   # Each load costs ~1.5s, so the data checks share one double load committed outside the example transactions.
   describe 'loaded twice in a row' do
@@ -24,8 +30,9 @@ RSpec.describe 'db/seeds.rb' do
     end
 
     after(:context) do
-      [Core::Match, Core::Player, Core::Team, Core::Championship, Core::Session, Core::User, Bolao::ScoringRule,
-       Cartola::ScoringRule].each(&:delete_all)
+      [Bolao::PredictionScore, Bolao::Prediction, Bolao::PoolMembership, Bolao::ScoringRule, Bolao::Pool,
+       Cartola::LineupPlayer, Cartola::Lineup, Cartola::Squad, Cartola::ScoringRule, Core::Match, Core::Player,
+       Core::Team, Core::Championship, Core::Session, Core::User].each(&:delete_all)
     end
 
     it 'creates nothing new on the second load' do
@@ -73,6 +80,81 @@ RSpec.describe 'db/seeds.rb' do
 
     it 'creates exactly one admin' do
       expect(Core::User.where(admin: true).count).to eq(1)
+    end
+
+    describe 'demo data' do
+      it 'creates demo1..demo5@demo.local, non-admin, with the documented password' do
+        expect(demo_users.pluck(:email_address)).to match_array((1..5).map { |n| "demo#{n}@demo.local" })
+        expect(demo_users).to all(satisfy { |user| !user.admin? && user.authenticate('demo-futebol') })
+      end
+
+      it 'puts the 5 demo users in pool DEMO01, owned by demo1' do
+        pool = Bolao::Pool.find_by!(code: 'DEMO01')
+
+        expect(pool.owner.email_address).to eq('demo1@demo.local')
+        expect(pool.members).to match_array(demo_users)
+      end
+
+      it 'scores rounds 1-4 and 6, leaves round 5 live and rounds 7-10 scheduled in the future' do
+        expect(matches_in_rounds([1, 2, 3, 4, 6])).to all(have_attributes(status: 'scored', home_score: Integer,
+                                                                          away_score: Integer))
+        expect(matches_in_rounds([5]).map(&:status)).to all(eq('live'))
+        expect(matches_in_rounds(7..10)).to all(have_attributes(status: 'scheduled'))
+        expect(matches_in_rounds(7..10).map(&:match_date)).to all(be_future)
+        expect(matches_in_rounds(11..38).map(&:status)).to all(eq('scheduled'))
+      end
+
+      it 'keeps rounds 7-10 in order after moving them to the future' do
+        first_kickoffs = (7..10).map { |round| matches_in_rounds([round]).map(&:match_date).min }
+
+        expect(first_kickoffs.each_cons(2).map { |earlier, later| later - earlier }).to all(eq(1.week))
+      end
+
+      it 'spreads at least 60 predictions over the 5 users and 10 rounds, one per (pool, user, match)' do
+        predictions = Bolao::Prediction.includes(:user, :match)
+
+        expect(predictions.size).to be >= 60
+        expect(predictions.map(&:user).uniq).to match_array(demo_users)
+        expect(predictions.map { |prediction| round_of(prediction.match).to_i }.uniq).to match_array(1..10)
+        expect(predictions.map { |prediction| [prediction.pool_id, prediction.user_id, prediction.match_id] }.uniq.size)
+          .to eq(predictions.size)
+      end
+
+      it 'gives every prediction on a scored match a kept score, and none to the others' do
+        scored, pending = Bolao::Prediction.includes(:match, :scores).partition { |prediction| prediction.match.scored? }
+
+        expect(scored).to all(satisfy { |prediction| prediction.scores.kept.one? })
+        expect(pending.flat_map(&:scores)).to be_empty
+        expect(Bolao::PredictionScore.sum(:points)).to be_positive
+      end
+
+      it "builds demo1's round 7 lineup: 11 players, a valid formation, within budget" do
+        lineup = Cartola::Lineup.joins(squad: :user)
+                                .find_by!(round: 7, core_users: { email_address: 'demo1@demo.local' })
+
+        expect(lineup).to be_valid
+        expect(lineup.players.size).to eq(11)
+        expect(lineup.total_cost).to be_between(1, Cartola::Lineup::BUDGET)
+      end
+    end
+  end
+
+  describe 'outside development/test' do
+    around do |example|
+      previous = ENV.fetch('SEED_ADMIN_PASSWORD', nil)
+      ENV['SEED_ADMIN_PASSWORD'] = 'senha-vinda-do-env'
+      example.run
+    ensure
+      ENV['SEED_ADMIN_PASSWORD'] = previous
+    end
+
+    it 'skips the demo data, whose password is public' do
+      allow(Rails.env).to receive(:local?).and_return(false)
+
+      load_seed
+
+      expect(demo_users).to be_empty
+      expect(Bolao::Pool.count).to eq(0)
     end
   end
 

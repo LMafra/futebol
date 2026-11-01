@@ -97,7 +97,7 @@ Só documentos: nenhum ticket foi implementado e nenhum arquivo de código mudou
 | [0024](../tickets/TICKET-0024.md) | Bolão: palpites | 0006, 0023 | **implementado** (branch `ticket/0024-bolao-bets`); palpite = `Bolao::Prediction` (sem model `Bet`); `Ui::PredictionFormComponent` da spec §5 criado; seeds de palpites passados salvam com `context: :backfill` |
 | [0025](../tickets/TICKET-0025.md) | Cartola: escalação | 0007, 0011 | **implementado** (branch `ticket/0025-cartola-lineup`); migrations `core_players.cost` + `cartola_lineups.formation`; seeds de jogadores ainda com `cost` 0 (custo editável no admin) |
 | [0026](../tickets/TICKET-0026.md) | Simulador: definir escopo (ADR) | — | **implementado** (branch `ticket/0026-simulador-adr`): [ADR 0003](../adr/0003-simulador.md) decide pela classificação "e se" pública e sem persistência; derivados 0028 (`core_matches.round`) e 0029 (Simulador v1); criação do ADR novo autorizada pelo usuário (0001/0002 intactos) |
-| [0027](../tickets/TICKET-0027.md) | Seeds de demonstração | 0023, 0024, 0025 | `core_matches` sem coluna `round` (vem do `external_id`); datas das rodadas 7–10 do seed estão no passado |
+| [0027](../tickets/TICKET-0027.md) | Seeds de demonstração | 0023, 0024, 0025 | **implementado** (branch `ticket/0027-demo-seeds`): `db/seeds/demo.rb` cria `demo1..5@demo.local`, bolão `DEMO01`, 150 palpites, rodadas 1–4/6 pontuadas, 5 ao vivo e 7–10 deslocadas para o futuro, além da escalação 4-3-3 de `demo1` na rodada 7; só em development/test (senha pública no README); jogadores ganham `cost` C$ 4–13 |
 
 ## Correções aplicadas nesta rodada
 | correção | status | artefato | impacto |

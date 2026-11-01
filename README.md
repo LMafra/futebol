@@ -19,6 +19,17 @@ bin/rails db:prepare db:seed
 git config core.hooksPath .githooks
 ```
 
+## Login demo
+
+Em development e test, `db:seed` cria dados de demonstração. É idempotente: rodar de novo não duplica registros nem repontua.
+
+- Usuários `demo1@demo.local` … `demo5@demo.local`, senha `demo-futebol`. Admin: `admin@futebol.dev` / `futebol-admin` (ou `SEED_ADMIN_PASSWORD`).
+- Bolão `DEMO01` ([`/pools`](http://localhost:3000/pools)), dono `demo1`, com os 5 usuários e 150 palpites nas rodadas 1–10.
+- Rodadas 1–4 e 6 finalizadas e pontuadas; rodada 5 ao vivo; rodadas 7–10 agendadas para os próximos domingos (as datas avançam se já tiverem passado).
+- Escalação 4-3-3 de `demo1` na rodada 7: [`/lineup?round=7`](http://localhost:3000/lineup?round=7).
+
+Fora de development/test, os dados demo não são criados: a senha acima é pública.
+
 ## Filas e erros
 
 - `bin/dev` sobe web + `bin/jobs` (Solid Queue). Development e test usam um banco de fila separado (`futebol_*_queue`), criado por `bin/rails db:prepare`.

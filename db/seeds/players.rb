@@ -3,10 +3,8 @@ module Seeds
     teams.each_with_index do |team, team_index|
       squad.each do |shirt_number, position|
         Core::Player.find_or_create_by!(external_id: "#{team.external_id}-#{shirt_number}") do |player|
-          player.team = team
-          player.name = player_name((team_index * squad.size) + shirt_number)
-          player.position = position
-          player.shirt_number = shirt_number
+          player.assign_attributes(team:, position:, shirt_number:,
+                                   **player_traits((team_index * squad.size) + shirt_number, position))
         end
       end
     end
@@ -16,6 +14,13 @@ module Seeds
   def self.squad
     { 1 => 'GOL', 2 => 'LAT', 3 => 'ZAG', 4 => 'ZAG', 5 => 'MEI', 6 => 'LAT',
       7 => 'ATA', 8 => 'MEI', 9 => 'ATA', 10 => 'MEI', 11 => 'ATA' }
+  end
+
+  def self.player_traits(seed, position) = { name: player_name(seed), cost: player_cost(position, seed) }
+
+  # C$ 4-13: an average 4-3-3 costs about C$ 93, so the Cartola budget of C$ 100 is a real constraint.
+  def self.player_cost(position, seed)
+    { 'GOL' => 5, 'LAT' => 4, 'ZAG' => 4, 'MEI' => 6, 'ATA' => 7 }.fetch(position) + (seed % 7)
   end
 
   def self.player_name(seed)
