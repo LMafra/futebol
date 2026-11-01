@@ -10,9 +10,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000014) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000017) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "bolao_scoring_rules", force: :cascade do |t|
+    t.bigint "pool_id"
+    t.string "kind", null: false
+    t.integer "points", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pool_id", "kind"], name: "index_bolao_scoring_rules_on_pool_id_and_kind", unique: true, nulls_not_distinct: true
+    t.check_constraint "kind::text = ANY (ARRAY['exact_score'::character varying, 'winner_and_goal_diff'::character varying, 'winner'::character varying, 'draw'::character varying]::text[])", name: "bolao_scoring_rules_kind_valid"
+    t.check_constraint "points >= 0", name: "bolao_scoring_rules_points_non_negative"
+  end
+
+  create_table "cartola_scoring_rules", force: :cascade do |t|
+    t.string "name", null: false
+    t.decimal "goal_points", precision: 5, scale: 2, null: false
+    t.decimal "assist_points", precision: 5, scale: 2, null: false
+    t.decimal "yellow_card_penalty", precision: 5, scale: 2, null: false
+    t.decimal "red_card_penalty", precision: 5, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_cartola_scoring_rules_on_name", unique: true
+    t.check_constraint "assist_points >= 0::numeric", name: "cartola_scoring_rules_assist_points_non_negative"
+    t.check_constraint "goal_points >= 0::numeric", name: "cartola_scoring_rules_goal_points_non_negative"
+    t.check_constraint "red_card_penalty >= 0::numeric", name: "cartola_scoring_rules_red_card_penalty_non_negative"
+    t.check_constraint "yellow_card_penalty >= 0::numeric", name: "cartola_scoring_rules_yellow_card_penalty_non_negative"
+  end
 
   create_table "core_audit_logs", force: :cascade do |t|
     t.bigint "user_id"
@@ -68,10 +94,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000014) do
     t.index ["home_team_id"], name: "index_core_matches_on_home_team_id"
     t.index ["match_date"], name: "index_core_matches_on_match_date"
     t.index ["scoring_token"], name: "index_core_matches_on_scoring_token", unique: true, where: "(scoring_token IS NOT NULL)"
-    t.check_constraint "(status::text = 'scored'::text) = (scores_calculated_at IS NOT NULL)", name: "matches_scored_has_timestamp"
     t.check_constraint "home_score >= 0 AND away_score >= 0", name: "matches_scores_non_negative"
     t.check_constraint "home_team_id <> away_team_id", name: "matches_distinct_teams"
-    t.check_constraint "status::text = ANY (ARRAY['scheduled'::character varying, 'live'::character varying, 'finished'::character varying, 'scored'::character varying]::text[])", name: "matches_status_valid"
+    t.check_constraint "scores_calculated_at IS NULL OR (status::text = ANY (ARRAY['finished'::character varying, 'scored'::character varying]::text[]))", name: "matches_timestamp_after_finish"
+    t.check_constraint "status::text <> 'scored'::text OR scores_calculated_at IS NOT NULL", name: "matches_scored_has_timestamp"
+    t.check_constraint "status::text = ANY (ARRAY['scheduled'::character varying, 'live'::character varying, 'finished'::character varying, 'scored'::character varying, 'reverted'::character varying]::text[])", name: "matches_status_valid"
   end
 
   create_table "core_players", force: :cascade do |t|

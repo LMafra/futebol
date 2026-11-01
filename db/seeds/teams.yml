@@ -1,0 +1,21 @@
+# Brasileirão Série A 2026 (demo).
+- { external_id: team-cap, name: Athletico Paranaense, short_name: CAP }
+- { external_id: team-cam, name: Atlético Mineiro, short_name: CAM }
+- { external_id: team-bah, name: Bahia, short_name: BAH }
+- { external_id: team-bot, name: Botafogo, short_name: BOT }
+- { external_id: team-rbb, name: Red Bull Bragantino, short_name: RBB }
+- { external_id: team-cha, name: Chapecoense, short_name: CHA }
+- { external_id: team-cor, name: Corinthians, short_name: COR }
+- { external_id: team-cfc, name: Coritiba, short_name: CFC }
+- { external_id: team-cru, name: Cruzeiro, short_name: CRU }
+- { external_id: team-fla, name: Flamengo, short_name: FLA }
+- { external_id: team-flu, name: Fluminense, short_name: FLU }
+- { external_id: team-gre, name: Grêmio, short_name: GRE }
+- { external_id: team-int, name: Internacional, short_name: INT }
+- { external_id: team-mir, name: Mirassol, short_name: MIR }
+- { external_id: team-pal, name: Palmeiras, short_name: PAL }
+- { external_id: team-rem, name: Remo, short_name: REM }
+- { external_id: team-san, name: Santos, short_name: SAN }
+- { external_id: team-sao, name: São Paulo, short_name: SAO }
+- { external_id: team-vas, name: Vasco da Gama, short_name: VAS }
+- { external_id: team-vit, name: Vitória, short_name: VIT }
