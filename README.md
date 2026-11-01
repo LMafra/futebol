@@ -19,6 +19,8 @@
     <a href="docs/README.md"><strong>Explore a documentação »</strong></a>
     <br />
     <br />
+    <a href="https://futebol-web.onrender.com">App</a>
+    &middot;
     <a href="docs/spec-v3.md">Spec</a>
     &middot;
     <a href="docs/tickets/INDEX.md">Tickets</a>
@@ -72,7 +74,7 @@ Decisões de arquitetura:
 [![OpenObserve][openobserve-badge]][openobserve-url]
 [![Render][render-badge]][render-url]
 
-Infra: Render + Supabase (Postgres) + R2 + Resend + OpenObserve ([MCPs](docs/mcp/README.md)).
+Infra: Render + Supabase (Postgres) + R2 + Resend + OpenObserve ([MCPs](docs/mcp/README.md)). Em produção: [futebol-web.onrender.com](https://futebol-web.onrender.com) no Render (plano free, Ohio) com Postgres no Supabase (`sa-east-1`).
 
 ## Começando
 
@@ -94,6 +96,16 @@ bin/dev   # http://localhost:3000
 
 `bin/setup` faz tudo isso de uma vez. Hooks, variáveis, OpenObserve local e deploy: [docs/OPERATIONS.md](docs/OPERATIONS.md).
 
+### Deploy
+
+O web service `futebol-web` roda o [`Dockerfile`](Dockerfile) no Render; o `bin/docker-entrypoint` aplica as migrations (`db:prepare`) no boot pelo session pooler do Supabase (porta 5432), e o app usa o transaction pooler (porta 6543). Sem worker no plano free: o Solid Queue roda dentro do Puma (`SOLID_QUEUE_IN_PUMA=1`). O serviço não faz auto-deploy; dispare pelo Dashboard (Manual Deploy) ou pelo MCP do Render (`trigger_deploy`).
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" https://futebol-web.onrender.com/up   # 200
+```
+
+No free tier, o Render hiberna o web após 15 min sem tráfego, e o Supabase pausa o projeto após 7 dias sem atividade. Variáveis, poolers, retomada do projeto e passos ainda manuais: [OPERATIONS.md → Deploy](docs/OPERATIONS.md#deploy-render--supabase).
+
 <p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
 
 ## Uso
@@ -105,6 +117,8 @@ bin/dev   # http://localhost:3000
 5. **Finalizar partida:** no admin, Pontuação → Finalizar partida confirma o placar; o job pontua palpites e escalações (Pontuação → Reverter pontuação desfaz).
 
 Login demo (só development/test, criado pelo `db:seed`): `demo1@demo.local` … `demo5@demo.local` / `demo-futebol` e o admin `admin@futebol.dev` / `futebol-admin`, com o bolão `DEMO01` já pontuado. Detalhes dos dados demo, filas e comandos: [docs/OPERATIONS.md](docs/OPERATIONS.md).
+
+Em produção não há contas demo, porque a senha acima é pública: o seed cria só o admin, com senha forte guardada fora do repositório, além de times, jogadores e partidas. Ainda não há cadastro público nem tela de usuários no admin: novas contas saem do console (`bin/rails console` com `Core::User.create!`).
 
 ## Roadmap
 
@@ -119,7 +133,8 @@ Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 27 tickets ([INDEX
 - [x] Escopo do Simulador ([ADR 0003](docs/adr/0003-simulador.md))
 - [x] CI (lint, testes, system specs, seeds 2×, gitleaks) e `render.yaml`
 - [x] Observabilidade com OpenTelemetry → OpenObserve e banco no Supabase
-- [ ] Primeiro deploy: projeto Supabase, OpenObserve Cloud e Blueprint no Render (manual)
+- [x] Primeiro deploy: projeto Supabase e web service `futebol-web` no Render, via MCPs
+- [ ] Pendências de produção: R2, Resend, OpenObserve Cloud, `RENDER_DEPLOY_HOOK_URL` e keep-alive (manual)
 - [ ] 0028: `core_matches.round`
 - [ ] 0029: Simulador v1 "e se"
 - [ ] Backlog: salvar/compartilhar simulação, Monte Carlo da temporada
