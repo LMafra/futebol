@@ -33,12 +33,22 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # ActiveAdmin config.authentication_method.
+  def authenticate_admin_user!
+    return request_authentication unless authenticated?
+    return if current_user&.admin?
+
+    render_forbidden(Pundit::NotAuthorizedError.new('admin required'))
+  end
+
   # ActiveAdmin denials (config.on_unauthorized_access): a redirect would loop back into the admin.
-  def render_forbidden(exception)
+  def render_forbidden(exception, message: nil)
     Rails.logger.warn("forbidden #{controller_path}##{action_name} user_id=#{current_user&.id}: #{exception.message}")
     respond_to do |format|
       format.json { render json: { error: 'forbidden' }, status: :forbidden }
-      format.any { render 'errors/forbidden', layout: 'application', formats: :html, status: :forbidden }
+      format.any do
+        render 'errors/forbidden', layout: 'application', formats: :html, status: :forbidden, locals: { message: }
+      end
     end
   end
 end

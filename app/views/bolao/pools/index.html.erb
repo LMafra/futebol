@@ -1,0 +1,6 @@
+<% content_for(:title, "Meus bolões · Futebol") %>
+
+<div class="max-w-3xl">
+  <%= render "shared/flash" %>
+  <%= render Pools::IndexComponent.new(pools: @pools, error: @error, state: @error ? :error : (@pools.empty? ? :empty : :default)) %>
+</div>
