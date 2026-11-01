@@ -22,7 +22,7 @@ git config core.hooksPath .githooks
 
 ## Ferramentas de qualidade
 
-- **N+1 (`prosopite` + `pg_query`, dev/test):** um N+1 faz a spec falhar com `Prosopite::NPlusOneQueriesError`. A varredura é feita por unidade de trabalho: cada request (middleware Rack mais externo em `config/environments/test.rb`), cada `perform` de job e cada `render_inline` de componente. Não é feita no exemplo inteiro, porque repetir uma unidade (dois requests, job rodado duas vezes) não é N+1. Configuração: [`spec/support/prosopite.rb`](spec/support/prosopite.rb); prova: `spec/lib/n_plus_one_detection_spec.rb`.
+- **N+1 (`prosopite` + `pg_query`, dev/test):** um N+1 faz a spec falhar com `Prosopite::NPlusOneQueriesError`. A varredura é feita por unidade de trabalho: cada request (middleware Rack em `config/environments/test.rb`, o mais externo depois do `Rack::Events` do OpenTelemetry), cada `perform` de job e cada `render_inline` de componente. Não é feita no exemplo inteiro, porque repetir uma unidade (dois requests, job rodado duas vezes) não é N+1. Configuração: [`spec/support/prosopite.rb`](spec/support/prosopite.rb); prova: `spec/lib/n_plus_one_detection_spec.rb`.
 - **Migrations (`strong_migrations`, development):** bloqueia operações perigosas (`remove_column`, índice sem `algorithm: :concurrently`, etc.) a partir da migration `20261031000031`; as versões aqui são sequenciais.
 - **Schema × models (`database_consistency`, dev/test):** `bundle exec database_consistency -c .database_consistency.todo.yml`. O todo lista os 19 achados existentes (índices redundantes, unique sem validação, `dependent` ausente); o CI falha só em achados novos.
 - **Componentes (`lookbook`, development):** [`/lookbook`](http://localhost:3000/lookbook), com os previews de `spec/components/previews` (4 estados por componente de `Ui::`).
@@ -40,12 +40,38 @@ Em development e test, `db:seed` cria dados de demonstração. É idempotente: r
 
 Fora de development/test, os dados demo não são criados: a senha acima é pública.
 
-## Filas e erros
+## Filas
 
 - `bin/dev` sobe web + `bin/jobs` (Solid Queue). Development e test usam um banco de fila separado (`futebol_*_queue`), criado por `bin/rails db:prepare`.
 - Painel das filas: [`/admin/jobs`](http://localhost:3000/admin/jobs) (mission_control-jobs). Visitante vai para o login; usuário sem `admin` recebe 403 (`JobsDashboardPolicy`).
-- Sentry: DSN em `SENTRY_DSN` ([.env.example](.env.example)), `send_default_pii = false`. Sem DSN em development, os eventos vão para `log/sentry_debug_events.log`.
-- Teste da integração: `bin/rails sentry:fake_exception` (imprime o `event_id` e o destino).
+
+## Observabilidade (OpenTelemetry → OpenObserve)
+
+Traces e logs saem por OTLP/HTTP para o [OpenObserve](https://openobserve.ai) ([`config/initializers/opentelemetry.rb`](config/initializers/opentelemetry.rb)). Serviço `futebol`; `use_all` instrumenta Rails (Action Pack/View, Active Record, Active Job, e portanto Solid Queue), Rack, PG (SQL ofuscado), Faraday e Net::HTTP. O health check `/up` não gera trace.
+
+| Variável | Uso |
+|---|---|
+| `OPENOBSERVE_OTLP_ENDPOINT` | URL base OTLP de uma organização do OpenObserve (`http://host:5080/api/<org>`); o app acrescenta `/v1/traces` e `/v1/logs`. Vazia: development usa `http://localhost:5080/api/default`, production não exporta e test nunca exporta. |
+| `OPENOBSERVE_AUTH` | Valor do header `Authorization`: `Basic <base64 de email:senha>`. Um token base64 sem prefixo recebe `Basic `. |
+| `OTEL_SDK_DISABLED` | `true` desliga o SDK (ex.: development sem OpenObserve rodando). |
+
+A porta é a 5080 (HTTP), não a 5081: a 5081 é o OTLP/gRPC do OpenObserve, e o exporter Ruby (`opentelemetry-exporter-otlp`) fala só OTLP/HTTP.
+
+OpenObserve local via Docker (UI em [localhost:5080](http://localhost:5080); a senha precisa ter maiúscula, minúscula, dígito e símbolo):
+
+```bash
+docker run -d --name futebol-openobserve -p 5080:5080 -p 5081:5081 \
+  -e ZO_ROOT_USER_EMAIL=root@futebol.local -e 'ZO_ROOT_USER_PASSWORD=Futebol-local1' \
+  -v futebol-openobserve:/data public.ecr.aws/zinclabs/openobserve:latest
+export OPENOBSERVE_AUTH="Basic $(printf 'root@futebol.local:Futebol-local1' | base64)"
+bin/dev   # cada request vira um trace (stream "default", aba Traces)
+```
+
+- **Erros:** um subscriber do `Rails.error` ([`lib/observability/error_span_subscriber.rb`](lib/observability/error_span_subscriber.rb)) transforma cada exceção reportada num span `exception <Classe>` com status `ERROR` e os atributos `exception.type`, `exception.message`, `exception.backtrace` (50 linhas), `exception.handled` e o contexto escalar em `error.context.*` (ex.: `match_id`, `scoring_token`). O span é filho do span da request ou do job. Cobre os `Rails.error.report` dos jobs com rescue e as exceções não tratadas que o próprio Rails reporta; cada exceção é reportada uma vez.
+- **Teste da integração:** `bin/rails observability:fake_exception` imprime o `trace_id` para buscar no OpenObserve.
+- **Logs (abordagem escolhida: OTel logs, sem sidecar):** o Lograge grava uma linha JSON por request no stdout (logs do Render), com `request_id`, `user_id`, `trace_id` e `span_id`. A instrumentação Logger do OTel envia cada linha de log, inclusive a do Lograge, como log record para o mesmo endpoint (`/v1/logs`, stream "default", aba Logs), já ligada ao trace. Não há collector nem sidecar para operar no Render, e o mesmo endpoint e credencial servem traces e logs. O custo: o SDK de logs Ruby ainda é 0.x.
+- **Maturidade:** traces estão estáveis (`opentelemetry-sdk` 1.x). Logs (`opentelemetry-logs-sdk` 0.x, instrumentação Logger 0.x) estão em desenvolvimento e a API pode mudar. Métricas ainda não estão configuradas.
+- **OpenObserve MCP:** não é usado nesta fase. Se existir no Cursor, fica só documentado em [docs/mcp](docs/mcp/README.md).
 
 ## CI
 
@@ -62,7 +88,7 @@ Fora de development/test, os dados demo não são criados: a senha acima é púb
 
 [`render.yaml`](render.yaml) define `futebol-web` (Docker, Puma + Thruster, health check `/up`) e `futebol-worker` (`./bin/jobs`, Solid Queue). O `bin/docker-entrypoint` roda `db:prepare` no boot do web e cria `<db>_cache`, `<db>_queue` e `<db>_cable` ao lado do banco do `DATABASE_URL` no Neon.
 
-Variáveis (grupo `futebol` no Render): `RAILS_MASTER_KEY`, `DATABASE_URL`, `APP_HOST`, `R2_*`, `RESEND_*`, `SENTRY_DSN` (ver [.env.example](.env.example)). No plano free, sem worker: remova `futebol-worker` e defina `SOLID_QUEUE_IN_PUMA=1` no web.
+Variáveis (grupo `futebol` no Render): `RAILS_MASTER_KEY`, `DATABASE_URL`, `APP_HOST`, `R2_*`, `RESEND_*`, `OPENOBSERVE_OTLP_ENDPOINT`, `OPENOBSERVE_AUTH` (ver [.env.example](.env.example)). No plano free, sem worker: remova `futebol-worker` e defina `SOLID_QUEUE_IN_PUMA=1` no web.
 
 Passos manuais (sem credenciais no ambiente do agente):
 

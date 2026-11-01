@@ -27,7 +27,9 @@ RSpec.describe 'N+1 detection (spec/support/prosopite.rb)' do
     expect { app.call(Rack::MockRequest.env_for('/probe')) }.to raise_error(Prosopite::NPlusOneQueriesError)
   end
 
-  it 'mounts the middleware outermost in the test app' do
-    expect(Rails.application.middleware.first.klass).to eq(Prosopite::Middleware::Rack)
+  it 'mounts the middleware outermost in the test app, inside only the OTel request span (Rack::Events)' do
+    middlewares = Rails.application.middleware.map(&:klass)
+
+    expect(middlewares.first(2)).to eq([Rack::Events, Prosopite::Middleware::Rack])
   end
 end

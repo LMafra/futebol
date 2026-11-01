@@ -68,6 +68,6 @@ class ProcessCsvImportJob < ApplicationJob
 
   def report_failure(error, csv_import_id:)
     Rails.logger.error("ProcessCsvImportJob failed csv_import_id=#{csv_import_id}: #{error.class} #{error.message}")
-    Sentry.capture_exception(error, extra: { csv_import_id: })
+    Rails.error.report(error, severity: :error, context: { csv_import_id: })
   end
 end

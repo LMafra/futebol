@@ -6,7 +6,6 @@ RSpec.describe ProcessCsvImportJob do
   before do
     create(:championship, external_id: 'brasileirao-2026')
     %w[flamengo palmeiras corinthians santos].each { |external_id| create(:team, external_id:) }
-    allow(Sentry).to receive(:capture_exception)
   end
 
   def csv_import_with(content = nil, fixture: nil)
@@ -123,7 +122,7 @@ RSpec.describe ProcessCsvImportJob do
       expect(task.error_message).to eq(%(partida "br26-y": home_team 'gremio' não encontrado))
     end
 
-    it 'registra o erro no log e no Sentry, sem re-raise (arquivo inválido não melhora com retry)' do
+    it 'registra o erro no log e num span OTel de erro, sem re-raise (arquivo inválido não melhora com retry)' do
       allow(Rails.logger).to receive(:error).and_call_original
       task = csv_import_with("#{header}br26-z,brasileirao-2026,flamengo,santos,2026-05-01 16:00,abc,0\n")
 
@@ -131,8 +130,8 @@ RSpec.describe ProcessCsvImportJob do
 
       expect(Rails.logger).to have_received(:error)
         .with(/ProcessCsvImportJob failed csv_import_id=#{task.id}: ArgumentError/)
-      expect(Sentry).to have_received(:capture_exception)
-        .with(an_instance_of(ArgumentError), hash_including(extra: { csv_import_id: task.id }))
+      expect(error_spans(ArgumentError).sole.attributes)
+        .to include('error.context.csv_import_id' => task.id, 'exception.severity' => 'error')
     end
   end
 end

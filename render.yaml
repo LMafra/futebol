@@ -44,7 +44,10 @@ envVarGroups:
         sync: false
       - key: RESEND_FROM
         sync: false
-      - key: SENTRY_DSN
+      # OpenTelemetry → OpenObserve (traces + logs); unset = nothing exported
+      - key: OPENOBSERVE_OTLP_ENDPOINT
+        sync: false
+      - key: OPENOBSERVE_AUTH
         sync: false
       - key: RAILS_LOG_LEVEL
         value: info
