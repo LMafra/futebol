@@ -29,12 +29,13 @@ class ProcessMatchPointsJob < ApplicationJob
   end
 
   def score_rows(match, scoring_token)
-    rules_by_pool = Hash.new { |cache, pool| cache[pool] = Bolao::ScoringRule.for(pool) }
+    predictions = Bolao::Prediction.kept.where(match:).includes(:pool).to_a
+    rules_by_pool = Bolao::ScoringRule.by_pool(predictions.map(&:pool_id))
     now = Time.current
 
-    Bolao::Prediction.kept.where(match:).includes(:pool).map do |prediction|
+    predictions.map do |prediction|
       points = Scoring::Engine.points_for(prediction:, home: match.home_score, away: match.away_score,
-                                          rules: rules_by_pool[prediction.pool])
+                                          rules: rules_by_pool.fetch(prediction.pool_id))
       { prediction_id: prediction.id, points:, scoring_token:, created_at: now, updated_at: now }
     end
   end

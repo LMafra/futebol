@@ -23,10 +23,9 @@ module Bolao
     end
 
     def call
-      rules_by_pool = Hash.new { |cache, pool| cache[pool] = ScoringRule.for(pool) }
-      rows = Prediction.kept.where(match: @match).includes(:pool).order(:id).map do |prediction|
-        row_for(prediction, rules_by_pool[prediction.pool])
-      end.freeze
+      predictions = Prediction.kept.where(match: @match).includes(:pool).order(:id).to_a
+      rules_by_pool = ScoringRule.by_pool(predictions.map(&:pool_id))
+      rows = predictions.map { |prediction| row_for(prediction, rules_by_pool.fetch(prediction.pool_id)) }.freeze
 
       Preview.new(rows:, total: rows.sum(&:points))
     end

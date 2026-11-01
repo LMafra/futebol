@@ -75,5 +75,20 @@ RSpec.describe Bolao::ScoringRule do
 
       expect(described_class.for(pool)).to eq(exact_score: 15, winner_and_goal_diff: 7, winner: 5, draw: 3)
     end
+
+    it 'resolves several pools in one query with .by_pool, each with its own overrides' do
+      create(:bolao_scoring_rule, pool: pool, kind: 'exact_score', points: 15)
+      create(:bolao_scoring_rule, pool: other_pool, kind: 'winner', points: 1)
+
+      queries = []
+      counter = ->(*, payload) { queries << payload[:sql] unless payload[:name] == 'SCHEMA' }
+      rules = ActiveSupport::Notifications.subscribed(counter, 'sql.active_record') do
+        described_class.by_pool([pool.id, other_pool.id, pool.id])
+      end
+
+      expect(queries.size).to eq(1)
+      expect(rules).to eq(pool.id => { exact_score: 15, winner_and_goal_diff: 7, winner: 5, draw: 3 },
+                          other_pool.id => { exact_score: 10, winner_and_goal_diff: 7, winner: 1, draw: 3 })
+    end
   end
 end

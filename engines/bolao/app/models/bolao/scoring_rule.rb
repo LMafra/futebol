@@ -11,12 +11,18 @@ module Bolao
     def self.ransackable_attributes(_auth_object = nil) = %w[kind pool_id]
     def self.ransackable_associations(_auth_object = nil) = %w[pool]
 
-    # Global rules first so pool overrides win when the hash is built.
-    def self.for(pool)
-      where(pool_id: [nil, pool&.id].uniq)
-        .order(Arel.sql('pool_id NULLS FIRST'))
-        .to_h { |rule| [rule.kind.to_sym, rule.points] }
+    def self.for(pool) = by_pool([pool&.id]).fetch(pool&.id)
+
+    # Rules of many pools in one query: { pool_id => { kind: points } }, each pool's rules overriding the global ones.
+    def self.by_pool(pool_ids)
+      rules = where(pool_id: [nil, *pool_ids].uniq).group_by(&:pool_id)
+      global = points_by_kind(rules[nil])
+
+      pool_ids.uniq.index_with { |pool_id| global.merge(points_by_kind(rules[pool_id])) }
     end
+
+    def self.points_by_kind(rules) = Array(rules).to_h { |rule| [rule.kind.to_sym, rule.points] }
+    private_class_method :points_by_kind
 
     def to_s = "#{kind} (#{pool || 'global'})"
   end

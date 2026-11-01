@@ -26,6 +26,7 @@ git config core.hooksPath .githooks
 - **Migrations (`strong_migrations`, development):** bloqueia operações perigosas (`remove_column`, índice sem `algorithm: :concurrently`, etc.) a partir da migration `20261031000031`; as versões aqui são sequenciais.
 - **Schema × models (`database_consistency`, dev/test):** `bundle exec database_consistency -c .database_consistency.todo.yml`. O todo lista os 19 achados existentes (índices redundantes, unique sem validação, `dependent` ausente); o CI falha só em achados novos.
 - **Componentes (`lookbook`, development):** [`/lookbook`](http://localhost:3000/lookbook), com os previews de `spec/components/previews` (4 estados por componente de `Ui::`).
+- **System specs (Capybara + Cuprite, test):** `spec/system/admin_finalizes_match_spec.rb` (admin loga, simula o placar no preview, confirma na finalização e o job pontua) e `spec/system/user_places_bet_spec.rb` (login, entra no bolão pelo código, vê o countdown andar e palpita). Rodam em Chrome headless via CDP, sem chromedriver. Sem Chrome no PATH, defina `BROWSER_PATH` (ex.: o Chromium do Playwright em `~/.cache/ms-playwright/chromium-*/chrome-linux64/chrome`); sem navegador, as specs ficam pendentes fora do CI. `HEADFUL=1` abre a janela.
 - **E-mail (`letter_opener`, development):** e-mails abrem no navegador em vez de sair; as cópias ficam em `tmp/letter_opener`.
 
 ## Login demo
@@ -51,7 +52,7 @@ Fora de development/test, os dados demo não são criados: a senha acima é púb
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) roda em todo PR e em push para `main` e `tier/**`:
 
 - `lint`: RuboCop, `packwerk validate` + `packwerk check`, `zeitwerk:check`, Brakeman, `bundler-audit check --update` e o grep de design (sem gradient/blur/glow).
-- `test`: `db:prepare` (primary + queue) no Postgres 18, `bundle exec rspec` e depois `db:seed` duas vezes, falhando se a linha `seeds ok (...)` com as contagens mudar entre as cargas.
+- `test`: `db:prepare` (primary + queue) no Postgres 18, `database_consistency`, `bundle exec rspec` (sem `spec/system`), as system specs num step próprio (`RAILS_SYSTEM_TESTING_SCREENSHOT=failed`, screenshots de falha como artifact) e depois `db:seed` duas vezes, falhando se a linha `seeds ok (...)` com as contagens mudar entre as cargas.
 - `secrets`: `gitleaks detect` no histórico inteiro. Falsos positivos revisados vão para [`.gitleaksignore`](.gitleaksignore) (fingerprint por linha).
 - `deploy`: só em push para `main`, depois de `lint`, `test` e `secrets`; chama `RENDER_DEPLOY_HOOK_URL` (secret do repositório). Sem o secret, o job avisa e o deploy fica manual.
 
