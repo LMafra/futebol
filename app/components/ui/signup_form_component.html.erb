@@ -17,6 +17,11 @@
         </div>
       <% end %>
 
+      <div class="flex items-start gap-2">
+        <%= check_box_tag "user[public_profile_consent]", "1", public_profile_consent, id: "user_public_profile_consent", class: "mt-1 size-4 accent-pitch" %>
+        <%= label_tag "user_public_profile_consent", t("public_profile_consent.label"), class: "text-sm" %>
+      </div>
+
       <div>
         <%= form.submit "Criar conta", class: button_classes %>
       </div>

@@ -6,7 +6,8 @@
   <h1 class="mt-1 border-b-4 border-ink pb-2 font-display text-4xl font-extrabold tracking-tight">Criar conta</h1>
 
   <div class="mt-6">
-    <%= render Ui::SignupFormComponent.new(user:, state: user.errors.any? ? :error : :default) %>
+    <%= render Ui::SignupFormComponent.new(user:, public_profile_consent: @public_profile_consent.present?,
+                                           state: user.errors.any? ? :error : :default) %>
   </div>
 
   <p class="mt-6 text-sm text-graphite">

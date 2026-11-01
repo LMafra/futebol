@@ -2,6 +2,8 @@ module Core
   class User < ApplicationRecord
     # Users::AnonymizeService rewrites emails into this reserved TLD (RFC 2606); nobody signs up with one.
     ANONYMIZED_EMAIL_DOMAIN = '@invalid'.freeze
+    # Shown in public rankings for users who did not opt in (LGPD).
+    PUBLIC_FALLBACK_NAME = 'Participante'.freeze
 
     has_secure_password
     has_many :sessions, class_name: 'Core::Session', dependent: :destroy
@@ -21,6 +23,16 @@ module Core
     validate :email_address_not_anonymized, on: :create
 
     def to_s = email_address
+
+    def public_profile_consented? = public_profile_consented_at.present?
+
+    # First name and last-name initial ("Lucas M."), only with consent.
+    def public_display_name
+      first_name, *other_names = name.to_s.split
+      return PUBLIC_FALLBACK_NAME unless public_profile_consented? && first_name
+
+      [first_name, other_names.last&.then { |last_name| "#{last_name[0].upcase}." }].compact.join(' ')
+    end
 
     private
 

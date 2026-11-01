@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000037) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000038) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -336,6 +336,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000037) do
     t.string "cpf"
     t.boolean "active", default: true, null: false
     t.datetime "anonymized_at"
+    t.datetime "public_profile_consented_at"
     t.index ["cpf"], name: "index_core_users_on_cpf", unique: true, where: "(cpf IS NOT NULL)"
     t.index ["email_address"], name: "index_core_users_on_email_address", unique: true
     t.check_constraint "anonymized_at IS NULL OR NOT active AND cpf IS NULL", name: "core_users_anonymized_inactive"

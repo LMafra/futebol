@@ -34,6 +34,7 @@
             <details class="relative" data-role="account-menu">
               <summary class="cursor-pointer list-none underline-offset-2 hover:underline">Minha conta</summary>
               <ul class="absolute right-0 z-10 mt-2 flex w-48 flex-col rounded-sm border border-rule bg-white py-1 text-ink">
+                <li><%= link_to "Minha conta", main_app.account_path, class: "block px-3 py-2 hover:bg-paper" %></li>
                 <li><%= link_to "Meus bolões", main_app.pools_path, class: "block px-3 py-2 hover:bg-paper" %></li>
                 <li><%= link_to "Meu #{module_label(:fantasy).downcase}", main_app.esquadrao_path, class: "block px-3 py-2 hover:bg-paper" %></li>
                 <li><%= link_to "Rankings", main_app.esquadrao_rankings_path, class: "block px-3 py-2 hover:bg-paper" %></li>

@@ -32,6 +32,7 @@ module Users
         password: SecureRandom.hex(32),
         admin: false,
         active: false,
+        public_profile_consented_at: nil,
         anonymized_at: Time.current
       }
     end
