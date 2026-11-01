@@ -38,7 +38,7 @@ RSpec.describe 'Sessions', type: :request do
     sign_in(user, password: 'wrong-password')
 
     expect(response).to redirect_to(new_session_path)
-    expect(flash[:alert]).to be_present
+    expect(flash[:alert]).to eq('E-mail ou senha incorretos. Tente novamente.')
     expect(user.sessions).to be_empty
   end
 

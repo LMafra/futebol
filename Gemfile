@@ -49,6 +49,7 @@ gem 'faraday', '~> 2.15'
 gem 'lograge', '~> 0.15'
 gem 'mission_control-jobs', '~> 1.3'
 gem 'pundit', '~> 2.5'
+gem 'rails-i18n', '~> 8.0'
 gem 'stoplight', '~> 6.0'
 # Blocks unsafe migrations (locks, rewrites); in every group because migrations call safety_assured and the
 # deploy runs them (db:prepare) [https://github.com/ankane/strong_migrations]

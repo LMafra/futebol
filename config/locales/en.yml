@@ -1,17 +1,8 @@
 # Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
+# are automatically loaded by Rails. The app runs in pt-BR (config/locales/pt-BR.yml); English stays available.
 #
 # To learn more about the API, please read the Rails Internationalization guide
 # at https://guides.rubyonrails.org/i18n.html.
 
 en:
   hello: "Hello world"
-  activemodel:
-    attributes:
-      finalization:
-        home_score: "Placar do mandante"
-        away_score: "Placar do visitante"
-        score_confirmation: "Confirmação do placar"
-      reversal:
-        reason: "Motivo"
