@@ -113,6 +113,20 @@ jobs:
           echo "2nd: $second"
           test -n "$first" && test "$first" = "$second"
 
+      # The schema above comes from db/schema.rb, so migrations only really run on deploy (db:prepare in
+      # bin/docker-entrypoint), with the Dockerfile bundle (BUNDLE_WITHOUT=development). Last, so the seeded
+      # rows exercise the backfills on the way down and up.
+      - name: Recent migrations, production bundle (down to StrongMigrations.start_after, then up)
+        env:
+          BUNDLE_WITHOUT: development
+        run: |
+          if ! version=$(bin/rails runner 'print StrongMigrations.start_after' 2>/dev/null) || [ -z "$version" ]; then
+            echo "::error::strong_migrations does not load with BUNDLE_WITHOUT=development (migrations call safety_assured)"
+            exit 1
+          fi
+          bin/rails db:migrate:primary VERSION="$version"
+          bin/rails db:migrate
+
   secrets:
     name: Secrets (gitleaks)
     runs-on: ubuntu-24.04
