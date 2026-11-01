@@ -1,0 +1,17 @@
+phase: 1
+status: warning
+artifacts:
+  - docs/adr/0001-arch.md
+  - GLOSSARY.md
+handoff: docs/handoffs/PHASE-1.md
+acceptance:
+  - {name: ADR ≤2 páginas, result: pass, evidence: "71 linhas / 541 palavras"}
+  - {name: Guard corrigido explícito, result: pass, evidence: "Decisão 2, passos 1-3 com ANTES"}
+  - {name: 5 colunas críticas listadas, result: pass, evidence: "tabela Decisão 3 (grep 5/5)"}
+  - {name: 4 jobs listados, result: pass, evidence: "tabela Decisão 4 (grep 4/4)"}
+  - {name: Decisões scoring_token/match_date explícitas, result: pass, evidence: "Decisão 6 linhas 56-57"}
+warnings:
+  - "Input ausente: 3 docs de arquitetura + 7 correções não existem em disco/transcripts; contratos e as 7 correções foram derivados do prompt"
+  - "status=warning (acceptance 5/5 pass) por input inferido; downstream deve validar com os docs reais"
+downstream_affected: [3, 4, 5, 6, 7]
+mcp_calls: []

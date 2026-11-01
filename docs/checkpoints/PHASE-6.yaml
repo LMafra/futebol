@@ -1,0 +1,23 @@
+phase: 6
+status: ok
+artifacts:
+  - README.md
+  - docs/mcp/README.md
+  - https://github.com/LMafra/futebol/pull/1
+handoff: docs/handoffs/PHASE-6.md
+acceptance:
+  - {name: PR criado (URL registrada), result: pass, evidence: "https://github.com/LMafra/futebol/pull/1 (base main=ca5c13d, head feat/scaffold-docs-deploy-bootstrap)"}
+  - {name: README com links, result: pass, evidence: "README.md: 5 bullets → ADR, design, spec, INDEX, docs/mcp, STATUS"}
+  - {name: Status de cada MCP registrado, result: pass, evidence: "README 'Status MCP (Fase 6)' + docs/mcp/README.md: 4 × manual"}
+warnings:
+  - "repo GitHub privado LMafra/futebol criado via gh (necessário para o PR)"
+  - "main remoto = bootstrap Fase 0 (ca5c13d); local main movido com git branch -f (commits preservados na feature branch)"
+  - "guardrail .claude bloqueia git push só para Claude Code; push feito pelo orquestrador por exigência da fase"
+  - "README.md evoluído in-place (append; seção MCPs da Fase 0 preservada); v1 em git ca5c13d"
+  - "nenhum deploy/bucket/e-mail real executado (MCPs ausentes)"
+downstream_affected: [7]
+mcp_calls:
+  - "r2: create_bucket futebol-dev/futebol-prod → não configurado → manual: npx wrangler r2 bucket create futebol-dev|futebol-prod"
+  - "render: trigger deploy → não configurado → manual: curl -X POST $RENDER_DEPLOY_HOOK_URL"
+  - "resend: send test email → não configurado → manual: curl https://api.resend.com/emails"
+  - "neon: SELECT 1 → não configurado → manual: psql $NEON_DEV_DATABASE_URL -c 'SELECT 1'"

@@ -1,0 +1,16 @@
+phase: 4
+version: 2
+correction: 3 (cascata)
+status: warning
+artifacts:
+  - docs/tickets/TICKET-0003-v2.md
+handoff: docs/handoffs/PHASE-4.md
+acceptance:
+  - {name: TICKET-0003 com 2 specs de regressão como critério de pronto, result: pass, evidence: "TICKET-0003-v2.md 'Pronto quando'"}
+  - {name: formato mantido (título, deps, skill, MCP, paths, pronto, teste antes/depois), result: pass, evidence: "TICKET-0003-v2.md"}
+warnings:
+  - "herda warnings de PHASE-3-v2 (estado reverted inexistente; check constraint) → listados em 'Bloqueios conhecidos'"
+  - "TICKET-0003.md v1 mantido; INDEX aponta para v2"
+cascade: "nenhuma além do TICKET-0003"
+downstream_affected: []
+mcp_calls: []

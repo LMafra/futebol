@@ -1,0 +1,19 @@
+phase: 0
+version: 2
+correction: 5
+status: ok
+artifacts:
+  - .gitignore
+handoff: docs/handoffs/PHASE-0.md
+diff: "+ *.sqlite3, *.sqlite3-* (após /spec/examples.txt)"
+acceptance:
+  - {name: .env e .env.local ignorados, result: pass, evidence: "git check-ignore: /.env*"}
+  - {name: credentials.yml.enc commitado / master.key ignorado, result: pass, evidence: "git ls-files config/credentials.yml.enc; /config/master.key + /config/*.key"}
+  - {name: "*.sqlite3, *.sqlite3-* ignorados", result: pass, evidence: "git check-ignore -v db/development.sqlite3 → .gitignore:20 (antes: faltava)"}
+  - {name: /log/*.log ignorado, result: pass, evidence: "/log/* cobre"}
+  - {name: /tmp/* ignorado, result: pass, evidence: "/tmp/*"}
+warnings:
+  - "correção aplicada in-place no .gitignore (docs/.gitignore-fase0-backup não criado: git não lê backup)"
+cascade: "nenhuma"
+downstream_affected: []
+mcp_calls: []

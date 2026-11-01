@@ -1,0 +1,16 @@
+phase: 2
+status: ok
+artifacts:
+  - docs/design/0001-direction.md
+handoff: docs/handoffs/PHASE-2.md
+acceptance:
+  - {name: Paleta nomeada fora do eixo azul/violeta, result: pass, evidence: "paper #F4F1EA / pitch #0B6B3A / cartola #E85D04 (seção 1)"}
+  - {name: Fontes serif+humanista nomeadas, result: pass, evidence: "Fraunces + Source Sans 3 (seção 2)"}
+  - {name: Referência cultural explícita, result: pass, evidence: "Placar, Lance!, placa de estádio, mesa redonda (topo + seção 6)"}
+  - {name: Checklist anti-AI completa, result: pass, evidence: "seção 6: 9 proibidos + 6 obrigatórios"}
+warnings:
+  - "ui-ux-pro-max --design-system sugeriu vermelho #DC2626 + Bebas Neue; descartado por restrição do prompt (mantido Source Sans 3)"
+  - "skills brand/ui-styling não consultadas a fundo (economia de tokens); tokens seguem design-system 3 camadas"
+  - "contrastes verificados por cálculo WCAG: 16.0 / 6.6 / 5.2 / 15.8"
+downstream_affected: [2.5, 3, 4, 5, 6, 7]
+mcp_calls: []

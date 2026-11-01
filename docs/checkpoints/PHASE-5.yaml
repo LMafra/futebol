@@ -1,0 +1,28 @@
+phase: 5
+status: ok
+artifacts:
+  - Gemfile
+  - config/database.yml
+  - engines/{core,bolao,cartola,simulador}/
+  - engines/{core,bolao,cartola}/db/migrate/ (12 migrations vazias)
+  - app/{admin,components,jobs,services,policies}/
+  - spec/{spec_helper,rails_helper}.rb
+  - db/seeds.rb
+  - db/.rubocop.yml
+handoff: docs/handoffs/PHASE-5.md
+acceptance:
+  - {name: Rails + 4 engines gerados, result: pass, evidence: "rails new (8.1.2) + rails plugin new --mountable x4; zeitwerk:check 'All is good!'"}
+  - {name: Migrations com TODO:TICKET, result: pass, evidence: "grep 'TODO: TICKET' engines/*/db/migrate = 12/12"}
+  - {name: seeds.rb executa sem erro, result: pass, evidence: "bin/rails db:seed → 'seeds ok' (commit fbf0100)"}
+  - {name: db:migrate rodou (neon ou local), result: pass, evidence: "LOCAL: docker postgres:18 'futebol-pg' localhost:5440; db:migrate:status 12 up"}
+warnings:
+  - "MCP neon não configurado → db local docker (futebol-pg, porta 5440); 1 linha registrada"
+  - "rails new --skip acrescentou '/config/*.key' ao .gitignore da Fase 0 (aditivo, não regenerado)"
+  - "rubocop -a inicial (cops Rails/* vazando de engines/*/.rubocop.yml) trocou puts→Rails.logger.debug em seeds; revertido em fbf0100"
+  - "engines/*/.rubocop.yml (omakase) e engines/*/Gemfile removidos; db/.rubocop.yml novo (herda raiz) para schemas gerados — .rubocop.yml da Fase 0 intacto"
+  - "rspec-rails 8.0 + factory_bot_rails 6.5 adicionados (necessários para spec/); demais gems de domínio + packwerk ficam no TICKET-0001"
+  - "app/admin e app/components só com .keep (ActiveAdmin/ViewComponent não instalados)"
+  - "Core::Match/AASM não scaffoldados (dependem de migrations reais: TICKET-0002/0003)"
+downstream_affected: [6, 7]
+mcp_calls:
+  - "neon: não chamado (não configurado)"

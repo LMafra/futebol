@@ -1,0 +1,6 @@
+{
+  "$schema": "https://www.cursor.com/schemas/environment.schema.json",
+  "name": "futebol-rails8",
+  "install": "bundle install && bin/rails db:prepare",
+  "test": "bundle exec rspec && bundle exec rubocop && bundle exec packwerk check && bin/rails zeitwerk:check"
+}

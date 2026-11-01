@@ -1,0 +1,23 @@
+phase: 0
+status: ok
+artifacts:
+  - .git/
+  - .gitignore
+  - .rubocop.yml
+  - .githooks/pre-commit
+  - .claude/settings.json
+  - .claude/hooks/block-dangerous-git.sh
+  - README.md
+handoff: docs/handoffs/PHASE-0.md
+acceptance:
+  - {name: git init executado, result: pass, evidence: "git init -b main; commit ca5c13d"}
+  - {name: README.md com seção MCPs (4), result: pass, evidence: "grep linhas neon|render|r2|resend = 4"}
+  - {name: .rubocop.yml presente, result: pass, evidence: ".rubocop.yml"}
+  - {name: hook pre-commit ativo, result: pass, evidence: "core.hooksPath=.githooks; output 'pre-commit: rubocop skipped' no commit"}
+warnings:
+  - "skill setup-pre-commit é Husky/npm; adaptado para hook git nativo (fase proíbe gems; projeto Ruby)"
+  - "jq ausente; guardrail usa fallback python3"
+  - "guardrail instalado em escopo de projeto (.claude/) sem perguntar (modo batch)"
+  - "MCPs neon/render/r2/resend não configurados na sessão"
+downstream_affected: []
+mcp_calls: []

@@ -1,0 +1,19 @@
+phase: 3
+status: ok
+artifacts:
+  - docs/spec.md
+handoff: docs/handoffs/PHASE-3.md
+acceptance:
+  - {name: add_check_constraint presente, result: pass, evidence: "spec §2: 4 chamadas + regra (add_constraint só citado como proibido)"}
+  - {name: tailwind.config.js derivado do design, result: pass, evidence: "spec §4: tokens paper/pitch/cartola, Fraunces/Source Sans 3, 4/8, 4/8/16, 120-180ms"}
+  - {name: 4 estados por ViewComponent, result: pass, evidence: "spec §5: tabela 5 componentes × default/loading/empty/error"}
+  - {name: CalculatePreviewService com candidate_home/away, result: pass, evidence: "spec §7"}
+  - {name: csv_file.open presente (não CSV.read), result: pass, evidence: "spec §8: csv_file.open + CSV.foreach; CSV.read só em comentário"}
+warnings:
+  - "skill to-spec indisponível localmente; find-skills não executado (evita instalação de rede em batch); spec escrita manualmente"
+  - "herda warning da Fase 1 (contratos inferidos do prompt)"
+  - "risco: activeadmin 3.5 × Rails 8.1 não confirmado"
+  - "risco: tailwindcss-rails 4 = Tailwind v4; tailwind.config.js via @config (legado suportado)"
+  - "ADR §2 não detalha que AASM event `before` roda antes dos guards; spec usa transition `after` + assign (sem regenerar ADR)"
+downstream_affected: [4, 5, 6, 7]
+mcp_calls: []
