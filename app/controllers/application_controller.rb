@@ -32,4 +32,13 @@ class ApplicationController < ActionController::Base
       format.any { redirect_back_or_to main_app.root_path, alert: 'Você não tem permissão para esta ação.' }
     end
   end
+
+  # ActiveAdmin denials (config.on_unauthorized_access): a redirect would loop back into the admin.
+  def render_forbidden(exception)
+    Rails.logger.warn("forbidden #{controller_path}##{action_name} user_id=#{current_user&.id}: #{exception.message}")
+    respond_to do |format|
+      format.json { render json: { error: 'forbidden' }, status: :forbidden }
+      format.any { render 'errors/forbidden', layout: 'application', formats: :html, status: :forbidden }
+    end
+  end
 end

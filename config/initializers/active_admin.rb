@@ -61,7 +61,8 @@ ActiveAdmin.setup do |config|
   #
   # This setting changes the method which Active Admin calls
   # within the application controller.
-  config.authentication_method = :authenticate_admin_user!
+  # Only a session is required here; admin rights are checked by Pundit (403 for non-admins).
+  config.authentication_method = :require_authentication
 
   # == User Authorization
   #
@@ -71,12 +72,12 @@ ActiveAdmin.setup do |config|
   # CanCanAdapter, PunditAdapter, or make your own. Please
   # refer to the documentation.
   # config.authorization_adapter = ActiveAdmin::CanCanAdapter
-  # config.authorization_adapter = ActiveAdmin::PunditAdapter
+  config.authorization_adapter = ActiveAdmin::PunditAdapter
 
   # In case you prefer Pundit over other solutions you can here pass
   # the name of default policy class. This policy will be used in every
   # case when Pundit is unable to find suitable policy.
-  # config.pundit_default_policy = "MyDefaultPunditPolicy"
+  config.pundit_default_policy = 'ApplicationPolicy'
 
   # If you wish to maintain a separate set of Pundit policies for admin
   # resources, you may set a namespace here that Pundit will search
@@ -91,7 +92,8 @@ ActiveAdmin.setup do |config|
   # because, by default, user gets redirected to Dashboard. If user
   # doesn't have access to Dashboard, he'll end up in a redirect loop.
   # Method provided here should be defined in application_controller.rb.
-  # config.on_unauthorized_access = :access_denied
+  # A proc runs via instance_exec on the controller, so it can reach the private handler.
+  config.on_unauthorized_access = proc { |_controller, exception| render_forbidden(exception) }
 
   # == Current User
   #
