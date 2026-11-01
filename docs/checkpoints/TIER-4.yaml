@@ -5,7 +5,7 @@ base: tier/3
 pr: https://github.com/LMafra/futebol/pull/6
 signed_commits: true  # SSH ed25519, git log %G? = G em todos os commits do tier
 context_read:
-  - AGENTS.md
+  - docs/agents.md
   - docs/tickets/INDEX.md
   - docs/spec-v2.md (§2, §7, §8) + docs/spec-v3.md (§3 AASM)
   - docs/checkpoints/TIER-3.yaml (status ok; TICKET-0004 ok → 0005 e 0006 desbloqueados, nenhum blocked)

@@ -9,7 +9,7 @@
 - `docs/adr/0003-simulador.md` (arquivo novo)
 
 ## Bloqueios conhecidos (resolver antes de começar)
-- AGENTS.md: "Nunca alterar `docs/adr/*`". Este ticket só cria `0003-simulador.md`; `0001-arch.md` e `0002-activeadmin-rails81.md` ficam intactos. Confirmar com o usuário que criar um ADR novo é permitido.
+- docs/agents.md: "Nunca alterar `docs/adr/*`". Este ticket só cria `0003-simulador.md`; `0001-arch.md` e `0002-activeadmin-rails81.md` ficam intactos. Confirmar com o usuário que criar um ADR novo é permitido.
 
 ## Pronto quando
 - ADR com 9 seções: 1 problema, 2 fluxo do usuário, 3 modelo de dados, 4 output, 5 gratuidade (o que é grátis para o usuário), 6 free tier (Render/Neon: CPU, jobs, storage), 7 alternativas (exatamente 3), 8 decisão, 9 tickets derivados

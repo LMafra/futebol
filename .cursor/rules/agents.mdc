@@ -1,0 +1,6 @@
+---
+description: Regras de execução para agentes (tickets, commits, gate de testes, arquivos imutáveis)
+alwaysApply: true
+---
+
+Siga as regras de @docs/agents.md e use os termos de @docs/glossary.md.

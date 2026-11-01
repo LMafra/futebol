@@ -5,7 +5,7 @@ base: feat/scaffold-docs-deploy-bootstrap
 pr: https://github.com/LMafra/futebol/pull/2
 signed_commits: true  # SSH ed25519, git log %G? = G em todos os commits do tier
 context_read:
-  - AGENTS.md
+  - docs/agents.md
   - docs/tickets/INDEX.md
   - docs/spec-v2.md
   - docs/checkpoints/STATUS.md

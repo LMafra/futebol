@@ -5,7 +5,7 @@ base: tier/1
 pr: https://github.com/LMafra/futebol/pull/4
 signed_commits: true  # SSH ed25519, git log %G? = G em todos os commits do tier
 context_read:
-  - AGENTS.md
+  - docs/agents.md
   - docs/tickets/INDEX.md
   - docs/spec-v2.md (incl. "Specs de regressão obrigatórias")
   - docs/checkpoints/TIER-1.yaml (status ok, 3/3 tickets ok)
@@ -28,7 +28,7 @@ tickets:
       - "justificativa corrigida em docs/spec-v3.md §3 (spec-v2 intocado) + docs/tickets/TICKET-0003-v3.md; INDEX aponta para v3"
     warnings:
       - "bloco literal da spec-v2 esperava scores_calculated_at `be_present` após revert_match! (zeragem externa via update_column); trocado por `be_nil` + spy no guard, conforme critério do tier (zerado DEPOIS, dentro do model)"
-      - "estado `reverted` diverge de ADR 0001 §2 (scored → finished); ADR é imutável (AGENTS.md) — registrado em spec-v3"
+      - "estado `reverted` diverge de ADR 0001 §2 (scored → finished); ADR é imutável (docs/agents.md) — registrado em spec-v3"
       - "RevertMatchPointsService (discard + AuditLog) não é chamado pelo model: precisa de actor/ip_address; fica com TICKET-0005 (service/job chama revert_match!)"
       - "finish_match! ainda não enfileira ProcessMatchPointsJob (job = TICKET-0004)"
   - id: TICKET-0016

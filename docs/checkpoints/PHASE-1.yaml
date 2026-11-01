@@ -2,7 +2,7 @@ phase: 1
 status: warning
 artifacts:
   - docs/adr/0001-arch.md
-  - GLOSSARY.md
+  - docs/glossary.md
 handoff: docs/handoffs/PHASE-1.md
 acceptance:
   - {name: ADR ≤2 páginas, result: pass, evidence: "71 linhas / 541 palavras"}

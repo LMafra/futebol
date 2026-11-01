@@ -11,7 +11,7 @@
 - 7 correções listadas no fim do ADR (check constraint, csv_file.open, candidate_home/away, unless_exist, seeds sem array, AuditLog ip_address)
 
 ## Paths
-- `docs/adr/0001-arch.md`, `GLOSSARY.md`
+- `docs/adr/0001-arch.md`, `docs/glossary.md`
 
 ## Avisos
 - Docs de arquitetura originais ausentes → contratos inferidos do prompt
