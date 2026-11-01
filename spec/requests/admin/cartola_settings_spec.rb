@@ -49,10 +49,10 @@ RSpec.describe 'Admin Cartola settings', type: :request do
     expect(player.reload.base_value).to eq(9.5)
   end
 
-  it 'shows both Cartola rankings of a championship' do
+  it 'shows both Esquadrão rankings of a championship' do
     create(:cartola_wallet, championship:, balance: 42, user: create(:user, name: 'Ana'))
 
-    get "/admin/cartolarankings?championship_id=#{championship.id}"
+    get "/admin/esquadraorankings?championship_id=#{championship.id}"
 
     expect(response).to have_http_status(:ok)
     page = Nokogiri::HTML(response.body)
@@ -63,6 +63,28 @@ RSpec.describe 'Admin Cartola settings', type: :request do
   it 'links the championship page to its rankings' do
     get "/admin/championships/#{championship.id}"
 
-    expect(response.body).to include("/admin/cartolarankings?championship_id=#{championship.id}")
+    expect(response.body).to include("/admin/esquadraorankings?championship_id=#{championship.id}")
+  end
+
+  it 'redirects the old Cartola admin URLs (301)' do
+    {
+      "/admin/cartolarankings?championship_id=#{championship.id}" =>
+        "/admin/esquadraorankings?championship_id=#{championship.id}",
+      '/admin/cartola_scoring_rules' => '/admin/esquadrao_scoring_rules',
+      '/admin/cartola_scoring_rules/3/edit' => '/admin/esquadrao_scoring_rules/3/edit',
+      '/admin/squads/5' => '/admin/esquadrao_squads/5'
+    }.each do |old_url, new_url|
+      get old_url
+
+      expect(response).to have_http_status(:moved_permanently), old_url
+      expect(response).to redirect_to(new_url)
+    end
+  end
+
+  it 'labels the admin menu as Esquadrão' do
+    get '/admin/esquadraorankings'
+
+    expect(response.body).to include('Esquadrão', 'Times do Esquadrão', 'Regras do Esquadrão')
+    expect(response.body).not_to include('Cartola')
   end
 end

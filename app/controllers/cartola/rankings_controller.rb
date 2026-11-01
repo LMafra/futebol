@@ -1,7 +1,7 @@
 module Cartola
-  # Cartola rankings of a championship (?championship_id=, default the latest), one tab each: ?tab=points|coins.
+  # Esquadrão rankings of a championship (?championship_id=, default the latest), one tab each: ?tab=points|coins.
   class RankingsController < ::ApplicationController
-    TABS = { 'points' => 'Pontos', 'coins' => 'Cartoletas' }.freeze
+    TABS = { 'points' => 'Pontos', 'coins' => 'Moedas' }.freeze
 
     def show
       authorize %i[cartola ranking], :show?

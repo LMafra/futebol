@@ -1,4 +1,11 @@
 Rails.application.routes.draw do
+  # 301 keeping the query string (redirect('/path') alone drops it).
+  moved_to = lambda do |path|
+    redirect do |params, request|
+      [[path, params[:rest]].compact.join('/'), request.query_string.presence].compact.join('?')
+    end
+  end
+
   resource :session
   resources :passwords, param: :token
   resources :users, only: %i[new create]
@@ -13,8 +20,11 @@ Rails.application.routes.draw do
 
   scope module: :cartola do
     resource :lineup, only: %i[show edit update destroy]
-    get 'cartola/rankings', to: 'rankings#show', as: :cartola_rankings
+    get 'esquadrao', to: 'lineups#show', as: :esquadrao
+    get 'esquadrao/rankings', to: 'rankings#show', as: :esquadrao_rankings
   end
+  get 'cartola', to: moved_to.call('/esquadrao')
+  get 'cartola/rankings', to: moved_to.call('/esquadrao/rankings')
 
   scope module: :simulador do
     get 'simulador', to: 'simulations#show', as: :simulador
@@ -26,6 +36,9 @@ Rails.application.routes.draw do
   end
 
   mount MissionControl::Jobs::Engine, at: '/admin/jobs'
+  get 'admin/cartolarankings', to: moved_to.call('/admin/esquadraorankings')
+  get 'admin/cartola_scoring_rules(/*rest)', to: moved_to.call('/admin/esquadrao_scoring_rules'), format: false
+  get 'admin/squads(/*rest)', to: moved_to.call('/admin/esquadrao_squads'), format: false
   ActiveAdmin.routes(self)
   mount Lookbook::Engine, at: '/lookbook' if defined?(Lookbook::Engine)
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

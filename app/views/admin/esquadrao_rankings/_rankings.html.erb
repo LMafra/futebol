@@ -1,7 +1,7 @@
 <% if championship.nil? %>
   <p class="text-gray-600 dark:text-gray-400">Nenhum campeonato cadastrado.</p>
 <% else %>
-  <%= form_with url: admin_cartolarankings_path, method: :get, class: "mb-6 flex flex-wrap items-end gap-3", data: { turbo: false } do %>
+  <%= form_with url: admin_esquadraorankings_path, method: :get, class: "mb-6 flex flex-wrap items-end gap-3", data: { turbo: false } do %>
     <div class="w-64">
       <%= label_tag :championship_id, "Campeonato", class: AdminHelper::ADMIN_LABEL_CLASSES %>
       <%= select_tag :championship_id, options_from_collection_for_select(championships, :id, :to_s, championship.id), class: AdminHelper::ADMIN_INPUT_CLASSES %>
@@ -9,7 +9,7 @@
     <%= submit_tag "Ver", name: nil, class: AdminHelper::ADMIN_BUTTON_CLASSES %>
   <% end %>
 
-  <% { "Pontos" => [points, "points"], "Cartoletas" => [coins, "coins"] }.each do |title, (rows, kind)| %>
+  <% { "Pontos" => [points, "points"], "Moedas" => [coins, "coins"] }.each do |title, (rows, kind)| %>
     <section class="panel" aria-labelledby="ranking-<%= kind %>">
       <h3 class="panel-title" id="ranking-<%= kind %>"><%= title %></h3>
       <div class="panel-body">

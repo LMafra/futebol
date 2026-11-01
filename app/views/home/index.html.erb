@@ -6,6 +6,6 @@
   <p class="mt-4">Conectado como <%= current_user.email_address %>.</p>
   <%= link_to "Meus bolões", pools_path, class: "mt-4 inline-block font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
   <%= link_to "Minha escalação", lineup_path, class: "ml-4 mt-4 inline-block font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
-  <%= link_to "Rankings do Cartola", cartola_rankings_path, class: "ml-4 mt-4 inline-block font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
+  <%= link_to "Rankings do #{module_label(:fantasy)}", esquadrao_rankings_path, class: "ml-4 mt-4 inline-block font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
   <%= button_to "Sair", session_path, method: :delete, class: "mt-6 cursor-pointer text-graphite underline underline-offset-2 hover:no-underline" %>
 </section>
