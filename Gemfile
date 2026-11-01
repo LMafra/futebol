@@ -74,11 +74,20 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem 'rubocop-rails-omakase', require: false
+
+  # Schema × model mismatches (missing NOT NULL, unique index, FK) [https://github.com/djezzzl/database_consistency]
+  gem 'database_consistency', '~> 3.1', require: false
+  # N+1 detection; specs fail on a detected N+1 (spec/support/prosopite.rb). pg_query fingerprints Postgres SQL.
+  gem 'pg_query', '~> 6.2'
+  gem 'prosopite', '~> 2.5'
 end
 
 group :development do
+  gem 'letter_opener', '~> 1.10'
   gem 'lookbook', '~> 2.3'
   gem 'packwerk', '~> 3.3'
+  # Blocks unsafe migrations (locks, rewrites) while they are written [https://github.com/ankane/strong_migrations]
+  gem 'strong_migrations', '~> 2.8'
 
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem 'web-console'

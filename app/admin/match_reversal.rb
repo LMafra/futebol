@@ -8,7 +8,7 @@ ActiveAdmin.register_page 'MatchReversal' do
 
   page_action :revert, method: :post do
     load_matches
-    @match = Core::Match.find(params.dig(:reversal, :match_id))
+    @match = Core::Match.includes(:home_team, :away_team).find(params.dig(:reversal, :match_id))
     authorize! :revert, @match
     @form = MatchReversalForm.new(reason: params.dig(:reversal, :reason), match: @match, actor: current_user,
                                   ip_address: request.remote_ip)
@@ -32,7 +32,7 @@ ActiveAdmin.register_page 'MatchReversal' do
       load_matches
       return if params[:match_id].blank?
 
-      @match = Core::Match.find(params[:match_id])
+      @match = Core::Match.includes(:home_team, :away_team).find(params[:match_id])
       authorize! :revert, @match
       @form = MatchReversalForm.new(match: @match)
     end

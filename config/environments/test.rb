@@ -26,6 +26,10 @@ Rails.application.configure do
   # Render exception templates for rescuable exceptions and raise for other exceptions.
   config.action_dispatch.show_exceptions = :rescuable
 
+  # Outermost, so an N+1 in a request raises in the spec instead of becoming a 500 page (spec/support/prosopite.rb).
+  require 'prosopite/middleware/rack'
+  config.middleware.insert_before 0, Prosopite::Middleware::Rack
+
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false
 

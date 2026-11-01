@@ -1,0 +1,66 @@
+---
+Bolao::Pool:
+  championship:
+    MissingDependentDestroyChecker:
+      enabled: false
+  owner:
+    MissingDependentDestroyChecker:
+      enabled: false
+Bolao::PoolMembership:
+  index_bolao_pool_memberships_on_pool_id:
+    RedundantIndexChecker:
+      enabled: false
+  joined_at:
+    NullConstraintChecker:
+      enabled: false
+  user:
+    MissingDependentDestroyChecker:
+      enabled: false
+Bolao::Prediction:
+  match:
+    MissingDependentDestroyChecker:
+      enabled: false
+  user:
+    MissingDependentDestroyChecker:
+      enabled: false
+Bolao::PredictionScore:
+  idx_on_prediction_id_scoring_token_acdf12d38b:
+    UniqueIndexChecker:
+      enabled: false
+Cartola::Lineup:
+  index_cartola_lineups_on_squad_id:
+    RedundantIndexChecker:
+      enabled: false
+Cartola::LineupPlayer:
+  index_cartola_lineup_players_on_lineup_id:
+    RedundantIndexChecker:
+      enabled: false
+  player:
+    MissingDependentDestroyChecker:
+      enabled: false
+Cartola::PlayerScore:
+  index_cartola_player_scores_kept_unique:
+    UniqueIndexChecker:
+      enabled: false
+  match:
+    MissingDependentDestroyChecker:
+      enabled: false
+  player:
+    MissingDependentDestroyChecker:
+      enabled: false
+Cartola::Squad:
+  user:
+    MissingDependentDestroyChecker:
+      enabled: false
+Core::AuditLog:
+  user:
+    MissingDependentDestroyChecker:
+      enabled: false
+Core::Match:
+  index_core_matches_on_scoring_token:
+    UniqueIndexChecker:
+      enabled: false
+Core::User:
+  password_digest:
+    NullConstraintChecker:
+      enabled: false

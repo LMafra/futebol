@@ -33,16 +33,12 @@ module Bolao
 
     private
 
+    # One query for all candidates; if every one is taken, code stays blank and validation fails.
     def assign_code
       return if code.present?
 
-      MAX_CODE_ATTEMPTS.times do
-        candidate = self.class.generate_code
-        next if self.class.exists?(code: candidate)
-
-        self.code = candidate
-        return
-      end
+      candidates = Array.new(MAX_CODE_ATTEMPTS) { self.class.generate_code }.uniq
+      self.code = (candidates - self.class.where(code: candidates).pluck(:code)).first
     end
 
     def add_owner_as_member

@@ -80,6 +80,10 @@ jobs:
       - name: Prepare databases (primary + queue)
         run: bin/rails db:prepare
 
+      # Fails on new schema × model mismatches; the reviewed backlog lives in .database_consistency.todo.yml.
+      - name: Database consistency
+        run: bundle exec database_consistency -c .database_consistency.todo.yml
+
       - name: Build CSS
         run: bin/rails tailwindcss:build
 
