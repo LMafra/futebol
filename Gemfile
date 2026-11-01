@@ -43,6 +43,7 @@ gem 'image_processing', '~> 1.2'
 gem 'aasm', '~> 6.0'
 gem 'activeadmin', '4.0.0.beta23'
 gem 'activerecord-import', '~> 3.0'
+gem 'aws-sdk-s3', '~> 1.200', require: false
 gem 'discard', '~> 2.0'
 gem 'faraday', '~> 2.15'
 gem 'lograge', '~> 0.15'

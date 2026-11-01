@@ -1,0 +1,50 @@
+# Render Blueprint: web (Puma + Thruster) and worker (Solid Queue), both from the Dockerfile.
+# Deploys are triggered by CI (deploy job → RENDER_DEPLOY_HOOK_URL) after lint and tests pass on main.
+# Free plan without workers: drop futebol-worker and set SOLID_QUEUE_IN_PUMA=1 on futebol-web.
+services:
+  - type: web
+    name: futebol-web
+    runtime: docker
+    plan: free
+    healthCheckPath: /up
+    autoDeploy: false
+    envVars:
+      - key: HTTP_PORT
+        value: 10000
+      - key: APP_HOST
+        sync: false
+      - fromGroup: futebol
+
+  - type: worker
+    name: futebol-worker
+    runtime: docker
+    plan: starter
+    dockerCommand: ./bin/jobs
+    autoDeploy: false
+    envVars:
+      - fromGroup: futebol
+
+envVarGroups:
+  - name: futebol
+    envVars:
+      - key: RAILS_MASTER_KEY
+        sync: false
+      # Neon primary; db:prepare (bin/docker-entrypoint) creates <db>_cache, <db>_queue, <db>_cable next to it.
+      - key: DATABASE_URL
+        sync: false
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET_PROD
+        value: futebol-prod
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: RAILS_LOG_LEVEL
+        value: info
