@@ -14,6 +14,8 @@ class ApplicationPolicy
   def update? = admin?
   def edit? = update?
   def destroy? = admin?
+  # ActiveAdmin batch destroy (PunditAdapter maps DESTROY on a class to destroy_all?).
+  def destroy_all? = destroy?
 
   private
 

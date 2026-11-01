@@ -9,7 +9,7 @@ RSpec.describe ApplicationController, type: :controller do
     def show = head(:ok)
 
     def edit
-      authorize Core::Match.new, :show?, policy_class: MatchPolicy
+      authorize Core::Match.new, :show?
       head :ok
     end
   end

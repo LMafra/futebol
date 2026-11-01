@@ -1,0 +1,71 @@
+<%= render "admin/shared/match_picker", url: admin_bolaopreview_path, matches: matches, match: match %>
+
+<% if match %>
+  <section class="panel" aria-labelledby="candidate-title">
+    <h3 class="panel-title" id="candidate-title">Placar candidato · <%= match %></h3>
+    <div class="panel-body">
+      <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+        Simula a pontuação dos palpites com um placar hipotético. Nada é gravado; o placar real (<%= admin_score(match) %>) não é usado.
+      </p>
+      <%= form_with url: admin_bolaopreview_path, method: :get, class: "flex flex-wrap items-end gap-3", data: { turbo: false } do %>
+        <%= hidden_field_tag :match_id, match.id %>
+        <div class="w-32">
+          <%= label_tag :candidate_home, match.home_team.name, class: AdminHelper::ADMIN_LABEL_CLASSES %>
+          <%= number_field_tag :candidate_home, candidate_home, min: 0, step: 1, required: true, class: AdminHelper::ADMIN_INPUT_CLASSES %>
+        </div>
+        <span class="pb-2 text-lg font-bold" aria-hidden="true">×</span>
+        <div class="w-32">
+          <%= label_tag :candidate_away, match.away_team.name, class: AdminHelper::ADMIN_LABEL_CLASSES %>
+          <%= number_field_tag :candidate_away, candidate_away, min: 0, step: 1, required: true, class: AdminHelper::ADMIN_INPUT_CLASSES %>
+        </div>
+        <%= submit_tag "Calcular preview", name: nil, class: AdminHelper::ADMIN_BUTTON_CLASSES %>
+      <% end %>
+
+      <% if preview_error %>
+        <p class="mt-4 rounded-md border-l-4 border-red-700 bg-red-50 px-4 py-3 text-sm text-red-900 dark:bg-red-950 dark:text-red-100" role="alert"><%= preview_error %></p>
+      <% end %>
+    </div>
+  </section>
+
+  <% if preview %>
+    <section class="panel" aria-labelledby="preview-title" data-role="preview">
+      <h3 class="panel-title" id="preview-title">
+        Pontuação simulada para <span class="tabular-nums" data-role="candidate-score"><%= candidate_home %> × <%= candidate_away %></span>
+      </h3>
+      <div class="panel-body">
+        <% if preview.rows.empty? %>
+          <p class="text-gray-600 dark:text-gray-400">Nenhum palpite para esta partida.</p>
+        <% else %>
+          <table class="data-table">
+            <thead>
+              <tr><th>Bolão</th><th>Participante</th><th>Palpite</th><th class="text-right">Pontos</th></tr>
+            </thead>
+            <tbody>
+              <% preview.rows.each do |row| %>
+                <tr>
+                  <td><%= pools[row.pool_id] %></td>
+                  <td><%= users[row.user_id] %></td>
+                  <td class="tabular-nums"><%= row.home_guess %> × <%= row.away_guess %></td>
+                  <td class="text-right font-semibold tabular-nums" data-role="points"><%= row.points %></td>
+                </tr>
+              <% end %>
+            </tbody>
+            <tfoot>
+              <tr><th colspan="3">Total distribuído</th><th class="text-right tabular-nums" data-role="total"><%= preview.total %></th></tr>
+            </tfoot>
+          </table>
+        <% end %>
+
+        <div class="mt-4 flex flex-wrap items-center gap-3">
+          <% if match.live? || match.may_start_match? %>
+            <%= link_to "Confirmar este placar na finalização",
+                        admin_matchfinalizer_path(match_id: match.id, home_score: candidate_home, away_score: candidate_away),
+                        class: AdminHelper::ADMIN_BUTTON_CLASSES, data: { role: "confirm-score" } %>
+          <% else %>
+            <span class="text-sm text-gray-600 dark:text-gray-400">A partida está <%= match.status %>; só partidas ao vivo podem ser finalizadas.</span>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  <% end %>
+<% end %>

@@ -73,6 +73,12 @@ RSpec.describe RevertMatchPointsService do
       expect(log.metadata).to eq('scoring_token' => scoring_token, 'reversal_token' => token, 'discarded_scores' => 3)
     end
 
+    it 'guarda o motivo da reversão quando informado' do
+      revert(reason: 'súmula corrigida')
+
+      expect(Core::AuditLog.last.metadata).to include('reason' => 'súmula corrigida')
+    end
+
     it 'sem ip_address → falha e faz rollback (scores continuam kept, partida intacta)' do
       expect { revert(ip_address: nil) }.to raise_error(ActiveRecord::RecordInvalid, /Ip address/)
 

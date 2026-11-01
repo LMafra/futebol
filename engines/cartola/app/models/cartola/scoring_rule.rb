@@ -7,5 +7,9 @@ module Cartola
     validates(*POINT_COLUMNS, numericality: { greater_than_or_equal_to: 0 })
 
     def self.default = find_by!(name: DEFAULT_NAME)
+
+    def self.ransackable_attributes(_auth_object = nil) = %w[name]
+
+    def to_s = name
   end
 end

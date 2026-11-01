@@ -12,6 +12,8 @@ module Core
     validates :short_name, presence: true, length: { is: 3 }, uniqueness: true
     validates :external_id, presence: true, uniqueness: true
 
+    def self.ransackable_attributes(_auth_object = nil) = %w[name short_name external_id]
+
     def to_s = name
   end
 end

@@ -40,6 +40,9 @@ module Core
     validates :scores_calculated_at, absence: true, unless: -> { status.in?(%w[finished scored]) }
     validate :teams_must_differ
 
+    def self.ransackable_attributes(_auth_object = nil) = %w[status external_id match_date championship_id]
+    def self.ransackable_associations(_auth_object = nil) = %w[championship]
+
     def to_s = "#{home_team} x #{away_team}"
 
     def scores_calculated? = scores_calculated_at.present?

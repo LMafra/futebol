@@ -4,17 +4,18 @@ RSpec.configure do |config|
   config.define_derived_metadata(file_path: %r{/spec/policies/}) { |metadata| metadata[:type] ||= :policy }
 end
 
-ADMIN_POLICY_ACTIONS = %i[index? show? create? new? update? edit? destroy?].freeze
+ADMIN_POLICY_ACTIONS = %i[index? show? create? new? update? edit? destroy? destroy_all?].freeze
 
 # allowed_for_admin: actions an admin may perform; everything else in ADMIN_POLICY_ACTIONS is denied to everyone.
-RSpec.shared_examples 'an admin-only policy' do |allowed_for_admin: ADMIN_POLICY_ACTIONS|
+# extra_admin_actions: custom actions (beyond CRUD) that only an admin may perform.
+RSpec.shared_examples 'an admin-only policy' do |allowed_for_admin: ADMIN_POLICY_ACTIONS, extra_admin_actions: []|
   subject(:policy) { described_class }
 
   let(:record) { Object.new }
   let(:admin) { build_stubbed(:user, :admin) }
   let(:regular_user) { build_stubbed(:user) }
 
-  allowed_for_admin.each do |action|
+  (allowed_for_admin + extra_admin_actions).each do |action|
     permissions action do
       it('grants an admin') { expect(policy).to permit(admin, record) }
       it('denies a regular user') { expect(policy).not_to permit(regular_user, record) }
