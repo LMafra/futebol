@@ -241,3 +241,60 @@ Secrets a configurar:
 | `ZO_ROOT_USER_EMAIL`, `ZO_ROOT_USER_PASSWORD` | host do OpenObserve | padrão do compose só para uso local; senha forte no VPS |
 
 Validar o OpenObserve local: `docker compose -f docker/openobserve/docker-compose.yml up -d` e depois `curl localhost:5080/healthz`.
+
+## Entrega de home, login, rename e rebranding
+
+Onze blocos, cada um numa branch `craquefy/<bloco>` empilhada a partir da `main`, com um commit assinado (SSH). O gate `test` de `.cursor/environment.json` (RSpec, RuboCop, Packwerk e Zeitwerk) passou depois de cada bloco, sem falha repetida, e nenhum bloco ficou `blocked`. No último gate: 926 exemplos, 0 falhas e 2 pending (system specs sem Chrome). O push fica com o usuário, porque o ambiente bloqueia `git push` pelo agente:
+
+```bash
+git push -u origin craquefy/a-private-flag craquefy/b-esquadrao craquefy/b2-locale craquefy/c-login craquefy/c2-consent craquefy/d0-scouts craquefy/d1-captain-valuation craquefy/d-rankings craquefy/e-home craquefy/f-brand craquefy/g-docs
+```
+
+| bloco | status | ticket | branch · commit | observações |
+|---|---|---|---|---|
+| A — flag privado | ok | [0032](../tickets/TICKET-0032.md) | `craquefy/a-private-flag` · `7966a2b` | Migration 037 com índice concorrente; privado some da home, da página pública e do Simulador para visitantes (404 por id) |
+| B — Esquadrão | ok | [0034](../tickets/TICKET-0034.md) | `craquefy/b-esquadrao` · `ee50cfc` | Só texto e URLs; 301 de `/cartola`, `/cartola/rankings` e das URLs antigas do admin, com a query string |
+| B2 — pt-BR | ok | [0037](../tickets/TICKET-0037.md) | `craquefy/b2-locale` · `64a0d1f` | Gem nova `rails-i18n`: quem baixar a branch roda `bundle install` |
+| C — login | ok | [0033](../tickets/TICKET-0033.md) | `craquefy/c-login` · `950ec4c` | O broadcast do placar mandava o layout inteiro no turbo-stream; passou a `layout: false` |
+| C2 — consentimento | ok | [0038](../tickets/TICKET-0038.md) | `craquefy/c2-consent` · `88cafab` | Usuários antigos ficam anônimos ("Participante") até consentirem |
+| D0 — scouts | ok | [0039](../tickets/TICKET-0039.md) | `craquefy/d0-scouts` · `b332b83` | Placar derivado dos scouts; finalização bloqueada sem scouts |
+| D1 — capitão e valorização | ok | [0040](../tickets/TICKET-0040.md) | `craquefy/d1-captain-valuation` · `db217dc` | [ADR 0005](../adr/0005-esquadrao-pontuacao-valorizacao.md) novo; cenário B da dica dá C$ 18.69, não 18.44 |
+| D — rankings públicos | ok | [0035](../tickets/TICKET-0035.md) | `craquefy/d-rankings` · `dea20c7` | Bolão conta a maior pontuação por partida entre os bolões do usuário |
+| E — home pública | ok | [0032](../tickets/TICKET-0032.md) | `craquefy/e-home` · `0fd8e6a` | Sem as referências do Mobbin (abaixo) |
+| F — Craquefy | ok | [0036](../tickets/TICKET-0036.md) | `craquefy/f-brand` · `7209ead` | `site_title` do admin como proc, avaliado por request |
+| G — docs | ok | — | `craquefy/g-docs` | Tickets 0032–0040, INDEX com 40, README e este STATUS |
+
+### Desvios e pendências
+- **Mobbin indisponível.** A busca respondeu "requires a paid plan", então não houve referências de FotMob, Sofascore, Onefootball, Sleeper ou Cartola FC. A hierarquia da home seguiu o design system: faixa-placar sem cards, módulos em 8/4 e "Entrar" como único acento laranja.
+- **Oferta e demanda na valorização** fica pendente, sem ticket numerado (também registrado no ADR 0005). A valorização atual é só regressão à média por jogador.
+- **Migrations novas** (037–042): `core_championships.private`, `core_users.public_profile_consented_at`, scouts em `cartola_player_scores`, colunas da regra do Esquadrão, `cartola_lineup_players.captain` e colunas de `cartola_player_value_histories`. O plano registrou 0 linhas nas tabelas de scouts, escalações e histórico de valores em produção.
+- **Nada foi renomeado** em engines, packages, tabelas `cartola_*`, models, services, classes, rotas internas ou repositório. ADRs 0001–0004, `docs/spec-v2.md` e `docs/design/*` não foram alterados.
+
+### N+1 evitados
+- Rankings do Bolão e do Esquadrão de todos os campeonatos em 2 queries agrupadas e uma carga de usuários (`Core::ChampionshipRankingsService.top`).
+- Times e status por campeonato em 2 queries agrupadas na home.
+- Top 10 de atletas numa query agrupada com `preload(player: :team)`.
+- Jogos de hoje com `includes(:home_team, :away_team)`.
+- Tela de scouts com jogadores em `includes(:team)` e PlayerScores indexados por jogador.
+- O Prosopite falha os request specs ao detectar N+1; home, campeonato e scouts passam.
+
+### Validação
+Local (`bin/rails s -p 3005`, banco de development com o seed):
+
+| URL | resultado |
+|---|---|
+| `/` | 200; `<title>Craquefy</title>`, meta description da marca, 0 e-mails e 0 "Futebol" no HTML |
+| `/entrar` | 200 |
+| `/campeonatos/1`, `?tab=bolao`, `?tab=esquadrao` | 200 |
+| `/campeonatos/999999` | 404 |
+| `/admin`, `/esquadrao`, `/minha-conta` | 302 → `/session/new` |
+| `/cartola?x=1` | 301 → `/esquadrao?x=1` |
+| `/simulador` | 200 |
+
+Produção (`futebol-web`, deploy `dep-dbjpha7avr4c73cbpqtg`, antes do merge destas branches). As primeiras chamadas deram 502 enquanto o Puma subia depois da hibernação (`connection refused` no proxy até "Listening on 0.0.0.0:3000"). Depois do boot: `/up` 200, `/` 302 → `/session/new`, `/entrar` 404, `/campeonatos/1` 404, `/esquadrao` 404, `/cartola/rankings` 302, `/admin` 302 e `/simulador` 200. Depois do merge, o esperado é `/` 200, `/entrar` 200, `/campeonatos/1` 200 e `/cartola/rankings` 301.
+
+```bash
+for url in /up / /entrar /campeonatos/1 /esquadrao /cartola/rankings /admin /simulador; do
+  printf "%-20s %s\n" "$url" "$(curl -s -o /dev/null --max-time 90 -w '%{http_code} %{redirect_url}' "https://futebol-web.onrender.com$url")"
+done
+```

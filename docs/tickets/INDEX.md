@@ -1,4 +1,4 @@
-# Tickets — INDEX (29 tickets)
+# Tickets — INDEX (40 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -33,6 +33,15 @@
 | [0029](TICKET-0029.md) | — | Bolão com 2 faixas configuráveis (ADR 0004) | 0004, 0006, 0010, 0016 | supabase (leitura) |
 | [0030](TICKET-0030.md) | — | Cartola configurável por campeonato (limites, carteira, valorização, rankings) | 0007, 0010, 0025 | supabase (leitura) |
 | [0031](TICKET-0031.md) | — | Simulador v1 "e se" (ADR 0003) | 0011, 0026, 0030 | — |
+| [0032](TICKET-0032.md) | — | Home pública + flag privado em campeonatos | 0011, 0031, 0035, 0038 | mobbin (indisponível) |
+| [0033](TICKET-0033.md) | — | Login em /entrar + menu da conta | 0014, 0028 | — |
+| [0034](TICKET-0034.md) | — | Cartola vira Esquadrão (UI, admin, 301) | 0025, 0030 | — |
+| [0035](TICKET-0035.md) | — | Página pública do campeonato com rankings | 0029, 0030, 0032, 0038, 0040 | — |
+| [0036](TICKET-0036.md) | — | Rebranding Craquefy | 0032, 0034, 0037 | — |
+| [0037](TICKET-0037.md) | — | Interface em pt-BR (rails-i18n) | 0010, 0014 | — |
+| [0038](TICKET-0038.md) | — | Consentimento de perfil público + /minha-conta | 0018, 0028 | — |
+| [0039](TICKET-0039.md) | — | Scouts oficiais do Esquadrão | 0004, 0010, 0030 | — |
+| [0040](TICKET-0040.md) | — | Capitão + valorização por regressão à média (ADR 0005) | 0030, 0039 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -43,3 +52,4 @@
 - UI/demo: {0011, 0014} → 0023 → 0024 (+ 0006) · {0007, 0011} → 0025 · {0023, 0024, 0025} → 0027
 - 0026 sem deps e não bloqueia nenhum ticket (tickets derivados saem do ADR)
 - Lacunas de produto: {0011, 0014, 0019} → 0028 · {0004, 0006, 0010, 0016} → 0029 · {0007, 0010, 0025} → 0030 → 0031 (+ 0011, 0026)
+- Craquefy (ordem das branches): 0032 (flag) → 0034 → 0037 → 0033 → 0038 → 0039 → 0040 → 0035 → 0032 (home) → 0036
