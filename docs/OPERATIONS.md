@@ -49,6 +49,7 @@ Fora de development/test, os dados demo não são criados: a senha acima é púb
 - System specs (Chrome headless): `bundle exec rspec spec/system`; o CI roda com `RAILS_SYSTEM_TESTING_SCREENSHOT=failed`.
 - Schema × models: `bundle exec database_consistency -c config/database_consistency.todo.yml`.
 - Antes do PR: `bin/ci` ([`config/ci.rb`](../config/ci.rb)).
+- Detalhes das ferramentas e configurações: [QUALITY.md](QUALITY.md).
 
 ## Comandos úteis
 
