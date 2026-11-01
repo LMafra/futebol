@@ -59,7 +59,7 @@ RSpec.describe 'Sessions', type: :request do
     expect(user.sessions.last.ip_address).to be_present
 
     get root_path
-    expect(response.body).to include(user.email_address)
+    expect(Nokogiri::HTML(response.body).at_css('[data-role="account-menu"]')).to be_present
   end
 
   it 'rejects invalid credentials' do

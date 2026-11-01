@@ -1,0 +1,23 @@
+<section class="flex flex-col gap-4" aria-labelledby="today-title" data-role="matches-today">
+  <h2 id="today-title" class="border-b border-rule pb-2 font-display text-3xl font-extrabold">Jogos de hoje</h2>
+  <% if matches.empty? %>
+    <p class="text-graphite">Nenhum jogo hoje nos campeonatos públicos.</p>
+  <% else %>
+    <ul class="flex gap-3 overflow-x-auto pb-2">
+      <% matches.each do |match| %>
+        <li class="flex min-w-48 flex-col gap-2 rounded-md border border-rule bg-white px-4 py-3" data-role="today-match">
+          <p class="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-graphite">
+            <span><%= Ui::ScoreboardComponent::STATUS_LABELS.fetch(match.status, match.status) %></span>
+            <span class="tabular-nums"><%= l(match.match_date, format: "%H:%M") %></span>
+          </p>
+          <% [[match.home_team, match.home_score], [match.away_team, match.away_score]].each do |team, score| %>
+            <p class="flex items-center justify-between gap-4 font-semibold">
+              <span><%= team.name %></span>
+              <span class="tabular-nums"><%= score || "–" %></span>
+            </p>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>

@@ -1,0 +1,6 @@
+<section class="flex flex-col gap-4" aria-labelledby="top-players-title" data-role="top-players">
+  <h2 id="top-players-title" class="border-b border-rule pb-2 font-display text-3xl font-extrabold">Ranking de atletas</h2>
+  <p class="text-graphite">Os 10 jogadores com mais pontos no <%= module_label(:fantasy) %>, somando os campeonatos públicos.</p>
+  <%= render Ui::LeaderboardTableComponent.new(rows: players, columns: { games: %w[J Jogos], goals: %w[G Gols], assists: %w[A Assistências] },
+                                               texts: { label: "Ranking de atletas", name_header: "Atleta", empty: "Nenhum scout lançado ainda." }) %>
+</section>

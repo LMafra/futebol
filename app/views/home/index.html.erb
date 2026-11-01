@@ -1,11 +1,10 @@
-<section class="max-w-3xl">
+<div class="flex flex-col gap-16">
   <%= render "shared/flash" %>
-
-  <p class="text-xs font-bold uppercase tracking-widest text-graphite">Rodada</p>
-  <h1 class="mt-1 border-b-4 border-ink pb-2 font-display text-4xl font-extrabold tracking-tight">Futebol</h1>
-  <p class="mt-4">Conectado como <%= current_user.email_address %>.</p>
-  <%= link_to "Meus bolões", pools_path, class: "mt-4 inline-block font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
-  <%= link_to "Minha escalação", lineup_path, class: "ml-4 mt-4 inline-block font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
-  <%= link_to "Rankings do #{module_label(:fantasy)}", esquadrao_rankings_path, class: "ml-4 mt-4 inline-block font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
-  <%= button_to "Sair", session_path, method: :delete, class: "mt-6 cursor-pointer text-graphite underline underline-offset-2 hover:no-underline" %>
-</section>
+  <%= render "home/hero" %>
+  <%= render "home/counters", counters: @counters %>
+  <%= render "home/modules" %>
+  <%= render "home/matches_today", matches: @matches_today %>
+  <%= render "home/championships", championships: @championships, rankings: @rankings, facts: @championship_facts %>
+  <%= render "home/top_players", players: @top_players %>
+  <%= render "home/how_it_works" %>
+</div>
