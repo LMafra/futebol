@@ -17,6 +17,13 @@ bin/rails db:prepare db:seed
 git config core.hooksPath .githooks
 ```
 
+## Filas e erros
+
+- `bin/dev` sobe web + `bin/jobs` (Solid Queue). Development e test usam um banco de fila separado (`futebol_*_queue`), criado por `bin/rails db:prepare`.
+- Painel das filas: [`/admin/jobs`](http://localhost:3000/admin/jobs) (mission_control-jobs). Visitante vai para o login; usuário sem `admin` recebe 403 (`JobsDashboardPolicy`).
+- Sentry: DSN em `SENTRY_DSN` ([.env.example](.env.example)), `send_default_pii = false`. Sem DSN em development, os eventos vão para `log/sentry_debug_events.log`.
+- Teste da integração: `bin/rails sentry:fake_exception` (imprime o `event_id` e o destino).
+
 ## MCPs
 
 | Nome | Instalação | Escopo | Configurado? |

@@ -27,6 +27,7 @@ Metrics/BlockLength:
     - 'spec/**/*'
     - 'engines/*/spec/**/*'
     - 'config/routes.rb'
+    - 'config/environments/*'
     - 'app/admin/**/*'
 
 Naming/PredicateMethod:

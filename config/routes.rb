@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
+  mount MissionControl::Jobs::Engine, at: '/admin/jobs'
   ActiveAdmin.routes(self)
   mount Lookbook::Engine, at: '/lookbook' if defined?(Lookbook::Engine)
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

@@ -32,6 +32,9 @@ Rails.application.configure do
   # Store uploaded files on the local file system in a temporary directory.
   config.active_storage.service = :test
 
+  # Jobs use the :test adapter; the queue database backs the /admin/jobs dashboard specs.
+  config.solid_queue.connects_to = { database: { writing: :queue } }
+
   # Tell Action Mailer not to deliver emails to the real world.
   # The :test delivery method accumulates sent emails in the
   # ActionMailer::Base.deliveries array.
