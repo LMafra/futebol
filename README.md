@@ -152,6 +152,16 @@ Production envia e-mail pelo SMTP do Resend ([`config/environments/production.rb
 
 Teste de envio e detalhes: [OPERATIONS.md → E-mail](docs/OPERATIONS.md#e-mail-resend).
 
+### Keep-alive
+
+O web free do Render dorme após 15 min sem tráfego. O workflow [`keep-alive.yml`](.github/workflows/keep-alive.yml) pinga `https://$RENDER_APP_HOST/up` a cada 14 min (`*/14 * * * *`) e também roda à mão (`workflow_dispatch`).
+
+- Secret do GitHub `RENDER_APP_HOST` = `futebol-web.onrender.com` (só o host): Settings → Secrets and variables → Actions, ou `gh secret set RENDER_APP_HOST --body futebol-web.onrender.com`.
+- O agendamento só roda a partir da `main`, pode atrasar e é desativado pelo GitHub depois de 60 dias sem atividade no repositório.
+- Alternativa: um job no [cron-job.org](https://cron-job.org) com GET em `https://futebol-web.onrender.com/up` a cada 14 min.
+
+Detalhes e custo em horas free: [OPERATIONS.md → Keep-alive](docs/OPERATIONS.md#keep-alive).
+
 <p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
 
 ## Uso
