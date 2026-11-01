@@ -1,6 +1,6 @@
 class RevertMatchPointsService
-  def self.call(match:, actor:, ip_address:, reversal_token: SecureRandom.uuid)
-    new(match:, actor:, ip_address:, reversal_token:).call
+  def self.call(match:, actor:, ip_address:, reversal_token: SecureRandom.uuid, reason: nil)
+    new(match:, actor:, ip_address:, reversal_token:, reason:).call
   end
 
   def self.applied?(match, reversal_token)
@@ -9,11 +9,12 @@ class RevertMatchPointsService
                     .exists?(["metadata ->> 'reversal_token' = ?", reversal_token])
   end
 
-  def initialize(match:, actor:, ip_address:, reversal_token:)
+  def initialize(match:, actor:, ip_address:, reversal_token:, reason: nil)
     @match = match
     @actor = actor
     @ip_address = ip_address
     @reversal_token = reversal_token
+    @reason = reason
   end
 
   # Returns false when this reversal_token was already applied (job retries, stale tokens).
@@ -33,6 +34,6 @@ class RevertMatchPointsService
 
   def audit!(**metadata)
     Core::AuditLog.create!(action: 'revert', user: @actor, auditable: @match, ip_address: @ip_address,
-                           metadata: metadata.merge(reversal_token: @reversal_token))
+                           metadata: metadata.merge(reversal_token: @reversal_token, reason: @reason).compact)
   end
 end

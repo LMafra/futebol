@@ -1,0 +1,72 @@
+<div class="grid gap-6 lg:grid-cols-2">
+  <section class="panel" aria-labelledby="bolao-tester-title">
+    <h3 class="panel-title" id="bolao-tester-title">Bolão: palpite × resultado</h3>
+    <div class="panel-body">
+      <%= form_with url: admin_scoringruletester_path, method: :get, scope: :bolao, class: "flex flex-col gap-3", data: { turbo: false } do |f| %>
+        <div>
+          <%= f.label :pool_id, "Bolão", class: AdminHelper::ADMIN_LABEL_CLASSES %>
+          <%= f.select :pool_id, pools.map { |p| [p.name, p.id] }, { include_blank: "Regras globais", selected: pool&.id }, class: AdminHelper::ADMIN_INPUT_CLASSES %>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <% { guess_home: "Palpite mandante", guess_away: "Palpite visitante", result_home: "Resultado mandante", result_away: "Resultado visitante" }.each do |field, label| %>
+            <div>
+              <%= f.label field, label, class: AdminHelper::ADMIN_LABEL_CLASSES %>
+              <%= f.number_field field, value: bolao&.dig(:input, field), min: 0, step: 1, required: true, class: AdminHelper::ADMIN_INPUT_CLASSES %>
+            </div>
+          <% end %>
+        </div>
+        <div><%= f.submit "Calcular", name: nil, class: AdminHelper::ADMIN_BUTTON_CLASSES %></div>
+      <% end %>
+
+      <% if bolao %>
+        <div class="mt-4 text-sm" data-role="bolao-result" role="status">
+          <% if bolao[:error] %>
+            <p class="text-red-800 dark:text-red-300"><%= bolao[:error] %></p>
+          <% else %>
+            <p><span class="text-2xl font-bold tabular-nums"><%= bolao[:points] %></span> pontos · regra: <strong><%= bolao[:kind] || "erro (nenhuma regra)" %></strong></p>
+          <% end %>
+        </div>
+      <% end %>
+
+      <table class="data-table mt-4">
+        <thead><tr><th>Regra</th><th class="text-right">Pontos</th></tr></thead>
+        <tbody>
+          <% Bolao::ScoringRule::KINDS.each do |kind| %>
+            <tr><td><%= kind %></td><td class="text-right tabular-nums"><%= bolao_rules.fetch(kind.to_sym, "—") %></td></tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="cartola-tester-title">
+    <h3 class="panel-title" id="cartola-tester-title">Cartola: scouts do jogador</h3>
+    <div class="panel-body">
+      <%= form_with url: admin_scoringruletester_path, method: :get, scope: :cartola, class: "flex flex-col gap-3", data: { turbo: false } do |f| %>
+        <div>
+          <%= f.label :rule_id, "Regra", class: AdminHelper::ADMIN_LABEL_CLASSES %>
+          <%= f.select :rule_id, cartola_rules.map { |r| [r.name, r.id] }, { selected: cartola&.dig(:input, :rule_id) }, class: AdminHelper::ADMIN_INPUT_CLASSES %>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <% { goals: "Gols", assists: "Assistências", yellow_cards: "Amarelos", red_cards: "Vermelhos" }.each do |field, label| %>
+            <div>
+              <%= f.label field, label, class: AdminHelper::ADMIN_LABEL_CLASSES %>
+              <%= f.number_field field, value: cartola&.dig(:input, field) || 0, min: 0, step: 1, required: true, class: AdminHelper::ADMIN_INPUT_CLASSES %>
+            </div>
+          <% end %>
+        </div>
+        <div><%= f.submit "Calcular", name: nil, class: AdminHelper::ADMIN_BUTTON_CLASSES %></div>
+      <% end %>
+
+      <% if cartola %>
+        <div class="mt-4 text-sm" data-role="cartola-result" role="status">
+          <% if cartola[:error] %>
+            <p class="text-red-800 dark:text-red-300"><%= cartola[:error] %></p>
+          <% else %>
+            <p><span class="text-2xl font-bold tabular-nums"><%= cartola[:points] %></span> pontos · regra: <strong><%= cartola[:rule].name %></strong></p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </section>
+</div>

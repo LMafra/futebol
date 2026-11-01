@@ -29,6 +29,11 @@ Metrics/BlockLength:
     - 'config/routes.rb'
     - 'app/admin/**/*'
 
+Naming/PredicateMethod:
+  AllowedMethods:
+    - call
+    - save
+
 Metrics/MethodLength:
   Exclude:
     - 'db/migrate/**/*'

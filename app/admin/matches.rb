@@ -22,7 +22,26 @@ ActiveAdmin.register Core::Match, as: 'Match' do
     column('Placar', class: 'tabular-nums') { |match| admin_score(match) }
     column(:status) { |match| status_tag match.status }
     column :scores_calculated_at
-    actions
+    actions do |match|
+      item 'Preview', admin_bolaopreview_path(match_id: match.id) if authorized?(:preview, match)
+    end
+  end
+
+  action_item :preview, only: :show, if: -> { authorized?(:preview, resource) } do
+    link_to 'Preview do Bolão', admin_bolaopreview_path(match_id: resource.id), class: 'action-item-button'
+  end
+
+  action_item :finalize, only: :show,
+                         if: -> { authorized?(:finalize, resource) && (resource.live? || resource.may_start_match?) } do
+    link_to 'Finalizar', admin_matchfinalizer_path(match_id: resource.id), class: 'action-item-button'
+  end
+
+  action_item :revert, only: :show, if: -> { authorized?(:revert, resource) && resource.may_revert_match? } do
+    link_to 'Reverter pontuação', admin_matchreversal_path(match_id: resource.id), class: 'action-item-button'
+  end
+
+  action_item :history, only: :show do
+    link_to 'Histórico', admin_audithistory_path(match_id: resource.id), class: 'action-item-button'
   end
 
   show title: :to_s do
