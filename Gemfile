@@ -82,6 +82,12 @@ group :development, :test do
   gem 'prosopite', '~> 2.5'
 end
 
+group :test do
+  # System specs (spec/system) in headless Chrome over CDP, no chromedriver [https://github.com/rubycdp/cuprite]
+  gem 'capybara', '~> 3.40'
+  gem 'cuprite', '~> 0.20'
+end
+
 group :development do
   gem 'letter_opener', '~> 1.10'
   gem 'lookbook', '~> 2.3'

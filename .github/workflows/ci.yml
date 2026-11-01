@@ -50,7 +50,7 @@ jobs:
             app/components app/views app/helpers app/javascript app/assets/tailwind config/tailwind.config.js
 
   test:
-    name: RSpec
+    name: RSpec (+ system tests)
     runs-on: ubuntu-24.04
     services:
       postgres:
@@ -88,7 +88,21 @@ jobs:
         run: bin/rails tailwindcss:build
 
       - name: RSpec
-        run: bundle exec rspec
+        run: bundle exec rspec --exclude-pattern 'spec/system/**/*_spec.rb'
+
+      # Cuprite drives the runner's preinstalled Google Chrome; failure screenshots go to tmp/capybara.
+      - name: System tests (Capybara + Cuprite)
+        env:
+          RAILS_SYSTEM_TESTING_SCREENSHOT: failed
+        run: bundle exec rspec spec/system
+
+      - name: Upload failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: system-test-screenshots
+          path: tmp/capybara/
+          if-no-files-found: ignore
 
       # After RSpec: the seeded rows would otherwise leak into the transactional specs.
       - name: Seeds are idempotent (db:seed twice, same counts)
