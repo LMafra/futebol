@@ -7,10 +7,10 @@
 
 ## Resumo
 
-| MCP | Transporte / endpoint | Escopo | Status no ambiente do agente (2026-10-31) | Smoke test (MCP) | Comando manual equivalente |
+| MCP | Transporte / endpoint | Escopo | Status no ambiente do agente (2026-11-01) | Smoke test (MCP) | Comando manual equivalente |
 |---|---|---|---|---|---|
-| render | HTTP hospedado `https://mcp.render.com/mcp` | serviços, deploys, logs, métricas, env vars | não configurado | `list_services` | `curl -fsS -H "Authorization: Bearer $RENDER_API_KEY" https://api.render.com/v1/services?limit=20` |
-| supabase | stdio, `pipx install supabase-mcp-server` | consultas e gestão do projeto; **não** substitui `SUPABASE_DATABASE_URL` | plugin Supabase do Cursor em `needsAuth` | `get_schemas` | `psql "$SUPABASE_DIRECT_URL" -c 'SELECT 1'` |
+| render | HTTP hospedado `https://mcp.render.com/mcp` | serviços, deploys, logs, métricas, env vars | conectado (plugin do Cursor; workspace `tea-cspqio56l47c739ns4ug`) | `list_services` | `curl -fsS -H "Authorization: Bearer $RENDER_API_KEY" https://api.render.com/v1/services?limit=20` |
+| supabase | plugin oficial do Cursor; alternativa stdio `pipx install supabase-mcp-server` | consultas e gestão do projeto; **não** substitui `SUPABASE_DATABASE_URL` | conectado (plugin do Cursor) | `list_projects` / `execute_sql` | `docker run --rm postgres:18 psql "$SUPABASE_DIRECT_URL" -c 'SELECT 1'` |
 | openobserve (opcional) | HTTP `https://<instância>/api/<org>/mcp` | consultar traces/logs, alertas | **não usado nesta fase** (só documentado) | — | UI do OpenObserve, aba Traces |
 | r2 | stdio `s3-mcp-server` | buckets `futebol-dev` / `futebol-prod` | não configurado | `list_buckets` | `aws s3api list-buckets --endpoint-url "$R2_ENDPOINT"` |
 | resend | HTTP `https://mcp.resend.com/mcp` | e-mail de teste | não configurado | `send-email` p/ endereço de teste | `curl -fsS https://api.resend.com/emails -H "Authorization: Bearer $RESEND_API_KEY" -H 'Content-Type: application/json' -d '{"from":"onboarding@resend.dev","to":"delivered@resend.dev","subject":"futebol smoke","text":"ok"}'` |
@@ -45,7 +45,28 @@ Servidor da comunidade, por stdio ([PyPI](https://pypi.org/project/supabase-mcp-
 - **Escopo: consultas e gestão, nunca a conexão do app.** O app conecta por `SUPABASE_DATABASE_URL`/`SUPABASE_DIRECT_URL` (docs/OPERATIONS.md, seção "Banco (Supabase)"). Migrations rodam pelo `db:prepare` do entrypoint, não pelo MCP, para o histórico ficar em `db/migrate`.
 - **Smoke:** `get_schemas` deve listar `public` com as tabelas do app.
 - **Manual sem psql local:** `docker run --rm postgres:18 psql "$SUPABASE_DIRECT_URL" -c 'SELECT 1'`.
-- O plugin oficial do Supabase no Cursor (MCP hospedado) aparece neste ambiente como `needsAuth`. Autenticar exige login no IDE, então nada foi chamado.
+- O plugin oficial do Supabase no Cursor está autenticado desde 2026-11-01 e foi o usado no deploy (`list_projects`, `create_project`, `execute_sql`, `list_tables`, `list_extensions`). O servidor stdio acima continua sendo a alternativa documentada; ele não substitui a connection string do app.
+
+## Comandos usados no deploy (2026-11-01)
+
+Plugins do Cursor, não o servidor stdio. Nenhum secret entra nestes comandos. Fallback é o Dashboard ou a API, sem colar senha no chat.
+
+| MCP | Ferramenta | Fallback manual |
+|---|---|---|
+| Supabase | `list_projects` | Dashboard → lista de projetos |
+| Supabase | `pause_project` | Dashboard → Pause project |
+| Supabase | `create_project` (`get_cost` + `confirm_cost` se a ferramenta pedir) | Dashboard → New project. O MCP não aceita `db_pass` e não devolve a senha: `PATCH /v1/projects/{ref}/database/password` e gravar a URI fora do repo |
+| Supabase | `get_project` / `get_project_url` | Dashboard → Project Settings → API |
+| Supabase | `execute_sql` | SQL Editor, ou `docker run --rm postgres:18 psql "$SUPABASE_DIRECT_URL" -c 'SELECT 1'` |
+| Supabase | `list_extensions` | SQL Editor: `SELECT name, installed_version FROM pg_available_extensions WHERE name IN ('pgcrypto','plpgsql')` |
+| Supabase | `list_tables` | SQL Editor: `\dt` ou `select tablename from pg_tables where schemaname = 'public'` |
+| Render | `list_workspaces` | Dashboard → troca de workspace. Há um só: `tea-cspqio56l47c739ns4ug` |
+| Render | `list_services` | `curl -fsS -H "Authorization: Bearer $RENDER_API_KEY" https://api.render.com/v1/services?limit=20` |
+| Render | `create_web_service` | Dashboard → New → Web Service. O MCP não cria background worker |
+| Render | `update_environment_variables` | Dashboard → Environment. Neste deploy os segredos foram por `PUT /v1/services/{id}/env-vars` (merge), para os valores não irem ao transcript |
+| Render | `trigger_deploy` | Dashboard → Manual Deploy, ou `curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL"` |
+| Render | `list_deploys` | Dashboard → Deploys |
+| Render | `list_logs` | Dashboard → Logs (build e runtime) |
 
 ## openobserve (opcional, não usado nesta fase)
 
