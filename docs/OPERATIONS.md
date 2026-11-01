@@ -48,7 +48,7 @@ Fora de development/test, os dados demo não são criados: a senha acima é púb
 - Gate local (o `test` de [`.cursor/environment.json`](../.cursor/environment.json)): `bundle exec rspec && bundle exec rubocop && bundle exec packwerk check && bin/rails zeitwerk:check`.
 - System specs (Chrome headless): `bundle exec rspec spec/system`; o CI roda com `RAILS_SYSTEM_TESTING_SCREENSHOT=failed`.
 - Schema × models: `bundle exec database_consistency -c config/database_consistency.todo.yml`.
-- Antes do PR: `bin/ci` ([`config/ci.rb`](../config/ci.rb)).
+- Antes do PR: `bin/ci` ([`config/ci.rb`](../config/ci.rb)): setup, RuboCop, grep de design, bundler-audit, importmap audit, Brakeman, Packwerk (`validate` + `check`), Zeitwerk, `database_consistency` e RSpec.
 - Detalhes das ferramentas e configurações: [QUALITY.md](QUALITY.md).
 
 ## Comandos úteis
@@ -75,7 +75,7 @@ Fora de development/test, os dados demo não são criados: a senha acima é púb
 
 ## Segurança
 
-[Dependabot](../.github/dependabot.yml) abre PRs semanais (segunda-feira) para gems e GitHub Actions. O ActiveAdmin fica de fora porque é um beta pinado. Vulnerabilidades: [SECURITY.md](../SECURITY.md). Licença: [MIT](../LICENSE).
+[Dependabot](../.github/dependabot.yml) abre PRs semanais (segunda-feira) para gems e GitHub Actions. O ActiveAdmin fica de fora porque é um beta pinado. Vulnerabilidades: [SECURITY.md](../.github/SECURITY.md). Licença: [MIT](../LICENSE).
 
 | Ferramenta | Onde roda | Comando local |
 |---|---|---|

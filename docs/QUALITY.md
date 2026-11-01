@@ -75,6 +75,7 @@ bundle exec rspec && bundle exec rubocop && bundle exec packwerk check && bin/ra
 - aspas simples (`Style/StringLiterals`), linhas de até 120 colunas, sem exigir comentário de documentação nem `frozen_string_literal`;
 - `Metrics/BlockLength` não vale para specs, rotas, `config/environments` e `app/admin`; `Metrics/MethodLength` e `AbcSize` não valem para migrations;
 - `Naming/PredicateMethod` aceita `call` e `save`;
-- fora da análise: `bin/`, `db/schema.rb`, `node_modules/`, `tmp/`, `vendor/` e os dummies dos engines.
+- fora da análise: `bin/`, `db/schema.rb`, `node_modules/`, `tmp/`, `vendor/` e os dummies dos engines;
+- [`db/.rubocop.yml`](../db/.rubocop.yml) herda a raiz e desliga `Metrics/BlockLength` nos schemas de `db/` (`queue_schema.rb`, `cache_schema.rb`, `cable_schema.rb`).
 
 O pre-commit (`.githooks`) roda o RuboCop nos arquivos Ruby staged; o CI roda em tudo (`bundle exec rubocop --format github`).
