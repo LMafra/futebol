@@ -22,6 +22,7 @@ RSpec.describe 'Public championship page', type: :request do
       [row.at_css('th').text.squish.delete_prefix(row.at_css('th span').text), row.css('td')[1].text]
     end
     expect(standings).to eq([%w[Alfa 3], %w[Beta 0]])
+    expect(page.at_css('[data-role="simulate-championship"]')['href']).to eq(simulador_championship_path(championship))
   end
 
   it 'mostra uma rodada por vez na aba Partidas, abrindo na primeira rodada em aberto' do

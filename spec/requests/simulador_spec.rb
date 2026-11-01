@@ -38,11 +38,26 @@ RSpec.describe 'Simulador', type: :request do
       expect(page.at_css("input[name='guesses[#{played.id}][home]']")).to be_nil
     end
 
-    it 'usa o campeonato mais recente em /simulador' do
-      get simulador_path
+    it 'separa as rodadas em aberto para o carrossel, começando pela primeira' do
+      create(:match, championship:, home_team: teams[2], away_team: teams[3], status: 'scheduled', round: 3)
 
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include(championship.to_s)
+      get simulador_championship_path(championship)
+
+      form = page.at_css('form[data-controller="rounds"]')
+      expect(form['data-rounds-index-value']).to eq('0')
+      expect(form.css('[data-rounds-target="round"]').map { |round| round['data-round-label'] })
+        .to eq(['Rodada 2', 'Rodada 3'])
+      expect(form.at_css('[data-role="rounds-nav"]')['hidden']).not_to be_nil
+      expect(form.css('[data-rounds-target="nav"] button').map(&:text).map(&:squish)).to eq(%w[Anterior Próxima])
+    end
+
+    it 'leva para a página do campeonato e para a lista de campeonatos' do
+      get simulador_championship_path(championship)
+
+      links = page.at_css('[data-role="simulator-nav"]').css('a').to_h { |link| [link.text, link['href']] }
+      expect(links).to eq('Ver campeonato' => public_championship_path(championship),
+                          'Outros campeonatos' => simulador_path)
+      expect(page.at_css('select#championship_id')).to be_nil
     end
 
     it 'responde 304 quando nada mudou (ETag)' do
@@ -72,7 +87,50 @@ RSpec.describe 'Simulador', type: :request do
     end
   end
 
+  describe 'GET /simulador' do
+    it 'lista os campeonatos públicos para escolher, sem login e sem abrir nenhum direto' do
+      private_championship = create(:championship, name: 'Copa Secreta', private: true)
+
+      get simulador_path
+
+      expect(response).to have_http_status(:ok)
+      cards = page.css('[data-role="simulator-championship"]')
+      expect(cards.map { |card| card['data-championship-id'].to_i }).to eq([championship.id])
+      expect(cards.first.at_css('a')['href']).to eq(simulador_championship_path(championship))
+      expect(page.css('[data-role="open-match"]')).to be_empty
+      expect(response.body).not_to include(private_championship.name)
+    end
+
+    it 'mostra também os privados para quem está logado' do
+      private_championship = create(:championship, name: 'Copa Secreta', private: true)
+      sign_in(create(:user))
+
+      get simulador_path
+
+      expect(page.css('[data-role="simulator-championship"]').map { |card| card['data-championship-id'].to_i })
+        .to contain_exactly(championship.id, private_championship.id)
+    end
+  end
+
   describe 'POST /simulador/:championship_id/preview' do
+    it 'volta na rodada em que o visitante estava, ou na primeira com erro' do
+      round_three = create(:match, championship:, home_team: teams[2], away_team: teams[3], status: 'scheduled',
+                                   round: 3)
+
+      post simulador_preview_path(championship), params: { round_index: '1', guesses: {} }
+      expect(page.at_css('form[data-controller="rounds"]')['data-rounds-index-value']).to eq('1')
+
+      post simulador_preview_path(championship), params: { round_index: '0',
+                                                           guesses: { round_three.id => { home: '-1', away: '0' } } }
+      expect(page.at_css('form[data-controller="rounds"]')['data-rounds-index-value']).to eq('1')
+    end
+
+    it 'exige o campeonato na rota do ADR (404 sem championship_id)' do
+      post simulador_projecao_path, params: { guesses: {} }
+
+      expect(response).to have_http_status(:not_found)
+    end
+
     it 'projeta a tabela com os placares do visitante, num Turbo Frame, sem gravar nada' do
       expect do
         preview({ open_match.id => { home: '0', away: '3' }, live_match.id => { home: '4', away: '0' } })

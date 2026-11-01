@@ -3,6 +3,9 @@ pt-BR:
     name: "Craquefy"
     tagline: "O campeonato do seu jeito"
     description: "Bolão, Esquadrão e Simulador para acompanhar o seu campeonato de futebol com os amigos."
+    author: "LMafra"
+    author_url: "https://github.com/LMafra"
+    pix_key: "chagas.lucas.mafra@gmail.com"
   activerecord:
     attributes:
       cartola/scoring_rule:

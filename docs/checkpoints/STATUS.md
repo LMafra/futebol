@@ -298,3 +298,9 @@ for url in /up / /entrar /campeonatos/1 /esquadrao /cartola/rankings /admin /sim
   printf "%-20s %s\n" "$url" "$(curl -s -o /dev/null --max-time 90 -w '%{http_code} %{redirect_url}' "https://futebol-web.onrender.com$url")"
 done
 ```
+
+### Ajustes pós-entrega (TICKET-0041)
+Branch `craquefy/h-ajustes`, empilhada sobre `craquefy/g-docs`, com um commit assinado; entra no mesmo push das outras 11 branches.
+- `/simulador` virou a lista de campeonatos para escolher (privados só para quem está logado); o simulador abre em `/simulador/:id`, sem login, e a página do campeonato ganhou o botão "Simular". Diverge do ADR 0003, que descrevia `GET /simulador` abrindo o simulador direto; o ADR não foi editado.
+- Jogos em aberto em carrossel: uma rodada por vez, com "Anterior" e "Próxima". As rodadas ocultas continuam no formulário, e sem JS ficam empilhadas.
+- Rodapé: "Desenvolvido por LMafra" (GitHub) e "Pague o Café" com a chave Pix e botão de copiar. A chave Pix é um e-mail publicado de propósito; as specs de privacidade checam os e-mails dos usuários, não qualquer `@` na página.

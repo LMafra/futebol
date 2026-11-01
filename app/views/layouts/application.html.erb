@@ -55,12 +55,24 @@
 
     <footer class="border-t border-rule">
       <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-6 text-sm text-graphite">
-        <p>© <span class="tabular-nums"><%= Date.current.year %></span> <%= brand(:name) %></p>
+        <p>
+          © <span class="tabular-nums"><%= Date.current.year %></span> <%= brand(:name) %> ·
+          Desenvolvido por <%= link_to brand(:author), brand(:author_url), class: "font-semibold underline underline-offset-2 hover:no-underline", rel: "noopener", data: { role: "author-link" } %>
+        </p>
         <nav class="flex flex-wrap items-center gap-4" aria-label="Rodapé">
           <%= link_to "GitHub", "https://github.com/LMafra/futebol", class: "underline underline-offset-2 hover:no-underline", rel: "noopener" %>
           <%= link_to "Documentação", "https://github.com/LMafra/futebol/tree/main/docs", class: "underline underline-offset-2 hover:no-underline", rel: "noopener" %>
           <%= link_to "Licença MIT", "https://github.com/LMafra/futebol/blob/main/LICENSE", class: "underline underline-offset-2 hover:no-underline", rel: "noopener" %>
           <%= link_to "Acesso administrativo", "/admin", class: "underline underline-offset-2 hover:no-underline" %>
+          <details class="relative" data-role="pix">
+            <summary class="cursor-pointer list-none font-semibold text-ink underline underline-offset-2 hover:no-underline">Pague o Café</summary>
+            <div class="absolute bottom-full right-0 z-10 mb-2 flex w-max flex-col gap-2 rounded-md border border-rule bg-white p-4 text-ink" data-controller="clipboard">
+              <p class="text-xs font-bold uppercase tracking-widest text-graphite">Chave Pix</p>
+              <code class="font-sans text-sm" data-clipboard-target="source"><%= brand(:pix_key) %></code>
+              <button type="button" class="cursor-pointer self-start rounded-sm border border-ink px-3 py-1 text-sm font-semibold hover:bg-ink hover:text-white"
+                      data-action="clipboard#copy" data-clipboard-target="button">Copiar chave</button>
+            </div>
+          </details>
         </nav>
       </div>
     </footer>
