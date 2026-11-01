@@ -25,7 +25,7 @@ class ProcessMatchPointsJob < ApplicationJob
   def report_failure(error, match_id:, scoring_token:)
     Rails.logger.error("ProcessMatchPointsJob failed match_id=#{match_id} scoring_token=#{scoring_token}: " \
                        "#{error.class} #{error.message}")
-    Sentry.capture_exception(error, extra: { match_id:, scoring_token: })
+    Rails.error.report(error, handled: false, context: { match_id:, scoring_token: })
   end
 
   def score_rows(match, scoring_token)

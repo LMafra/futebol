@@ -49,8 +49,6 @@ gem 'faraday', '~> 2.15'
 gem 'lograge', '~> 0.15'
 gem 'mission_control-jobs', '~> 1.3'
 gem 'pundit', '~> 2.5'
-gem 'sentry-rails', '~> 7.2'
-gem 'sentry-ruby', '~> 7.2'
 gem 'stoplight', '~> 6.0'
 gem 'view_component', '~> 4.20'
 
@@ -58,6 +56,15 @@ gem 'bolao', path: 'engines/bolao'
 gem 'cartola', path: 'engines/cartola'
 gem 'core', path: 'engines/core'
 gem 'simulador', path: 'engines/simulador'
+
+# Observability: traces (stable) and log records (logs SDK is still 0.x) over OTLP/HTTP to OpenObserve
+# (config/initializers/opentelemetry.rb).
+gem 'opentelemetry-exporter-otlp', '~> 0.37'
+gem 'opentelemetry-exporter-otlp-logs', '~> 0.7'
+gem 'opentelemetry-instrumentation-all', '~> 0.99'
+gem 'opentelemetry-instrumentation-logger', '~> 0.5'
+gem 'opentelemetry-logs-sdk', '~> 0.8'
+gem 'opentelemetry-sdk', '~> 1.13'
 
 group :development, :test do
   gem 'factory_bot_rails', '~> 6.5'

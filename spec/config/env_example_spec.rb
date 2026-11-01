@@ -8,8 +8,9 @@ RSpec.describe '.env.example' do
       config = Rails.application.config
       puts JSON.dump(
         storage: config.active_storage.service,
-        sentry_environment: Sentry.configuration.environment,
-        sentry_traces: Sentry.configuration.traces_sample_rate,
+        otel_service: OpenTelemetry.tracer_provider.resource.attribute_enumerator.to_h['service.name'],
+        otel_traces_uri: OpenTelemetry.tracer_provider.instance_variable_get(:@span_processors)
+                                      .filter_map { |p| p.instance_variable_get(:@exporter)&.instance_variable_get(:@uri)&.to_s }.first,
         queue_url: ActiveRecord::Base.configurations.configs_for(env_name: Rails.env, name: 'queue').try(:url)
       )
     RUBY
@@ -34,7 +35,8 @@ RSpec.describe '.env.example' do
   end
 
   it 'boots development with blank values falling back to defaults' do
-    expect(boot('development')).to include(storage: 'local', sentry_environment: 'development', sentry_traces: 0.0)
+    expect(boot('development')).to include(storage: 'local', otel_service: 'futebol',
+                                           otel_traces_uri: 'http://localhost:5080/api/default/v1/traces')
   end
 
   it 'boots production with blank values falling back to defaults' do
@@ -42,7 +44,7 @@ RSpec.describe '.env.example' do
                                   'R2_SECRET_ACCESS_KEY' => 'secret',
                                   'DATABASE_URL' => 'postgres://u:p@db.example.com/neondb')
 
-    expect(settings).to include(storage: 'r2', sentry_environment: 'production', sentry_traces: 0.05,
+    expect(settings).to include(storage: 'r2', otel_service: 'futebol', otel_traces_uri: nil,
                                 queue_url: 'postgres://u:p@db.example.com/neondb_queue')
   end
 end

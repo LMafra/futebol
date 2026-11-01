@@ -17,6 +17,6 @@ class RevertMatchPointsJob < ApplicationJob
   def report_failure(error, match_id:, reversal_token:)
     Rails.logger.error("RevertMatchPointsJob failed match_id=#{match_id} reversal_token=#{reversal_token}: " \
                        "#{error.class} #{error.message}")
-    Sentry.capture_exception(error, extra: { match_id:, reversal_token: })
+    Rails.error.report(error, handled: false, context: { match_id:, reversal_token: })
   end
 end

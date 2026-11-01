@@ -107,7 +107,6 @@ RSpec.describe RevertMatchPointsJob do
 
   before do
     create(:bolao_scoring_rule, pool_id: nil, kind: 'exact_score', points: 10)
-    allow(Sentry).to receive(:capture_exception)
   end
 
   def score!(token = SecureRandom.uuid) = ProcessMatchPointsJob.perform_now(match.id, token)
@@ -156,15 +155,14 @@ RSpec.describe RevertMatchPointsJob do
     end
   end
 
-  it 'falha → log + Sentry + re-raise' do
+  it 'falha → log + span OTel de erro + re-raise' do
     allow(Rails.logger).to receive(:error).and_call_original
     token = SecureRandom.uuid
 
     expect { revert!(token) }.to raise_error(AASM::InvalidTransition)
 
     expect(Rails.logger).to have_received(:error).with(/RevertMatchPointsJob failed match_id=#{match.id}/)
-    expect(Sentry).to have_received(:capture_exception)
-      .with(an_instance_of(AASM::InvalidTransition),
-            hash_including(extra: { match_id: match.id, reversal_token: token }))
+    expect(error_spans(AASM::InvalidTransition).sole.attributes)
+      .to include('error.context.match_id' => match.id, 'error.context.reversal_token' => token)
   end
 end

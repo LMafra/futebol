@@ -61,18 +61,18 @@ RSpec.describe ProcessMatchPointsJob do
 
   describe 'failure handling (rescue)' do
     before do
-      allow(Sentry).to receive(:capture_exception)
       allow(Rails.logger).to receive(:error).and_call_original
       allow(Scoring::Engine).to receive(:points_for).and_raise(RuntimeError, 'engine exploded')
     end
 
-    it 'logs the error, reports it to Sentry and re-raises' do
+    it 'logs the error, reports it as an OTel error span and re-raises' do
       expect { perform }.to raise_error(RuntimeError, 'engine exploded')
 
       expect(Rails.logger).to have_received(:error)
         .with(/ProcessMatchPointsJob failed match_id=#{match.id} scoring_token=#{token}: RuntimeError engine exploded/)
-      expect(Sentry).to have_received(:capture_exception)
-        .with(an_instance_of(RuntimeError), hash_including(extra: { match_id: match.id, scoring_token: token }))
+      expect(error_spans(RuntimeError).sole.attributes)
+        .to include('exception.message' => 'engine exploded', 'exception.handled' => false,
+                    'error.context.match_id' => match.id, 'error.context.scoring_token' => token)
     end
 
     it 'leaves no partial scores and keeps the match unscored' do
@@ -84,7 +84,6 @@ RSpec.describe ProcessMatchPointsJob do
   end
 
   it 'refuses to score a match that is not finished, rolling back the inserted scores' do
-    allow(Sentry).to receive(:capture_exception)
     match.update!(status: 'live')
 
     expect { perform }.to raise_error(AASM::InvalidTransition)
