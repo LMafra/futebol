@@ -14,7 +14,7 @@
 | openobserve (opcional) | HTTP `https://<instância>/api/<org>/mcp` | consultar traces/logs, alertas | **não usado nesta fase** (só documentado) | — | UI do OpenObserve, aba Traces |
 | cloudflare | plugin do Cursor, HTTP `https://mcp.cloudflare.com/mcp` (OAuth) | API da Cloudflare, buckets R2 | conectado (2026-11-01); criou os buckets `futebol-dev` e `futebol-prod` | `execute` → `GET /accounts/{account_id}/r2/buckets` | Dashboard → R2 |
 | r2 | stdio `s3-mcp-server` | buckets `futebol-dev` / `futebol-prod` | não configurado | `list_buckets` | `aws s3api list-buckets --endpoint-url "$R2_ENDPOINT"` |
-| resend | HTTP `https://mcp.resend.com/mcp` | e-mail de teste | não configurado | `send-email` p/ endereço de teste | `curl -fsS https://api.resend.com/emails -H "Authorization: Bearer $RESEND_API_KEY" -H 'Content-Type: application/json' -d '{"from":"onboarding@resend.dev","to":"delivered@resend.dev","subject":"futebol smoke","text":"ok"}'` |
+| resend | HTTP `https://mcp.resend.com/mcp` | e-mail de teste | MCP não configurado; chave do app validada por SMTP (2026-11-01; permissão só de envio) | `send-email` p/ endereço de teste | `curl -fsS https://api.resend.com/emails -H "Authorization: Bearer $RESEND_API_KEY" -H 'Content-Type: application/json' -d '{"from":"onboarding@resend.dev","to":"delivered@resend.dev","subject":"futebol smoke","text":"ok"}'` |
 
 ## render
 

@@ -61,7 +61,9 @@ Fora de development/test, os dados demo não são criados: a senha acima é púb
 | `bin/rails db:reset` | recria o banco local do zero |
 | `bin/jobs` | só o worker do Solid Queue |
 | `bin/rails tailwindcss:build` | compila o CSS do app |
+| `docker compose -f docker/openobserve/docker-compose.yml up -d` | sobe o OpenObserve self-hosted local (UI em `localhost:5080`) |
 | `bin/rails observability:fake_exception` | gera um span de erro e imprime o `trace_id` |
+| `gh workflow run keep-alive.yml` | dispara o ping de keep-alive à mão |
 | `bin/ci` | checagens locais antes do PR |
 
 ## CI
@@ -267,7 +269,7 @@ Smoke tests, variáveis e comandos manuais por MCP: [docs/mcp/README.md](mcp/REA
 | openobserve | não usado | UI do OpenObserve (aba Traces/Logs) |
 | cloudflare | conectado (1 conta) | `execute` com `GET/POST /accounts/{account_id}/r2/buckets`; criou `futebol-dev` e `futebol-prod` |
 | r2 | buckets criados pelo MCP da Cloudflare | alternativa: `npx wrangler r2 bucket create futebol-dev && npx wrangler r2 bucket create futebol-prod` |
-| resend | manual | manual: `curl https://api.resend.com/emails` (ver [docs/mcp](mcp/README.md)) |
+| resend | MCP não usado; chave validada por SMTP (2026-11-01) | teste: envio SMTP para `delivered@resend.dev` (ver [E-mail](#e-mail-resend)). A chave só tem permissão de envio, então o `curl https://api.resend.com/emails` funciona e `GET /domains` responde 401 `restricted_api_key` |
 
 ### Fluxo de deploy com MCP
 

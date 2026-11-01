@@ -99,7 +99,7 @@ bin/dev   # http://localhost:3000
 
 ### Deploy
 
-O web service `futebol-web` roda o [`Dockerfile`](Dockerfile) no Render; o `bin/docker-entrypoint` aplica as migrations (`db:prepare`) no boot pelo session pooler do Supabase (porta 5432), e o app usa o transaction pooler (porta 6543). Sem worker no plano free: o Solid Queue roda dentro do Puma (`SOLID_QUEUE_IN_PUMA=1`). O serviço não faz auto-deploy; dispare pelo Dashboard (Manual Deploy) ou pelo MCP do Render (`trigger_deploy`).
+O web service `futebol-web` roda o [`Dockerfile`](Dockerfile) no Render; o `bin/docker-entrypoint` aplica as migrations (`db:prepare`) no boot pelo session pooler do Supabase (porta 5432), e o app usa o transaction pooler (porta 6543). Sem worker no plano free: o Solid Queue roda dentro do Puma (`SOLID_QUEUE_IN_PUMA=1`). O auto-deploy está ligado, com gatilho `commit`: cada commit na `main` vira deploy. Para refazer um deploy sem commit novo, use o Dashboard (Manual Deploy) ou o MCP do Render (`trigger_deploy`).
 
 ```bash
 curl -s -o /dev/null -w "%{http_code}\n" https://futebol-web.onrender.com/up   # 200
@@ -117,7 +117,7 @@ As variáveis ficam documentadas em [`.env.example`](.env.example) e, em produç
 |---|---|---|
 | [OpenObserve self-hosted](#openobserve-self-hosted) | `docker/openobserve/docker-compose.yml` + `OTEL_EXPORTER_OTLP_*` | escolher o host (VPS) e definir `OTEL_EXPORTER_OTLP_*` no Render |
 | [Cloudflare R2](#cloudflare-r2) | serviço `r2` em `config/storage.yml` | buckets criados; falta gerar o token S3 e definir `R2_*` |
-| [Resend](#resend) | SMTP em `config/environments/production.rb` | conta, API key, domínio verificado e `RESEND_*` |
+| [Resend](#resend) | SMTP em `config/environments/production.rb` | conta e API key prontas (SMTP validado); falta verificar o domínio e definir `RESEND_*` no Render |
 | [Keep-alive](#keep-alive) | `.github/workflows/keep-alive.yml` | nenhum: o secret `RENDER_APP_HOST` já está no GitHub; começa a valer com o merge na `main` |
 
 ### OpenObserve self-hosted
