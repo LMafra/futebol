@@ -2,7 +2,5 @@
 require "rubygems"
 require "bundler/setup"
 
-# Explicit RuboCop config increases performance slightly while avoiding config confusion.
-ARGV.unshift("--config", File.expand_path("../.rubocop.yml", __dir__))
-
+# No forced --config: an explicit config would skip db/.rubocop.yml (schemas), which the CI and pre-commit honor.
 load Gem.bin_path("rubocop", "rubocop")

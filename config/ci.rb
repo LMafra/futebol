@@ -12,6 +12,12 @@ CI.run do
   step 'Security: Importmap vulnerability audit', 'bin/importmap audit'
   step 'Security: Brakeman code analysis', 'bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error'
 
+  step 'Boundaries: Packwerk', 'bin/packwerk validate && bin/packwerk check'
+  step 'Autoload: Zeitwerk', 'bin/rails zeitwerk:check'
+  step 'Schema: database_consistency',
+       'RAILS_ENV=test bundle exec database_consistency -c config/database_consistency.todo.yml'
+  step 'Tests: RSpec', 'bundle exec rspec'
+
   # Optional: set a green GitHub commit status to unblock PR merge.
   # Requires the `gh` CLI and `gh extension install basecamp/gh-signoff`.
   # if success?
