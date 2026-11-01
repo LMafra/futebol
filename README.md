@@ -11,10 +11,12 @@
     <img src="docs/assets/logo.svg" alt="Logo" width="96" height="96">
   </a>
 
-  <h3 align="center">Futebol</h3>
+  <h3 align="center">Craquefy</h3>
 
   <p align="center">
-    Bolão, Cartola e Simulador em um monólito modular Rails 8.
+    O campeonato do seu jeito: Bolão, Esquadrão e Simulador em um monólito modular Rails 8.
+    <br />
+    <sub>Repo GitHub: futebol; marca: Craquefy.</sub>
     <br />
     <a href="docs/README.md"><strong>Explore a documentação »</strong></a>
     <br />
@@ -155,7 +157,7 @@ Production envia e-mail pelo SMTP do Resend ([`config/environments/production.rb
 
 1. Crie a conta em [resend.com](https://resend.com) e gere uma API key (`re_xxxxxxxxx`) com permissão Sending access.
 2. Em Domains, cadastre e verifique o domínio do remetente (registros SPF/DKIM no DNS). Sem isso, `onboarding@resend.dev` só entrega para o e-mail do dono da conta.
-3. No Render (env vars do `futebol-web`), defina `RESEND_API_KEY` e `RESEND_FROM` (ex.: `Futebol <bolao@seu-dominio.com>`).
+3. No Render (env vars do `futebol-web`), defina `RESEND_API_KEY` e `RESEND_FROM` (ex.: `Craquefy <bolao@seu-dominio.com>`).
 
 Teste de envio e detalhes: [OPERATIONS.md → E-mail](docs/OPERATIONS.md#e-mail-resend).
 

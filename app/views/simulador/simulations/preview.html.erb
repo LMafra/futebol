@@ -1,4 +1,4 @@
-<% content_for(:title, "Simulador · #{@championship} · Futebol") %>
+<% content_for(:title, brand_title("Simulador · #{@championship}")) %>
 
 <%= render "simulador/simulations/simulator", championship: @championship, open_matches: @open_matches,
                                                simulation: @simulation, raw: @raw, projected: @projected,

@@ -1,4 +1,4 @@
-<section class="rounded-md bg-night text-white" aria-label="Números do Craquefy" data-role="counters">
+<section class="rounded-md bg-night text-white" aria-label="Números do <%= brand(:name) %>" data-role="counters">
   <dl class="grid divide-y divide-graphite md:grid-cols-3 md:divide-x md:divide-y-0">
     <% { championships: "Campeonatos públicos", matches: "Partidas", players: "Jogadores" }.each do |key, label| %>
       <div class="flex flex-col gap-1 px-6 py-6" data-role="counter-<%= key %>">

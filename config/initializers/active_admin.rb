@@ -6,7 +6,7 @@ ActiveAdmin.setup do |config|
   # by extracting the _site_header partial into your project
   # to use your own logo, styles, etc.
   #
-  config.site_title = 'Futebol'
+  config.site_title = proc { I18n.t('brand.name') }
 
   # == Load Paths
   #
