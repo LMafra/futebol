@@ -32,6 +32,7 @@
 | [0028](TICKET-0028.md) | — | Signup público | 0011, 0014, 0019 | — |
 | [0029](TICKET-0029.md) | — | Bolão com 2 faixas configuráveis (ADR 0004) | 0004, 0006, 0010, 0016 | supabase (leitura) |
 | [0030](TICKET-0030.md) | — | Cartola configurável por campeonato (limites, carteira, valorização, rankings) | 0007, 0010, 0025 | supabase (leitura) |
+| [0031](TICKET-0031.md) | — | Simulador v1 "e se" (ADR 0003) | 0011, 0026, 0030 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -41,4 +42,4 @@
 - 0013 não bloqueia nenhum ticket
 - UI/demo: {0011, 0014} → 0023 → 0024 (+ 0006) · {0007, 0011} → 0025 · {0023, 0024, 0025} → 0027
 - 0026 sem deps e não bloqueia nenhum ticket (tickets derivados saem do ADR)
-- Lacunas de produto: {0011, 0014, 0019} → 0028 · {0004, 0006, 0010, 0016} → 0029 · {0007, 0010, 0025} → 0030
+- Lacunas de produto: {0011, 0014, 0019} → 0028 · {0004, 0006, 0010, 0016} → 0029 · {0007, 0010, 0025} → 0030 → 0031 (+ 0011, 0026)

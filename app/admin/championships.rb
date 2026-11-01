@@ -17,6 +17,10 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
     actions
   end
 
+  action_item :simulador, only: :show do
+    link_to 'Simulador', main_app.simulador_championship_path(resource), class: 'action-item-button'
+  end
+
   action_item :cartola_rankings, only: :show do
     link_to 'Rankings do Cartola', admin_cartolarankings_path(championship_id: resource.id),
             class: 'action-item-button'

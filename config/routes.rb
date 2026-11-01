@@ -16,6 +16,15 @@ Rails.application.routes.draw do
     get 'cartola/rankings', to: 'rankings#show', as: :cartola_rankings
   end
 
+  scope module: :simulador do
+    get 'simulador', to: 'simulations#show', as: :simulador
+    post 'simulador/projecao', to: 'simulations#preview', as: :simulador_projecao
+    get 'simulador/:championship_id', to: 'simulations#show', as: :simulador_championship,
+                                      constraints: { championship_id: /\d+/ }
+    post 'simulador/:championship_id/preview', to: 'simulations#preview', as: :simulador_preview,
+                                               constraints: { championship_id: /\d+/ }
+  end
+
   mount MissionControl::Jobs::Engine, at: '/admin/jobs'
   ActiveAdmin.routes(self)
   mount Lookbook::Engine, at: '/lookbook' if defined?(Lookbook::Engine)

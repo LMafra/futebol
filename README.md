@@ -51,7 +51,7 @@
 
 ## Sobre o projeto
 
-Plataforma Rails 8 com engines `core`, `bolao`, `cartola` e `simulador` para quem acompanha o campeonato com os amigos: no **Bolão**, cada participante palpita o placar das partidas de um grupo; no **Cartola**, monta a escalação da rodada com os limites por posição do campeonato e compra os jogadores com a carteira de cartoletas; o **Simulador** vai projetar a classificação ("e se"), com escopo definido no [ADR 0003](docs/adr/0003-simulador.md) e implementação no roadmap. Partidas, times e usuários vivem no `core`; o admin cadastra, importa e finaliza partidas, e a pontuação é calculada por jobs.
+Plataforma Rails 8 com engines `core`, `bolao`, `cartola` e `simulador` para quem acompanha o campeonato com os amigos: no **Bolão**, cada participante palpita o placar das partidas de um grupo; no **Cartola**, monta a escalação da rodada com os limites por posição do campeonato e compra os jogadores com a carteira de cartoletas; o **Simulador** projeta a classificação ("e se") a partir de placares hipotéticos, aberto a visitantes ([ADR 0003](docs/adr/0003-simulador.md)). Partidas, times e usuários vivem no `core`; o admin cadastra, importa e finaliza partidas, e a pontuação é calculada por jobs.
 
 Decisões de arquitetura:
 
@@ -122,7 +122,7 @@ Em produção não há contas demo, porque a senha acima é pública: o seed cri
 
 ## Roadmap
 
-Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 30 tickets ([INDEX](docs/tickets/INDEX.md)).
+Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 31 tickets ([INDEX](docs/tickets/INDEX.md)).
 
 - [x] Monolito modular com 4 engines e Packwerk
 - [x] Core, AASM das partidas e pontuação idempotente e reversível com auditoria
@@ -138,7 +138,7 @@ Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 30 tickets ([INDEX
 - [x] 0029: Bolão com 2 faixas configuráveis por campeonato ([ADR 0004](docs/adr/0004-bolao-scoring.md))
 - [x] 0030: Cartola configurável por campeonato (limites por posição, carteira, valorização, rankings; inclui `core_matches.round`)
 - [ ] Pendências de produção: R2, Resend, OpenObserve Cloud, `RENDER_DEPLOY_HOOK_URL` e keep-alive (manual)
-- [ ] Simulador v1 "e se" (derivado do ADR 0003, que o numerava 0029; `core_matches.round` era o 0028)
+- [x] 0031: Simulador v1 "e se" em [`/simulador`](http://localhost:3000/simulador) (ADR 0003, que o numerava 0029; `core_matches.round` entrou no 0030)
 - [ ] Backlog: salvar/compartilhar simulação, Monte Carlo da temporada
 
 Estado de cada fase: [STATUS](docs/checkpoints/STATUS.md).
