@@ -73,6 +73,8 @@ Fora de development/test, os dados demo não são criados: a senha acima é púb
 - `secrets`: `gitleaks detect` no histórico inteiro. Falsos positivos revisados vão para [`.gitleaksignore`](../.gitleaksignore) (fingerprint por linha).
 - `deploy`: só em push para `main`, depois de `lint`, `test` e `secrets`; chama `RENDER_DEPLOY_HOOK_URL` (secret do repositório). Sem o secret, o job avisa e o deploy fica manual.
 
+Fora do CI, [`.github/workflows/keep-alive.yml`](../.github/workflows/keep-alive.yml) pinga o `/up` de produção a cada 14 min (ver [Keep-alive](#keep-alive)).
+
 ## Segurança
 
 [Dependabot](../.github/dependabot.yml) abre PRs semanais (segunda-feira) para gems e GitHub Actions. O ActiveAdmin fica de fora porque é um beta pinado. Vulnerabilidades: [SECURITY.md](../.github/SECURITY.md). Licença: [MIT](../LICENSE).
@@ -162,11 +164,17 @@ Production saiu do Neon para o Supabase. `DATABASE_URL` (Neon) deu lugar a `SUPA
 
 ### Keep-alive
 
-O web free do Render dorme após 15 min sem tráfego. Crie um cron em [cron-job.org](https://cron-job.org) (ou similar):
+O web free do Render dorme após 15 min sem tráfego. O workflow [`.github/workflows/keep-alive.yml`](../.github/workflows/keep-alive.yml) faz `GET https://$RENDER_APP_HOST/up` a cada 14 min (`*/14 * * * *`), com até 3 novas tentativas e 90 s de timeout para cobrir o tempo de acordar. Também roda à mão: Actions → Keep Render alive → Run workflow (`gh workflow run keep-alive.yml`).
 
-- URL: `https://<app>.onrender.com/up`, método GET, a cada 10 min (`*/10 * * * *`).
-- `/up` é público, não redireciona para HTTPS e não passa pela checagem de host, então o ping não depende de cookie nem de domínio.
-- manual: cadastrar o job no cron-job.org e conferir o histórico de execuções (200).
+- Secret do repositório `RENDER_APP_HOST` = `futebol-web.onrender.com`, só o host, sem `https://` nem `/up`. Já cadastrado em 2026-11-01 (`gh secret set RENDER_APP_HOST --body futebol-web.onrender.com`). Sem o secret, o job emite um aviso e termina verde.
+- O `schedule` só dispara a partir da branch padrão: o keep-alive começa a valer depois do merge na `main`.
+- O GitHub pode atrasar execuções agendadas (às vezes mais de 15 min, e aí a instância chega a dormir) e desativa o `schedule` depois de 60 dias sem atividade no repositório; reative em Actions → Keep Render alive → Enable workflow.
+- Custo: com o web sempre acordado, a instância usa cerca de 744 das 750 horas free por mês do workspace no Render. Outro serviço free no mesmo workspace esgotaria a cota antes do fim do mês.
+- `/up` é público, não redireciona para HTTPS e não passa pela checagem de host, então o ping não depende de cookie nem de domínio. O keep-alive não toca o banco, então o Supabase ainda pode pausar após 7 dias sem atividade.
+
+Alternativa sem GitHub Actions, ou como reforço para os atrasos do agendador: um job em [cron-job.org](https://cron-job.org).
+
+- manual: Create cronjob → URL `https://futebol-web.onrender.com/up`, método GET, agendamento a cada 14 min (`*/14 * * * *`), timeout de 30 s ou mais, notificação em caso de falha; depois, conferir no histórico de execuções as respostas 200.
 
 ### Storage (Cloudflare R2)
 
