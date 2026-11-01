@@ -32,23 +32,38 @@ FactoryBot.define do
     sequence(:name) { |n| "Esquadrão #{n}" }
   end
 
-  # A complete lineup: include_players are kept and the formation is filled with new players.
+  # A full lineup (bypassing the wallet): include_players are kept and every slot is filled up to the
+  # championship's limits with new players.
   factory :cartola_lineup, class: 'Cartola::Lineup' do
     transient do
       include_players { [] }
     end
 
     squad factory: :cartola_squad
+    championship
     round { 1 }
     formation { '4-3-3' }
     players do
-      missing = Cartola::Lineup.required_lines(formation)
-      include_players.each { |player| missing[Cartola::Lineup::LINES.fetch(player.position)] -= 1 }
-      fill_positions = { goalkeeper: 'GOL', defense: 'ZAG', midfield: 'MEI', attack: 'ATA' }
-      include_players + missing.flat_map do |line, count|
-        Array.new(count) { association(:player, position: fill_positions.fetch(line)) }
+      missing = championship.cartola_limits.transform_keys(&:to_s)
+      include_players.each { |player| missing[player.slot] -= 1 }
+      fill_positions = { 'goalkeeper' => 'GOL', 'defender' => 'ZAG', 'midfielder' => 'MEI', 'forward' => 'ATA' }
+      include_players + missing.flat_map do |slot, count|
+        Array.new(count) { association(:player, position: fill_positions.fetch(slot)) }
       end
     end
+  end
+
+  factory :cartola_wallet, class: 'Cartola::Wallet' do
+    user
+    championship
+    balance { 100 }
+  end
+
+  factory :cartola_player_value, class: 'Cartola::PlayerValue' do
+    player
+    championship
+    value { 5 }
+    changed_at { Time.current }
   end
 
   factory :cartola_player_score, class: 'Cartola::PlayerScore' do

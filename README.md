@@ -51,7 +51,7 @@
 
 ## Sobre o projeto
 
-Plataforma Rails 8 com engines `core`, `bolao`, `cartola` e `simulador` para quem acompanha o campeonato com os amigos: no **Bolão**, cada participante palpita o placar das partidas de um grupo; no **Cartola**, monta a escalação da rodada dentro do orçamento; o **Simulador** vai projetar a classificação ("e se"), com escopo definido no [ADR 0003](docs/adr/0003-simulador.md) e implementação no roadmap. Partidas, times e usuários vivem no `core`; o admin cadastra, importa e finaliza partidas, e a pontuação é calculada por jobs.
+Plataforma Rails 8 com engines `core`, `bolao`, `cartola` e `simulador` para quem acompanha o campeonato com os amigos: no **Bolão**, cada participante palpita o placar das partidas de um grupo; no **Cartola**, monta a escalação da rodada com os limites por posição do campeonato e compra os jogadores com a carteira de cartoletas; o **Simulador** vai projetar a classificação ("e se"), com escopo definido no [ADR 0003](docs/adr/0003-simulador.md) e implementação no roadmap. Partidas, times e usuários vivem no `core`; o admin cadastra, importa e finaliza partidas, e a pontuação é calculada por jobs.
 
 Decisões de arquitetura:
 
@@ -113,7 +113,7 @@ No free tier, o Render hiberna o web após 15 min sem tráfego, e o Supabase pau
 1. **Campeonato:** em [`/admin`](http://localhost:3000/admin), cadastre o campeonato e os times (Cadastros) e importe as partidas por CSV (Cadastros → Importações CSV).
 2. **Bolão:** crie um bolão em [`/pools/new`](http://localhost:3000/pools/new) e compartilhe o código; os amigos entram por [`/pools`](http://localhost:3000/pools).
 3. **Palpites:** cada participante palpita o placar das partidas na página de palpites do bolão.
-4. **Escalação:** monte o time da rodada no Cartola em [`/lineup`](http://localhost:3000/lineup).
+4. **Escalação:** monte o time da rodada no Cartola em [`/lineup`](http://localhost:3000/lineup) e acompanhe os rankings em [`/cartola/rankings`](http://localhost:3000/cartola/rankings).
 5. **Finalizar partida:** no admin, Pontuação → Finalizar partida confirma o placar; o job pontua palpites e escalações (Pontuação → Reverter pontuação desfaz).
 
 Login demo (só development/test, criado pelo `db:seed`): `demo1@demo.local` … `demo5@demo.local` / `demo-futebol` e o admin `admin@futebol.dev` / `futebol-admin`, com o bolão `DEMO01` já pontuado. Detalhes dos dados demo, filas e comandos: [docs/OPERATIONS.md](docs/OPERATIONS.md).
@@ -122,7 +122,7 @@ Em produção não há contas demo, porque a senha acima é pública: o seed cri
 
 ## Roadmap
 
-Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 29 tickets ([INDEX](docs/tickets/INDEX.md)).
+Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 30 tickets ([INDEX](docs/tickets/INDEX.md)).
 
 - [x] Monolito modular com 4 engines e Packwerk
 - [x] Core, AASM das partidas e pontuação idempotente e reversível com auditoria
@@ -136,6 +136,7 @@ Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 29 tickets ([INDEX
 - [x] Primeiro deploy: projeto Supabase e web service `futebol-web` no Render, via MCPs
 - [x] 0028: cadastro público em `/signup`
 - [x] 0029: Bolão com 2 faixas configuráveis por campeonato ([ADR 0004](docs/adr/0004-bolao-scoring.md))
+- [x] 0030: Cartola configurável por campeonato (limites por posição, carteira, valorização, rankings; inclui `core_matches.round`)
 - [ ] Pendências de produção: R2, Resend, OpenObserve Cloud, `RENDER_DEPLOY_HOOK_URL` e keep-alive (manual)
 - [ ] Simulador v1 "e se" (derivado do ADR 0003, que o numerava 0029; `core_matches.round` era o 0028)
 - [ ] Backlog: salvar/compartilhar simulação, Monte Carlo da temporada

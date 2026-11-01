@@ -3,16 +3,21 @@
   <% when :default %>
     <div class="flex flex-col gap-4 rounded-md bg-pitch px-4 py-6 text-white" data-role="pitch">
       <p class="text-xs font-bold uppercase tracking-widest text-rule" data-role="formation">Formação <span class="tabular-nums"><%= lineup.formation %></span></p>
-      <% LINES.each do |line, label| %>
-        <div class="flex flex-col items-center gap-2" data-line="<%= line %>">
+      <% SLOTS.each do |slot, label| %>
+        <div class="flex flex-col items-center gap-2" data-slot="<%= slot %>">
           <span class="sr-only"><%= label %></span>
           <ul class="flex flex-wrap justify-center gap-2">
-            <% players_on(line).each do |player| %>
+            <% players_on(slot).each do |player| %>
               <li class="flex min-w-28 flex-col items-center rounded-sm bg-night px-3 py-2 text-center" data-role="pitch-player">
                 <span class="text-sm font-semibold"><%= player.name %></span>
                 <span class="text-xs text-rule"><%= player.position %> · <%= player.team&.short_name %></span>
-                <span class="text-xs tabular-nums text-rule"><%= cost(player) %></span>
+                <% if price(player) %>
+                  <span class="text-xs tabular-nums text-rule"><%= price(player) %></span>
+                <% end %>
               </li>
+            <% end %>
+            <% open_slots(slot).times do %>
+              <li class="flex min-w-28 items-center justify-center rounded-sm border border-dashed border-rule px-3 py-2 text-xs text-rule" data-role="pitch-open-slot">Vaga</li>
             <% end %>
           </ul>
         </div>

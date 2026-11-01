@@ -4,14 +4,14 @@ RSpec.describe 'db/seeds.rb' do
   def seeded_models
     [Core::Team, Core::Player, Core::Championship, Core::Match, Core::User, Bolao::ScoringRule, Cartola::ScoringRule,
      Bolao::Pool, Bolao::PoolMembership, Bolao::Prediction, Bolao::PredictionScore, Cartola::Squad, Cartola::Lineup,
-     Cartola::LineupPlayer]
+     Cartola::LineupPlayer, Cartola::Wallet]
   end
 
   def counts = seeded_models.to_h { |model| [model.name, model.count] }
 
   def load_seed = expect { Rails.application.load_seed }.to output(/seeds ok/).to_stdout
 
-  def round_of(match) = match.external_id[/-r(\d+)-/, 1]
+  def round_of(match) = match.round
 
   def matches_in_rounds(rounds) = Core::Match.select { |match| round_of(match).to_i.in?(rounds) }
 
@@ -31,7 +31,7 @@ RSpec.describe 'db/seeds.rb' do
 
     after(:context) do
       [Bolao::PredictionScore, Bolao::Prediction, Bolao::PoolMembership, Bolao::ScoringRule, Bolao::Pool,
-       Cartola::LineupPlayer, Cartola::Lineup, Cartola::Squad, Cartola::ScoringRule, Core::Match, Core::Player,
+       Cartola::Wallet, Cartola::LineupPlayer, Cartola::Lineup, Cartola::Squad, Cartola::ScoringRule, Core::Match, Core::Player,
        Core::Team, Core::Championship, Core::Session, Core::User].each(&:delete_all)
     end
 
@@ -57,7 +57,10 @@ RSpec.describe 'db/seeds.rb' do
       rounds = championship.matches.group_by { |match| round_of(match) }
 
       expect(championship).to have_attributes(external_id: 'brasileirao-2026', season: 2026)
-      expect(rounds.size).to eq(38)
+      expect(rounds.keys).to match_array(1..38)
+      expect(championship.matches).to all(satisfy { |match|
+        match.external_id.include?(format('-r%02d-', match.round))
+      })
       expect(rounds.values.map(&:size)).to all(eq(10))
       expect(championship.matches.where(match_date: nil)).to be_empty
     end
@@ -128,13 +131,17 @@ RSpec.describe 'db/seeds.rb' do
         expect(Bolao::PredictionScore.sum(:points)).to be_positive
       end
 
-      it "builds demo1's round 7 lineup: 11 players, a valid formation, within budget" do
+      it "buys demo1's round 7 lineup within the championship limits, from demo1's wallet" do
         lineup = Cartola::Lineup.joins(squad: :user)
                                 .find_by!(round: 7, core_users: { email_address: 'demo1@demo.local' })
+        cost = Cartola::PlayerValue.prices_for(lineup.players, lineup.championship).values.sum
+        wallet = Cartola::Wallet.find_by!(user: lineup.squad.user, championship: lineup.championship)
 
         expect(lineup).to be_valid
-        expect(lineup.players.size).to eq(11)
-        expect(lineup.total_cost).to be_between(1, Cartola::Lineup::BUDGET)
+        expect(lineup.lineup_players.map(&:position).tally)
+          .to eq('goalkeeper' => 1, 'defender' => 2, 'midfielder' => 3, 'forward' => 3)
+        expect(wallet.balance).to eq(lineup.championship.cartola_initial_budget - cost)
+        expect(wallet.balance).to be_positive
       end
     end
   end

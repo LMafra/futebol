@@ -10,7 +10,7 @@ module Seeds
     demo_predictions(pool, championship, users)
     demo_results(championship)
     demo_upcoming_dates(championship)
-    demo_lineup(users.first)
+    demo_lineup(users.first, championship)
   end
 
   # Signup público disponível em /signup; estas contas existem só para a demo local.
@@ -75,25 +75,26 @@ module Seeds
 
   def self.weeks_until_future(time) = (((Time.current - time) / 1.week).floor + 1).weeks
 
-  def self.demo_lineup(user)
+  # Bought through the wallet, so the demo user's balance reflects it.
+  def self.demo_lineup(user, championship)
     squad = Cartola::Squad.find_or_create_by!(user:) { |new_squad| new_squad.name = "Time de #{user.name}" }
-    lineup = squad.lineups.find_or_initialize_by(round: 7)
+    lineup = squad.lineups.find_or_initialize_by(championship:, round: 7)
     return if lineup.persisted?
 
     lineup.formation = '4-3-3'
     lineup.assign_players(demo_lineup_players)
-    lineup.save!
+    Cartola::WalletService.save(lineup) || raise("demo lineup: #{lineup.errors.full_messages.to_sentence}")
   end
 
-  # 4-3-3 from the cheapest players per position, well within budget.
+  # The cheapest players per position, up to the championship's default limits (1 / 2 / 3 / 3).
   def self.demo_lineup_players
-    { 'GOL' => 1, 'LAT' => 2, 'ZAG' => 2, 'MEI' => 3, 'ATA' => 3 }.flat_map do |position, count|
-      Core::Player.where(position:).order(:cost, :external_id).first(count)
+    { 'GOL' => 1, 'LAT' => 1, 'ZAG' => 1, 'MEI' => 3, 'ATA' => 3 }.flat_map do |position, count|
+      Core::Player.where(position:).order(:base_value, :external_id).first(count)
     end
   end
 
   def self.demo_round(championship, round)
-    championship.matches.where('external_id LIKE ?', format('br26-r%<round>02d-%%', round:)).order(:external_id)
+    championship.matches.where(round:).order(:external_id)
   end
 
   def self.demo_score(round, index) = [(round + index) % 4, (round + (2 * index)) % 3]

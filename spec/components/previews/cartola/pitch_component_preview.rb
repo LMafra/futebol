@@ -21,12 +21,11 @@ module Cartola
 
     def sample_lineup
       team = Core::Team.new(name: 'Flamengo', short_name: 'FLA')
-      players = { 'GOL' => 1, 'LAT' => 2, 'ZAG' => 2, 'MEI' => 3, 'ATA' => 3 }.flat_map do |position, count|
-        Array.new(count) do |index|
-          Core::Player.new(name: "#{position.capitalize} #{index + 1}", position:, team:, cost: 8.5)
-        end
+      players = { 'GOL' => 1, 'LAT' => 1, 'ZAG' => 1, 'MEI' => 3, 'ATA' => 2 }.flat_map do |position, count|
+        Array.new(count) { |index| Core::Player.new(name: "#{position.capitalize} #{index + 1}", position:, team:) }
       end
-      Cartola::Lineup.new(formation: '4-3-3').tap { |lineup| players.each { |player| lineup.lineup_players.build(player:) } }
+      Cartola::Lineup.new(formation: '4-3-3', championship: Core::Championship.new)
+                     .tap { |lineup| lineup.assign_players(players) }
     end
   end
 end

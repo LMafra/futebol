@@ -2,7 +2,7 @@ module Cartola
   # @label Cartola budget bar
   class BudgetBarComponentPreview < ViewComponent::Preview
     def default
-      render BudgetBarComponent.new(spent: 87.5)
+      render BudgetBarComponent.new(spent: 87.5, budget: 100)
     end
 
     def loading

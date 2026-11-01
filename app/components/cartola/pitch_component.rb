@@ -1,20 +1,24 @@
 module Cartola
   class PitchComponent < Ui::BaseComponent
     # Top to bottom, as seen on TV: attack first, goalkeeper last.
-    LINES = { attack: 'Ataque', midfield: 'Meio', defense: 'Defesa', goalkeeper: 'Gol' }.freeze
+    SLOTS = { forward: 'Ataque', midfielder: 'Meio', defender: 'Defesa', goalkeeper: 'Gol' }.freeze
 
-    attr_reader :lineup
+    attr_reader :lineup, :prices
 
-    def initialize(lineup: nil, state: :default)
+    # prices: { player_id => value } (Cartola::PlayerValue.prices_for); players without one show no price.
+    def initialize(lineup: nil, prices: {}, state: :default)
       super(state:)
       @lineup = lineup
+      @prices = prices
       require_in_default_state!(:lineup, lineup)
     end
 
     private
 
-    def players_on(line) = lineup.players_by_line.fetch(line, []).sort_by(&:name)
+    def players_on(slot) = lineup.players_by_slot.fetch(slot, []).sort_by(&:name)
 
-    def cost(player) = format('C$ %.2f', player.cost)
+    def open_slots(slot) = [lineup.slots.fetch(slot) - players_on(slot).size, 0].max
+
+    def price(player) = prices[player.id] && format('C$ %.2f', prices[player.id])
   end
 end

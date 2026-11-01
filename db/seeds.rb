@@ -19,5 +19,5 @@ end
 
 seeded_models = [Core::Team, Core::Player, Core::Championship, Core::Match, Core::User, Bolao::ScoringRule,
                  Cartola::ScoringRule, Bolao::Pool, Bolao::PoolMembership, Bolao::Prediction,
-                 Bolao::PredictionScore, Cartola::Squad, Cartola::Lineup, Cartola::LineupPlayer]
+                 Bolao::PredictionScore, Cartola::Squad, Cartola::Lineup, Cartola::LineupPlayer, Cartola::Wallet]
 puts "seeds ok (#{seeded_models.map { |model| "#{model.name}=#{model.count}" }.join(', ')})"

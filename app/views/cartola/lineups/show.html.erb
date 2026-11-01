@@ -3,26 +3,34 @@
 <div class="flex max-w-4xl flex-col gap-6">
   <header class="flex flex-wrap items-end justify-between gap-4 border-b-4 border-ink pb-2">
     <div>
-      <p class="text-xs font-bold uppercase tracking-widest text-graphite">Cartola · <%= @lineup.squad.name %></p>
+      <p class="text-xs font-bold uppercase tracking-widest text-graphite">Cartola · <%= @lineup.squad.name %> · <%= @lineup.championship %></p>
       <h1 class="mt-1 font-display text-4xl font-extrabold tracking-tight">Rodada <span class="tabular-nums"><%= @lineup.round %></span></h1>
     </div>
     <nav class="flex items-center gap-4 text-sm font-semibold" aria-label="Rodadas">
       <% if @lineup.round > 1 %>
-        <%= link_to "← Rodada #{@lineup.round - 1}", main_app.lineup_path(round: @lineup.round - 1, squad_id: params[:squad_id]), class: "text-pitch underline underline-offset-2 hover:no-underline" %>
+        <%= link_to "← Rodada #{@lineup.round - 1}", main_app.lineup_path(lineup_location(round: @lineup.round - 1)), class: "text-pitch underline underline-offset-2 hover:no-underline" %>
       <% end %>
       <% if @lineup.round < 38 %>
-        <%= link_to "Rodada #{@lineup.round + 1} →", main_app.lineup_path(round: @lineup.round + 1, squad_id: params[:squad_id]), class: "text-pitch underline underline-offset-2 hover:no-underline" %>
+        <%= link_to "Rodada #{@lineup.round + 1} →", main_app.lineup_path(lineup_location(round: @lineup.round + 1)), class: "text-pitch underline underline-offset-2 hover:no-underline" %>
       <% end %>
+      <%= link_to "Rankings", main_app.cartola_rankings_path(championship_id: @lineup.championship_id), class: "text-pitch underline underline-offset-2 hover:no-underline" %>
     </nav>
   </header>
 
   <div><%= render "shared/flash" %></div>
 
-  <%= render Cartola::BudgetBarComponent.new(spent: @lineup.total_cost) %>
-  <%= render Cartola::PitchComponent.new(lineup: @lineup, state: @lineup.persisted? ? :default : :empty) %>
+  <%= render Cartola::BudgetBarComponent.new(spent: @spent, budget: @budget) %>
+  <%= render Cartola::PitchComponent.new(lineup: @lineup, prices: @prices, state: @lineup.persisted? ? :default : :empty) %>
 
   <% if policy(@lineup).update? %>
-    <%= link_to(@lineup.persisted? ? "Editar escalação" : "Escalar time", main_app.edit_lineup_path(round: @lineup.round),
-                class: "self-start rounded-sm bg-cartola px-4 py-2 font-semibold text-ink hover:bg-ink hover:text-white") %>
+    <div class="flex flex-wrap items-center gap-4">
+      <%= link_to(@lineup.persisted? ? "Editar escalação" : "Escalar time", main_app.edit_lineup_path(lineup_location),
+                  class: "rounded-sm bg-cartola px-4 py-2 font-semibold text-ink hover:bg-ink hover:text-white") %>
+      <% if policy(@lineup).destroy? %>
+        <%= button_to "Desfazer escalação", main_app.lineup_path(lineup_location), method: :delete,
+                      form: { data: { turbo_confirm: "Desfazer a escalação e devolver os jogadores à carteira?" } },
+                      class: "cursor-pointer text-graphite underline underline-offset-2 hover:no-underline" %>
+      <% end %>
+    </div>
   <% end %>
 </div>

@@ -3,12 +3,14 @@ module Cartola
     POSITION_LABELS = { 'GOL' => 'Goleiros', 'LAT' => 'Laterais', 'ZAG' => 'Zagueiros', 'MEI' => 'Meias',
                         'ATA' => 'Atacantes' }.freeze
 
-    attr_reader :players, :selected_ids
+    attr_reader :players, :selected_ids, :prices
 
-    def initialize(players: nil, selected_ids: [], state: :default)
+    # prices: { player_id => value } (Cartola::PlayerValue.prices_for).
+    def initialize(players: nil, selected_ids: [], prices: {}, state: :default)
       super(state:)
       @players = players
       @selected_ids = selected_ids.to_set
+      @prices = prices
       require_in_default_state!(:players, players)
     end
 
@@ -20,6 +22,6 @@ module Cartola
 
     def selected?(player) = selected_ids.include?(player.id)
 
-    def cost(player) = format('C$ %.2f', player.cost)
+    def price(player) = prices[player.id] && format('C$ %.2f', prices[player.id])
   end
 end

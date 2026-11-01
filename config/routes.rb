@@ -12,7 +12,8 @@ Rails.application.routes.draw do
   end
 
   scope module: :cartola do
-    resource :lineup, only: %i[show edit update]
+    resource :lineup, only: %i[show edit update destroy]
+    get 'cartola/rankings', to: 'rankings#show', as: :cartola_rankings
   end
 
   mount MissionControl::Jobs::Engine, at: '/admin/jobs'

@@ -16,10 +16,11 @@ module Seeds
       7 => 'ATA', 8 => 'MEI', 9 => 'ATA', 10 => 'MEI', 11 => 'ATA' }
   end
 
-  def self.player_traits(seed, position) = { name: player_name(seed), cost: player_cost(position, seed) }
+  def self.player_traits(seed, position) = { name: player_name(seed), base_value: player_base_value(position, seed) }
 
-  # C$ 4-13: an average 4-3-3 costs about C$ 93, so the Cartola budget of C$ 100 is a real constraint.
-  def self.player_cost(position, seed)
+  # C$ 4-13: a full lineup at the default limits (9 players) costs about C$ 75 of the C$ 100 wallet, so the
+  # budget is a real constraint.
+  def self.player_base_value(position, seed)
     { 'GOL' => 5, 'LAT' => 4, 'ZAG' => 4, 'MEI' => 6, 'ATA' => 7 }.fetch(position) + (seed % 7)
   end
 

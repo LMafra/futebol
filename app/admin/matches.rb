@@ -6,6 +6,7 @@ ActiveAdmin.register Core::Match, as: 'Match' do
   config.sort_order = 'match_date_desc'
 
   filter :championship
+  filter :round, label: 'Rodada'
   filter :status, as: :select, collection: -> { Core::Match::STATUSES }
   filter :external_id
   filter :match_date
@@ -50,6 +51,7 @@ ActiveAdmin.register Core::Match, as: 'Match' do
       row :home_team
       row :away_team
       row :match_date
+      row('Rodada', &:round)
       row('Placar') { |match| admin_score(match) }
       row(:status) { |match| status_tag match.status }
       row :scores_calculated_at

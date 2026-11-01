@@ -21,11 +21,12 @@ class ProcessCsvImportJob < ApplicationJob
   private
 
   # Streams the tempfile row by row; the CSV is never loaded whole into memory.
+  # round is optional: without that header, a re-import keeps the rounds already stored.
   def import_rows(task, file)
     CSV.foreach(file.path, headers: true, encoding: 'bom|utf-8').each_slice(BATCH_SIZE) do |batch|
+      columns = batch.first.headers.include?('round') ? [*UPSERT_COLUMNS, :round] : UPSERT_COLUMNS
       Core::Match.import(rows_for(batch), validate: false,
-                                          on_duplicate_key_update: { conflict_target: [:external_id],
-                                                                     columns: UPSERT_COLUMNS })
+                                          on_duplicate_key_update: { conflict_target: [:external_id], columns: })
       task.increment!(:rows_processed, batch.size)
     end
   end
@@ -45,7 +46,8 @@ class ProcessCsvImportJob < ApplicationJob
       away_team_id: lookup(teams, row, 'away_team'),
       match_date: Time.zone.parse(required(row, 'match_date')),
       home_score: score(row['home_score']),
-      away_score: score(row['away_score'])
+      away_score: score(row['away_score']),
+      round: round(row)
     }
   end
 
@@ -65,6 +67,13 @@ class ProcessCsvImportJob < ApplicationJob
   end
 
   def score(value) = value.presence && Integer(value, 10)
+
+  def round(row)
+    value = row['round'].presence && Integer(row['round'], 10)
+    return value if value.nil? || value.between?(1, 38)
+
+    raise InvalidRow, "partida #{row['external_id'].inspect}: rodada '#{row['round']}' fora de 1..38"
+  end
 
   def report_failure(error, csv_import_id:)
     Rails.logger.error("ProcessCsvImportJob failed csv_import_id=#{csv_import_id}: #{error.class} #{error.message}")

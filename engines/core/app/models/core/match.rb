@@ -36,11 +36,12 @@ module Core
     validates :home_score, :away_score, numericality: { only_integer: true, greater_than_or_equal_to: 0 },
                                         allow_nil: true
     validates :external_id, presence: true, uniqueness: true
+    validates :round, numericality: { only_integer: true, in: 1..38 }, allow_nil: true
     validates :scores_calculated_at, presence: true, if: -> { status == 'scored' }
     validates :scores_calculated_at, absence: true, unless: -> { status.in?(%w[finished scored]) }
     validate :teams_must_differ
 
-    def self.ransackable_attributes(_auth_object = nil) = %w[status external_id match_date championship_id]
+    def self.ransackable_attributes(_auth_object = nil) = %w[status external_id match_date championship_id round]
     def self.ransackable_associations(_auth_object = nil) = %w[championship]
 
     def to_s = "#{home_team} x #{away_team}"

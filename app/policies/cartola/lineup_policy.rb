@@ -1,8 +1,9 @@
 module Cartola
-  # The squad owner edits their lineup; an admin may only read it.
+  # The squad owner edits and undoes their lineup; an admin may only read it.
   class LineupPolicy < ApplicationPolicy
     def show? = owner? || admin?
     def update? = owner?
+    def destroy? = owner? && record.persisted?
 
     private
 

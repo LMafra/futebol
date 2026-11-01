@@ -1,23 +1,27 @@
 <% content_for(:title, "Escalar · Rodada #{@lineup.round} · Futebol") %>
+<% limits = @lineup.championship.cartola_limits %>
 
 <div class="flex max-w-4xl flex-col gap-6">
   <header class="border-b-4 border-ink pb-2">
-    <p class="text-xs font-bold uppercase tracking-widest text-graphite">Cartola · <%= @lineup.squad.name %></p>
+    <p class="text-xs font-bold uppercase tracking-widest text-graphite">Cartola · <%= @lineup.squad.name %> · <%= @lineup.championship %></p>
     <h1 class="mt-1 font-display text-4xl font-extrabold tracking-tight">Escalar · Rodada <span class="tabular-nums"><%= @lineup.round %></span></h1>
-    <p class="mt-2 text-graphite">11 jogadores na formação escolhida, até C$ <%= Cartola::Lineup::BUDGET %>.</p>
+    <p class="mt-2 text-graphite" data-role="limits">
+      Até <%= limits[:goalkeeper] %> goleiro(s), <%= limits[:defender] %> defensor(es), <%= limits[:midfielder] %> meio-campista(s)
+      e <%= limits[:forward] %> atacante(s). A formação só organiza o campo.
+    </p>
   </header>
 
   <div><%= render "shared/flash" %></div>
 
-  <%= form_with url: main_app.lineup_path(round: @lineup.round), method: :patch, class: "flex flex-col gap-4" do %>
+  <%= form_with url: main_app.lineup_path(lineup_location), method: :patch, class: "flex flex-col gap-4" do %>
     <%= render Cartola::FormationPickerComponent.new(selected: @lineup.formation,
                                                      state: @lineup.errors[:formation].any? ? :error : :default) %>
-    <%= render Cartola::BudgetBarComponent.new(spent: @lineup.total_cost) %>
-    <%= render Cartola::PlayerPickerComponent.new(players: @players, selected_ids: @lineup.selected_players.map(&:id),
-                                                  state: @lineup.errors[:players].any? ? :error : :default) %>
+    <%= render Cartola::BudgetBarComponent.new(spent: @spent, budget: @budget) %>
+    <%= render Cartola::PlayerPickerComponent.new(players: @players, selected_ids: @lineup.selected_players.map(&:id), prices: @prices,
+                                                  state: @lineup.errors[:players].any? || @lineup.errors[:base].any? ? :error : :default) %>
     <div class="flex items-center gap-4">
       <button type="submit" class="cursor-pointer rounded-sm bg-cartola px-4 py-2 font-semibold text-ink hover:bg-ink hover:text-white">Salvar escalação</button>
-      <%= link_to "Cancelar", main_app.lineup_path(round: @lineup.round), class: "text-graphite underline underline-offset-2 hover:no-underline" %>
+      <%= link_to "Cancelar", main_app.lineup_path(lineup_location), class: "text-graphite underline underline-offset-2 hover:no-underline" %>
     </div>
   <% end %>
 </div>
