@@ -22,6 +22,21 @@ RSpec.describe Core::User do
     expect(build(:user, password: 'short')).not_to be_valid
   end
 
+  it 'requires a name on create only' do
+    expect(build(:user, name: nil)).not_to be_valid
+
+    user = create(:user)
+    user.update_columns(name: nil)
+    expect(user.reload).to be_valid
+  end
+
+  it 'rejects signing up with an email in the anonymized domain' do
+    user = build(:user, email_address: "anon-#{SecureRandom.uuid}@invalid")
+
+    expect(user).not_to be_valid
+    expect(user.errors[:email_address]).to include('não está disponível')
+  end
+
   it 'is not an admin by default' do
     expect(create(:user).admin?).to be(false)
   end

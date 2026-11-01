@@ -1,4 +1,4 @@
-# Tickets — INDEX (27 tickets)
+# Tickets — INDEX (28 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -29,6 +29,7 @@
 | [0025](TICKET-0025.md) | — | Cartola: escalação | 0007, 0011 | neon (opc) |
 | [0026](TICKET-0026.md) | — | Simulador: definir escopo (ADR) | — | — |
 | [0027](TICKET-0027.md) | — | Seeds de demonstração | 0023, 0024, 0025 | neon (opc) |
+| [0028](TICKET-0028.md) | — | Signup público | 0011, 0014, 0019 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -38,3 +39,4 @@
 - 0013 não bloqueia nenhum ticket
 - UI/demo: {0011, 0014} → 0023 → 0024 (+ 0006) · {0007, 0011} → 0025 · {0023, 0024, 0025} → 0027
 - 0026 sem deps e não bloqueia nenhum ticket (tickets derivados saem do ADR)
+- Lacunas de produto: {0011, 0014, 0019} → 0028

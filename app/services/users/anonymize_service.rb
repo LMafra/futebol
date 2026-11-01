@@ -27,7 +27,7 @@ module Users
     def anonymized_attributes
       {
         name: ANONYMIZED_NAME,
-        email_address: "anon-#{SecureRandom.uuid}@invalid",
+        email_address: "anon-#{SecureRandom.uuid}#{Core::User::ANONYMIZED_EMAIL_DOMAIN}",
         cpf: nil,
         password: SecureRandom.hex(32),
         admin: false,

@@ -1,0 +1,38 @@
+<div class="flex flex-col gap-4" <%= tag.attributes(root_attributes(label: "Criar conta")) %>>
+  <% if error? %>
+    <div class="<%= error_classes %>" role="alert" data-role="errors">
+      <span class="font-bold">Não foi possível criar a conta. Confira os campos destacados.</span>
+    </div>
+  <% end %>
+
+  <% if form? %>
+    <%= form_with model: user, scope: :user, url: users_path, class: "flex flex-col gap-4" do |form| %>
+      <% FIELDS.each do |field| %>
+        <div>
+          <%= form.label field.attribute, field.label, class: "text-sm font-semibold" %>
+          <%= form.public_send(field.input, field.attribute, **field_options(field)) %>
+          <% if (message = field_error(field.attribute)) %>
+            <p id="<%= error_id(field.attribute) %>" class="mt-1 text-sm font-semibold text-ink" data-role="field-error"><%= field.label %> <%= message %></p>
+          <% end %>
+        </div>
+      <% end %>
+
+      <div>
+        <%= form.submit "Criar conta", class: button_classes %>
+      </div>
+    <% end %>
+  <% elsif loading? %>
+    <span class="sr-only">Criando conta…</span>
+    <div class="flex flex-col gap-4" aria-hidden="true">
+      <% FIELDS.size.times do %>
+        <div class="h-10 w-full <%= skeleton_classes %>" data-role="skeleton"></div>
+      <% end %>
+      <button type="button" disabled class="inline-flex w-fit items-center gap-2 rounded-sm bg-cartola px-4 py-2 font-bold text-ink opacity-60">
+        <span class="size-3 animate-spin rounded-full border-2 border-ink border-t-transparent motion-reduce:animate-none" data-role="spinner"></span>
+        Criando conta…
+      </button>
+    </div>
+  <% elsif empty? %>
+    <%= empty_notice("Cadastro indisponível no momento.") %>
+  <% end %>
+</div>

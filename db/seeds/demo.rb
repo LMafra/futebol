@@ -13,6 +13,7 @@ module Seeds
     demo_lineup(users.first)
   end
 
+  # Signup público disponível em /signup; estas contas existem só para a demo local.
   def self.demo_users
     (1..5).map do |number|
       Core::User.find_or_create_by!(email_address: "demo#{number}@demo.local") do |user|

@@ -118,11 +118,11 @@ No free tier, o Render hiberna o web após 15 min sem tráfego, e o Supabase pau
 
 Login demo (só development/test, criado pelo `db:seed`): `demo1@demo.local` … `demo5@demo.local` / `demo-futebol` e o admin `admin@futebol.dev` / `futebol-admin`, com o bolão `DEMO01` já pontuado. Detalhes dos dados demo, filas e comandos: [docs/OPERATIONS.md](docs/OPERATIONS.md).
 
-Em produção não há contas demo, porque a senha acima é pública: o seed cria só o admin, com senha forte guardada fora do repositório, além de times, jogadores e partidas. Ainda não há cadastro público nem tela de usuários no admin: novas contas saem do console (`bin/rails console` com `Core::User.create!`).
+Em produção não há contas demo, porque a senha acima é pública: o seed cria só o admin, com senha forte guardada fora do repositório, além de times, jogadores e partidas. Novas contas saem do cadastro público em [`/signup`](http://localhost:3000/signup) (link "Criar conta" no login); ainda não há tela de usuários no admin.
 
 ## Roadmap
 
-Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 27 tickets ([INDEX](docs/tickets/INDEX.md)).
+Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 28 tickets ([INDEX](docs/tickets/INDEX.md)).
 
 - [x] Monolito modular com 4 engines e Packwerk
 - [x] Core, AASM das partidas e pontuação idempotente e reversível com auditoria
@@ -134,9 +134,9 @@ Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 27 tickets ([INDEX
 - [x] CI (lint, testes, system specs, seeds 2×, gitleaks) e `render.yaml`
 - [x] Observabilidade com OpenTelemetry → OpenObserve e banco no Supabase
 - [x] Primeiro deploy: projeto Supabase e web service `futebol-web` no Render, via MCPs
+- [x] 0028: cadastro público em `/signup`
 - [ ] Pendências de produção: R2, Resend, OpenObserve Cloud, `RENDER_DEPLOY_HOOK_URL` e keep-alive (manual)
-- [ ] 0028: `core_matches.round`
-- [ ] 0029: Simulador v1 "e se"
+- [ ] Simulador v1 "e se" (derivado do ADR 0003, que o numerava 0029; `core_matches.round` era o 0028)
 - [ ] Backlog: salvar/compartilhar simulação, Monte Carlo da temporada
 
 Estado de cada fase: [STATUS](docs/checkpoints/STATUS.md).
