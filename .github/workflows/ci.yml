@@ -16,7 +16,7 @@ permissions:
 jobs:
   lint:
     name: Lint (rubocop, packwerk, zeitwerk, brakeman)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       RAILS_ENV: test
     steps:
@@ -45,7 +45,7 @@ jobs:
 
   test:
     name: RSpec
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:18
@@ -84,7 +84,7 @@ jobs:
     name: Deploy (Render)
     needs: [lint, test]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
     steps:
