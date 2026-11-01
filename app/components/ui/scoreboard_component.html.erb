@@ -1,0 +1,46 @@
+<%= turbo_frame_tag frame_id do %>
+  <section class="w-full" <%= tag.attributes(root_attributes(label: "Placar")) %>>
+    <% case state %>
+    <% when :default %>
+      <div class="grid grid-cols-12 items-center gap-4 rounded-md bg-night px-6 text-white">
+        <div class="col-span-2 flex h-16 items-center gap-2">
+          <%= crest(match.home_team) %>
+          <%= crest(match.away_team) %>
+        </div>
+
+        <div class="col-span-8 grid grid-cols-[1fr_auto_1fr] items-center gap-4 py-3">
+          <span class="truncate text-right font-display text-2xl font-bold"><%= match.home_team.name %></span>
+          <span class="font-sans text-6xl font-bold tabular-nums lining-nums" data-role="score">
+            <%= score(match.home_score) %><span class="px-2 text-rule" aria-hidden="true">×</span><%= score(match.away_score) %>
+          </span>
+          <span class="truncate font-display text-2xl font-bold"><%= match.away_team.name %></span>
+        </div>
+
+        <div class="col-span-2 flex flex-col items-end gap-1 text-right">
+          <% if live? %>
+            <span class="rounded-sm bg-cartola px-2 py-1 text-xs font-bold uppercase tracking-widest text-ink" data-role="status">Ao vivo</span>
+          <% else %>
+            <span class="text-xs font-bold uppercase tracking-widest text-rule" data-role="status"><%= status_label %></span>
+          <% end %>
+          <span class="text-sm tabular-nums text-rule"><%= kickoff %></span>
+        </div>
+      </div>
+    <% when :loading %>
+      <span class="sr-only">Carregando placar…</span>
+      <div class="flex flex-col gap-2" aria-hidden="true">
+        <% 3.times do %>
+          <div class="h-16 w-full <%= skeleton_classes %>" data-role="skeleton"></div>
+        <% end %>
+      </div>
+    <% when :empty %>
+      <%= empty_notice("Sem jogos nesta rodada") %>
+    <% when :error %>
+      <div class="<%= error_classes %>" role="alert">
+        <span class="font-bold">Não foi possível carregar o placar.</span>
+        <% if retry_path %>
+          <%= link_to "Tentar novamente", retry_path, class: "font-semibold underline underline-offset-2 hover:no-underline", data: { role: "retry" } %>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+<% end %>

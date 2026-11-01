@@ -38,5 +38,8 @@ module Futebol
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    config.view_component.previews.paths << config.root.join('spec/components/previews').to_s
+    config.view_component.previews.default_layout = 'component_preview'
   end
 end

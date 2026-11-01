@@ -4,6 +4,9 @@ CI.run do
   step 'Setup', 'bin/setup --skip-server'
 
   step 'Style: Ruby', 'bin/rubocop'
+  step 'Design: anti-AI grep',
+       "! grep -rEn 'bg-gradient|backdrop-blur|shadow-[a-z]+-[0-9]{3}' " \
+       'app/components app/views app/helpers app/javascript app/assets/tailwind config/tailwind.config.js'
 
   step 'Security: Gem audit', 'bin/bundler-audit'
   step 'Security: Importmap vulnerability audit', 'bin/importmap audit'

@@ -1,0 +1,41 @@
+<section class="w-full rounded-md border border-rule bg-white p-4" <%= tag.attributes(root_attributes(label: "Simulação de pontos")) %>>
+  <p class="text-xs font-bold uppercase tracking-widest text-graphite">Simulação</p>
+
+  <% case state %>
+  <% when :default %>
+    <h3 class="mt-1 border-b-4 border-ink pb-2 font-display text-xl font-extrabold tracking-tight">
+      <%= preview.home_team %>
+      <span class="font-sans tabular-nums" data-role="candidate-score"><%= preview.home_score %> × <%= preview.away_score %></span>
+      <%= preview.away_team %>
+    </h3>
+
+    <ul class="mt-3 divide-y divide-rule text-sm tabular-nums">
+      <% preview.entries.each do |entry| %>
+        <li class="flex items-center justify-between py-2" data-role="preview-entry">
+          <span><%= entry.participant %></span>
+          <span class="font-bold"><%= signed(entry.points) %> pts</span>
+        </li>
+      <% end %>
+    </ul>
+
+    <p class="mt-3 flex justify-between border-t border-ink pt-2 text-sm font-bold tabular-nums">
+      <span>Total distribuído</span>
+      <span data-role="total-points"><%= total_points %> pts</span>
+    </p>
+  <% when :loading %>
+    <span class="sr-only">Calculando simulação…</span>
+    <div class="mt-2 flex flex-col gap-2" aria-hidden="true">
+      <div class="h-8 w-2/3 <%= skeleton_classes %>" data-role="skeleton"></div>
+      <% 3.times do %>
+        <div class="h-6 w-full <%= skeleton_classes %>" data-role="skeleton"></div>
+      <% end %>
+    </div>
+  <% when :empty %>
+    <div class="mt-2"><%= empty_notice("Informe um placar candidato") %></div>
+  <% when :error %>
+    <div class="mt-2 <%= error_classes %>" role="alert">
+      <span class="font-bold">Simulação indisponível.</span>
+      <span data-role="error-message"><%= error_message.presence || "Erro ao calcular a prévia." %></span>
+    </div>
+  <% end %>
+</section>
