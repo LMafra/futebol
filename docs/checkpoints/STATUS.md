@@ -21,6 +21,7 @@
 | 3 | 5 (0015, 0019, 0018, 0007, 0004) | 0 | 0 | ok — [TIER-3.yaml](TIER-3.yaml) · [PR #5](https://github.com/LMafra/futebol/pull/5) |
 | 4 | 4 (0008, 0009, 0005, 0006) | 0 | 0 | ok — [TIER-4.yaml](TIER-4.yaml) · [PR #6](https://github.com/LMafra/futebol/pull/6) |
 | 5 | 1 (0010) | 0 | 0 | ok — [TIER-5.yaml](TIER-5.yaml) · [PR #7](https://github.com/LMafra/futebol/pull/7) |
+| 6 | 1 (0021) + 1 partial (0012) | 0 | 0 | partial — deploy Render manual (sem `RENDER_DEPLOY_HOOK_URL`) — [TIER-6.yaml](TIER-6.yaml) · PR pendente |
 
 ## Correções aplicadas nesta rodada
 | correção | status | artefato | impacto |
@@ -54,10 +55,13 @@
 5. ~~TIER-3: TICKET-0015, 0019, 0018, 0007, 0004~~ — concluídos (Pundit, rate limit 5/3min, anonimização LGPD, preview Cartola dry-run, ProcessMatchPointsJob idempotente; FK `pool_id` adicionada)
 6. ~~TIER-4: TICKET-0008, 0009, 0005, 0006~~ — concluídos (broadcast com `unless_exist`, import CSV em streaming com upsert por `external_id`, revert com discard + AuditLog `ip_address`, preview Bolão com `candidate_home/away`; Active Storage instalado)
 7. ~~TIER-5: TICKET-0010~~ — concluído (ActiveAdmin sob `PunditAdapter` com 403 para não-admin; 5 custom pages: preview Bolão com placar candidato, finalizador com confirmação do placar, reversão com motivo obrigatório, testador de regras, histórico de auditoria; jobs de pontuação, reversão e import CSV enfileirados pelo admin)
-8. TIER-6: TICKET-0012 (CI + deploy Render/Neon + R2 + Resend) → 0021 (Solid Queue dashboard + Sentry)
+8. ~~TIER-6: TICKET-0021, 0012~~ — 0021 ok (mission_control-jobs em `/admin/jobs` admin-only, Sentry com DSN via ENV e stub em dev); 0012 partial (CI GitHub Actions verde, `render.yaml` web + worker, R2, Resend, keep-alive documentado; deploy no Render não executado por falta de credencial)
+9. Pendências manuais do TIER-6 (README → "Deploy"): Blueprint no Render, secret `RENDER_DEPLOY_HOOK_URL`, cron-job.org em `/up`, buckets R2, e-mail de teste Resend, `SENTRY_DSN` real
+10. Merge da cadeia de PRs (tier/1 … tier/6) em `main` para o badge do CI refletir a branch padrão
 
 ```bash
-cd /home/lmafra/projects/futebol && bin/setup && git switch -c tier/6 tier/5
+cd /home/lmafra/projects/futebol && bin/setup && bin/rails db:prepare   # cria futebol_development_queue
 ```
 - Bancos locais criados antes do TIER-3 têm versões órfãs dos stubs Bolão/Cartola (07..12): rodar `bin/rails db:reset`
 - TIER-4 adiciona migrations 25 (Active Storage) e 26 (`error_log`): `bin/rails db:migrate`
+- TIER-6: development roda jobs no Solid Queue (`bin/dev` inclui `bin/jobs`)
