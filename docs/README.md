@@ -19,3 +19,4 @@
 ## Operações
 - [MCPs configurados](mcp/README.md)
 - [Guia de operações](OPERATIONS.md)
+- [Qualidade e ferramentas](QUALITY.md)
