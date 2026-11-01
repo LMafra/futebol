@@ -9,7 +9,7 @@ Plataforma Rails 8 com engines `core`, `bolao`, `cartola` e `simulador`.
 - Design "Placar de Domingo": verde-campo, laranja-cartola, Fraunces + Source Sans 3 ([direção](docs/design/0001-direction.md), [crítica](docs/design/0001-critique.md))
 - Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 27 tickets ([INDEX](docs/tickets/INDEX.md))
 - Admin em ActiveAdmin `4.0.0.beta23`, pinado no Gemfile ([ADR 0002](docs/adr/0002-activeadmin-rails81.md)). É um pré-release: a API pode mudar entre betas, então atualize só de forma deliberada (Gemfile + `bundle update activeadmin` + suíte de `spec/requests/admin`). O fallback estável é a 3.5.x, com Sass/sprockets só para o admin.
-- Infra: Render + Neon + R2 + Resend ([MCPs](docs/mcp/README.md)); status das fases em [STATUS](docs/checkpoints/STATUS.md)
+- Infra: Render + Supabase (Postgres) + R2 + Resend + OpenObserve ([MCPs](docs/mcp/README.md)); status das fases em [STATUS](docs/checkpoints/STATUS.md)
 
 ## Setup local
 
@@ -84,11 +84,11 @@ bin/dev   # cada request vira um trace (stream "default", aba Traces)
 
 [Dependabot](.github/dependabot.yml) abre PRs semanais (segunda-feira) para gems e GitHub Actions. O ActiveAdmin fica de fora porque é um beta pinado. Vulnerabilidades: [SECURITY.md](SECURITY.md). Licença: [MIT](LICENSE).
 
-## Deploy (Render + Neon)
+## Deploy (Render + Supabase)
 
-[`render.yaml`](render.yaml) define `futebol-web` (Docker, Puma + Thruster, health check `/up`) e `futebol-worker` (`./bin/jobs`, Solid Queue). O `bin/docker-entrypoint` roda `db:prepare` no boot do web e cria `<db>_cache`, `<db>_queue` e `<db>_cable` ao lado do banco do `DATABASE_URL` no Neon.
+[`render.yaml`](render.yaml) define `futebol-web` (Docker, Puma + Thruster, health check `/up`) e `futebol-worker` (`./bin/jobs`, Solid Queue). O `bin/docker-entrypoint` roda `db:prepare` no boot do web pela `SUPABASE_DIRECT_URL` e cria `<db>_cache`, `<db>_queue` e `<db>_cable` ao lado do banco principal no Supabase.
 
-Variáveis (grupo `futebol` no Render): `RAILS_MASTER_KEY`, `DATABASE_URL`, `APP_HOST`, `R2_*`, `RESEND_*`, `OPENOBSERVE_OTLP_ENDPOINT`, `OPENOBSERVE_AUTH` (ver [.env.example](.env.example)). No plano free, sem worker: remova `futebol-worker` e defina `SOLID_QUEUE_IN_PUMA=1` no web.
+Variáveis (grupo `futebol` no Render): `RAILS_MASTER_KEY`, `SUPABASE_DATABASE_URL`, `SUPABASE_DIRECT_URL`, `APP_HOST`, `R2_*`, `RESEND_*`, `OPENOBSERVE_OTLP_ENDPOINT`, `OPENOBSERVE_AUTH` (ver [.env.example](.env.example)). No plano free, sem worker: remova `futebol-worker` e defina `SOLID_QUEUE_IN_PUMA=1` no web.
 
 Passos manuais (sem credenciais no ambiente do agente):
 
@@ -96,6 +96,42 @@ Passos manuais (sem credenciais no ambiente do agente):
 - manual: `gh secret set RENDER_DEPLOY_HOOK_URL --body "<deploy hook do futebol-web>"` (ativa o job `deploy` do CI).
 - manual: `curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL"` (deploy avulso).
 - manual: `curl -fsS https://<app>.onrender.com/up` (espera 200).
+
+### Banco (Supabase)
+
+Production usa Postgres no [Supabase](https://supabase.com); development e test continuam no Postgres local (docker `futebol-pg`). [`config/database.yml`](config/database.yml) lê `SUPABASE_DATABASE_URL` (ou `DATABASE_URL`, como fallback) e liga `sslmode: require` e `max_connections` de 5 (`RAILS_MAX_THREADS`).
+
+**Pooling:**
+
+| Variável | Conexão (Dashboard → Connect) | Uso | Prepared statements |
+|---|---|---|---|
+| `SUPABASE_DATABASE_URL` | Transaction pooler, porta **6543** | runtime do web e do worker | **desligados**. O pooler entrega cada transação a qualquer conexão do servidor, então `prepared_statements` e `advisory_locks` ficam `false`, detectados pela porta 6543. |
+| `SUPABASE_DIRECT_URL` | Session pooler, porta **5432** (`aws-0-<region>.pooler.supabase.com`) | `db:prepare`/migrations no `bin/docker-entrypoint` | ligados (sessão dedicada; migrations usam advisory lock) |
+
+Motivos da escolha:
+
+- No free tier, o session pooler segura uma conexão do servidor por cliente, num pool de ~15. Web e worker, com 4 pools cada (primary, cache, queue e cable) de até 5 conexões, esgotam esse limite. O transaction pooler multiplexa os clientes.
+- A conexão direta (`db.<ref>.supabase.co`) é só IPv6 sem o add-on IPv4, e o Render sai por IPv4. Por isso a "direct URL" aqui é o session pooler.
+
+**Solid Queue/Cache/Cable:** ficam em bancos irmãos no mesmo projeto (`postgres_cache`, `postgres_queue`, `postgres_cable`), criados pelo `db:prepare` (a role `postgres` do Supabase tem `CREATEDB`). `CACHE_/QUEUE_/CABLE_DATABASE_URL` sobrescrevem. Foi mantido o modelo atual, sem consolidar no banco principal: os schemas `db/{cache,queue,cable}_schema.rb` continuam carregados por `db:prepare`, sem migrations copiadas. O custo é que os 4 bancos dividem os 500 MB do free tier, por isso o Solid Cache em production tem `max_size` de 64 MB ([`config/cache.yml`](config/cache.yml)).
+
+**Free tier:**
+
+- 500 MB de banco por projeto e 2 projetos ativos por organização.
+- O projeto **pausa após 7 dias sem atividade**. O keep-alive do `/up` não toca o banco, então o pause continua possível.
+- Para retomar: Dashboard → projeto pausado → **Restore project**. Leva alguns minutos, e a URL e a senha não mudam. Enquanto estiver pausado, o web responde 500 nas páginas que usam o banco, e o `db:prepare` do boot falha.
+
+Ensaio local do fluxo (Postgres 18 com SSL + PgBouncer em modo transaction na porta 6543, imitando o pooler):
+
+- `db:prepare` pela URL de sessão criou os 3 bancos irmãos e rodou as migrations.
+- Pelo pooler: `db:seed` 2× com contagens iguais, `prepared_statements=false`, `ssl=true`, e Solid Cache, Queue e Cable funcionando.
+
+Passos manuais (o agente não cria o projeto: o MCP do Supabase não está autenticado e não há credenciais no ambiente):
+
+- manual: criar o projeto no [Supabase](https://supabase.com/dashboard) (na região do Render: o `render.yaml` não fixa região, então o padrão é Oregon e o par é `us-west-2`) e guardar a senha do banco.
+- manual: em Connect, copiar a URL do **Transaction pooler** (6543) para `SUPABASE_DATABASE_URL` e a do **Session pooler** (5432) para `SUPABASE_DIRECT_URL` no grupo `futebol` do Render, com `?sslmode=require`.
+- manual: `SUPABASE_DATABASE_URL="$SUPABASE_DIRECT_URL" RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 bin/rails db:prepare` (ou o primeiro deploy, que roda o mesmo pelo entrypoint).
+- manual: `for i in 1 2; do ALLOW_PRODUCTION_SEED=1 SEED_ADMIN_PASSWORD=<senha forte> RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 bin/rails db:seed | grep '^seeds ok'; done` (as duas linhas devem ser iguais).
 
 ### Keep-alive
 
@@ -122,7 +158,7 @@ Production envia por SMTP (`smtp.resend.com:465`, TLS, usuário `resend`, senha 
 
 | Nome | Instalação | Escopo | Configurado? |
 |------|------------|--------|--------------|
-| neon | `npx -y @neondatabase/mcp-server-neon start <NEON_API_KEY>` (MCP oficial) | Postgres apenas em dev/test — nunca em produção | não |
+| supabase | `pipx install supabase-mcp-server` (stdio) | consultas e gestão do projeto; não substitui `SUPABASE_DATABASE_URL` | não |
 | render | `render-useful-mcp` (servidor MCP com `RENDER_API_KEY`) | deploy, logs, serviços | não |
 | r2 | `s3-mcp-server` apontando para o endpoint R2 (`AWS_ENDPOINT_URL=https://<account>.r2.cloudflarestorage.com`) | listar/upload/delete em buckets | não |
 | resend | MCP remoto `https://mcp.resend.com` (`RESEND_API_KEY`) | envio/teste de e-mail | não |
@@ -133,7 +169,7 @@ Smoke tests, variáveis e comandos manuais por MCP: [docs/mcp/README.md](docs/mc
 
 | MCP | status | ação |
 |---|---|---|
-| neon | manual | manual: `psql "$NEON_DEV_DATABASE_URL" -c 'SELECT 1'` |
+| supabase | manual | manual: `psql "$SUPABASE_DIRECT_URL" -c 'SELECT 1'` |
 | render | manual | manual: `curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL"` (sem `RENDER_DEPLOY_HOOK_URL`: deploy não executado) |
 | r2 | manual | manual: `npx wrangler r2 bucket create futebol-dev && npx wrangler r2 bucket create futebol-prod` |
 | resend | manual | manual: `curl https://api.resend.com/emails` (ver [docs/mcp](docs/mcp/README.md)) |

@@ -11,7 +11,9 @@ RSpec.describe '.env.example' do
         otel_service: OpenTelemetry.tracer_provider.resource.attribute_enumerator.to_h['service.name'],
         otel_traces_uri: OpenTelemetry.tracer_provider.instance_variable_get(:@span_processors)
                                       .filter_map { |p| p.instance_variable_get(:@exporter)&.instance_variable_get(:@uri)&.to_s }.first,
-        queue_url: ActiveRecord::Base.configurations.configs_for(env_name: Rails.env, name: 'queue').try(:url)
+        queue_url: ActiveRecord::Base.configurations.configs_for(env_name: Rails.env, name: 'queue').try(:url),
+        primary: ActiveRecord::Base.configurations.configs_for(env_name: Rails.env, name: 'primary')
+                                   .configuration_hash.slice(:prepared_statements, :advisory_locks, :sslmode)
       )
     RUBY
   end
@@ -39,12 +41,25 @@ RSpec.describe '.env.example' do
                                            otel_traces_uri: 'http://localhost:5080/api/default/v1/traces')
   end
 
-  it 'boots production with blank values falling back to defaults' do
-    settings = boot('production', 'SECRET_KEY_BASE_DUMMY' => '1', 'R2_ACCESS_KEY_ID' => 'key',
-                                  'R2_SECRET_ACCESS_KEY' => 'secret',
-                                  'DATABASE_URL' => 'postgres://u:p@db.example.com/neondb')
+  describe 'production' do
+    let(:production_env) do
+      { 'SECRET_KEY_BASE_DUMMY' => '1', 'R2_ACCESS_KEY_ID' => 'key', 'R2_SECRET_ACCESS_KEY' => 'secret' }
+    end
+    let(:pooler) { 'postgres://postgres.ref:p@aws-0-sa-east-1.pooler.supabase.com' }
 
-    expect(settings).to include(storage: 'r2', otel_service: 'futebol', otel_traces_uri: nil,
-                                queue_url: 'postgres://u:p@db.example.com/neondb_queue')
+    it 'boots with blank values falling back to defaults, on the Supabase transaction pooler' do
+      settings = boot('production', production_env.merge('SUPABASE_DATABASE_URL' => "#{pooler}:6543/postgres"))
+
+      expect(settings).to include(storage: 'r2', otel_service: 'futebol', otel_traces_uri: nil,
+                                  queue_url: "#{pooler}:6543/postgres_queue",
+                                  primary: { prepared_statements: false, advisory_locks: false, sslmode: 'require' })
+    end
+
+    it 'keeps prepared statements on the session pooler (db:prepare) and accepts DATABASE_URL as fallback' do
+      settings = boot('production', production_env.merge('DATABASE_URL' => "#{pooler}:5432/postgres"))
+
+      expect(settings).to include(queue_url: "#{pooler}:5432/postgres_queue",
+                                  primary: { prepared_statements: true, advisory_locks: true, sslmode: 'require' })
+    end
   end
 end

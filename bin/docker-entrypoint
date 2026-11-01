@@ -1,8 +1,10 @@
 #!/bin/bash -e
 
 # If running the rails server then create or migrate existing database
+# Supabase: migrations need a session connection (advisory locks, prepared statements), so db:prepare goes through
+# SUPABASE_DIRECT_URL (session pooler) instead of the transaction pooler in SUPABASE_DATABASE_URL.
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  ./bin/rails db:prepare
+  SUPABASE_DATABASE_URL="${SUPABASE_DIRECT_URL:-${SUPABASE_DATABASE_URL:-}}" ./bin/rails db:prepare
 fi
 
 exec "${@}"

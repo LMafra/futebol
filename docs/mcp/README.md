@@ -9,17 +9,17 @@
 
 | MCP | escopo | configurado? | smoke test (MCP) | status smoke | comando manual equivalente |
 |---|---|---|---|---|---|
-| neon | Postgres **dev/test apenas** (NUNCA prod) | não | `run_sql` → `SELECT 1` na branch dev | manual | `psql "$NEON_DEV_DATABASE_URL" -c 'SELECT 1'` |
+| supabase | consultas e gestão do projeto Supabase (não é a conexão do app) | não | `get_schemas` | manual | `psql "$SUPABASE_DIRECT_URL" -c 'SELECT 1'` |
 | render | deploy, logs, serviços | não | `list_services` | manual | `curl -fsS -H "Authorization: Bearer $RENDER_API_KEY" https://api.render.com/v1/services?limit=20` |
 | r2 | buckets `futebol-dev` / `futebol-prod` | não | `list_buckets` | manual | `aws s3api list-buckets --endpoint-url "$R2_ENDPOINT"` |
 | resend | e-mail de teste | não | `send-email` p/ endereço de teste | manual | `curl -fsS https://api.resend.com/emails -H "Authorization: Bearer $RESEND_API_KEY" -H 'Content-Type: application/json' -d '{"from":"onboarding@resend.dev","to":"delivered@resend.dev","subject":"futebol smoke","text":"ok"}'` |
 
-## neon
-- Instalação: `npx -y @neondatabase/mcp-server-neon start "$NEON_API_KEY"` (ou remoto `https://mcp.neon.tech/mcp`)
-- Env: `NEON_API_KEY`, `NEON_DEV_DATABASE_URL`
-- Escopo: restringir a projeto/branch de dev; produção usa `DATABASE_URL` no Render, nunca via MCP
-- Smoke: `run_sql` com `SELECT 1` → esperado `1`
-- Manual sem psql local: `docker run --rm postgres:18 psql "$NEON_DEV_DATABASE_URL" -c 'SELECT 1'`
+## supabase
+- Instalação: `pipx install supabase-mcp-server` (stdio)
+- Env: `SUPABASE_PROJECT_REF`, `SUPABASE_DB_PASSWORD`, `SUPABASE_REGION`, `QUERY_API_KEY` (obrigatórias); `SUPABASE_ACCESS_TOKEN` (Management API, opcional)
+- Escopo: consultas e gestão; o app conecta por `SUPABASE_DATABASE_URL`/`SUPABASE_DIRECT_URL` no Render, nunca via MCP
+- Smoke: `get_schemas` → esperado `public` com as tabelas do app
+- Manual sem psql local: `docker run --rm postgres:18 psql "$SUPABASE_DIRECT_URL" -c 'SELECT 1'`
 
 ## render
 - Instalação: `render-useful-mcp` com `RENDER_API_KEY`
@@ -41,6 +41,6 @@
 - Escopo: envio/teste de e-mail (sem listas de contatos)
 - Smoke: `send-email` para `delivered@resend.dev` → esperado id do e-mail
 
-## DB local (substitui neon enquanto não configurado)
+## DB local (development/test)
 - `bin/setup` sobe `futebol-pg` (docker, porta 5440) automaticamente
 - Manual: `docker run -d --name futebol-pg -e POSTGRES_PASSWORD=postgres -p 5440:5432 postgres:18`

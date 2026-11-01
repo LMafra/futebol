@@ -88,18 +88,27 @@ test:
 # the values provided in this file. Alternatively, you can specify a connection
 # URL environment variable explicitly:
 #
-#   # Render/Neon: DATABASE_URL is the primary. Solid Cache/Queue/Cable get their own databases on the same server,
-# named after the primary (neondb → neondb_cache, …) and created by db:prepare; CACHE_/QUEUE_/CABLE_DATABASE_URL
-# override them.
-<% sibling_url = lambda do |name|
+# Production: Supabase (README "Banco (Supabase)"). SUPABASE_DATABASE_URL, falling back to DATABASE_URL, is the
+# runtime connection: the transaction pooler (port 6543) hands each transaction to any server connection, so
+# prepared statements and session advisory locks are off there. bin/docker-entrypoint runs db:prepare over
+# SUPABASE_DIRECT_URL (session pooler, port 5432), where both stay on.
+# Solid Cache/Queue/Cable get their own databases on the same server, named after the primary
+# (postgres → postgres_cache, …) and created by db:prepare; CACHE_/QUEUE_/CABLE_DATABASE_URL override them.
+<% primary_url = ENV["SUPABASE_DATABASE_URL"].presence || ENV["DATABASE_URL"].presence
+   transaction_pooler = primary_url.present? && URI.parse(primary_url).port == 6543
+   sibling_url = lambda do |name|
      ENV["#{name.upcase}_DATABASE_URL"].presence ||
-       ENV["DATABASE_URL"].presence&.then { |url| URI.parse(url).tap { |uri| uri.path = "#{uri.path}_#{name}" }.to_s }
+       primary_url&.then { |url| URI.parse(url).tap { |uri| uri.path = "#{uri.path}_#{name}" }.to_s }
    end %>
 production:
   primary: &primary_production
     <<: *default
-    url: <%= ENV["DATABASE_URL"] %>
+    url: <%= primary_url %>
     database: futebol_production
+    max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    sslmode: require
+    prepared_statements: <%= !transaction_pooler %>
+    advisory_locks: <%= !transaction_pooler %>
     # db:prepare (bin/docker-entrypoint) must not seed a fresh production database; db:seed stays guarded.
     seeds: false
   cache:
