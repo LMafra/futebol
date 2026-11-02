@@ -1,0 +1,18 @@
+<% content_for(:title, "#{@championship} · Futebol") %>
+
+<div class="flex max-w-4xl flex-col gap-6">
+  <header class="border-b-4 border-ink pb-2">
+    <p class="text-xs font-bold uppercase tracking-widest text-graphite">Campeonato · Temporada <span class="tabular-nums"><%= @championship.season %></span></p>
+    <h1 class="mt-1 font-display text-4xl font-extrabold tracking-tight"><%= @championship.name %></h1>
+  </header>
+
+  <nav class="flex flex-wrap gap-2" aria-label="Seções do campeonato" role="tablist">
+    <% ChampionshipsController::TABS.each do |tab, label| %>
+      <%= link_to label, public_championship_path(@championship, tab:), role: "tab", data: { role: "championship-tab" },
+                  aria: { selected: tab == @tab, current: (tab == @tab ? "page" : nil) },
+                  class: "rounded-sm border px-3 py-2 font-semibold #{tab == @tab ? 'border-cartola bg-cartola text-ink' : 'border-rule hover:bg-paper'}" %>
+    <% end %>
+  </nav>
+
+  <%= render ChampionshipsController::PARTIALS.fetch(@tab) %>
+</div>

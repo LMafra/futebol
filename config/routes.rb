@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   resources :users, only: %i[new create]
   get 'signup', to: 'users#new'
   resource :account, path: 'minha-conta', only: %i[show update]
+  get 'campeonatos/:id', to: 'championships#show', as: :public_championship, constraints: { id: /\d+/ }
 
   scope module: :bolao do
     resources :pools, only: %i[index new create show destroy] do

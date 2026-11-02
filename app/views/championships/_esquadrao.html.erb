@@ -1,0 +1,7 @@
+<section class="flex flex-col gap-3" aria-labelledby="esquadrao-title">
+  <h2 id="esquadrao-title" class="font-display text-2xl font-extrabold">Ranking do <%= module_label(:fantasy) %></h2>
+  <p class="text-sm text-graphite">Pontos dos escalados em cada rodada; os do capitão contam em dobro.</p>
+  <%= render Ui::LeaderboardTableComponent.new(rows: @ranking,
+                                               texts: { label: "Ranking do #{module_label(:fantasy)}", name_header: "Técnico",
+                                                        empty: "Nenhuma escalação pontuada ainda." }) %>
+</section>

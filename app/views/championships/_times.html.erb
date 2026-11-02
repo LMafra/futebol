@@ -1,0 +1,9 @@
+<section class="flex flex-col gap-3" aria-labelledby="standings-title">
+  <h2 id="standings-title" class="font-display text-2xl font-extrabold">Classificação</h2>
+  <%= render Ui::StandingsTableComponent.new(rows: simulador_rows(@standings.map { |standing| [standing, nil] }, @teams),
+                                             empty_message: "Nenhum time cadastrado neste campeonato.") %>
+  <p class="text-sm text-graphite">
+    Só entram as partidas encerradas.
+    <%= link_to "Simular os próximos jogos", simulador_championship_path(@championship), class: "font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
+  </p>
+</section>

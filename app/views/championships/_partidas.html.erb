@@ -1,0 +1,41 @@
+<section class="flex flex-col gap-3" aria-labelledby="matches-title">
+  <div class="flex flex-wrap items-end justify-between gap-3">
+    <h2 id="matches-title" class="font-display text-2xl font-extrabold">
+      Partidas<% if @round %> · Rodada <span class="tabular-nums"><%= @round %></span><% end %>
+    </h2>
+    <% if @round %>
+      <nav class="flex items-center gap-4 text-sm font-semibold" aria-label="Rodadas">
+        <% previous_round = @rounds.reverse.find { |round| round < @round } %>
+        <% next_round = @rounds.find { |round| round > @round } %>
+        <% if previous_round %>
+          <%= link_to "← Rodada #{previous_round}", public_championship_path(@championship, tab: "partidas", rodada: previous_round), class: "text-pitch underline underline-offset-2 hover:no-underline" %>
+        <% end %>
+        <% if next_round %>
+          <%= link_to "Rodada #{next_round} →", public_championship_path(@championship, tab: "partidas", rodada: next_round), class: "text-pitch underline underline-offset-2 hover:no-underline" %>
+        <% end %>
+      </nav>
+    <% end %>
+  </div>
+
+  <% if @matches.empty? %>
+    <p class="rounded-md border border-dashed border-rule px-4 py-8 text-center text-graphite">Nenhuma partida cadastrada.</p>
+  <% else %>
+    <ul class="flex flex-col divide-y divide-rule rounded-md border border-rule bg-white">
+      <% @matches.each do |match| %>
+        <li class="grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 py-3" data-role="match-row">
+          <span class="text-right font-semibold"><%= match.home_team.name %></span>
+          <span class="flex flex-col items-center">
+            <span class="font-display text-xl font-extrabold tabular-nums">
+              <%= match.home_score || "–" %> × <%= match.away_score || "–" %>
+            </span>
+            <span class="text-xs text-graphite">
+              <%= Ui::ScoreboardComponent::STATUS_LABELS.fetch(match.status, match.status) %>
+              <% if match.match_date %> · <%= l(match.match_date, format: "%d/%m %H:%M") %><% end %>
+            </span>
+          </span>
+          <span class="font-semibold"><%= match.away_team.name %></span>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>
