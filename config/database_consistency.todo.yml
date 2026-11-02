@@ -45,6 +45,9 @@ Cartola::LineupPlayer:
   index_cartola_lineup_players_on_lineup_id:
     RedundantIndexChecker:
       enabled: false
+  index_cartola_lineup_players_one_captain:
+    UniqueIndexChecker:
+      enabled: false
   player:
     MissingDependentDestroyChecker:
       enabled: false

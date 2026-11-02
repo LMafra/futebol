@@ -25,7 +25,10 @@ module Cartola
         Array.new(count) { |index| Core::Player.new(name: "#{position.capitalize} #{index + 1}", position:, team:) }
       end
       Cartola::Lineup.new(formation: '4-3-3', championship: Core::Championship.new)
-                     .tap { |lineup| lineup.assign_players(players) }
+                     .tap do |lineup|
+                       lineup.assign_players(players)
+                       lineup.lineup_players.last.captain = true
+                     end
     end
   end
 end

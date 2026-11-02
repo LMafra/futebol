@@ -9,7 +9,12 @@
           <ul class="flex flex-wrap justify-center gap-2">
             <% players_on(slot).each do |player| %>
               <li class="flex min-w-28 flex-col items-center rounded-sm bg-night px-3 py-2 text-center" data-role="pitch-player">
-                <span class="text-sm font-semibold"><%= player.name %></span>
+                <span class="text-sm font-semibold">
+                  <%= player.name %>
+                  <% if captain?(player) %>
+                    <abbr class="ml-1 rounded-sm bg-cartola px-1 text-xs font-bold text-ink no-underline" title="Capitão" data-role="captain">C</abbr>
+                  <% end %>
+                </span>
                 <span class="text-xs text-rule"><%= player.position %> · <%= player.team&.short_name %></span>
                 <% if price(player) %>
                   <span class="text-xs tabular-nums text-rule"><%= price(player) %></span>

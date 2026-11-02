@@ -15,7 +15,8 @@ module Cartola
     validates :round, numericality: { only_integer: true, in: 1..38 },
                       uniqueness: { scope: %i[squad_id championship_id] }
     validates :formation, inclusion: { in: FORMATIONS }
-    validate :some_players, :within_championship_limits
+    validate :some_players, :within_championship_limits, :one_captain
+    before_save :release_captaincy
 
     # "4-3-3" => { goalkeeper: 1, defender: 4, midfielder: 3, forward: 3 }
     def self.preset(formation)
@@ -38,7 +39,16 @@ module Cartola
                  .each { |player| lineup_players.build(player:, position: player.slot) }
     end
 
-    def selected_players = lineup_players.reject(&:marked_for_destruction?).map(&:player)
+    # The captain's points count twice in the ranking (Cartola::RankingsService); nothing is written until save.
+    def assign_captain(player_id)
+      kept_lineup_players.each { |lineup_player| lineup_player.captain = lineup_player.player_id == player_id.to_i }
+    end
+
+    def captain = kept_lineup_players.find(&:captain)&.player
+
+    def captain_id = captain&.id
+
+    def selected_players = kept_lineup_players.map(&:player)
 
     def players_by_slot = selected_players.group_by { |player| player.slot.to_sym }
 
@@ -49,6 +59,22 @@ module Cartola
     end
 
     private
+
+    def kept_lineup_players = lineup_players.reject(&:marked_for_destruction?)
+
+    def one_captain
+      return if selected_players.empty? || kept_lineup_players.one?(&:captain)
+
+      errors.add(:base, 'Escolha um capitão entre os escalados')
+    end
+
+    # One captain per lineup in the database: the old one steps down before the lineup players are saved.
+    def release_captaincy
+      return if new_record?
+
+      lineup_players.where(captain: true).where.not(id: kept_lineup_players.find(&:captain)&.id)
+                    .update_all(captain: false, updated_at: Time.current)
+    end
 
     def some_players
       errors.add(:players, 'escolha pelo menos um jogador') if selected_players.empty?

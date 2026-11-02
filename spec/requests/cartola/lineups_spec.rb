@@ -12,8 +12,9 @@ RSpec.describe 'Cartola lineups', type: :request do
     end
   end
 
-  def submit(players, formation: '4-3-3', round: 7)
-    patch lineup_path(round:), params: { lineup: { formation:, player_ids: players.map(&:id) } }
+  def submit(players, formation: '4-3-3', round: 7, captain: players.first)
+    patch lineup_path(round:),
+          params: { lineup: { formation:, player_ids: players.map(&:id), captain_id: captain&.id } }
   end
 
   def balance = Cartola::Wallet.find_by!(user:, championship:).balance
@@ -84,6 +85,42 @@ RSpec.describe 'Cartola lineups', type: :request do
 
       expect(response).to redirect_to(lineup_path(round: 7))
       expect(balance).to eq(100 - 45 - 8 + 5)
+    end
+
+    it 'exige um capitão entre os escalados' do
+      squad
+      players = valid_players
+
+      expect { submit(players, captain: nil) }.not_to change(Cartola::Lineup, :count)
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include('Escolha um capitão entre os escalados')
+
+      submit(players.first(8), captain: players.last)
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it 'troca o capitão ao editar e o marca em campo' do
+      squad
+      players = valid_players
+      submit(players)
+
+      submit(players, captain: players.last)
+
+      expect(response).to redirect_to(lineup_path(round: 7))
+      lineup = squad.lineups.find_by!(championship:, round: 7)
+      expect(lineup.lineup_players.where(captain: true).pluck(:player_id)).to eq([players.last.id])
+      get lineup_path(round: 7)
+      captain_card = Nokogiri::HTML(response.body).at_css('[data-role="captain"]').ancestors('li').first
+      expect(captain_card.text).to include(players.last.name)
+    end
+
+    it 'marca o capitão no formulário de edição' do
+      lineup = create(:cartola_lineup, squad:, championship:, round: 7)
+
+      get edit_lineup_path(round: 7)
+
+      checked = Nokogiri::HTML(response.body).at_css('input[name="lineup[captain_id]"][checked]')
+      expect(checked['value']).to eq(lineup.captain_id.to_s)
     end
 
     it 'recusa mais jogadores numa posição do que o campeonato permite' do

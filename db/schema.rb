@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000040) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000042) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -114,8 +114,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000040) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "position", null: false
+    t.boolean "captain", default: false, null: false
     t.index ["lineup_id", "player_id"], name: "index_cartola_lineup_players_on_lineup_id_and_player_id", unique: true
     t.index ["lineup_id"], name: "index_cartola_lineup_players_on_lineup_id"
+    t.index ["lineup_id"], name: "index_cartola_lineup_players_one_captain", unique: true, where: "captain"
     t.index ["player_id"], name: "index_cartola_lineup_players_on_player_id"
     t.check_constraint "\"position\"::text = ANY (ARRAY['goalkeeper'::character varying, 'defender'::character varying, 'midfielder'::character varying, 'forward'::character varying]::text[])", name: "cartola_lineup_players_position_valid"
   end
@@ -179,12 +181,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000040) do
     t.datetime "changed_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "expected_score", precision: 6, scale: 2, default: "0.0", null: false
+    t.integer "games_played", default: 1, null: false
     t.index ["championship_id"], name: "index_cartola_player_value_histories_on_championship_id"
     t.index ["match_id"], name: "index_cartola_player_value_histories_on_match_id"
     t.index ["player_id", "scoring_token"], name: "idx_on_player_id_scoring_token_73a634962b", unique: true
     t.index ["scoring_token"], name: "index_cartola_player_value_histories_on_scoring_token"
     t.check_constraint "previous_value > 0::numeric AND value > 0::numeric", name: "cartola_player_value_histories_values_positive"
   end
+
+  add_check_constraint "cartola_player_value_histories", "games_played >= 1", name: "cartola_player_value_histories_games_played_positive", validate: false
 
   create_table "cartola_player_values", force: :cascade do |t|
     t.bigint "player_id", null: false

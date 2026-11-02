@@ -82,8 +82,14 @@ module Seeds
     return if lineup.persisted?
 
     lineup.formation = '4-3-3'
-    lineup.assign_players(demo_lineup_players)
+    assign_demo_players(lineup)
     Cartola::WalletService.save(lineup) || raise("demo lineup: #{lineup.errors.full_messages.to_sentence}")
+  end
+
+  def self.assign_demo_players(lineup)
+    players = demo_lineup_players
+    lineup.assign_players(players)
+    lineup.assign_captain(players.last&.id)
   end
 
   # The cheapest players per position, up to the championship's default limits (1 / 2 / 3 / 3).

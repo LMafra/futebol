@@ -37,6 +37,7 @@ FactoryBot.define do
   factory :cartola_lineup, class: 'Cartola::Lineup' do
     transient do
       include_players { [] }
+      captain { nil }
     end
 
     squad factory: :cartola_squad
@@ -50,6 +51,11 @@ FactoryBot.define do
       include_players + missing.flat_map do |slot, count|
         Array.new(count) { association(:player, position: fill_positions.fetch(slot)) }
       end
+    end
+
+    after(:build) do |lineup, evaluator|
+      captain = lineup.lineup_players.find { |lineup_player| lineup_player.player == evaluator.captain }
+      (captain || lineup.lineup_players.first)&.captain = true
     end
   end
 

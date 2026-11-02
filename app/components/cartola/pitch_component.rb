@@ -19,6 +19,8 @@ module Cartola
 
     def open_slots(slot) = [lineup.slots.fetch(slot) - players_on(slot).size, 0].max
 
+    def captain?(player) = player == lineup.captain
+
     def price(player) = prices[player.id] && format('C$ %.2f', prices[player.id])
   end
 end
