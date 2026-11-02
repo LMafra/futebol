@@ -1,4 +1,4 @@
-# Tickets — INDEX (51 tickets)
+# Tickets — INDEX (52 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -53,6 +53,7 @@
 | [0049](TICKET-0049.md) | — | Jogos de hoje em faixa sem fim (volta do último ao primeiro) | 0048 | — |
 | [0050](TICKET-0050.md) | — | Jogos de hoje sem barra de rolagem | 0049 | — |
 | [0051](TICKET-0051.md) | — | Jogos de hoje: cards inteiros e setas de um card por vez | 0050 | — |
+| [0052](TICKET-0052.md) | — | Scouts no seed demo, para o ranking de atletas da home | 0032, 0042 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -63,4 +64,4 @@
 - UI/demo: {0011, 0014} → 0023 → 0024 (+ 0006) · {0007, 0011} → 0025 · {0023, 0024, 0025} → 0027
 - 0026 sem deps e não bloqueia nenhum ticket (tickets derivados saem do ADR)
 - Lacunas de produto: {0011, 0014, 0019} → 0028 · {0004, 0006, 0010, 0016} → 0029 · {0007, 0010, 0025} → 0030 → 0031 (+ 0011, 0026)
-- Craquefy (ordem das branches): 0032 (flag) → 0034 → 0037 → 0033 → 0038 → 0039 → 0040 → 0035 → 0032 (home) → 0036 → 0041 → 0042 → 0043 → 0044 → 0045 → 0046 → 0047 → 0048 → 0049 → 0050 → 0051
+- Craquefy (ordem das branches): 0032 (flag) → 0034 → 0037 → 0033 → 0038 → 0039 → 0040 → 0035 → 0032 (home) → 0036 → 0041 → 0042 → 0043 → 0044 → 0045 → 0046 → 0047 → 0048 → 0049 → 0050 → 0051 → 0052

@@ -355,3 +355,8 @@ Branch `craquefy/q-sem-barra`, empilhada sobre `craquefy/p-jogos-hoje-loop`, com
 Branch `craquefy/r-jogos-hoje-passo`, empilhada sobre `craquefy/q-sem-barra`, com um commit assinado.
 - Cards em frações exatas da faixa (1, 2, 3 ou 4 por tela), sem o último cortado; as setas andam um card por clique. Verificado no navegador.
 - No celular cabe um card inteiro por vez, sem a ponta do próximo; o total de jogos e as setas indicam que há mais.
+
+### Scouts no seed demo (TICKET-0052)
+Branch `craquefy/s-seed-scouts`, empilhada sobre `craquefy/r-jogos-hoje-passo`, com um commit assinado.
+- O seed lança os scouts das 50 partidas finalizadas do Brasileirão (1.100 linhas), com gols batendo o placar, e o "Ranking de atletas" da home mostra 10 jogadores. Verificado no navegador, já com o seed rodado no banco local.
+- Os campeonatos pequenos continuam sem scouts, porque os times deles não têm elenco.

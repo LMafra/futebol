@@ -4,7 +4,7 @@ RSpec.describe 'db/seeds.rb' do
   def seeded_models
     [Core::Team, Core::Player, Core::Championship, Core::Match, Core::User, Bolao::ScoringRule, Cartola::ScoringRule,
      Bolao::Pool, Bolao::PoolMembership, Bolao::Prediction, Bolao::PredictionScore, Cartola::Squad, Cartola::Lineup,
-     Cartola::LineupPlayer, Cartola::Wallet]
+     Cartola::LineupPlayer, Cartola::Wallet, Cartola::PlayerScore]
   end
 
   def counts = seeded_models.to_h { |model| [model.name, model.count] }
@@ -39,7 +39,8 @@ RSpec.describe 'db/seeds.rb' do
 
     after(:context) do
       [Bolao::PredictionScore, Bolao::Prediction, Bolao::PoolMembership, Bolao::ScoringRule, Bolao::Pool,
-       Cartola::Wallet, Cartola::LineupPlayer, Cartola::Lineup, Cartola::Squad, Cartola::ScoringRule, Core::Match, Core::Player,
+       Cartola::PlayerScore, Cartola::Wallet, Cartola::LineupPlayer, Cartola::Lineup, Cartola::Squad,
+       Cartola::ScoringRule, Core::Match, Core::Player,
        Core::Team, Core::Championship, Core::Session, Core::User].each(&:delete_all)
     end
 
@@ -177,6 +178,25 @@ RSpec.describe 'db/seeds.rb' do
         expect(scored).to all(satisfy { |prediction| prediction.scores.kept.one? })
         expect(pending.flat_map(&:scores)).to be_empty
         expect(Bolao::PredictionScore.sum(:points)).to be_positive
+      end
+
+      it 'lança os scouts das partidas encerradas, com gols batendo o placar, e enche o ranking de atletas' do
+        matches = matches_in_rounds([1, 2, 3, 4, 6])
+        scores = Cartola::PlayerScore.kept.where(match: matches).group_by(&:match_id)
+
+        expect(scores.keys).to match_array(matches.map(&:id))
+        matches.each do |match|
+          rows = scores.fetch(match.id)
+          expect(rows.size).to eq(22)
+          expect(rows.count(&:highlight)).to eq(1)
+          expect(Cartola::PlayerScore.score_for(match)).to eq([match.home_score, match.away_score])
+          expect(rows.sum(&:assists)).to be <= rows.sum(&:goals)
+          expect(rows.reject { |row| row.player.position == 'GOL' }.sum(&:saves)).to be_zero
+        end
+        rows = Cartola::TopPlayersService.call([serie_a])
+        expect(rows.size).to eq(10)
+        expect(rows.first.goals).to be_positive
+        expect(rows.map(&:points)).to eq(rows.map(&:points).sort.reverse)
       end
 
       it "buys demo1's round 7 lineup within the championship limits, from demo1's wallet" do
