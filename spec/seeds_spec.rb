@@ -145,10 +145,11 @@ RSpec.describe 'db/seeds.rb' do
         end
       end
 
-      it 'fields every Esquadrão lineup with players of its own championship' do
+      it 'fields every Esquadrão lineup with players of its own championship, one round per squad' do
         Cartola::Lineup.includes(:championship, :players).find_each do |lineup|
           expect(lineup.players.map(&:team_id)).to all(be_in(lineup.championship.teams.ids))
         end
+        expect(Cartola::Lineup.group(:squad_id, :round).having('COUNT(*) > 1').count).to be_empty
       end
     end
 

@@ -22,7 +22,18 @@ module Seeds
     small_today(championship, today_round)
     small_predictions(small_pool(championship, users), championship, users, today_round)
     small_results(championship, today_round)
-    users.each.with_index(1) { |user, number| demo_lineup(user, championship, round: today_round - 1, pick: number) }
+    users.each.with_index(1) do |user, number|
+      demo_lineup(user, championship, round: small_lineup_round(user, championship, today_round), pick: number)
+    end
+  end
+
+  # The latest finished round the user has no lineup in yet, in any championship: reverting the migration that
+  # scoped lineups by championship recreates the unique index on squad and round.
+  def self.small_lineup_round(user, championship, today_round)
+    lineups = Cartola::Lineup.joins(:squad).where(cartola_squads: { user_id: user.id })
+    lineups.find_by(championship:)&.round ||
+      (1...today_round).reverse_each.find { |round| !lineups.exists?(round:) } ||
+      raise("no free round for #{user.email_address} in #{championship.name}")
   end
 
   # Visibility follows the YAML on every load, so databases seeded before the flag existed catch up.
