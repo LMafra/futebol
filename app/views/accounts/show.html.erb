@@ -1,0 +1,28 @@
+<% content_for(:title, "Minha conta · Futebol") %>
+
+<section class="max-w-xl">
+  <%= render "shared/flash" %>
+
+  <p class="text-xs font-bold uppercase tracking-widest text-graphite">Conta</p>
+  <h1 class="mt-1 border-b-4 border-ink pb-2 font-display text-4xl font-extrabold tracking-tight">Minha conta</h1>
+
+  <dl class="mt-6 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2" data-role="account-data">
+    <dt class="font-semibold">Nome</dt>
+    <dd><%= @user.name.presence || "—" %></dd>
+    <dt class="font-semibold">E-mail</dt>
+    <dd><%= @user.email_address %></dd>
+    <dt class="font-semibold">Nos rankings públicos</dt>
+    <dd data-role="public-name"><%= @user.public_display_name %></dd>
+  </dl>
+
+  <%= form_with url: account_path, method: :patch, class: "mt-8 flex flex-col gap-4 border-t border-rule pt-6" do %>
+    <div class="flex items-start gap-2">
+      <%= hidden_field_tag :public_profile_consent, "0", id: nil %>
+      <%= check_box_tag :public_profile_consent, "1", @user.public_profile_consented?, class: "mt-1 size-4 accent-pitch" %>
+      <%= label_tag :public_profile_consent, t("public_profile_consent.label"), class: "text-sm" %>
+    </div>
+    <div>
+      <%= submit_tag "Salvar", name: nil, class: "cursor-pointer rounded-sm bg-cartola px-4 py-2 font-bold text-ink transition-colors duration-fast ease-editorial hover:bg-pitch hover:text-white" %>
+    </div>
+  <% end %>
+</section>

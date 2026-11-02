@@ -62,6 +62,24 @@ RSpec.describe Core::User do
     expect(build(:user, cpf: nil)).to be_valid
   end
 
+  describe '#public_display_name' do
+    it 'shows first name and last-name initial only with consent' do
+      user = build(:user, name: 'lucas de souza mafra')
+      expect(user.public_display_name).to eq('Participante')
+      expect(user).not_to be_public_profile_consented
+
+      user.public_profile_consented_at = Time.current
+      expect(user).to be_public_profile_consented
+      expect(user.public_display_name).to eq('lucas M.')
+    end
+
+    it 'keeps a single name as is and falls back without a name' do
+      expect(build(:user, name: 'Lucas', public_profile_consented_at: Time.current).public_display_name).to eq('Lucas')
+      expect(build(:user, name: nil, public_profile_consented_at: Time.current).public_display_name)
+        .to eq('Participante')
+    end
+  end
+
   describe 'database check constraints' do
     it 'blocks a cpf that is not 11 digits' do
       user = create(:user)

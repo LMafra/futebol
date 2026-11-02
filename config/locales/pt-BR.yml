@@ -7,6 +7,8 @@ pt-BR:
         score_confirmation: "Confirmação do placar"
       reversal:
         reason: "Motivo"
+  public_profile_consent:
+    label: "Autorizo exibir meu nome (primeiro nome + inicial) nos rankings públicos do Craquefy"
   modules:
     fantasy:
       name: "Esquadrão"

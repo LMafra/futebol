@@ -9,11 +9,12 @@ module Ui
       Field.new(:password_confirmation, 'Confirme a senha', :password_field, 'new-password')
     ].freeze
 
-    attr_reader :user
+    attr_reader :user, :public_profile_consent
 
-    def initialize(user: nil, state: :default)
+    def initialize(user: nil, public_profile_consent: false, state: :default)
       super(state:)
       @user = user
+      @public_profile_consent = public_profile_consent
       require_in_default_state!(:user, user)
     end
 

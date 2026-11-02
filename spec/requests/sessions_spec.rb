@@ -38,7 +38,7 @@ RSpec.describe 'Sessions', type: :request do
 
     page = Nokogiri::HTML(response.body)
     menu = page.at_css('header [data-role="account-menu"]')
-    expect(menu.css('a').map(&:text)).to eq(['Meus bolões', 'Meu esquadrão', 'Rankings'])
+    expect(menu.css('a').map(&:text)).to eq(['Minha conta', 'Meus bolões', 'Meu esquadrão', 'Rankings'])
     expect(page.at_css('header form[action="/session"] button').text).to eq('Sair')
     expect(page.at_css('header nav a[href="/entrar"]')).to be_nil
   end

@@ -24,6 +24,33 @@ RSpec.describe 'Users (public signup)', type: :request do
     expect(response).to have_http_status(:ok)
   end
 
+  it 'shows the public-profile consent unchecked and keeps the user anonymous without it' do
+    get signup_path
+    checkbox = Nokogiri::HTML(response.body).at_css('input[type="checkbox"][name="user[public_profile_consent]"]')
+    expect(checkbox['checked']).to be_nil
+    expect(response.body).to include('Autorizo exibir meu nome (primeiro nome + inicial) nos rankings públicos')
+
+    expect { signup }.not_to change(Core::AuditLog, :count)
+    expect(Core::User.find_by!(email_address: 'novo@futebol.test')).not_to be_public_profile_consented
+  end
+
+  it 'records the consent and an AuditLog with the IP when the box is checked' do
+    expect { signup(public_profile_consent: '1') }.to change(Core::AuditLog, :count).by(1)
+
+    user = Core::User.find_by!(email_address: 'novo@futebol.test')
+    expect(user.public_profile_consented_at).to be_present
+    log = Core::AuditLog.last
+    expect([log.action, log.user, log.auditable]).to eq(['user.public_profile_consent_granted', user, user])
+    expect(log.ip_address.to_s).to be_present
+  end
+
+  it 'keeps the consent box checked when the signup fails' do
+    signup(public_profile_consent: '1', password: 'curta', password_confirmation: 'curta')
+
+    checkbox = Nokogiri::HTML(response.body).at_css('input[name="user[public_profile_consent]"]')
+    expect(checkbox['checked']).to be_present
+  end
+
   it 'answers 422 for a duplicated email' do
     create(:user, email_address: 'novo@futebol.test')
 

@@ -23,6 +23,15 @@ RSpec.describe Users::AnonymizeService do
     expect(reloaded.anonymized_at).to be_present
   end
 
+  it 'revokes the public-profile consent' do
+    user.update!(public_profile_consented_at: Time.current)
+
+    anonymize
+
+    expect(user.reload).not_to be_public_profile_consented
+    expect(user.public_display_name).to eq('Participante')
+  end
+
   it 'leaves no original personal data on the record' do
     anonymize
 

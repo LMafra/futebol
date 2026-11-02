@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
   resources :users, only: %i[new create]
   get 'signup', to: 'users#new'
+  resource :account, path: 'minha-conta', only: %i[show update]
 
   scope module: :bolao do
     resources :pools, only: %i[index new create show destroy] do
