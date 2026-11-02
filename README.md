@@ -205,7 +205,7 @@ Esquadrão é o nome visível do engine `cartola`; as URLs antigas (`/cartola`, 
 
 ### Campeonatos públicos
 
-[`/campeonatos/:id`](http://localhost:3000/campeonatos/1) mostra, sem login, as abas Times (classificação), Partidas (uma rodada por vez, `?rodada=`), Bolão e Esquadrão (rankings completos). No Bolão vale a maior pontuação de cada partida entre os bolões do usuário; no Esquadrão, o capitão pontua em dobro. O botão "Simular" (também em cada card de campeonato da home) abre o Simulador desse campeonato, uma rodada por vez: abre na primeira rodada com jogo em aberto, e "Anterior" mostra os resultados das rodadas passadas. Campeonato privado responde 404.
+[`/campeonatos/:id`](http://localhost:3000/campeonatos/1) mostra, sem login, as abas Times (classificação), Partidas (uma rodada por vez, `?rodada=`), Bolão e Esquadrão (rankings completos). No Bolão vale a maior pontuação de cada partida entre os bolões do usuário; no Esquadrão, o capitão pontua em dobro. O botão "Simular" (também em cada card de campeonato da home) abre o Simulador desse campeonato, uma rodada por vez: abre na primeira rodada com jogo em aberto, e "Anterior" mostra os resultados das rodadas passadas. Ao projetar, a tabela projetada toma o lugar da atual, e "Zerar simulação" volta ao início. Campeonato privado responde 404.
 
 ### Privacidade (consentimento)
 
@@ -238,6 +238,7 @@ Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 41 tickets ([INDEX
 - [x] 0032–0040: home pública, login em `/entrar`, Esquadrão, rankings públicos por campeonato, pt-BR, consentimento, scouts, capitão e valorização ([ADR 0005](docs/adr/0005-esquadrao-pontuacao-valorizacao.md)) e a marca Craquefy
 - [x] 0041: Simulador por campeonato (lista em `/simulador`, botão "Simular" na página do campeonato, rodadas em carrossel) e rodapé com autor e "Pague o Café" (Pix)
 - [x] 0043: Simulador pelos cards da home (fora do cabeçalho), rodadas passadas no carrossel e rolagem guiada na home
+- [x] 0044: Simulador com a tabela projetada no lugar da atual e "Zerar simulação"
 - [ ] Backlog: salvar/compartilhar simulação, Monte Carlo da temporada, oferta e demanda na valorização do Esquadrão
 
 Estado de cada fase: [STATUS](docs/checkpoints/STATUS.md).

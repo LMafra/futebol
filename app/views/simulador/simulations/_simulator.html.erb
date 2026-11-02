@@ -1,4 +1,24 @@
-<%= turbo_frame_tag "simulador" do %>
+<%= turbo_frame_tag "simulador", class: "grid gap-8 lg:grid-cols-2" do %>
+  <section aria-labelledby="table-title" data-role="<%= projected ? "projection" : "real-table" %>">
+    <div class="mb-3 flex flex-wrap items-center justify-between gap-4">
+      <h2 id="table-title" class="font-display text-2xl font-extrabold"><%= projected ? "Tabela projetada" : "Tabela atual" %></h2>
+      <% if simulated %>
+        <%= link_to main_app.simulador_championship_path(championship), data: { role: "reset-simulation" },
+                    class: "flex items-center gap-1 rounded-sm border border-ink px-3 py-2 text-sm font-semibold hover:bg-ink hover:text-white" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          Zerar simulação
+        <% end %>
+      <% end %>
+    </div>
+    <% if projected %>
+      <%= render Ui::StandingsTableComponent.new(rows: simulador_rows(projected, teams), zones: true,
+                                                 empty_message: "Preencha algum placar para projetar.") %>
+    <% else %>
+      <%= render Ui::StandingsTableComponent.new(rows: simulador_rows(real, teams), zones: true,
+                                                 empty_message: "Nenhum jogo encerrado ainda.") %>
+    <% end %>
+  </section>
+
   <section class="flex flex-col gap-6" aria-labelledby="simulator-title">
     <h2 id="simulator-title" class="font-display text-2xl font-extrabold">Rodadas</h2>
 
@@ -8,14 +28,6 @@
         <% simulation.errors.each do |match_id, message| %>
           <span>Partida <%= match_id %>: <%= message %></span>
         <% end %>
-      </div>
-    <% end %>
-
-    <% if projected %>
-      <div data-role="projection">
-        <h3 class="mb-3 font-display text-xl font-extrabold">Tabela projetada</h3>
-        <%= render Ui::StandingsTableComponent.new(rows: simulador_rows(projected, teams), zones: true,
-                                                   empty_message: "Preencha algum placar para projetar.") %>
       </div>
     <% end %>
 
