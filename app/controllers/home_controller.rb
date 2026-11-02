@@ -34,9 +34,8 @@ class HomeController < ApplicationController
   end
 
   def team_counts(matches)
-    sides = %w[home_team_id away_team_id].map { |side| matches.select("championship_id, #{side} AS team_id").to_sql }
-    Core::Match.unscoped.from("(#{sides.join(' UNION ALL ')}) AS sides").group('sides.championship_id')
-               .distinct.count('sides.team_id')
+    matches.pluck(:championship_id, :home_team_id, :away_team_id).group_by(&:first)
+           .transform_values { |rows| rows.flat_map { |row| row.drop(1) }.uniq.size }
   end
 
   def statuses_by_championship(matches)
