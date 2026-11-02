@@ -2,4 +2,5 @@
 
 <%= render "simulador/simulations/simulator", championship: @championship, matches: @matches,
                                                open_matches: @open_matches, simulation: @simulation, raw: @raw,
-                                               projected: @projected, teams: @teams, round_index: params[:round_index] %>
+                                               real: @real, projected: @projected, simulated: true, teams: @teams,
+                                               round_index: params[:round_index] %>

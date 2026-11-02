@@ -15,15 +15,8 @@
     </nav>
   </header>
 
-  <div class="grid gap-8 lg:grid-cols-2">
-    <section aria-labelledby="real-table-title">
-      <h2 id="real-table-title" class="mb-3 font-display text-2xl font-extrabold">Tabela atual</h2>
-      <%= render Ui::StandingsTableComponent.new(rows: simulador_rows(@real, @teams), zones: true,
-                                                 empty_message: "Nenhum jogo encerrado ainda.") %>
-    </section>
-
-    <%= render "simulador/simulations/simulator", championship: @championship, matches: @matches,
-                                                   open_matches: @open_matches, simulation: @simulation, raw: {},
-                                                   projected: nil, teams: @teams, round_index: nil %>
-  </div>
+  <%= render "simulador/simulations/simulator", championship: @championship, matches: @matches,
+                                                 open_matches: @open_matches, simulation: @simulation, raw: {},
+                                                 real: @real, projected: nil, simulated: false, teams: @teams,
+                                                 round_index: nil %>
 </div>

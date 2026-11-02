@@ -31,7 +31,9 @@ RSpec.describe 'Simulador', type: :request do
       get simulador_championship_path(championship)
 
       expect(response).to have_http_status(:ok)
-      expect(table_names('#real-table-title + section')).to eq(%w[Atlético Cruzeiro Fortaleza Botafogo])
+      expect(page.at_css('#table-title').text).to eq('Tabela atual')
+      expect(table_names('[data-role="real-table"]')).to eq(%w[Atlético Cruzeiro Fortaleza Botafogo])
+      expect(page.at_css('[data-role="reset-simulation"]')).to be_nil
       expect(page.css('[data-role="open-match"]').map { |li| li['data-match-id'].to_i })
         .to eq([live_match.id, open_match.id])
       expect(page.at_css("input[name='guesses[#{live_match.id}][home]']")['value']).to eq('1')
@@ -165,6 +167,18 @@ RSpec.describe 'Simulador', type: :request do
       expect(projection.first.at_css('[data-role="position-change"]')['aria-label']).to eq('Subiu 2')
     end
 
+    it 'mostra a tabela projetada no lugar da atual, com o botão de zerar a simulação' do
+      preview({ open_match.id => { home: '0', away: '3' } })
+
+      frame = page.at_css('turbo-frame#simulador')
+      expect(frame.at_css('#table-title').text).to eq('Tabela projetada')
+      expect(frame.at_css('[data-role="real-table"]')).to be_nil
+      expect(page.css('[data-role="standing-row"]').size).to eq(4)
+      reset = frame.at_css('[data-role="reset-simulation"]')
+      expect(reset.text.squish).to eq('Zerar simulação')
+      expect(reset['href']).to eq(simulador_championship_path(championship))
+    end
+
     it 'aceita a rota do ADR (POST /simulador/projecao com championship_id)' do
       post simulador_projecao_path, params: { championship_id: championship.id,
                                               guesses: { open_match.id => { home: '1', away: '1' } } }
@@ -178,6 +192,8 @@ RSpec.describe 'Simulador', type: :request do
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(page.at_css('[data-role="projection"]')).to be_nil
+      expect(page.at_css('[data-role="real-table"]')).to be_present
+      expect(page.at_css('[data-role="reset-simulation"]')).to be_present
       expect(page.at_css('[data-role="simulation-errors"]').text)
         .to include('placar inválido', 'não é uma partida em aberto')
       input = page.at_css("input[name='guesses[#{open_match.id}][home]']")

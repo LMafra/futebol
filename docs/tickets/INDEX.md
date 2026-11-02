@@ -1,4 +1,4 @@
-# Tickets — INDEX (43 tickets)
+# Tickets — INDEX (44 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -45,6 +45,7 @@
 | [0041](TICKET-0041.md) | — | Simulador por campeonato (lista + carrossel de rodadas) + rodapé com autor e Pix | 0031, 0032, 0035 | — |
 | [0042](TICKET-0042.md) | — | Jogos de hoje agrupados por campeonato + 5 campeonatos pequenos (6–12 times, públicos e privados) no seed local | 0035, 0041 | — |
 | [0043](TICKET-0043.md) | — | Simulador pelos cards da home + rodadas passadas no carrossel + scroll snap na home | 0041, 0042 | — |
+| [0044](TICKET-0044.md) | — | Simulador: tabela projetada no lugar da atual + "Zerar simulação" | 0043 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -55,4 +56,4 @@
 - UI/demo: {0011, 0014} → 0023 → 0024 (+ 0006) · {0007, 0011} → 0025 · {0023, 0024, 0025} → 0027
 - 0026 sem deps e não bloqueia nenhum ticket (tickets derivados saem do ADR)
 - Lacunas de produto: {0011, 0014, 0019} → 0028 · {0004, 0006, 0010, 0016} → 0029 · {0007, 0010, 0025} → 0030 → 0031 (+ 0011, 0026)
-- Craquefy (ordem das branches): 0032 (flag) → 0034 → 0037 → 0033 → 0038 → 0039 → 0040 → 0035 → 0032 (home) → 0036 → 0041 → 0042 → 0043
+- Craquefy (ordem das branches): 0032 (flag) → 0034 → 0037 → 0033 → 0038 → 0039 → 0040 → 0035 → 0032 (home) → 0036 → 0041 → 0042 → 0043 → 0044

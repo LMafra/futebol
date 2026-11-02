@@ -34,4 +34,22 @@ RSpec.describe 'Visitor simulates a championship', type: :system do
     expect(page).to have_field('Gols do Alfa')
     expect(page).to have_button('Próxima rodada', disabled: true)
   end
+
+  it 'swaps the current table for the projected one, and resets the simulation' do
+    visit simulador_championship_path(championship)
+    expect(page).to have_css('#table-title', text: 'Tabela atual')
+
+    fill_in 'Gols do Gama', with: '3'
+    fill_in 'Gols do Delta', with: '0'
+    click_on 'Projetar tabela'
+
+    expect(page).to have_css('#table-title', text: 'Tabela projetada')
+    expect(page).to have_no_css('[data-role="real-table"]')
+
+    click_on 'Zerar simulação'
+
+    expect(page).to have_css('#table-title', text: 'Tabela atual')
+    expect(page).to have_field('Gols do Gama', with: '')
+    expect(page).to have_no_link('Zerar simulação')
+  end
 end
