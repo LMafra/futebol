@@ -76,7 +76,7 @@ RSpec.describe 'Public home', type: :request do
     expect(page.at_css('nav[aria-label="Principal"]').text).not_to include('Simulador')
   end
 
-  it 'guia a rolagem da home seção a seção (scroll snap obrigatório), só na home' do
+  it 'guia a rolagem da home seção a seção (scroll snap por proximidade), só na home' do
     get root_path
 
     sections = page.at_css('[data-role="home-sections"]')

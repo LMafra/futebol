@@ -1,4 +1,4 @@
-# Tickets — INDEX (45 tickets)
+# Tickets — INDEX (46 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -47,6 +47,7 @@
 | [0043](TICKET-0043.md) | — | Simulador pelos cards da home + rodadas passadas no carrossel + scroll snap na home | 0041, 0042 | — |
 | [0044](TICKET-0044.md) | — | Simulador: tabela projetada no lugar da atual + "Zerar simulação" | 0043 | — |
 | [0045](TICKET-0045.md) | — | Fuso do app em Brasília ("hoje", horários exibidos, CSV) | 0042 | — |
+| [0046](TICKET-0046.md) | — | Scroll snap da home por proximidade (era obrigatório) | 0043 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -57,4 +58,4 @@
 - UI/demo: {0011, 0014} → 0023 → 0024 (+ 0006) · {0007, 0011} → 0025 · {0023, 0024, 0025} → 0027
 - 0026 sem deps e não bloqueia nenhum ticket (tickets derivados saem do ADR)
 - Lacunas de produto: {0011, 0014, 0019} → 0028 · {0004, 0006, 0010, 0016} → 0029 · {0007, 0010, 0025} → 0030 → 0031 (+ 0011, 0026)
-- Craquefy (ordem das branches): 0032 (flag) → 0034 → 0037 → 0033 → 0038 → 0039 → 0040 → 0035 → 0032 (home) → 0036 → 0041 → 0042 → 0043 → 0044 → 0045
+- Craquefy (ordem das branches): 0032 (flag) → 0034 → 0037 → 0033 → 0038 → 0039 → 0040 → 0035 → 0032 (home) → 0036 → 0041 → 0042 → 0043 → 0044 → 0045 → 0046
