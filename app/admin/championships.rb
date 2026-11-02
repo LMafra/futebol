@@ -1,12 +1,13 @@
 ActiveAdmin.register Core::Championship, as: 'Championship' do
   menu parent: 'Cadastros', label: 'Campeonatos'
 
-  permit_params :name, :season, :external_id, :cartola_goalkeeper_limit, :cartola_defender_limit,
+  permit_params :name, :season, :external_id, :private, :cartola_goalkeeper_limit, :cartola_defender_limit,
                 :cartola_midfielder_limit, :cartola_forward_limit, :cartola_initial_budget, :cartola_base_player_value
 
   filter :name
   filter :season
   filter :external_id
+  filter :private, label: 'Privado'
 
   index do
     selectable_column
@@ -14,6 +15,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
     column :name
     column :season
     column :external_id
+    column('Privado') { |championship| status_tag(championship.private? ? 'sim' : 'não') }
     actions
   end
 
@@ -31,6 +33,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
       row :name
       row :season
       row :external_id
+      row('Campeonato privado?') { |championship| championship.private? ? 'Sim' : 'Não' }
     end
     panel 'Cartola' do
       attributes_table_for resource do
@@ -50,6 +53,8 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
       f.input :name
       f.input :season
       f.input :external_id
+      f.input :private, label: 'Campeonato privado?',
+                        hint: 'Campeonatos privados não aparecem na home, na página pública nem no Simulador.'
     end
     f.inputs 'Cartola' do
       f.input :cartola_goalkeeper_limit, label: 'Limite de goleiros', input_html: { min: 0 }

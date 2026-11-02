@@ -14,7 +14,10 @@ module Core
     validates :cartola_initial_budget, :cartola_base_player_value, numericality: { greater_than_or_equal_to: 0 }
     validate :cartola_line_limits_positive
 
-    def self.ransackable_attributes(_auth_object = nil) = %w[name season external_id]
+    scope :publicly_visible, -> { where(private: false) }
+    scope :private_only, -> { where(private: true) }
+
+    def self.ransackable_attributes(_auth_object = nil) = %w[name season external_id private]
 
     def self.latest = order(season: :desc, id: :desc).first
 

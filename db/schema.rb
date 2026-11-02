@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000036) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000037) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -238,7 +238,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000036) do
     t.integer "cartola_forward_limit", default: 3, null: false
     t.decimal "cartola_initial_budget", precision: 10, scale: 2, default: "100.0", null: false
     t.decimal "cartola_base_player_value", precision: 6, scale: 2, default: "5.0", null: false
+    t.boolean "private", default: false, null: false
     t.index ["external_id"], name: "index_core_championships_on_external_id", unique: true
+    t.index ["private"], name: "index_core_championships_on_private"
     t.check_constraint "(cartola_defender_limit + cartola_midfielder_limit + cartola_forward_limit) > 0", name: "core_championships_cartola_line_limits_positive"
     t.check_constraint "cartola_goalkeeper_limit >= 0 AND cartola_defender_limit >= 0 AND cartola_midfielder_limit >= 0 AND cartola_forward_limit >= 0", name: "core_championships_cartola_limits_non_negative"
     t.check_constraint "cartola_initial_budget >= 0::numeric AND cartola_base_player_value >= 0::numeric", name: "core_championships_cartola_money_non_negative"

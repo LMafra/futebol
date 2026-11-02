@@ -23,6 +23,15 @@ RSpec.describe 'Admin Cartola settings', type: :request do
                                                    cartola_initial_budget: 120, cartola_base_player_value: 6.5)
   end
 
+  it 'edits the private flag of a championship' do
+    get "/admin/championships/#{championship.id}/edit"
+    expect(response.body).to include('Campeonato privado?')
+
+    patch "/admin/championships/#{championship.id}", params: { championship: { private: '1' } }
+
+    expect(championship.reload).to be_private
+  end
+
   it 'rejects limits without any outfield player' do
     patch "/admin/championships/#{championship.id}", params: { championship: {
       cartola_defender_limit: 0, cartola_midfielder_limit: 0, cartola_forward_limit: 0

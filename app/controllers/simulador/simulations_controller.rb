@@ -32,8 +32,10 @@ module Simulador
 
     private
 
+    # Visitors only see public championships; a private one asked by id is a 404.
     def set_championship
-      @championships = Core::Championship.order(season: :desc, name: :asc).to_a
+      scope = user_signed_in? ? Core::Championship.all : Core::Championship.publicly_visible
+      @championships = scope.order(season: :desc, name: :asc).to_a
       @championship = if params[:championship_id].present?
                         @championships.find { |championship| championship.id == params[:championship_id].to_i }
                       else

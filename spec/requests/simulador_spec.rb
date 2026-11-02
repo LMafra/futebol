@@ -59,6 +59,17 @@ RSpec.describe 'Simulador', type: :request do
 
       expect(response).to have_http_status(:not_found)
     end
+
+    it 'esconde campeonato privado de visitantes (404), mas não de usuários logados' do
+      championship.update!(private: true)
+
+      get simulador_championship_path(championship)
+      expect(response).to have_http_status(:not_found)
+
+      sign_in(create(:user))
+      get simulador_championship_path(championship)
+      expect(response).to have_http_status(:ok)
+    end
   end
 
   describe 'POST /simulador/:championship_id/preview' do
