@@ -317,9 +317,14 @@ Branch `craquefy/j-simulador-cards`, empilhada sobre `craquefy/i-campeonatos-see
 - O link "Simulador" saiu do cabeçalho; cada card de campeonato da home tem "Simular".
 - O carrossel do simulador traz todas as rodadas: abre na primeira com jogo em aberto, e "Anterior" mostra os resultados das encerradas, sem campos.
 - A home tem scroll snap obrigatório (seções, cabeçalho e rodapé). O Turbo mantém os atributos do `<html>` entre visitas, então um controller Stimulus liga e desliga o snap; verificado no navegador que o simulador e a volta para a home ficam corretos.
-- Pendente: o app roda em UTC (`config.time_zone` não definido), então "Jogos de hoje" vira o dia às 21h de Brasília.
+- O app rodava em UTC (`config.time_zone` não definido), então "Jogos de hoje" virava o dia às 21h de Brasília. Resolvido no TICKET-0045.
 
 ### Tabela projetada no lugar da atual (TICKET-0044)
 Branch `craquefy/k-simulador-tabela`, empilhada sobre `craquefy/j-simulador-cards`, com um commit assinado.
 - O Turbo Frame do simulador envolve a tabela e as rodadas: ao projetar, a tabela projetada substitui a atual no mesmo lugar.
 - "Zerar simulação" aparece depois de projetar e recarrega o frame no estado inicial. Verificado no navegador (projetar e zerar na Copa da Várzea Paulista).
+
+### Fuso em Brasília (TICKET-0045)
+Branch `craquefy/l-fuso-brasilia`, empilhada sobre `craquefy/k-simulador-tabela`, com um commit assinado.
+- `config.time_zone = 'Brasilia'`: "hoje", horários exibidos e datas do CSV seguem Brasília; o banco continua em UTC.
+- Em produção, partidas importadas por CSV antes desta mudança (lidas como UTC) ficariam 3 horas antes do pretendido; as do seed já usavam o fuso de São Paulo.
