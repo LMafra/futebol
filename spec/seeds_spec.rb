@@ -13,7 +13,15 @@ RSpec.describe 'db/seeds.rb' do
 
   def round_of(match) = match.round
 
-  def matches_in_rounds(rounds) = Core::Match.select { |match| round_of(match).to_i.in?(rounds) }
+  def serie_a = Core::Championship.find_by!(external_id: 'brasileirao-2026')
+
+  def serie_a_teams
+    Core::Team.where(external_id: YAML.load_file(Rails.root.join('db/seeds/teams.yml')).pluck('external_id'))
+  end
+
+  def matches_in_rounds(rounds) = serie_a.matches.select { |match| round_of(match).to_i.in?(rounds) }
+
+  def small_championships = Core::Championship.where.not(external_id: 'brasileirao-2026').includes(matches: :home_team)
 
   def demo_users = Core::User.where('email_address LIKE ?', '%@demo.local')
 
@@ -41,19 +49,20 @@ RSpec.describe 'db/seeds.rb' do
     end
 
     it 'seeds the 20 Série A teams' do
-      expect(Core::Team.count).to eq(20)
-      expect(Core::Team.pluck(:short_name)).to include('FLA', 'PAL', 'COR', 'SAO', 'REM', 'MIR')
+      expect(serie_a_teams.count).to eq(20)
+      expect(serie_a_teams.pluck(:short_name)).to include('FLA', 'PAL', 'COR', 'SAO', 'REM', 'MIR')
     end
 
-    it 'gives every team an 11-player squad (1 GOL, 2 LAT, 2 ZAG, 3 MEI, 3 ATA)' do
-      Core::Team.includes(:players).find_each do |team|
+    it 'gives every Série A team an 11-player squad (1 GOL, 2 LAT, 2 ZAG, 3 MEI, 3 ATA), and players to no one else' do
+      expect(Core::Player.where.not(team: serie_a_teams)).to be_empty
+      serie_a_teams.includes(:players).find_each do |team|
         expect(team.players.map(&:position).tally).to eq('GOL' => 1, 'LAT' => 2, 'ZAG' => 2, 'MEI' => 3, 'ATA' => 3)
         expect(team.players.map(&:shirt_number)).to match_array(1..11)
       end
     end
 
-    it 'seeds one demo championship with 38 rounds of 10 matches, each with a match_date' do
-      championship = Core::Championship.sole
+    it 'seeds the Brasileirão with 38 rounds of 10 matches, each with a match_date' do
+      championship = serie_a
       rounds = championship.matches.group_by { |match| round_of(match) }
 
       expect(championship).to have_attributes(external_id: 'brasileirao-2026', season: 2026)
@@ -66,11 +75,11 @@ RSpec.describe 'db/seeds.rb' do
     end
 
     it 'schedules a double round robin: every pairing once each way, nobody twice in a round' do
-      pairings = Core::Match.pluck(:home_team_id, :away_team_id)
+      pairings = serie_a.matches.pluck(:home_team_id, :away_team_id)
 
       expect(pairings.uniq.size).to eq(20 * 19)
       expect(pairings).to all(satisfy { |home, away| home != away })
-      Core::Match.all.group_by { |match| round_of(match) }.each_value do |round|
+      serie_a.matches.group_by { |match| round_of(match) }.each_value do |round|
         expect(round.flat_map { |match| [match.home_team_id, match.away_team_id] }.uniq.size).to eq(20)
       end
     end
@@ -83,6 +92,45 @@ RSpec.describe 'db/seeds.rb' do
 
     it 'creates exactly one admin' do
       expect(Core::User.where(admin: true).count).to eq(1)
+    end
+
+    describe 'small championships' do
+      it 'seeds at least 5 championships of 6 to 12 teams, each a single round robin' do
+        expect(small_championships.size).to be >= 5
+        small_championships.each do |championship|
+          teams = championship.matches.flat_map { |match| [match.home_team_id, match.away_team_id] }.uniq
+          pairings = championship.matches.map { |match| [match.home_team_id, match.away_team_id].sort }
+
+          expect(teams.size).to be_between(6, 12)
+          expect(pairings.uniq.size).to eq(pairings.size).and eq(teams.size * (teams.size - 1) / 2)
+          championship.matches.group_by(&:round).each_value do |round|
+            expect(round.flat_map { |match| [match.home_team_id, match.away_team_id] }).to match_array(teams)
+          end
+        end
+      end
+
+      it 'mixes public and private ones, so the public pages show only part of them' do
+        public_ones, private_ones = small_championships.partition { |championship| !championship.private? }
+
+        expect(public_ones.size).to be >= 3
+        expect(private_ones.map(&:name)).to contain_exactly('Liga Amadora Carioca', 'Liga Sulista Sub-20')
+        expect(Core::Championship.publicly_visible).to include(*public_ones)
+        expect(Core::Championship.publicly_visible).not_to include(*private_ones)
+      end
+
+      it 'plays the middle round today: earlier rounds finished, later ones scheduled' do
+        small_championships.each do |championship|
+          today_round = championship.matches.map(&:round).max.succ / 2
+          by_round = championship.matches.group_by(&:round)
+
+          expect(by_round[today_round].map(&:match_date)).to all(be_today)
+          expect(by_round.select { |round, _| round < today_round }.values.flatten)
+            .to all(have_attributes(status: 'finished', home_score: Integer, away_score: Integer))
+          expect(by_round.select { |round, _| round > today_round }.values.flatten)
+            .to all(have_attributes(status: 'scheduled', home_score: nil))
+          expect(by_round[today_round].select { |match| match.match_date.future? }).to all(be_scheduled)
+        end
+      end
     end
 
     describe 'demo data' do
@@ -143,6 +191,28 @@ RSpec.describe 'db/seeds.rb' do
         expect(wallet.balance).to eq(lineup.championship.cartola_initial_budget - cost)
         expect(wallet.balance).to be_positive
       end
+    end
+  end
+
+  describe 'small championships' do
+    include ActiveSupport::Testing::TimeHelpers
+
+    it 'turns a championship seeded as public private when the YAML says so' do
+      load_seed
+      Core::Championship.where.not(external_id: 'brasileirao-2026').update_all(private: false)
+
+      load_seed
+
+      expect(Core::Championship.find_by!(external_id: 'amadora-carioca-2026')).to be_private
+    end
+
+    it 'moves their calendar on a later day so the middle round is today again' do
+      travel_to(3.days.ago) { load_seed }
+
+      load_seed
+
+      today = Core::Match.where(match_date: Date.current.all_day).where.not(championship: serie_a)
+      expect(today.distinct.count(:championship_id)).to be >= 5
     end
   end
 

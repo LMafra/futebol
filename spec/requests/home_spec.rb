@@ -37,7 +37,7 @@ RSpec.describe 'Public home', type: :request do
       .to eq(['Meus bolões', 'Meu esquadrão', 'Simulador'])
   end
 
-  it 'lista só os campeonatos públicos, com contadores, Top 3 do Bolão e do Esquadrão e link para o ranking' do
+  it 'lista só os campeonatos públicos, com contadores gerais, Top 3 do Bolão e do Esquadrão e link para o ranking' do
     create(:match, championship: public_championship)
     private_championship = create(:championship, name: 'Copa Secreta', private: true)
     create(:match, championship: private_championship)
@@ -52,8 +52,10 @@ RSpec.describe 'Public home', type: :request do
     cards = page.css('[data-role="championship-card"]')
     expect(cards.map { |card| card.at_css('h3').text.squish }).to eq(['Copa Aberta'])
     expect(response.body).not_to include('Copa Secreta')
-    expect(page.at_css('[data-role="counter-championships"] dd').text).to eq('1')
-    expect(page.at_css('[data-role="counter-matches"] dd').text).to eq('5')
+    expect(page.at_css('[data-role="counter-championships"] dt').text).to eq('Campeonatos')
+    expect(page.at_css('[data-role="counter-championships"] dd').text).to eq('2')
+    expect(page.at_css('[data-role="counter-matches"] dd').text).to eq('6')
+    expect(page.at_css('main').text).not_to match(/campeonatos? públic|privad/i)
     expect(cards.first.css('[data-role="top-bolao"] [data-role="leaderboard-row"]').map { |row| row.text.squish })
       .to eq(['1 Davi L. 3', '2 Caio L. 2', '3 Bia L. 1'])
     expect(cards.first.at_css('[data-role="top-esquadrao"]').text).to include('Sem escalações pontuadas.')
@@ -69,6 +71,20 @@ RSpec.describe 'Public home', type: :request do
 
     expect(page.css('[data-role="today-match"]').size).to eq(1)
     expect(page.at_css('[data-role="today-match"]').text).to include(today.home_team.name, '21:00')
+  end
+
+  it 'agrupa os jogos de hoje por campeonato, com link para cada um' do
+    varzea = create(:championship, name: 'Copa da Várzea')
+    create_list(:match, 2, championship: varzea, match_date: Time.current.change(hour: 10))
+    create(:match, championship: public_championship, match_date: Time.current.change(hour: 21))
+
+    get root_path
+
+    groups = page.css('[data-role="today-championship"]')
+    expect(groups.map { |group| group.at_css('h3 a').text }).to eq(['Copa da Várzea', public_championship.name])
+    expect(groups.first.at_css('h3 a')['href']).to eq(public_championship_path(varzea))
+    expect(groups.map { |group| group.css('[data-role="today-match"]').size }).to eq([2, 1])
+    expect(groups.first.at_css('h3').text).to include('2 jogos')
   end
 
   it 'mostra o top de atletas com J, G, A e Pts' do

@@ -1,6 +1,6 @@
 # Public home: hero, counters, modules, today's matches, the public championships with their Top 3 rankings and
-# the top 10 athletes. Visitors and users alike only see public championships here; every list is loaded in
-# grouped queries, whatever the number of championships.
+# the top 10 athletes. The counters cover every championship; the lists show only public ones, to visitors and
+# users alike, and are loaded in grouped queries whatever the number of championships.
 class HomeController < ApplicationController
   FINAL_STATUSES = %w[finished scored].freeze
 
@@ -11,7 +11,7 @@ class HomeController < ApplicationController
     public_championships = Core::Championship.publicly_visible
     @championships = public_championships.order(season: :desc, name: :asc).to_a
     public_matches = Core::Match.where(championship: public_championships)
-    @counters = { championships: @championships.size, matches: public_matches.count, players: Core::Player.count }
+    @counters = { championships: Core::Championship.count, matches: Core::Match.count, players: Core::Player.count }
     @matches_today = matches_today(public_matches)
     @rankings = Core::ChampionshipRankingsService.top(@championships)
     @championship_facts = championship_facts(public_matches)
@@ -21,7 +21,8 @@ class HomeController < ApplicationController
   private
 
   def matches_today(matches)
-    matches.where(match_date: Date.current.all_day).includes(:home_team, :away_team).order(:match_date, :id).to_a
+    matches.where(match_date: Date.current.all_day).includes(:championship, :home_team, :away_team)
+           .order(:match_date, :id).to_a
   end
 
   # { championship_id => { teams:, status: } }

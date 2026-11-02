@@ -3,7 +3,7 @@ if Rails.env.production? && ENV['ALLOW_PRODUCTION_SEED'].blank?
   abort 'seeds blocked in production (set ALLOW_PRODUCTION_SEED=1 to force)'
 end
 
-%w[teams players championships matches scoring_rules users demo].each do |name|
+%w[teams players championships matches scoring_rules users demo small_championships].each do |name|
   load Rails.root.join("db/seeds/#{name}.rb")
 end
 
@@ -14,7 +14,10 @@ ActiveRecord::Base.transaction do
   Seeds.scoring_rules
   Seeds.admin
   # The demo password is public (README), so these accounts never reach a deployed database.
-  Seeds.demo(Seeds.championship) if Rails.env.local?
+  if Rails.env.local?
+    Seeds.demo(Seeds.championship)
+    Seeds.small_championships
+  end
 end
 
 seeded_models = [Core::Team, Core::Player, Core::Championship, Core::Match, Core::User, Bolao::ScoringRule,

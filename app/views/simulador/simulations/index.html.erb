@@ -15,7 +15,7 @@
         <li class="flex flex-wrap items-center justify-between gap-4 rounded-md border border-rule bg-white p-6" data-role="simulator-championship" data-championship-id="<%= championship.id %>">
           <div>
             <h2 class="font-display text-2xl font-extrabold"><%= championship.name %></h2>
-            <p class="text-sm text-graphite">Temporada <span class="tabular-nums"><%= championship.season %></span><% if championship.private? %> · privado<% end %></p>
+            <p class="text-sm text-graphite">Temporada <span class="tabular-nums"><%= championship.season %></span></p>
           </div>
           <%= link_to "Simular", main_app.simulador_championship_path(championship),
                       class: "rounded-sm border-2 border-ink px-4 py-2 font-bold transition-colors duration-fast ease-editorial hover:bg-ink hover:text-white",
