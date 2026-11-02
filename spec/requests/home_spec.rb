@@ -135,7 +135,7 @@ RSpec.describe 'Public home', type: :request do
     expect(page.at_css('[data-role="today-match"]').text).to include(tonight.home_team.name, '21:00')
   end
 
-  it 'põe os jogos de hoje numa faixa horizontal única, por horário, com o campeonato dentro de cada card' do
+  it 'põe os jogos de hoje numa faixa horizontal única e sem fim, por horário, com o campeonato em cada card' do
     varzea = create(:championship, name: 'Copa da Várzea')
     create(:match, championship: varzea, match_date: Time.current.change(hour: 10))
     create(:match, championship: public_championship, match_date: Time.current.change(hour: 15))
@@ -154,8 +154,9 @@ RSpec.describe 'Public home', type: :request do
     expect(cards.map { |card| card.text[/\d{2}:\d{2}/] }).to eq(%w[10:00 15:00 21:00])
     expect(cards.first.at_css('a')['href']).to eq(public_championship_path(varzea))
     expect(today.at_css('[data-role="today-count"]').text).to eq('3 jogos')
-    expect(today.css('button[data-scroller-target]').map { |button| button['aria-label'] })
-      .to eq(['Jogos anteriores', 'Próximos jogos'])
+    expect(today.at_css('ul')['data-action']).to eq('scroll->scroller#scrolled')
+    expect(today.css('button[data-action^="scroller#"]').map { |button| [button['aria-label'], button['disabled']] })
+      .to eq([['Jogos anteriores', nil], ['Próximos jogos', nil]])
   end
 
   it 'mostra o top de atletas com J, G, A e Pts' do

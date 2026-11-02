@@ -6,8 +6,8 @@
         <span class="text-sm font-bold text-graphite tabular-nums" data-role="today-count"><%= pluralize(matches.size, "jogo", plural: "jogos") %></span>
         <div class="flex gap-2" data-scroller-target="nav" hidden>
           <% [["previous", "Jogos anteriores", "m15 18-6-6 6-6"], ["next", "Próximos jogos", "m9 18 6-6-6-6"]].each do |action, label, path| %>
-            <button type="button" class="flex size-8 cursor-pointer items-center justify-center rounded-sm border border-ink hover:bg-ink hover:text-white disabled:cursor-not-allowed disabled:border-rule disabled:text-graphite disabled:hover:bg-transparent"
-                    data-action="scroller#<%= action %>" data-scroller-target="<%= action %>" aria-label="<%= label %>">
+            <button type="button" class="flex size-8 cursor-pointer items-center justify-center rounded-sm border border-ink hover:bg-ink hover:text-white"
+                    data-action="scroller#<%= action %>" aria-label="<%= label %>">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="<%= path %>"/></svg>
             </button>
           <% end %>
@@ -18,7 +18,7 @@
   <% if matches.empty? %>
     <p class="text-graphite">Nenhum jogo hoje.</p>
   <% else %>
-    <ul class="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2" aria-label="Jogos de hoje, em ordem de horário" data-scroller-target="list" data-action="scroll->scroller#update">
+    <ul class="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2" aria-label="Jogos de hoje, em ordem de horário" data-scroller-target="list" data-action="scroll->scroller#scrolled">
       <% matches.each do |match| %>
         <li class="flex w-3/4 shrink-0 snap-start flex-col gap-2 rounded-md border border-rule bg-white px-4 py-3 sm:w-1/3 lg:w-1/4" data-role="today-match">
           <%= link_to match.championship.name, public_championship_path(match.championship),
