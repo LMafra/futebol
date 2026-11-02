@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 // Endless horizontal list. When the items overflow, copies of them go before (one set) and after (two sets, so a
 // "next" from anywhere in the originals still has room), hidden from assistive tech and the tab order. Once a
 // scroll settles outside the originals, the list jumps by one set to the same card among them, so it never reaches
-// an end. Previous/next scroll one visible width. Without JS the list is a plain horizontal scroll.
+// an end. Previous/next move one card. Without JS the list is a plain horizontal scroll.
 export default class extends Controller {
   static targets = ["list", "nav"]
 
@@ -42,7 +42,8 @@ export default class extends Controller {
   scroll(direction) {
     this.wrap()
     const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    this.listTarget.scrollBy({ left: direction * this.listTarget.clientWidth, behavior: smooth ? "smooth" : "auto" })
+    const step = this.listTarget.firstElementChild.offsetWidth
+    this.listTarget.scrollBy({ left: direction * step, behavior: smooth ? "smooth" : "auto" })
   }
 
   layout() {
