@@ -1,4 +1,4 @@
-# Tickets — INDEX (47 tickets)
+# Tickets — INDEX (48 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -49,6 +49,7 @@
 | [0045](TICKET-0045.md) | — | Fuso do app em Brasília ("hoje", horários exibidos, CSV) | 0042 | — |
 | [0046](TICKET-0046.md) | — | Scroll snap da home por proximidade (era obrigatório) | 0043 | — |
 | [0047](TICKET-0047.md) | — | Classificação no card de campeonato da home, antes dos Top 3 | 0035, 0046 | — |
+| [0048](TICKET-0048.md) | — | Jogos de hoje numa faixa horizontal única, com o campeonato em cada card | 0042 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -59,4 +60,4 @@
 - UI/demo: {0011, 0014} → 0023 → 0024 (+ 0006) · {0007, 0011} → 0025 · {0023, 0024, 0025} → 0027
 - 0026 sem deps e não bloqueia nenhum ticket (tickets derivados saem do ADR)
 - Lacunas de produto: {0011, 0014, 0019} → 0028 · {0004, 0006, 0010, 0016} → 0029 · {0007, 0010, 0025} → 0030 → 0031 (+ 0011, 0026)
-- Craquefy (ordem das branches): 0032 (flag) → 0034 → 0037 → 0033 → 0038 → 0039 → 0040 → 0035 → 0032 (home) → 0036 → 0041 → 0042 → 0043 → 0044 → 0045 → 0046 → 0047
+- Craquefy (ordem das branches): 0032 (flag) → 0034 → 0037 → 0033 → 0038 → 0039 → 0040 → 0035 → 0032 (home) → 0036 → 0041 → 0042 → 0043 → 0044 → 0045 → 0046 → 0047 → 0048

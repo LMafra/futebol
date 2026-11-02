@@ -336,3 +336,8 @@ Branch `craquefy/m-snap-proximity`, empilhada sobre `craquefy/l-fuso-brasilia`, 
 ### Classificação no card de campeonato (TICKET-0047)
 Branch `craquefy/n-card-classificacao`, empilhada sobre `craquefy/m-snap-proximity`, com um commit assinado.
 - Cada card da home abre com as 4 primeiras posições da tabela real (só partidas encerradas) e o link "Tabela completa"; o Top 3 do Bolão e o do Esquadrão vêm depois. Verificado no navegador com os 4 campeonatos públicos do seed.
+
+### Jogos de hoje em faixa horizontal (TICKET-0048)
+Branch `craquefy/o-jogos-hoje-carrossel`, empilhada sobre `craquefy/n-card-classificacao`, com um commit assinado.
+- "Jogos de hoje" deixou de agrupar por campeonato (TICKET-0042): é uma faixa só, por horário, com o campeonato dentro de cada card, para a seção não crescer com o número de campeonatos.
+- Botões de anterior e próximo no cabeçalho da seção, que só aparecem quando a faixa transborda. Verificado no navegador com os 14 jogos públicos do seed.
