@@ -109,6 +109,7 @@ RSpec.describe 'Simulador', type: :request do
 
       expect(page.css('[data-role="simulator-championship"]').map { |card| card['data-championship-id'].to_i })
         .to contain_exactly(championship.id, private_championship.id)
+      expect(page.at_css('main').text).not_to match(/campeonatos? públic|privad/i)
     end
   end
 

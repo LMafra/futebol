@@ -187,7 +187,7 @@ Em produção não há contas demo, porque a senha acima é pública: o seed cri
 
 ### Home pública
 
-[`/`](http://localhost:3000/) abre sem login: hero com "Entrar" e "Criar conta", contadores, os três módulos, jogos de hoje, os campeonatos públicos com o Top 3 do Bolão e do Esquadrão e o top 10 de atletas (jogos, gols, assistências e pontos). Campeonatos marcados como privados no admin ("Campeonato privado?") não aparecem.
+[`/`](http://localhost:3000/) abre sem login: hero com "Entrar" e "Criar conta", contadores, os três módulos, jogos de hoje, os campeonatos públicos com o Top 3 do Bolão e do Esquadrão e o top 10 de atletas (jogos, gols, assistências e pontos). Campeonatos marcados como privados no admin ("Campeonato privado?") não aparecem nas listas, mas entram nos contadores (campeonatos, partidas e jogadores no total). Fora do admin, nenhum texto diz se um campeonato é público ou privado.
 
 ### Login
 

@@ -1,7 +1,7 @@
 <section class="flex flex-col gap-4" aria-labelledby="today-title" data-role="matches-today">
   <h2 id="today-title" class="border-b border-rule pb-2 font-display text-3xl font-extrabold">Jogos de hoje</h2>
   <% if matches.empty? %>
-    <p class="text-graphite">Nenhum jogo hoje nos campeonatos públicos.</p>
+    <p class="text-graphite">Nenhum jogo hoje.</p>
   <% else %>
     <div class="flex flex-col gap-6">
       <% matches.group_by(&:championship).each do |championship, championship_matches| %>

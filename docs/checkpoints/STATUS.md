@@ -306,7 +306,8 @@ Branch `craquefy/h-ajustes`, empilhada sobre `craquefy/g-docs`, com um commit as
 - Rodapé: "Desenvolvido por LMafra" (GitHub) e "Pague o Café" com a chave Pix e botão de copiar. A chave Pix é um e-mail publicado de propósito; as specs de privacidade checam os e-mails dos usuários, não qualquer `@` na página.
 
 ### Jogos de hoje com vários campeonatos (TICKET-0042)
-Branch `craquefy/i-campeonatos-seed`, empilhada sobre `craquefy/h-ajustes`, com dois commits assinados (o segundo mistura públicos e privados).
+Branch `craquefy/i-campeonatos-seed`, empilhada sobre `craquefy/h-ajustes`, com três commits assinados (o segundo mistura públicos e privados; o terceiro tira dos textos a visibilidade e deixa os contadores gerais).
+- Fora do admin, nenhum texto diz se o campeonato é público ou privado. Os contadores da home contam todos os campeonatos e partidas; as listas continuam só com os públicos.
 - "Jogos de hoje" agrupa por campeonato, com o nome (link) e a contagem de jogos de cada um.
 - Seed local com 5 campeonatos fictícios de 6, 8, 10, 12 e 6 times, em turno único, com a rodada do meio hoje: 3 públicos e 2 privados (Liga Amadora Carioca e Liga Sulista Sub-20), que a home não mostra. Só em development/test, como a demo: as datas acompanham o dia em que o seed roda, o que não faz sentido em produção.
 - Os 42 times novos não têm elenco, porque o seletor do Esquadrão lista todos os jogadores do banco. Filtrar o seletor pelos times do campeonato fica como melhoria futura.

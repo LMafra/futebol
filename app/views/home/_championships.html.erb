@@ -1,7 +1,7 @@
 <section class="flex flex-col gap-6" aria-labelledby="championships-title">
   <h2 id="championships-title" class="border-b border-rule pb-2 font-display text-3xl font-extrabold">Campeonatos</h2>
   <% if championships.empty? %>
-    <p class="text-graphite">Nenhum campeonato público no momento.</p>
+    <p class="text-graphite">Nenhum campeonato no momento.</p>
   <% else %>
     <div class="grid gap-6 md:grid-cols-2">
       <% championships.each do |championship| %>
