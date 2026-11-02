@@ -135,18 +135,27 @@ RSpec.describe 'Public home', type: :request do
     expect(page.at_css('[data-role="today-match"]').text).to include(tonight.home_team.name, '21:00')
   end
 
-  it 'agrupa os jogos de hoje por campeonato, com link para cada um' do
+  it 'põe os jogos de hoje numa faixa horizontal única, por horário, com o campeonato dentro de cada card' do
     varzea = create(:championship, name: 'Copa da Várzea')
-    create_list(:match, 2, championship: varzea, match_date: Time.current.change(hour: 10))
-    create(:match, championship: public_championship, match_date: Time.current.change(hour: 21))
+    create(:match, championship: varzea, match_date: Time.current.change(hour: 10))
+    create(:match, championship: public_championship, match_date: Time.current.change(hour: 15))
+    create(:match, championship: varzea, match_date: Time.current.change(hour: 21))
 
     get root_path
 
-    groups = page.css('[data-role="today-championship"]')
-    expect(groups.map { |group| group.at_css('h3 a').text }).to eq(['Copa da Várzea', public_championship.name])
-    expect(groups.first.at_css('h3 a')['href']).to eq(public_championship_path(varzea))
-    expect(groups.map { |group| group.css('[data-role="today-match"]').size }).to eq([2, 1])
-    expect(groups.first.at_css('h3').text).to include('2 jogos')
+    today = page.at_css('[data-role="matches-today"]')
+    expect(today['data-controller']).to eq('scroller')
+    expect(today.css('[data-role="today-championship"]')).to be_empty
+    expect(today.css('ul').size).to eq(1)
+    expect(today.at_css('ul')['class'].split).to include('overflow-x-auto', 'snap-x')
+    cards = today.css('[data-role="today-match"]')
+    expect(cards.map { |card| card.at_css('[data-role="today-match-championship"]').text })
+      .to eq(['Copa da Várzea', public_championship.name, 'Copa da Várzea'])
+    expect(cards.map { |card| card.text[/\d{2}:\d{2}/] }).to eq(%w[10:00 15:00 21:00])
+    expect(cards.first.at_css('a')['href']).to eq(public_championship_path(varzea))
+    expect(today.at_css('[data-role="today-count"]').text).to eq('3 jogos')
+    expect(today.css('button[data-scroller-target]').map { |button| button['aria-label'] })
+      .to eq(['Jogos anteriores', 'Próximos jogos'])
   end
 
   it 'mostra o top de atletas com J, G, A e Pts' do
