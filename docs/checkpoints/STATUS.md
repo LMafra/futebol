@@ -350,3 +350,8 @@ Branch `craquefy/p-jogos-hoje-loop`, empilhada sobre `craquefy/o-jogos-hoje-carr
 ### Jogos de hoje sem barra de rolagem (TICKET-0050)
 Branch `craquefy/q-sem-barra`, empilhada sobre `craquefy/p-jogos-hoje-loop`, com um commit assinado.
 - Nova utilidade `scrollbar-none` no CSS do Tailwind, usada na faixa de "Jogos de hoje". A faixa continua rolando pelas setas, toque, trackpad e shift + roda. Verificado no navegador.
+
+### Jogos de hoje com cards inteiros (TICKET-0051)
+Branch `craquefy/r-jogos-hoje-passo`, empilhada sobre `craquefy/q-sem-barra`, com um commit assinado.
+- Cards em frações exatas da faixa (1, 2, 3 ou 4 por tela), sem o último cortado; as setas andam um card por clique. Verificado no navegador.
+- No celular cabe um card inteiro por vez, sem a ponta do próximo; o total de jogos e as setas indicam que há mais.

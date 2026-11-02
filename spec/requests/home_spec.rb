@@ -147,7 +147,8 @@ RSpec.describe 'Public home', type: :request do
     expect(today['data-controller']).to eq('scroller')
     expect(today.css('[data-role="today-championship"]')).to be_empty
     expect(today.css('ul').size).to eq(1)
-    expect(today.at_css('ul')['class'].split).to include('overflow-x-auto', 'snap-x', 'scrollbar-none')
+    expect(today.at_css('ul')['class'].split).to include('overflow-x-auto', 'snap-x', 'scrollbar-none', '-mr-3')
+    expect(today.at_css('li')['class'].split).to include('pr-3', 'w-full', 'sm:w-1/2', 'md:w-1/3', 'lg:w-1/4')
     cards = today.css('[data-role="today-match"]')
     expect(cards.map { |card| card.at_css('[data-role="today-match-championship"]').text })
       .to eq(['Copa da Várzea', public_championship.name, 'Copa da Várzea'])
