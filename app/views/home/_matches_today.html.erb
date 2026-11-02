@@ -18,7 +18,7 @@
   <% if matches.empty? %>
     <p class="text-graphite">Nenhum jogo hoje.</p>
   <% else %>
-    <ul class="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2" aria-label="Jogos de hoje, em ordem de horário" data-scroller-target="list" data-action="scroll->scroller#scrolled">
+    <ul class="scrollbar-none flex snap-x snap-mandatory gap-3 overflow-x-auto" aria-label="Jogos de hoje, em ordem de horário" data-scroller-target="list" data-action="scroll->scroller#scrolled">
       <% matches.each do |match| %>
         <li class="flex w-3/4 shrink-0 snap-start flex-col gap-2 rounded-md border border-rule bg-white px-4 py-3 sm:w-1/3 lg:w-1/4" data-role="today-match">
           <%= link_to match.championship.name, public_championship_path(match.championship),
