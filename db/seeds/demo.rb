@@ -45,10 +45,12 @@ module Seeds
     end
   end
 
+  # Scouts go in before the scoring job, so prices move as after a real match.
   def self.demo_results(championship)
     [1, 2, 3, 4, 6].each do |round|
       demo_round(championship, round).each_with_index do |match, index|
         demo_finish(match, *demo_score(round, index))
+        demo_scouts(match)
         ProcessMatchPointsJob.perform_now(match.id, demo_scoring_token(match))
       end
     end
