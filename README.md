@@ -54,7 +54,7 @@
 
 ## Sobre o projeto
 
-Plataforma Rails 8 com engines `core`, `bolao`, `cartola` e `simulador` para quem acompanha o campeonato com os amigos: no **Bolão**, cada participante palpita o placar das partidas de um grupo; no **Cartola**, monta a escalação da rodada com os limites por posição do campeonato e compra os jogadores com a carteira de cartoletas; o **Simulador** projeta a classificação ("e se") a partir de placares hipotéticos, aberto a visitantes ([ADR 0003](docs/adr/0003-simulador.md)). Partidas, times e usuários vivem no `core`; o admin cadastra, importa e finaliza partidas, e a pontuação é calculada por jobs.
+Plataforma Rails 8 com engines `core`, `bolao`, `cartola` e `simulador` para quem acompanha o campeonato com os amigos: no **Bolão**, cada participante palpita o placar das partidas de um grupo; no **Esquadrão** (engine `cartola`), monta a escalação da rodada com capitão, respeitando os limites por posição do campeonato, e compra os jogadores com a carteira de moedas; o **Simulador** projeta a classificação ("e se") a partir de placares hipotéticos, aberto a visitantes ([ADR 0003](docs/adr/0003-simulador.md)). Partidas, times e usuários vivem no `core`; o admin cadastra, importa e finaliza partidas, e a pontuação é calculada por jobs.
 
 Decisões de arquitetura:
 
@@ -178,16 +178,46 @@ Detalhes e custo em horas free: [OPERATIONS.md → Keep-alive](docs/OPERATIONS.m
 1. **Campeonato:** em [`/admin`](http://localhost:3000/admin), cadastre o campeonato e os times (Cadastros) e importe as partidas por CSV (Cadastros → Importações CSV).
 2. **Bolão:** crie um bolão em [`/pools/new`](http://localhost:3000/pools/new) e compartilhe o código; os amigos entram por [`/pools`](http://localhost:3000/pools).
 3. **Palpites:** cada participante palpita o placar das partidas na página de palpites do bolão.
-4. **Escalação:** monte o time da rodada no Cartola em [`/lineup`](http://localhost:3000/lineup) e acompanhe os rankings em [`/cartola/rankings`](http://localhost:3000/cartola/rankings).
-5. **Finalizar partida:** no admin, Pontuação → Finalizar partida confirma o placar; o job pontua palpites e escalações (Pontuação → Reverter pontuação desfaz).
+4. **Escalação:** monte o time da rodada no Esquadrão em [`/esquadrao`](http://localhost:3000/esquadrao), com um capitão, e acompanhe os rankings em [`/esquadrao/rankings`](http://localhost:3000/esquadrao/rankings).
+5. **Scouts e finalização:** no admin, Pontuação → Scouts da partida lança os scouts; Pontuação → Finalizar partida confirma o placar calculado deles, e o job pontua palpites e escalações (Pontuação → Reverter pontuação desfaz).
 
 Login demo (só development/test, criado pelo `db:seed`): `demo1@demo.local` … `demo5@demo.local` / `demo-futebol` e o admin `admin@futebol.dev` / `futebol-admin`, com o bolão `DEMO01` já pontuado. Detalhes dos dados demo, filas e comandos: [docs/OPERATIONS.md](docs/OPERATIONS.md).
 
 Em produção não há contas demo, porque a senha acima é pública: o seed cria só o admin, com senha forte guardada fora do repositório, além de times, jogadores e partidas. Novas contas saem do cadastro público em [`/signup`](http://localhost:3000/signup) (link "Criar conta" no login); ainda não há tela de usuários no admin.
 
+### Home pública
+
+[`/`](http://localhost:3000/) abre sem login: hero com "Entrar" e "Criar conta", contadores, os três módulos, jogos de hoje, os campeonatos públicos com o Top 3 do Bolão e do Esquadrão e o top 10 de atletas (jogos, gols, assistências e pontos). Campeonatos marcados como privados no admin ("Campeonato privado?") não aparecem.
+
+### Login
+
+O link "Entrar" leva a [`/entrar`](http://localhost:3000/entrar); páginas que exigem sessão continuam redirecionando para `/session/new`. Logado, o cabeçalho mostra o menu "Minha conta" (Minha conta, Meus bolões, Meu esquadrão, Rankings) e "Sair". O rodapé tem "Acesso administrativo" para `/admin`.
+
+### Módulos
+
+| Módulo | Onde | Login |
+|---|---|---|
+| Bolão | [`/pools`](http://localhost:3000/pools) | sim |
+| Esquadrão | [`/esquadrao`](http://localhost:3000/esquadrao) e [`/esquadrao/rankings`](http://localhost:3000/esquadrao/rankings) | sim |
+| Simulador | [`/simulador`](http://localhost:3000/simulador) | não |
+
+Esquadrão é o nome visível do engine `cartola`; as URLs antigas (`/cartola`, `/cartola/rankings` e as do admin) respondem 301. A marca é Craquefy; o repositório, os engines e as tabelas mantêm os nomes internos ([glossário](docs/glossary.md)).
+
+### Campeonatos públicos
+
+[`/campeonatos/:id`](http://localhost:3000/campeonatos/1) mostra, sem login, as abas Times (classificação), Partidas (uma rodada por vez, `?rodada=`), Bolão e Esquadrão (rankings completos). No Bolão vale a maior pontuação de cada partida entre os bolões do usuário; no Esquadrão, o capitão pontua em dobro. Campeonato privado responde 404.
+
+### Privacidade (consentimento)
+
+Os rankings públicos mostram "primeiro nome + inicial" (ex.: "Lucas M.") só de quem autorizou, no cadastro ou em [`/minha-conta`](http://localhost:3000/minha-conta); os demais aparecem como "Participante", e o e-mail nunca é exibido. Conceder e revogar geram AuditLog com IP, e a anonimização (LGPD) apaga o consentimento.
+
+### Scouts
+
+O admin lança os scouts oficiais de cada partida (G, A, DP, DE só para goleiros, CA, CV, GC, Jogou e Destaque) em Pontuação → Scouts da partida; SG é calculado. O placar vem dos gols lançados, e a pontuação do Esquadrão e a valorização dos jogadores seguem o [ADR 0005](docs/adr/0005-esquadrao-pontuacao-valorizacao.md).
+
 ## Roadmap
 
-Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 31 tickets ([INDEX](docs/tickets/INDEX.md)).
+Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 40 tickets ([INDEX](docs/tickets/INDEX.md)).
 
 - [x] Monolito modular com 4 engines e Packwerk
 - [x] Core, AASM das partidas e pontuação idempotente e reversível com auditoria
@@ -205,7 +235,8 @@ Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 31 tickets ([INDEX
 - [x] Infra de produção: OpenObserve self-hosted (Docker + OTLP), R2 (`storage.yml`), Resend (SMTP) e keep-alive (GitHub Actions)
 - [ ] Pendências manuais de produção: token S3 do R2, domínio do Resend e `R2_*`/`RESEND_*` no Render, host do OpenObserve e `RENDER_DEPLOY_HOOK_URL`
 - [x] 0031: Simulador v1 "e se" em [`/simulador`](http://localhost:3000/simulador) (ADR 0003, que o numerava 0029; `core_matches.round` entrou no 0030)
-- [ ] Backlog: salvar/compartilhar simulação, Monte Carlo da temporada
+- [x] 0032–0040: home pública, login em `/entrar`, Esquadrão, rankings públicos por campeonato, pt-BR, consentimento, scouts, capitão e valorização ([ADR 0005](docs/adr/0005-esquadrao-pontuacao-valorizacao.md)) e a marca Craquefy
+- [ ] Backlog: salvar/compartilhar simulação, Monte Carlo da temporada, oferta e demanda na valorização do Esquadrão
 
 Estado de cada fase: [STATUS](docs/checkpoints/STATUS.md).
 
