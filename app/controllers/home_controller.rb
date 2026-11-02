@@ -1,6 +1,7 @@
-# Public home: hero, counters, modules, today's matches, the public championships with the leaders of their table
-# and their Top 3 rankings, and the top 10 athletes. The counters cover every championship; the lists show only
-# public ones, to visitors and users alike, and are loaded in grouped queries whatever the number of championships.
+# Public home: hero, counters, modules, how it works, today's matches, the public championships with the leaders
+# of their table and their Top 3 rankings, and the top 10 athletes. The counters cover every championship; the
+# lists show only public ones, to visitors and users alike, and are loaded in grouped queries whatever the number
+# of championships.
 class HomeController < ApplicationController
   FINAL_STATUSES = %w[finished scored].freeze
 
