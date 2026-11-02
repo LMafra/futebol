@@ -1,0 +1,27 @@
+<% content_for(:title, brand_title("Simulador")) %>
+
+<div class="flex flex-col gap-8">
+  <header class="border-b-4 border-ink pb-2">
+    <p class="text-xs font-bold uppercase tracking-widest text-graphite">Simulador</p>
+    <h1 class="mt-1 font-display text-4xl font-extrabold tracking-tight">E se…?</h1>
+    <p class="mt-2 max-w-2xl text-graphite">Escolha o campeonato e preencha os placares dos jogos que faltam para ver como a tabela ficaria. Não precisa de login.</p>
+  </header>
+
+  <% if @championships.empty? %>
+    <p class="rounded-md border border-dashed border-rule px-4 py-8 text-center text-graphite">Nenhum campeonato disponível para simular.</p>
+  <% else %>
+    <ul class="grid gap-6 md:grid-cols-2" aria-label="Campeonatos para simular">
+      <% @championships.each do |championship| %>
+        <li class="flex flex-wrap items-center justify-between gap-4 rounded-md border border-rule bg-white p-6" data-role="simulator-championship" data-championship-id="<%= championship.id %>">
+          <div>
+            <h2 class="font-display text-2xl font-extrabold"><%= championship.name %></h2>
+            <p class="text-sm text-graphite">Temporada <span class="tabular-nums"><%= championship.season %></span><% if championship.private? %> · privado<% end %></p>
+          </div>
+          <%= link_to "Simular", main_app.simulador_championship_path(championship),
+                      class: "rounded-sm border-2 border-ink px-4 py-2 font-bold transition-colors duration-fast ease-editorial hover:bg-ink hover:text-white",
+                      aria: { label: "Simular #{championship.name}" } %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

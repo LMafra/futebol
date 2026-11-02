@@ -1,7 +1,7 @@
 module Simulador
-  # Public "what if" standings (ADR 0003). GET shows the real table and the open (scheduled/live) matches of a
-  # championship (?championship_id= or /simulador/:championship_id, default the latest); POST projects the table
-  # with the guessed scores into the "simulador" Turbo Frame. Nothing is stored.
+  # Public "what if" standings (ADR 0003). /simulador lists the championships to pick from; GET
+  # /simulador/:championship_id shows the real table and the open (scheduled/live) matches of that championship;
+  # POST projects the table with the guessed scores into the "simulador" Turbo Frame. Nothing is stored.
   # ::ApplicationController: inside Simulador, the bare constant resolves to the engine's controller.
   class SimulationsController < ::ApplicationController
     EDITABLE_STATUSES = %w[scheduled live].freeze
@@ -10,11 +10,15 @@ module Simulador
     rate_limit to: 30, within: 1.minute, by: -> { request.remote_ip }, only: :preview,
                with: -> { reject_rate_limited_preview }
 
-    before_action :set_championship
+    before_action :set_championship, except: :index
+
+    def index
+      @championships = championships.order(season: :desc, name: :asc).to_a
+    end
 
     def show
       authorize %i[simulador simulation], :show?
-      return unless stale?(etag: [@championship, @championship.matches.maximum(:updated_at), @championships.size])
+      return unless stale?(etag: [@championship, @championship.matches.maximum(:updated_at)])
 
       load_matches
       @simulation = Simulador::Simulation.new(championship_id: @championship.id, guesses: live_scores, errors: {})
@@ -32,16 +36,11 @@ module Simulador
 
     private
 
-    # Visitors only see public championships; a private one asked by id is a 404.
+    def championships = policy_scope(Core::Championship, policy_scope_class: Simulador::SimulationPolicy::Scope)
+
+    # A championship the user cannot see (private for visitors) is a 404, like a missing one.
     def set_championship
-      scope = user_signed_in? ? Core::Championship.all : Core::Championship.publicly_visible
-      @championships = scope.order(season: :desc, name: :asc).to_a
-      @championship = if params[:championship_id].present?
-                        @championships.find { |championship| championship.id == params[:championship_id].to_i }
-                      else
-                        @championships.first
-                      end
-      raise ActiveRecord::RecordNotFound, 'Campeonato não encontrado' unless @championship
+      @championship = championships.find(params[:championship_id])
     end
 
     def load_matches

@@ -30,7 +30,7 @@ Rails.application.routes.draw do
   get 'cartola/rankings', to: moved_to.call('/esquadrao/rankings')
 
   scope module: :simulador do
-    get 'simulador', to: 'simulations#show', as: :simulador
+    get 'simulador', to: 'simulations#index', as: :simulador
     post 'simulador/projecao', to: 'simulations#preview', as: :simulador_projecao
     get 'simulador/:championship_id', to: 'simulations#show', as: :simulador_championship,
                                       constraints: { championship_id: /\d+/ }

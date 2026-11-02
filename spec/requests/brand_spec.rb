@@ -12,6 +12,18 @@ RSpec.describe 'Craquefy brand', type: :request do
     expect(response.body).not_to include('Futebol')
   end
 
+  it 'credits the author and shows the Pix key to buy a coffee in the footer' do
+    get root_path
+
+    footer = page.at_css('footer')
+    expect(footer.at_css('[data-role="author-link"]')['href']).to eq('https://github.com/LMafra')
+    expect(footer.text.squish).to include('Desenvolvido por LMafra')
+    pix = footer.at_css('[data-role="pix"]')
+    expect(pix.at_css('summary').text).to eq('Pague o Café')
+    expect(pix.at_css('[data-clipboard-target="source"]').text).to eq('chagas.lucas.mafra@gmail.com')
+    expect(pix.at_css('button[data-action="clipboard#copy"]').text).to eq('Copiar chave')
+  end
+
   it 'suffixes page titles with the brand' do
     sign_in(create(:user))
     get pools_path

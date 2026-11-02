@@ -199,13 +199,13 @@ O link "Entrar" leva a [`/entrar`](http://localhost:3000/entrar); páginas que e
 |---|---|---|
 | Bolão | [`/pools`](http://localhost:3000/pools) | sim |
 | Esquadrão | [`/esquadrao`](http://localhost:3000/esquadrao) e [`/esquadrao/rankings`](http://localhost:3000/esquadrao/rankings) | sim |
-| Simulador | [`/simulador`](http://localhost:3000/simulador) | não |
+| Simulador | [`/simulador`](http://localhost:3000/simulador) (escolha o campeonato) e `/simulador/:id` | não |
 
 Esquadrão é o nome visível do engine `cartola`; as URLs antigas (`/cartola`, `/cartola/rankings` e as do admin) respondem 301. A marca é Craquefy; o repositório, os engines e as tabelas mantêm os nomes internos ([glossário](docs/glossary.md)).
 
 ### Campeonatos públicos
 
-[`/campeonatos/:id`](http://localhost:3000/campeonatos/1) mostra, sem login, as abas Times (classificação), Partidas (uma rodada por vez, `?rodada=`), Bolão e Esquadrão (rankings completos). No Bolão vale a maior pontuação de cada partida entre os bolões do usuário; no Esquadrão, o capitão pontua em dobro. Campeonato privado responde 404.
+[`/campeonatos/:id`](http://localhost:3000/campeonatos/1) mostra, sem login, as abas Times (classificação), Partidas (uma rodada por vez, `?rodada=`), Bolão e Esquadrão (rankings completos). No Bolão vale a maior pontuação de cada partida entre os bolões do usuário; no Esquadrão, o capitão pontua em dobro. O botão "Simular" abre o Simulador desse campeonato, com os jogos em aberto uma rodada por vez. Campeonato privado responde 404.
 
 ### Privacidade (consentimento)
 
@@ -217,7 +217,7 @@ O admin lança os scouts oficiais de cada partida (G, A, DP, DE só para goleiro
 
 ## Roadmap
 
-Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 40 tickets ([INDEX](docs/tickets/INDEX.md)).
+Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 41 tickets ([INDEX](docs/tickets/INDEX.md)).
 
 - [x] Monolito modular com 4 engines e Packwerk
 - [x] Core, AASM das partidas e pontuação idempotente e reversível com auditoria
@@ -236,6 +236,7 @@ Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 40 tickets ([INDEX
 - [ ] Pendências manuais de produção: token S3 do R2, domínio do Resend e `R2_*`/`RESEND_*` no Render, host do OpenObserve e `RENDER_DEPLOY_HOOK_URL`
 - [x] 0031: Simulador v1 "e se" em [`/simulador`](http://localhost:3000/simulador) (ADR 0003, que o numerava 0029; `core_matches.round` entrou no 0030)
 - [x] 0032–0040: home pública, login em `/entrar`, Esquadrão, rankings públicos por campeonato, pt-BR, consentimento, scouts, capitão e valorização ([ADR 0005](docs/adr/0005-esquadrao-pontuacao-valorizacao.md)) e a marca Craquefy
+- [x] 0041: Simulador por campeonato (lista em `/simulador`, botão "Simular" na página do campeonato, rodadas em carrossel) e rodapé com autor e "Pague o Café" (Pix)
 - [ ] Backlog: salvar/compartilhar simulação, Monte Carlo da temporada, oferta e demanda na valorização do Esquadrão
 
 Estado de cada fase: [STATUS](docs/checkpoints/STATUS.md).

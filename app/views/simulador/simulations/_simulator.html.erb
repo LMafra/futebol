@@ -22,10 +22,28 @@
     <% if open_matches.empty? %>
       <p class="rounded-md border border-dashed border-rule px-4 py-8 text-center text-graphite">Todos os jogos deste campeonato já foram encerrados.</p>
     <% else %>
-      <%= form_with url: main_app.simulador_preview_path(championship), method: :post, class: "flex flex-col gap-4" do %>
-        <% open_matches.group_by(&:round).each do |round, matches| %>
-          <fieldset class="rounded-md border border-rule bg-white p-4">
-            <legend class="px-1 text-xs font-bold uppercase tracking-widest text-graphite"><%= round ? "Rodada #{round}" : "Sem rodada" %></legend>
+      <% rounds = open_matches.group_by(&:round).to_a %>
+      <% start_index = simulador_round_index(rounds, simulation, round_index) %>
+      <%= form_with url: main_app.simulador_preview_path(championship), method: :post, class: "flex flex-col gap-4",
+                    data: { controller: "rounds", rounds_index_value: start_index } do %>
+        <%= hidden_field_tag :round_index, start_index, data: { rounds_target: "position" } %>
+        <div class="flex items-center justify-between gap-2" data-rounds-target="nav" data-role="rounds-nav" hidden>
+          <button type="button" class="flex cursor-pointer items-center gap-1 rounded-sm border border-ink px-3 py-2 text-sm font-semibold hover:bg-ink hover:text-white disabled:cursor-not-allowed disabled:border-rule disabled:text-graphite disabled:hover:bg-transparent"
+                  data-action="rounds#previous" data-rounds-target="previous" aria-label="Rodada anterior">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+            Anterior
+          </button>
+          <p class="text-center text-sm font-bold" aria-live="polite" data-rounds-target="label"></p>
+          <button type="button" class="flex cursor-pointer items-center gap-1 rounded-sm border border-ink px-3 py-2 text-sm font-semibold hover:bg-ink hover:text-white disabled:cursor-not-allowed disabled:border-rule disabled:text-graphite disabled:hover:bg-transparent"
+                  data-action="rounds#next" data-rounds-target="next" aria-label="Próxima rodada">
+            Próxima
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+        <% rounds.each do |round, matches| %>
+          <% round_label = round ? "Rodada #{round}" : "Sem rodada" %>
+          <fieldset class="rounded-md border border-rule bg-white p-4" data-rounds-target="round" data-round-label="<%= round_label %>" data-role="open-round">
+            <legend class="px-1 text-xs font-bold uppercase tracking-widest text-graphite"><%= round_label %></legend>
             <ul class="flex flex-col gap-2">
               <% matches.each do |match| %>
                 <% error = simulation.errors[match.id.to_s] %>

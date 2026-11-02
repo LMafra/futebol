@@ -7,14 +7,12 @@
       <h1 class="mt-1 font-display text-4xl font-extrabold tracking-tight">E se…?</h1>
       <p class="mt-2 max-w-2xl text-graphite">Preencha placares dos jogos que faltam e veja como a tabela ficaria. Nada é salvo; jogos sem placar ficam de fora.</p>
     </div>
-    <% if @championships.size > 1 %>
-      <%= form_with url: main_app.simulador_path, method: :get, class: "flex items-center gap-2 text-sm font-semibold", data: { turbo: false } do %>
-        <%= label_tag :championship_id, "Campeonato" %>
-        <%= select_tag :championship_id, options_from_collection_for_select(@championships, :id, :to_s, @championship.id),
-                       class: "rounded-sm border border-rule px-2 py-1" %>
-        <button type="submit" class="cursor-pointer rounded-sm border border-ink px-3 py-1 hover:bg-ink hover:text-white">Ver</button>
+    <nav class="flex flex-wrap items-center gap-4 text-sm font-semibold" aria-label="Navegação do simulador" data-role="simulator-nav">
+      <% unless @championship.private? %>
+        <%= link_to "Ver campeonato", main_app.public_championship_path(@championship), class: "text-pitch underline underline-offset-2 hover:no-underline" %>
       <% end %>
-    <% end %>
+      <%= link_to "Outros campeonatos", main_app.simulador_path, class: "text-pitch underline underline-offset-2 hover:no-underline" %>
+    </nav>
   </header>
 
   <div class="grid gap-8 lg:grid-cols-2">
@@ -25,6 +23,7 @@
     </section>
 
     <%= render "simulador/simulations/simulator", championship: @championship, open_matches: @open_matches,
-                                                   simulation: @simulation, raw: {}, projected: nil, teams: @teams %>
+                                                   simulation: @simulation, raw: {}, projected: nil, teams: @teams,
+                                                   round_index: 0 %>
   </div>
 </div>

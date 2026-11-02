@@ -1,4 +1,4 @@
-# Tickets — INDEX (40 tickets)
+# Tickets — INDEX (41 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -42,6 +42,7 @@
 | [0038](TICKET-0038.md) | — | Consentimento de perfil público + /minha-conta | 0018, 0028 | — |
 | [0039](TICKET-0039.md) | — | Scouts oficiais do Esquadrão | 0004, 0010, 0030 | — |
 | [0040](TICKET-0040.md) | — | Capitão + valorização por regressão à média (ADR 0005) | 0030, 0039 | — |
+| [0041](TICKET-0041.md) | — | Simulador por campeonato (lista + carrossel de rodadas) + rodapé com autor e Pix | 0031, 0032, 0035 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -52,4 +53,4 @@
 - UI/demo: {0011, 0014} → 0023 → 0024 (+ 0006) · {0007, 0011} → 0025 · {0023, 0024, 0025} → 0027
 - 0026 sem deps e não bloqueia nenhum ticket (tickets derivados saem do ADR)
 - Lacunas de produto: {0011, 0014, 0019} → 0028 · {0004, 0006, 0010, 0016} → 0029 · {0007, 0010, 0025} → 0030 → 0031 (+ 0011, 0026)
-- Craquefy (ordem das branches): 0032 (flag) → 0034 → 0037 → 0033 → 0038 → 0039 → 0040 → 0035 → 0032 (home) → 0036
+- Craquefy (ordem das branches): 0032 (flag) → 0034 → 0037 → 0033 → 0038 → 0039 → 0040 → 0035 → 0032 (home) → 0036 → 0041
