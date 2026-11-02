@@ -11,10 +11,11 @@ class FinalizeMatchService
     @ip_address = ip_address
   end
 
-  # Records the final score through AASM (scheduled → live → finished), audits it and enqueues the scoring
-  # once the transaction has committed.
+  # Records the final score through AASM (scheduled → live → finished), recomputes the scouts' SG and points with
+  # the rule in force, audits it and enqueues the scoring once the transaction has committed.
   def call
     @match.with_lock do
+      Cartola::RecordScoutsService.rescore!(@match)
       @match.assign_attributes(home_score: @home_score, away_score: @away_score)
       @match.start_match! if @match.may_start_match?
       @match.finish_match!

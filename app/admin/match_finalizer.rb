@@ -34,7 +34,7 @@ ActiveAdmin.register_page 'MatchFinalizer' do
 
       @match = Core::Match.includes(:home_team, :away_team).find(params[:match_id])
       authorize! :finalize, @match
-      @form = MatchFinalizationForm.new(match: @match, **params.permit(:home_score, :away_score).to_h.symbolize_keys)
+      @form = MatchFinalizationForm.new(match: @match)
     end
 
     def load_matches
@@ -44,7 +44,7 @@ ActiveAdmin.register_page 'MatchFinalizer' do
     end
 
     def finalization_params
-      params.expect(finalization: %i[home_score away_score score_confirmation]).to_h.symbolize_keys
+      params.expect(finalization: %i[score_confirmation]).to_h.symbolize_keys
     end
 
     def admin_score_text = "#{@match.home_score} × #{@match.away_score}"

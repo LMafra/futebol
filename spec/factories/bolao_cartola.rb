@@ -69,6 +69,7 @@ FactoryBot.define do
   factory :cartola_player_score, class: 'Cartola::PlayerScore' do
     player
     match
+    team { player.team }
     points { 5 }
   end
 

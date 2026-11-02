@@ -49,11 +49,19 @@
           <%= f.select :rule_id, cartola_rules.map { |r| [r.name, r.id] }, { selected: cartola&.dig(:input, :rule_id) }, class: AdminHelper::ADMIN_INPUT_CLASSES %>
         </div>
         <div class="grid grid-cols-2 gap-3">
-          <% { goals: "Gols", assists: "Assistências", yellow_cards: "Amarelos", red_cards: "Vermelhos" }.each do |field, label| %>
+          <% { goals: "Gols (G)", assists: "Assistências (A)", penalty_saves: "Defesas de pênalti (DP)", saves: "Defesas (DE)",
+               yellow_cards: "Amarelos (CA)", red_cards: "Vermelhos (CV)", own_goals: "Gols contra (GC)" }.each do |field, label| %>
             <div>
               <%= f.label field, label, class: AdminHelper::ADMIN_LABEL_CLASSES %>
               <%= f.number_field field, value: cartola&.dig(:input, field) || 0, min: 0, step: 1, required: true, class: AdminHelper::ADMIN_INPUT_CLASSES %>
             </div>
+          <% end %>
+        </div>
+        <div class="flex flex-wrap gap-4 text-sm">
+          <% { clean_sheet: "Sem sofrer gols (SG)", played: "Jogou", highlight: "Destaque" }.each do |field, label| %>
+            <label class="inline-flex items-center gap-2">
+              <%= f.check_box field, { checked: cartola&.dig(:input, field) == "1" }, "1", "0" %> <%= label %>
+            </label>
           <% end %>
         </div>
         <div><%= f.submit "Calcular", name: nil, class: AdminHelper::ADMIN_BUTTON_CLASSES %></div>

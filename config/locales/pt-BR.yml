@@ -1,4 +1,18 @@
 pt-BR:
+  activerecord:
+    attributes:
+      cartola/scoring_rule:
+        name: "Nome"
+        goal_points: "Gol (G)"
+        assist_points: "Assistência (A)"
+        clean_sheet_points: "Jogo sem sofrer gols (SG)"
+        penalty_save_points: "Defesa de pênalti (DP)"
+        save_points: "Defesa (DE, só goleiros)"
+        yellow_card_penalty: "Cartão amarelo (CA, desconta)"
+        red_card_penalty: "Cartão vermelho (CV, desconta)"
+        own_goal_penalty: "Gol contra (GC, desconta)"
+        played_points: "Jogou"
+        highlight_points: "Destaque"
   activemodel:
     attributes:
       finalization:

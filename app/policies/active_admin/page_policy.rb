@@ -4,5 +4,6 @@ module ActiveAdmin
   class PagePolicy < ApplicationPolicy
     def finalize? = admin?
     def revert? = admin?
+    def record? = admin?
   end
 end

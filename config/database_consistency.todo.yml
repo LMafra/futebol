@@ -52,10 +52,16 @@ Cartola::PlayerScore:
   index_cartola_player_scores_kept_unique:
     UniqueIndexChecker:
       enabled: false
+  index_cartola_player_scores_one_highlight:
+    UniqueIndexChecker:
+      enabled: false
   match:
     MissingDependentDestroyChecker:
       enabled: false
   player:
+    MissingDependentDestroyChecker:
+      enabled: false
+  team:
     MissingDependentDestroyChecker:
       enabled: false
 Cartola::PlayerValue:
