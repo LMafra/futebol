@@ -39,6 +39,9 @@ module Futebol
     # Don't generate system test files.
     config.generators.system_tests = nil
 
+    config.i18n.default_locale = :'pt-BR'
+    config.i18n.available_locales = %i[pt-BR en]
+
     # Solid Queue dashboard at /admin/jobs: admin-only through JobsDashboardController (Pundit), no HTTP basic auth.
     config.mission_control.jobs.adapters = [:solid_queue]
     config.mission_control.jobs.base_controller_class = 'JobsDashboardController'

@@ -1,4 +1,12 @@
 pt-BR:
+  activemodel:
+    attributes:
+      finalization:
+        home_score: "Placar do mandante"
+        away_score: "Placar do visitante"
+        score_confirmation: "Confirmação do placar"
+      reversal:
+        reason: "Motivo"
   modules:
     fantasy:
       name: "Esquadrão"

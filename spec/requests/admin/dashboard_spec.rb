@@ -20,7 +20,7 @@ RSpec.describe 'ActiveAdmin dashboard', type: :request do
     get '/admin'
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include('Dashboard')
+    expect(response.body).to include('Painel Administrativo', 'lang="pt-BR"')
     expect(response.body).to match(%r{/assets/active_admin-\h+\.css})
   end
 end
