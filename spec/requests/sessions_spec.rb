@@ -4,7 +4,7 @@ RSpec.describe 'Sessions', type: :request do
   let(:user) { create(:user) }
 
   it 'redirects anonymous visitors to the login page' do
-    get root_path
+    get pools_path
 
     expect(response).to redirect_to(new_session_path)
   end
@@ -13,6 +13,34 @@ RSpec.describe 'Sessions', type: :request do
     get new_session_path
 
     expect(response).to have_http_status(:ok)
+  end
+
+  it 'serves the login page at /entrar too' do
+    get login_path
+
+    expect(response).to have_http_status(:ok)
+    page = Nokogiri::HTML(response.body)
+    expect(page.at_css('main p.uppercase').text).to eq('Craquefy')
+    expect(page.at_css('header nav a[href="/entrar"]').text).to eq('Entrar')
+    expect(page.at_css('[data-role="account-menu"]')).to be_nil
+    expect(page.at_css('footer a[href="/admin"]').text).to eq('Acesso administrativo')
+  end
+
+  it 'sends anonymous /admin visitors to /session/new' do
+    get '/admin'
+
+    expect(response).to redirect_to(new_session_path)
+  end
+
+  it 'shows the account menu and the sign-out button to signed-in users' do
+    sign_in(user)
+    get pools_path
+
+    page = Nokogiri::HTML(response.body)
+    menu = page.at_css('header [data-role="account-menu"]')
+    expect(menu.css('a').map(&:text)).to eq(['Meus bolões', 'Meu esquadrão', 'Rankings'])
+    expect(page.at_css('header form[action="/session"] button').text).to eq('Sair')
+    expect(page.at_css('header nav a[href="/entrar"]')).to be_nil
   end
 
   it 'links the login page to the public signup form' do

@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   end
 
   resource :session
+  get 'entrar', to: 'sessions#new', as: :login
   resources :passwords, param: :token
   resources :users, only: %i[new create]
   get 'signup', to: 'users#new'

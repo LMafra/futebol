@@ -26,14 +26,36 @@
 
   <body class="min-h-screen bg-paper text-ink">
     <header class="bg-pitch text-white">
-      <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-        <%= link_to "Futebol", main_app.root_path, class: "font-display text-2xl font-extrabold tracking-tight" %>
-        <%= link_to "Simulador", main_app.simulador_path, class: "font-semibold underline-offset-2 hover:underline" %>
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+        <%= link_to "Craquefy", main_app.root_path, class: "font-display text-2xl font-extrabold tracking-tight" %>
+        <nav class="flex items-center gap-4 text-sm font-semibold" aria-label="Principal">
+          <%= link_to "Simulador", main_app.simulador_path, class: "underline-offset-2 hover:underline" %>
+          <% if user_signed_in? %>
+            <details class="relative" data-role="account-menu">
+              <summary class="cursor-pointer list-none underline-offset-2 hover:underline">Minha conta</summary>
+              <ul class="absolute right-0 z-10 mt-2 flex w-48 flex-col rounded-sm border border-rule bg-white py-1 text-ink">
+                <li><%= link_to "Meus bolões", main_app.pools_path, class: "block px-3 py-2 hover:bg-paper" %></li>
+                <li><%= link_to "Meu #{module_label(:fantasy).downcase}", main_app.esquadrao_path, class: "block px-3 py-2 hover:bg-paper" %></li>
+                <li><%= link_to "Rankings", main_app.esquadrao_rankings_path, class: "block px-3 py-2 hover:bg-paper" %></li>
+              </ul>
+            </details>
+            <%= button_to "Sair", main_app.session_path, method: :delete, class: "cursor-pointer underline-offset-2 hover:underline" %>
+          <% else %>
+            <%= link_to "Entrar", main_app.login_path, class: "rounded-sm bg-cartola px-3 py-1 font-bold text-ink transition-colors duration-fast ease-editorial hover:bg-white" %>
+          <% end %>
+        </nav>
       </div>
     </header>
 
     <main class="mx-auto max-w-7xl px-4 py-8">
       <%= yield %>
     </main>
+
+    <footer class="border-t border-rule">
+      <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-6 text-sm text-graphite">
+        <p>Craquefy</p>
+        <%= link_to "Acesso administrativo", "/admin", class: "underline underline-offset-2 hover:no-underline" %>
+      </div>
+    </footer>
   </body>
 </html>
