@@ -22,8 +22,8 @@
                                                  empty_message: "Nenhum jogo encerrado ainda.") %>
     </section>
 
-    <%= render "simulador/simulations/simulator", championship: @championship, open_matches: @open_matches,
-                                                   simulation: @simulation, raw: {}, projected: nil, teams: @teams,
-                                                   round_index: 0 %>
+    <%= render "simulador/simulations/simulator", championship: @championship, matches: @matches,
+                                                   open_matches: @open_matches, simulation: @simulation, raw: {},
+                                                   projected: nil, teams: @teams, round_index: nil %>
   </div>
 </div>

@@ -1,6 +1,6 @@
 <%= turbo_frame_tag "simulador" do %>
   <section class="flex flex-col gap-6" aria-labelledby="simulator-title">
-    <h2 id="simulator-title" class="font-display text-2xl font-extrabold">Jogos em aberto</h2>
+    <h2 id="simulator-title" class="font-display text-2xl font-extrabold">Rodadas</h2>
 
     <% if simulation.errors.any? %>
       <div class="flex flex-col gap-1 rounded-md border-l-4 border-ink bg-loss px-4 py-3 text-ink" role="alert" data-role="simulation-errors">
@@ -21,8 +21,9 @@
 
     <% if open_matches.empty? %>
       <p class="rounded-md border border-dashed border-rule px-4 py-8 text-center text-graphite">Todos os jogos deste campeonato já foram encerrados.</p>
-    <% else %>
-      <% rounds = open_matches.group_by(&:round).to_a %>
+    <% end %>
+    <% if matches.any? %>
+      <% rounds = matches.group_by(&:round).to_a %>
       <% start_index = simulador_round_index(rounds, simulation, round_index) %>
       <%= form_with url: main_app.simulador_preview_path(championship), method: :post, class: "flex flex-col gap-4",
                     data: { controller: "rounds", rounds_index_value: start_index } do %>
@@ -40,12 +41,25 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
           </button>
         </div>
-        <% rounds.each do |round, matches| %>
+        <% rounds.each do |round, round_matches| %>
           <% round_label = round ? "Rodada #{round}" : "Sem rodada" %>
-          <fieldset class="rounded-md border border-rule bg-white p-4" data-rounds-target="round" data-round-label="<%= round_label %>" data-role="open-round">
-            <legend class="px-1 text-xs font-bold uppercase tracking-widest text-graphite"><%= round_label %></legend>
+          <% open_round = round_matches.any? { |match| simulador_open?(match) } %>
+          <fieldset class="rounded-md border border-rule bg-white p-4" data-rounds-target="round" data-round-label="<%= round_label %>"
+                    data-role="<%= open_round ? "open-round" : "closed-round" %>">
+            <legend class="px-1 text-xs font-bold uppercase tracking-widest text-graphite"><%= round_label %><%= " · encerrada" unless open_round %></legend>
             <ul class="flex flex-col gap-2">
-              <% matches.each do |match| %>
+              <% round_matches.each do |match| %>
+                <% unless simulador_open?(match) %>
+                  <li class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 text-sm" data-role="closed-match" data-match-id="<%= match.id %>">
+                    <span class="truncate text-right font-semibold"><%= match.home_team.name %></span>
+                    <span class="flex items-center gap-1 font-bold tabular-nums" aria-hidden="true">
+                      <span class="w-12 text-center"><%= match.home_score || "–" %></span>×<span class="w-12 text-center"><%= match.away_score || "–" %></span>
+                    </span>
+                    <span class="sr-only">Placar final: <%= match.home_score %> a <%= match.away_score %></span>
+                    <span class="truncate font-semibold"><%= match.away_team.name %></span>
+                  </li>
+                  <% next %>
+                <% end %>
                 <% error = simulation.errors[match.id.to_s] %>
                 <li class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 text-sm" data-role="open-match" data-match-id="<%= match.id %>">
                   <span class="truncate text-right font-semibold"><%= match.home_team.name %><% if match.live? %> <span class="text-xs font-bold text-cartola">AO VIVO</span><% end %></span>
@@ -69,7 +83,9 @@
             </ul>
           </fieldset>
         <% end %>
-        <button type="submit" class="cursor-pointer self-start rounded-sm bg-pitch px-4 py-2 font-semibold text-white hover:bg-ink">Projetar tabela</button>
+        <% if open_matches.any? %>
+          <button type="submit" class="cursor-pointer self-start rounded-sm bg-pitch px-4 py-2 font-semibold text-white hover:bg-ink">Projetar tabela</button>
+        <% end %>
       <% end %>
     <% end %>
   </section>

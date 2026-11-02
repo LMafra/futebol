@@ -38,17 +38,37 @@ RSpec.describe 'Simulador', type: :request do
       expect(page.at_css("input[name='guesses[#{played.id}][home]']")).to be_nil
     end
 
-    it 'separa as rodadas em aberto para o carrossel, começando pela primeira' do
+    it 'põe todas as rodadas no carrossel, abrindo na primeira com jogo em aberto' do
       create(:match, championship:, home_team: teams[2], away_team: teams[3], status: 'scheduled', round: 3)
 
       get simulador_championship_path(championship)
 
       form = page.at_css('form[data-controller="rounds"]')
-      expect(form['data-rounds-index-value']).to eq('0')
-      expect(form.css('[data-rounds-target="round"]').map { |round| round['data-round-label'] })
-        .to eq(['Rodada 2', 'Rodada 3'])
+      expect(form['data-rounds-index-value']).to eq('1')
+      expect(form.css('[data-rounds-target="round"]').map { |round| [round['data-round-label'], round['data-role']] })
+        .to eq([['Rodada 1', 'closed-round'], ['Rodada 2', 'open-round'], ['Rodada 3', 'open-round']])
       expect(form.at_css('[data-role="rounds-nav"]')['hidden']).not_to be_nil
       expect(form.css('[data-rounds-target="nav"] button').map(&:text).map(&:squish)).to eq(%w[Anterior Próxima])
+    end
+
+    it 'mostra o resultado das rodadas encerradas, sem campos de placar' do
+      get simulador_championship_path(championship)
+
+      closed = page.at_css('[data-role="closed-round"]')
+      expect(closed.at_css('legend').text).to eq('Rodada 1 · encerrada')
+      expect(closed.css('input')).to be_empty
+      result = closed.at_css("[data-role='closed-match'][data-match-id='#{played.id}']")
+      expect(result.text.squish).to include('Atlético', '2×0', 'Placar final: 2 a 0', 'Botafogo')
+    end
+
+    it 'mostra as rodadas encerradas mesmo sem jogos em aberto, sem o botão de projetar' do
+      [open_match, live_match].each(&:destroy!)
+
+      get simulador_championship_path(championship)
+
+      expect(page.text).to include('Todos os jogos deste campeonato já foram encerrados.')
+      expect(page.css('[data-role="closed-round"]').size).to eq(1)
+      expect(page.at_css('button[type="submit"]')).to be_nil
     end
 
     it 'leva para a página do campeonato e para a lista de campeonatos' do
@@ -118,12 +138,12 @@ RSpec.describe 'Simulador', type: :request do
       round_three = create(:match, championship:, home_team: teams[2], away_team: teams[3], status: 'scheduled',
                                    round: 3)
 
-      post simulador_preview_path(championship), params: { round_index: '1', guesses: {} }
-      expect(page.at_css('form[data-controller="rounds"]')['data-rounds-index-value']).to eq('1')
+      post simulador_preview_path(championship), params: { round_index: '0', guesses: {} }
+      expect(page.at_css('form[data-controller="rounds"]')['data-rounds-index-value']).to eq('0')
 
-      post simulador_preview_path(championship), params: { round_index: '0',
+      post simulador_preview_path(championship), params: { round_index: '1',
                                                            guesses: { round_three.id => { home: '-1', away: '0' } } }
-      expect(page.at_css('form[data-controller="rounds"]')['data-rounds-index-value']).to eq('1')
+      expect(page.at_css('form[data-controller="rounds"]')['data-rounds-index-value']).to eq('2')
     end
 
     it 'exige o campeonato na rota do ADR (404 sem championship_id)' do
