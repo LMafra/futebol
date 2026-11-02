@@ -14,7 +14,15 @@
             </div>
             <span class="rounded-sm border border-ink px-2 py-1 text-xs font-bold uppercase tracking-widest" data-role="championship-status"><%= fact[:status] %></span>
           </header>
-          <div class="grid gap-4 sm:grid-cols-2">
+          <div data-role="standings-leaders">
+            <div class="mb-1 flex items-baseline justify-between gap-2">
+              <h4 class="text-xs font-bold uppercase tracking-widest text-graphite">Classificação</h4>
+              <%= link_to "Tabela completa", public_championship_path(championship), class: "text-sm font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
+            </div>
+            <%= render Ui::LeaderboardTableComponent.new(rows: standings.fetch(championship.id), compact: true,
+                                                         texts: { label: "Classificação · #{championship.name}", name_header: "Time", empty: "Nenhum jogo encerrado ainda." }) %>
+          </div>
+          <div class="grid gap-4 border-t border-rule pt-4 sm:grid-cols-2">
             <div data-role="top-bolao">
               <h4 class="mb-1 text-xs font-bold uppercase tracking-widest text-graphite">Top 3 Bolão</h4>
               <%= render Ui::LeaderboardTableComponent.new(rows: rankings.dig(championship.id, :bolao), compact: true,

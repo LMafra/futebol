@@ -332,3 +332,7 @@ Branch `craquefy/l-fuso-brasilia`, empilhada sobre `craquefy/k-simulador-tabela`
 ### Scroll snap por proximidade (TICKET-0046)
 Branch `craquefy/m-snap-proximity`, empilhada sobre `craquefy/l-fuso-brasilia`, com um commit assinado.
 - O snap da home passou de obrigatório para proximidade (`snap-proximity`): só encaixa quando a rolagem para perto do início de uma seção.
+
+### Classificação no card de campeonato (TICKET-0047)
+Branch `craquefy/n-card-classificacao`, empilhada sobre `craquefy/m-snap-proximity`, com um commit assinado.
+- Cada card da home abre com as 4 primeiras posições da tabela real (só partidas encerradas) e o link "Tabela completa"; o Top 3 do Bolão e o do Esquadrão vêm depois. Verificado no navegador com os 4 campeonatos públicos do seed.

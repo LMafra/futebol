@@ -64,6 +64,30 @@ RSpec.describe 'Public home', type: :request do
     expect(cards.first.at_css('a[href$="tab=bolao"]').text).to eq('Ver ranking completo')
   end
 
+  it 'abre o card com a classificação (líderes dos jogos encerrados) antes do Top 3 do Bolão e do Esquadrão' do
+    teams = %w[Alfa Beta Gama Delta Ômega].map { |name| create(:team, name:) }
+    [[0, 1, 3, 0], [2, 3, 1, 1], [0, 2, 2, 1], [4, 1, 1, 0]].each do |home, away, home_score, away_score|
+      create(:match, championship: public_championship, home_team: teams[home], away_team: teams[away],
+                     status: 'finished', home_score:, away_score:)
+    end
+    create(:match, championship: public_championship, home_team: teams[1], away_team: teams[0],
+                   status: 'live', home_score: 9, away_score: 0)
+    empty_championship = create(:championship, name: 'Copa Nova')
+    create(:match, championship: empty_championship)
+
+    get root_path
+
+    card = page.css('[data-role="championship-card"]').find { |node| node.at_css('h3').text.squish == 'Copa Aberta' }
+    blocks = card.css('[data-role="standings-leaders"], [data-role="top-bolao"], [data-role="top-esquadrao"]')
+    expect(blocks.map { |block| block['data-role'] }).to eq(%w[standings-leaders top-bolao top-esquadrao])
+    leaders = card.at_css('[data-role="standings-leaders"]')
+    expect(leaders.css('[data-role="leaderboard-row"]').map { |row| row.text.squish })
+      .to eq(['1 Alfa 6', '2 Ômega 3', '3 Delta 1', '4 Gama 1'])
+    expect(leaders.at_css('a', text: 'Tabela completa')['href']).to eq(public_championship_path(public_championship))
+    new_card = page.css('[data-role="championship-card"]').find { |node| node.at_css('h3').text.squish == 'Copa Nova' }
+    expect(new_card.at_css('[data-role="standings-leaders"]').text).to include('Nenhum jogo encerrado ainda.')
+  end
+
   it 'leva ao Simulador pelo card de cada campeonato, não pelo cabeçalho' do
     public_championship
 

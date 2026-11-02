@@ -1,6 +1,6 @@
-# Public home: hero, counters, modules, today's matches, the public championships with their Top 3 rankings and
-# the top 10 athletes. The counters cover every championship; the lists show only public ones, to visitors and
-# users alike, and are loaded in grouped queries whatever the number of championships.
+# Public home: hero, counters, modules, today's matches, the public championships with the leaders of their table
+# and their Top 3 rankings, and the top 10 athletes. The counters cover every championship; the lists show only
+# public ones, to visitors and users alike, and are loaded in grouped queries whatever the number of championships.
 class HomeController < ApplicationController
   FINAL_STATUSES = %w[finished scored].freeze
 
@@ -13,6 +13,7 @@ class HomeController < ApplicationController
     public_matches = Core::Match.where(championship: public_championships)
     @counters = { championships: Core::Championship.count, matches: Core::Match.count, players: Core::Player.count }
     @matches_today = matches_today(public_matches)
+    @standings = Core::ChampionshipStandingsService.top(@championships)
     @rankings = Core::ChampionshipRankingsService.top(@championships)
     @championship_facts = championship_facts(public_matches)
     @top_players = Cartola::TopPlayersService.call(@championships)
