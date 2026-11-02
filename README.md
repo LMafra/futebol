@@ -248,6 +248,7 @@ Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 41 tickets ([INDEX
 - [x] 0051: jogos de hoje com cards inteiros e passo de um card
 - [x] 0052: scouts no seed demo
 - [x] 0053: Esquadrão só com jogadores do campeonato
+- [x] 0054: Top 3 Bolão e Esquadrão no seed dos campeonatos
 - [ ] Backlog: salvar/compartilhar simulação, Monte Carlo da temporada, oferta e demanda na valorização do Esquadrão
 
 Estado de cada fase: [STATUS](docs/checkpoints/STATUS.md).

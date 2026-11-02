@@ -364,3 +364,9 @@ Branch `craquefy/s-seed-scouts`, empilhada sobre `craquefy/r-jogos-hoje-passo`, 
 ### Esquadrão só com jogadores do campeonato (TICKET-0053)
 Branch `craquefy/t-esquadrao-elenco`, empilhada sobre `craquefy/s-seed-scouts`, com um commit assinado.
 - O seletor da escalação lista só os jogadores dos times com partida no campeonato, mais os já escalados; o salvamento ignora jogador de fora. Preparação para dar elenco aos times dos campeonatos pequenos (TICKET-0054).
+
+### Top 3 Bolão e Esquadrão no seed dos campeonatos (TICKET-0054)
+Branch `craquefy/u-seed-rankings`, empilhada sobre `craquefy/t-esquadrao-elenco`, com um commit assinado.
+- Os 5 campeonatos pequenos ganham elencos, bolão, palpites, scouts, pontuação e escalações dos usuários demo; no Brasileirão, `demo2`–`demo5` escalam na rodada 6. Todos os cards da home mostram Top 3 Bolão e Top 3 Esquadrão. Verificado no navegador, com o seed rodado no banco local.
+- `demo1`–`demo3` autorizam o perfil público (Ana S., Bruno L., Carla M.); os outros aparecem como "Participante".
+- Uma carga do zero leva cerca de 8 s no spec (o job de pontuação roda por partida encerrada); a segunda carga não cria nada.

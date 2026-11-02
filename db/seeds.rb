@@ -3,7 +3,7 @@ if Rails.env.production? && ENV['ALLOW_PRODUCTION_SEED'].blank?
   abort 'seeds blocked in production (set ALLOW_PRODUCTION_SEED=1 to force)'
 end
 
-%w[teams players championships matches scoring_rules users demo scouts small_championships].each do |name|
+%w[teams players championships matches scoring_rules users demo lineups scouts small_championships].each do |name|
   load Rails.root.join("db/seeds/#{name}.rb")
 end
 
