@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Public home', type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   let(:public_championship) { create(:championship, name: 'Copa Aberta') }
   def page = Nokogiri::HTML(response.body)
 
@@ -96,6 +98,17 @@ RSpec.describe 'Public home', type: :request do
 
     expect(page.css('[data-role="today-match"]').size).to eq(1)
     expect(page.at_css('[data-role="today-match"]').text).to include(today.home_team.name, '21:00')
+  end
+
+  it 'conta "hoje" no horário de Brasília, mesmo quando já é o dia seguinte em UTC' do
+    brasilia = Time.find_zone!('America/Sao_Paulo')
+    tonight = create(:match, championship: public_championship, match_date: brasilia.local(2026, 11, 1, 21))
+    create(:match, championship: public_championship, match_date: brasilia.local(2026, 11, 2, 10))
+
+    travel_to(brasilia.local(2026, 11, 1, 22, 30)) { get root_path }
+
+    expect(page.css('[data-role="today-match"]').size).to eq(1)
+    expect(page.at_css('[data-role="today-match"]').text).to include(tonight.home_team.name, '21:00')
   end
 
   it 'agrupa os jogos de hoje por campeonato, com link para cada um' do

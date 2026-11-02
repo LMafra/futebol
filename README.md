@@ -175,7 +175,7 @@ Detalhes e custo em horas free: [OPERATIONS.md → Keep-alive](docs/OPERATIONS.m
 
 ## Uso
 
-1. **Campeonato:** em [`/admin`](http://localhost:3000/admin), cadastre o campeonato e os times (Cadastros) e importe as partidas por CSV (Cadastros → Importações CSV).
+1. **Campeonato:** em [`/admin`](http://localhost:3000/admin), cadastre o campeonato e os times (Cadastros) e importe as partidas por CSV (Cadastros → Importações CSV). O `match_date` do CSV é lido no horário de Brasília, o fuso do app (`config.time_zone = 'Brasilia'`); o banco guarda em UTC.
 2. **Bolão:** crie um bolão em [`/pools/new`](http://localhost:3000/pools/new) e compartilhe o código; os amigos entram por [`/pools`](http://localhost:3000/pools).
 3. **Palpites:** cada participante palpita o placar das partidas na página de palpites do bolão.
 4. **Escalação:** monte o time da rodada no Esquadrão em [`/esquadrao`](http://localhost:3000/esquadrao), com um capitão, e acompanhe os rankings em [`/esquadrao/rankings`](http://localhost:3000/esquadrao/rankings).
@@ -239,6 +239,7 @@ Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 41 tickets ([INDEX
 - [x] 0041: Simulador por campeonato (lista em `/simulador`, botão "Simular" na página do campeonato, rodadas em carrossel) e rodapé com autor e "Pague o Café" (Pix)
 - [x] 0043: Simulador pelos cards da home (fora do cabeçalho), rodadas passadas no carrossel e rolagem guiada na home
 - [x] 0044: Simulador com a tabela projetada no lugar da atual e "Zerar simulação"
+- [x] 0045: fuso do app em Brasília ("hoje", horários exibidos e datas do CSV)
 - [ ] Backlog: salvar/compartilhar simulação, Monte Carlo da temporada, oferta e demanda na valorização do Esquadrão
 
 Estado de cada fase: [STATUS](docs/checkpoints/STATUS.md).
