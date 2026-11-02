@@ -328,3 +328,7 @@ Branch `craquefy/k-simulador-tabela`, empilhada sobre `craquefy/j-simulador-card
 Branch `craquefy/l-fuso-brasilia`, empilhada sobre `craquefy/k-simulador-tabela`, com um commit assinado.
 - `config.time_zone = 'Brasilia'`: "hoje", horários exibidos e datas do CSV seguem Brasília; o banco continua em UTC.
 - Em produção, partidas importadas por CSV antes desta mudança (lidas como UTC) ficariam 3 horas antes do pretendido; as do seed já usavam o fuso de São Paulo.
+
+### Scroll snap por proximidade (TICKET-0046)
+Branch `craquefy/m-snap-proximity`, empilhada sobre `craquefy/l-fuso-brasilia`, com um commit assinado.
+- O snap da home passou de obrigatório para proximidade (`snap-proximity`): só encaixa quando a rolagem para perto do início de uma seção.

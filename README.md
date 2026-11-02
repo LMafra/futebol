@@ -187,7 +187,7 @@ Em produção não há contas demo, porque a senha acima é pública: o seed cri
 
 ### Home pública
 
-[`/`](http://localhost:3000/) abre sem login: hero com "Entrar" e "Criar conta", contadores, os três módulos, jogos de hoje, os campeonatos públicos com o Top 3 do Bolão e do Esquadrão e o top 10 de atletas (jogos, gols, assistências e pontos). Campeonatos marcados como privados no admin ("Campeonato privado?") não aparecem nas listas, mas entram nos contadores (campeonatos, partidas e jogadores no total). Fora do admin, nenhum texto diz se um campeonato é público ou privado. A home rola seção a seção (scroll snap obrigatório).
+[`/`](http://localhost:3000/) abre sem login: hero com "Entrar" e "Criar conta", contadores, os três módulos, jogos de hoje, os campeonatos públicos com o Top 3 do Bolão e do Esquadrão e o top 10 de atletas (jogos, gols, assistências e pontos). Campeonatos marcados como privados no admin ("Campeonato privado?") não aparecem nas listas, mas entram nos contadores (campeonatos, partidas e jogadores no total). Fora do admin, nenhum texto diz se um campeonato é público ou privado. A home encaixa as seções ao parar de rolar perto do início de uma delas (scroll snap por proximidade).
 
 ### Login
 
@@ -240,6 +240,7 @@ Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 41 tickets ([INDEX
 - [x] 0043: Simulador pelos cards da home (fora do cabeçalho), rodadas passadas no carrossel e rolagem guiada na home
 - [x] 0044: Simulador com a tabela projetada no lugar da atual e "Zerar simulação"
 - [x] 0045: fuso do app em Brasília ("hoje", horários exibidos e datas do CSV)
+- [x] 0046: scroll snap da home por proximidade
 - [ ] Backlog: salvar/compartilhar simulação, Monte Carlo da temporada, oferta e demanda na valorização do Esquadrão
 
 Estado de cada fase: [STATUS](docs/checkpoints/STATUS.md).
