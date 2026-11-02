@@ -5,6 +5,8 @@
 #   ?tab=bolao, ?tab=esquadrao: the full public rankings (Core::ChampionshipRankingsService).
 class ChampionshipsController < ApplicationController
   TABS = { 'times' => 'Times', 'partidas' => 'Partidas', 'bolao' => 'Bolão', 'esquadrao' => 'Esquadrão' }.freeze
+  # Fixed partial per tab, so the rendered path never comes from the request.
+  PARTIALS = TABS.keys.index_with { |tab| "championships/#{tab}" }.freeze
   FINAL_STATUSES = %w[finished scored].freeze
   OPEN_STATUSES = %w[scheduled live].freeze
 

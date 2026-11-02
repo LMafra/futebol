@@ -14,5 +14,5 @@
     <% end %>
   </nav>
 
-  <%= render "championships/#{@tab}" %>
+  <%= render ChampionshipsController::PARTIALS.fetch(@tab) %>
 </div>
