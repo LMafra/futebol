@@ -42,7 +42,7 @@
             </details>
             <%= button_to "Sair", main_app.session_path, method: :delete, class: "cursor-pointer underline-offset-2 hover:underline" %>
           <% else %>
-            <%= link_to "Entrar", main_app.login_path, class: "rounded-sm bg-cartola px-3 py-1 font-bold text-ink transition-colors duration-fast ease-editorial hover:bg-white" %>
+            <%= link_to "Entrar", main_app.login_path, class: "rounded-sm border border-white px-3 py-1 font-bold transition-colors duration-fast ease-editorial hover:bg-white hover:text-pitch" %>
           <% end %>
         </nav>
       </div>
@@ -54,8 +54,13 @@
 
     <footer class="border-t border-rule">
       <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-6 text-sm text-graphite">
-        <p>Craquefy</p>
-        <%= link_to "Acesso administrativo", "/admin", class: "underline underline-offset-2 hover:no-underline" %>
+        <p>© <span class="tabular-nums"><%= Date.current.year %></span> Craquefy</p>
+        <nav class="flex flex-wrap items-center gap-4" aria-label="Rodapé">
+          <%= link_to "GitHub", "https://github.com/LMafra/futebol", class: "underline underline-offset-2 hover:no-underline", rel: "noopener" %>
+          <%= link_to "Documentação", "https://github.com/LMafra/futebol/tree/main/docs", class: "underline underline-offset-2 hover:no-underline", rel: "noopener" %>
+          <%= link_to "Licença MIT", "https://github.com/LMafra/futebol/blob/main/LICENSE", class: "underline underline-offset-2 hover:no-underline", rel: "noopener" %>
+          <%= link_to "Acesso administrativo", "/admin", class: "underline underline-offset-2 hover:no-underline" %>
+        </nav>
       </div>
     </footer>
   </body>
