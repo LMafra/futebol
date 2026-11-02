@@ -1,5 +1,5 @@
 <% content_for(:title, brand_title("Simulador · #{@championship}")) %>
 
-<%= render "simulador/simulations/simulator", championship: @championship, open_matches: @open_matches,
-                                               simulation: @simulation, raw: @raw, projected: @projected,
-                                               teams: @teams, round_index: params[:round_index] %>
+<%= render "simulador/simulations/simulator", championship: @championship, matches: @matches,
+                                               open_matches: @open_matches, simulation: @simulation, raw: @raw,
+                                               projected: @projected, teams: @teams, round_index: params[:round_index] %>

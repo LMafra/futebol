@@ -187,7 +187,7 @@ Em produção não há contas demo, porque a senha acima é pública: o seed cri
 
 ### Home pública
 
-[`/`](http://localhost:3000/) abre sem login: hero com "Entrar" e "Criar conta", contadores, os três módulos, jogos de hoje, os campeonatos públicos com o Top 3 do Bolão e do Esquadrão e o top 10 de atletas (jogos, gols, assistências e pontos). Campeonatos marcados como privados no admin ("Campeonato privado?") não aparecem nas listas, mas entram nos contadores (campeonatos, partidas e jogadores no total). Fora do admin, nenhum texto diz se um campeonato é público ou privado.
+[`/`](http://localhost:3000/) abre sem login: hero com "Entrar" e "Criar conta", contadores, os três módulos, jogos de hoje, os campeonatos públicos com o Top 3 do Bolão e do Esquadrão e o top 10 de atletas (jogos, gols, assistências e pontos). Campeonatos marcados como privados no admin ("Campeonato privado?") não aparecem nas listas, mas entram nos contadores (campeonatos, partidas e jogadores no total). Fora do admin, nenhum texto diz se um campeonato é público ou privado. A home rola seção a seção (scroll snap obrigatório).
 
 ### Login
 
@@ -205,7 +205,7 @@ Esquadrão é o nome visível do engine `cartola`; as URLs antigas (`/cartola`, 
 
 ### Campeonatos públicos
 
-[`/campeonatos/:id`](http://localhost:3000/campeonatos/1) mostra, sem login, as abas Times (classificação), Partidas (uma rodada por vez, `?rodada=`), Bolão e Esquadrão (rankings completos). No Bolão vale a maior pontuação de cada partida entre os bolões do usuário; no Esquadrão, o capitão pontua em dobro. O botão "Simular" abre o Simulador desse campeonato, com os jogos em aberto uma rodada por vez. Campeonato privado responde 404.
+[`/campeonatos/:id`](http://localhost:3000/campeonatos/1) mostra, sem login, as abas Times (classificação), Partidas (uma rodada por vez, `?rodada=`), Bolão e Esquadrão (rankings completos). No Bolão vale a maior pontuação de cada partida entre os bolões do usuário; no Esquadrão, o capitão pontua em dobro. O botão "Simular" (também em cada card de campeonato da home) abre o Simulador desse campeonato, uma rodada por vez: abre na primeira rodada com jogo em aberto, e "Anterior" mostra os resultados das rodadas passadas. Campeonato privado responde 404.
 
 ### Privacidade (consentimento)
 
@@ -237,6 +237,7 @@ Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 41 tickets ([INDEX
 - [x] 0031: Simulador v1 "e se" em [`/simulador`](http://localhost:3000/simulador) (ADR 0003, que o numerava 0029; `core_matches.round` entrou no 0030)
 - [x] 0032–0040: home pública, login em `/entrar`, Esquadrão, rankings públicos por campeonato, pt-BR, consentimento, scouts, capitão e valorização ([ADR 0005](docs/adr/0005-esquadrao-pontuacao-valorizacao.md)) e a marca Craquefy
 - [x] 0041: Simulador por campeonato (lista em `/simulador`, botão "Simular" na página do campeonato, rodadas em carrossel) e rodapé com autor e "Pague o Café" (Pix)
+- [x] 0043: Simulador pelos cards da home (fora do cabeçalho), rodadas passadas no carrossel e rolagem guiada na home
 - [ ] Backlog: salvar/compartilhar simulação, Monte Carlo da temporada, oferta e demanda na valorização do Esquadrão
 
 Estado de cada fase: [STATUS](docs/checkpoints/STATUS.md).

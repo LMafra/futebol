@@ -26,7 +26,12 @@
                                                            texts: { label: "Top 3 do #{module_label(:fantasy)} · #{championship.name}", empty: "Sem escalações pontuadas." }) %>
             </div>
           </div>
-          <%= link_to "Ver ranking completo", public_championship_path(championship, tab: "bolao"), class: "mt-auto self-start font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
+          <div class="mt-auto flex flex-wrap items-center justify-between gap-4">
+            <%= link_to "Ver ranking completo", public_championship_path(championship, tab: "bolao"), class: "font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
+            <%= link_to "Simular", simulador_championship_path(championship), data: { role: "simulate-championship" },
+                        aria: { label: "Simular #{championship.name}" },
+                        class: "rounded-sm border-2 border-ink px-4 py-2 font-bold transition-colors duration-fast ease-editorial hover:bg-ink hover:text-white" %>
+          </div>
         </article>
       <% end %>
     </div>

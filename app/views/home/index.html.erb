@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-16">
+<div class="flex flex-col gap-16 *:snap-start *:scroll-mt-8" data-controller="scroll-snap" data-role="home-sections">
   <%= render "shared/flash" %>
   <%= render "home/hero" %>
   <%= render "home/counters", counters: @counters %>

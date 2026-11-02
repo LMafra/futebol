@@ -62,6 +62,31 @@ RSpec.describe 'Public home', type: :request do
     expect(cards.first.at_css('a[href$="tab=bolao"]').text).to eq('Ver ranking completo')
   end
 
+  it 'leva ao Simulador pelo card de cada campeonato, não pelo cabeçalho' do
+    public_championship
+
+    get root_path
+
+    simulate = page.at_css('[data-role="championship-card"] [data-role="simulate-championship"]')
+    expect(simulate.text).to eq('Simular')
+    expect(simulate['href']).to eq(simulador_championship_path(public_championship))
+    expect(simulate['aria-label']).to eq('Simular Copa Aberta')
+    expect(page.at_css('nav[aria-label="Principal"]').text).not_to include('Simulador')
+  end
+
+  it 'guia a rolagem da home seção a seção (scroll snap obrigatório), só na home' do
+    get root_path
+
+    sections = page.at_css('[data-role="home-sections"]')
+    expect(sections['data-controller']).to eq('scroll-snap')
+    expect(sections['class'].split).to include('*:snap-start')
+    expect(page.css('body > header, body > footer').map { |node| node['class'].split.first })
+      .to eq(%w[snap-start snap-end])
+
+    get login_path
+    expect(page.at_css('[data-controller="scroll-snap"]')).to be_nil
+  end
+
   it 'mostra os jogos de hoje dos campeonatos públicos' do
     today = create(:match, championship: public_championship, match_date: Time.current.change(hour: 21))
     create(:match, championship: public_championship, match_date: 3.days.from_now)

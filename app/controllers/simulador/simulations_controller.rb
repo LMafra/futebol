@@ -1,6 +1,7 @@
 module Simulador
   # Public "what if" standings (ADR 0003). /simulador lists the championships to pick from; GET
-  # /simulador/:championship_id shows the real table and the open (scheduled/live) matches of that championship;
+  # /simulador/:championship_id shows the real table and every round of that championship, played matches with
+  # their result and open (scheduled/live) ones with score fields;
   # POST projects the table with the guessed scores into the "simulador" Turbo Frame. Nothing is stored.
   # ::ApplicationController: inside Simulador, the bare constant resolves to the engine's controller.
   class SimulationsController < ::ApplicationController
@@ -44,10 +45,10 @@ module Simulador
     end
 
     def load_matches
-      matches = @championship.matches.includes(:home_team, :away_team).order(:round, :match_date, :id).to_a
-      @teams = teams_of(matches)
-      @open_matches = matches.select { |match| match.status.in?(EDITABLE_STATUSES) }
-      @fixtures = matches.map { |match| fixture(match) }
+      @matches = @championship.matches.includes(:home_team, :away_team).order(:round, :match_date, :id).to_a
+      @teams = teams_of(@matches)
+      @open_matches = @matches.select { |match| match.status.in?(EDITABLE_STATUSES) }
+      @fixtures = @matches.map { |match| fixture(match) }
       @real = calculate({})
     end
 

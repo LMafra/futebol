@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Shows one round of open matches at a time, with previous/next buttons. Hidden rounds stay in the form, so
+// Shows one round at a time, played or open, with previous/next buttons. Hidden rounds stay in the form, so
 // every guess is still submitted; without JS all rounds stay stacked and the nav stays hidden.
 export default class extends Controller {
   static targets = ["round", "nav", "label", "previous", "next", "position"]

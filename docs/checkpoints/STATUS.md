@@ -311,3 +311,10 @@ Branch `craquefy/i-campeonatos-seed`, empilhada sobre `craquefy/h-ajustes`, com 
 - "Jogos de hoje" agrupa por campeonato, com o nome (link) e a contagem de jogos de cada um.
 - Seed local com 5 campeonatos fictícios de 6, 8, 10, 12 e 6 times, em turno único, com a rodada do meio hoje: 3 públicos e 2 privados (Liga Amadora Carioca e Liga Sulista Sub-20), que a home não mostra. Só em development/test, como a demo: as datas acompanham o dia em que o seed roda, o que não faz sentido em produção.
 - Os 42 times novos não têm elenco, porque o seletor do Esquadrão lista todos os jogadores do banco. Filtrar o seletor pelos times do campeonato fica como melhoria futura.
+
+### Simulador pelos cards e rolagem guiada (TICKET-0043)
+Branch `craquefy/j-simulador-cards`, empilhada sobre `craquefy/i-campeonatos-seed`, com um commit assinado.
+- O link "Simulador" saiu do cabeçalho; cada card de campeonato da home tem "Simular".
+- O carrossel do simulador traz todas as rodadas: abre na primeira com jogo em aberto, e "Anterior" mostra os resultados das encerradas, sem campos.
+- A home tem scroll snap obrigatório (seções, cabeçalho e rodapé). O Turbo mantém os atributos do `<html>` entre visitas, então um controller Stimulus liga e desliga o snap; verificado no navegador que o simulador e a volta para a home ficam corretos.
+- Pendente: o app roda em UTC (`config.time_zone` não definido), então "Jogos de hoje" vira o dia às 21h de Brasília.
