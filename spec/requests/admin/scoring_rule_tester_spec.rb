@@ -14,7 +14,7 @@ RSpec.describe 'Admin ScoringRuleTester page', type: :request do
     get '/admin/scoringruletester'
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include('Pontos por placar exato', 'Pontos por vencedor', 'Cartola')
+    expect(response.body).to include('Pontos por placar exato', 'Pontos por vencedor', 'Esquadrão')
   end
 
   it 'applies the Bolão rules (with pool overrides) to a guess and a result' do

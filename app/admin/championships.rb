@@ -23,8 +23,8 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
     link_to 'Simulador', main_app.simulador_championship_path(resource), class: 'action-item-button'
   end
 
-  action_item :cartola_rankings, only: :show do
-    link_to 'Rankings do Cartola', admin_cartolarankings_path(championship_id: resource.id),
+  action_item :esquadrao_rankings, only: :show do
+    link_to 'Rankings do Esquadrão', admin_esquadraorankings_path(championship_id: resource.id),
             class: 'action-item-button'
   end
 
@@ -35,7 +35,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
       row :external_id
       row('Campeonato privado?') { |championship| championship.private? ? 'Sim' : 'Não' }
     end
-    panel 'Cartola' do
+    panel 'Esquadrão' do
       attributes_table_for resource do
         row('Limite de goleiros', &:cartola_goalkeeper_limit)
         row('Limite de defensores', &:cartola_defender_limit)
@@ -56,7 +56,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
       f.input :private, label: 'Campeonato privado?',
                         hint: 'Campeonatos privados não aparecem na home, na página pública nem no Simulador.'
     end
-    f.inputs 'Cartola' do
+    f.inputs 'Esquadrão' do
       f.input :cartola_goalkeeper_limit, label: 'Limite de goleiros', input_html: { min: 0 }
       f.input :cartola_defender_limit, label: 'Limite de defensores', input_html: { min: 0 }
       f.input :cartola_midfielder_limit, label: 'Limite de meio-campistas', input_html: { min: 0 }

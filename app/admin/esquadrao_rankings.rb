@@ -1,8 +1,8 @@
-ActiveAdmin.register_page 'CartolaRankings' do
-  menu parent: 'Cartola', label: 'Rankings'
+ActiveAdmin.register_page 'EsquadraoRankings' do
+  menu parent: 'Esquadrão', label: 'Rankings'
 
-  content title: 'Rankings do Cartola' do
-    render partial: 'admin/cartola_rankings/rankings',
+  content title: 'Rankings do Esquadrão' do
+    render partial: 'admin/esquadrao_rankings/rankings',
            locals: { championships: assigns[:championships], championship: assigns[:championship],
                      points: assigns[:points], coins: assigns[:coins] }
   end

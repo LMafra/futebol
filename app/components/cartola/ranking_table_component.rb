@@ -14,7 +14,7 @@ module Cartola
 
     def rendered_state = default? && rows.empty? ? :empty : state
 
-    def value_header = kind == :coins ? 'Cartoletas' : 'Pontos'
+    def value_header = kind == :coins ? 'Moedas' : 'Pontos'
 
     def formatted(value) = kind == :coins ? format('C$ %.2f', value) : format('%.2f', value)
 

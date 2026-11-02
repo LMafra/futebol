@@ -9,10 +9,10 @@ RSpec.describe 'ActiveAdmin resources (Pundit)', type: :request do
       teams: match.home_team,
       players: create(:player),
       bolao_scoring_rules: create(:bolao_scoring_rule),
-      cartola_scoring_rules: create(:cartola_scoring_rule),
+      esquadrao_scoring_rules: create(:cartola_scoring_rule),
       csv_imports: create(:csv_import),
       pools: create(:bolao_pool),
-      squads: create(:cartola_squad),
+      esquadrao_squads: create(:cartola_squad),
       audit_logs: create(:audit_log, auditable: match)
     }
   end
@@ -40,7 +40,8 @@ RSpec.describe 'ActiveAdmin resources (Pundit)', type: :request do
     end
 
     it 'renders the form of the editable resources' do
-      editable = %w[championships teams players bolao_scoring_rules cartola_scoring_rules csv_imports pools squads]
+      editable = %w[championships teams players bolao_scoring_rules esquadrao_scoring_rules csv_imports pools
+                    esquadrao_squads]
       editable.each do |resource|
         get "/admin/#{resource}/new"
         expect(response).to have_http_status(:ok), "new #{resource}: #{response.status}"

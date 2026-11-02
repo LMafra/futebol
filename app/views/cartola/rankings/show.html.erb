@@ -1,13 +1,13 @@
-<% content_for(:title, "Rankings do Cartola · Futebol") %>
+<% content_for(:title, "Rankings do #{module_label(:fantasy)} · Futebol") %>
 
 <div class="flex max-w-3xl flex-col gap-6">
   <header class="flex flex-wrap items-end justify-between gap-4 border-b-4 border-ink pb-2">
     <div>
-      <p class="text-xs font-bold uppercase tracking-widest text-graphite">Cartola<%= " · #{@championship}" if @championship %></p>
+      <p class="text-xs font-bold uppercase tracking-widest text-graphite"><%= module_label(:fantasy) %><%= " · #{@championship}" if @championship %></p>
       <h1 class="mt-1 font-display text-4xl font-extrabold tracking-tight">Rankings</h1>
     </div>
     <% if @championships.size > 1 %>
-      <%= form_with url: main_app.cartola_rankings_path, method: :get, class: "flex items-center gap-2 text-sm font-semibold" do %>
+      <%= form_with url: main_app.esquadrao_rankings_path, method: :get, class: "flex items-center gap-2 text-sm font-semibold" do %>
         <%= hidden_field_tag :tab, @tab %>
         <%= label_tag :championship_id, "Campeonato" %>
         <%= select_tag :championship_id, options_from_collection_for_select(@championships, :id, :to_s, @championship&.id),
@@ -19,7 +19,7 @@
 
   <nav class="flex gap-2" aria-label="Rankings" role="tablist">
     <% Cartola::RankingsController::TABS.each do |tab, label| %>
-      <%= link_to label, main_app.cartola_rankings_path(tab:, championship_id: @championship&.id), role: "tab",
+      <%= link_to label, main_app.esquadrao_rankings_path(tab:, championship_id: @championship&.id), role: "tab",
                   aria: { selected: tab == @tab, current: (tab == @tab ? "page" : nil) },
                   class: "rounded-sm border px-3 py-2 font-semibold #{tab == @tab ? 'border-cartola bg-cartola text-ink' : 'border-rule hover:bg-paper'}" %>
     <% end %>

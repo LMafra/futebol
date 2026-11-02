@@ -18,8 +18,24 @@ RSpec.describe 'Cartola lineups', type: :request do
 
   def balance = Cartola::Wallet.find_by!(user:, championship:).balance
 
+  it 'redireciona /cartola para /esquadrao (301) mantendo a query string' do
+    get '/cartola?round=3'
+
+    expect(response).to have_http_status(:moved_permanently)
+    expect(response).to redirect_to('/esquadrao?round=3')
+  end
+
   context 'with a session' do
     before { sign_in(user) }
+
+    it 'abre a escalação em /esquadrao' do
+      create(:cartola_lineup, squad:, championship:, round: 7)
+
+      get esquadrao_path(round: 7)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('Rodada <span class="tabular-nums">7</span>')
+    end
 
     it 'mostra a própria escalação' do
       lineup = create(:cartola_lineup, squad:, championship:, round: 7)
@@ -27,7 +43,7 @@ RSpec.describe 'Cartola lineups', type: :request do
       get lineup_path(round: 7)
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include(lineup.players.first.name, '4-3-3')
+      expect(response.body).to include(lineup.players.first.name, '4-3-3', 'Esquadrão ·')
     end
 
     it 'cria o squad no primeiro acesso' do
