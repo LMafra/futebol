@@ -341,3 +341,8 @@ Branch `craquefy/n-card-classificacao`, empilhada sobre `craquefy/m-snap-proximi
 Branch `craquefy/o-jogos-hoje-carrossel`, empilhada sobre `craquefy/n-card-classificacao`, com um commit assinado.
 - "Jogos de hoje" deixou de agrupar por campeonato (TICKET-0042): é uma faixa só, por horário, com o campeonato dentro de cada card, para a seção não crescer com o número de campeonatos.
 - Botões de anterior e próximo no cabeçalho da seção, que só aparecem quando a faixa transborda. Verificado no navegador com os 14 jogos públicos do seed.
+
+### Jogos de hoje sem fim (TICKET-0049)
+Branch `craquefy/p-jogos-hoje-loop`, empilhada sobre `craquefy/o-jogos-hoje-carrossel`, com um commit assinado.
+- A faixa dá a volta: cópias dos cards (`aria-hidden`, fora do Tab) antes e depois dos originais, e um salto de uma volta inteira quando a rolagem assenta numa cópia. Verificado no navegador nos dois sentidos.
+- A barra de rolagem horizontal continua visível e fica no meio durante a volta; esconder a barra precisaria de CSS fora das utilidades do design system.
