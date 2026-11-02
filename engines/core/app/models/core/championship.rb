@@ -24,6 +24,11 @@ module Core
     # Maximum players per position in a Cartola lineup: { goalkeeper: 1, defender: 2, midfielder: 3, forward: 3 }.
     def cartola_limits = CARTOLA_LIMITS.transform_values { |column| public_send(column) }
 
+    # Teams with at least one match in the championship, home or away.
+    def teams
+      Core::Team.where(id: matches.select(:home_team_id)).or(Core::Team.where(id: matches.select(:away_team_id)))
+    end
+
     def to_s = "#{name} #{season}"
 
     private

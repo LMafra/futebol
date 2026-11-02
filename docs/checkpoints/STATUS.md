@@ -360,3 +360,7 @@ Branch `craquefy/r-jogos-hoje-passo`, empilhada sobre `craquefy/q-sem-barra`, co
 Branch `craquefy/s-seed-scouts`, empilhada sobre `craquefy/r-jogos-hoje-passo`, com um commit assinado.
 - O seed lança os scouts das 50 partidas finalizadas do Brasileirão (1.100 linhas), com gols batendo o placar, e o "Ranking de atletas" da home mostra 10 jogadores. Verificado no navegador, já com o seed rodado no banco local.
 - Os campeonatos pequenos continuam sem scouts, porque os times deles não têm elenco.
+
+### Esquadrão só com jogadores do campeonato (TICKET-0053)
+Branch `craquefy/t-esquadrao-elenco`, empilhada sobre `craquefy/s-seed-scouts`, com um commit assinado.
+- O seletor da escalação lista só os jogadores dos times com partida no campeonato, mais os já escalados; o salvamento ignora jogador de fora. Preparação para dar elenco aos times dos campeonatos pequenos (TICKET-0054).
