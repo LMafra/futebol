@@ -22,7 +22,7 @@ module SystemAuthenticationHelpers
     visit new_session_path
     fill_in 'E-mail', with: user.email_address
     fill_in 'Senha', with: password
-    click_on 'Entrar'
+    click_button 'Entrar'
     expect(page).to have_no_current_path(new_session_path)
   end
 end
