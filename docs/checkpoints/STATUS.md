@@ -345,4 +345,8 @@ Branch `craquefy/o-jogos-hoje-carrossel`, empilhada sobre `craquefy/n-card-class
 ### Jogos de hoje sem fim (TICKET-0049)
 Branch `craquefy/p-jogos-hoje-loop`, empilhada sobre `craquefy/o-jogos-hoje-carrossel`, com um commit assinado.
 - A faixa dá a volta: cópias dos cards (`aria-hidden`, fora do Tab) antes e depois dos originais, e um salto de uma volta inteira quando a rolagem assenta numa cópia. Verificado no navegador nos dois sentidos.
-- A barra de rolagem horizontal continua visível e fica no meio durante a volta; esconder a barra precisaria de CSS fora das utilidades do design system.
+- A barra de rolagem horizontal continua visível e fica no meio durante a volta; esconder a barra precisaria de CSS fora das utilidades do design system. Resolvido no TICKET-0050.
+
+### Jogos de hoje sem barra de rolagem (TICKET-0050)
+Branch `craquefy/q-sem-barra`, empilhada sobre `craquefy/p-jogos-hoje-loop`, com um commit assinado.
+- Nova utilidade `scrollbar-none` no CSS do Tailwind, usada na faixa de "Jogos de hoje". A faixa continua rolando pelas setas, toque, trackpad e shift + roda. Verificado no navegador.

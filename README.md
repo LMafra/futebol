@@ -244,6 +244,7 @@ Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 41 tickets ([INDEX
 - [x] 0047: classificação no card de campeonato da home
 - [x] 0048: jogos de hoje numa faixa horizontal única
 - [x] 0049: jogos de hoje em faixa sem fim
+- [x] 0050: jogos de hoje sem barra de rolagem
 - [ ] Backlog: salvar/compartilhar simulação, Monte Carlo da temporada, oferta e demanda na valorização do Esquadrão
 
 Estado de cada fase: [STATUS](docs/checkpoints/STATUS.md).
