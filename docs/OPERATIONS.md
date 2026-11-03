@@ -31,12 +31,13 @@ Admin em ActiveAdmin `4.0.0.beta23`, pinado no Gemfile ([ADR 0002](adr/0002-acti
 
 Em development e test, `db:seed` cria dados de demonstração. É idempotente: rodar de novo não duplica registros nem repontua.
 
-- Usuários `demo1@demo.local` … `demo5@demo.local`, senha `demo-futebol`. Admin: `admin@futebol.dev` / `futebol-admin` (ou `SEED_ADMIN_PASSWORD`).
+- Usuários `demo1@demo.local` … `demo5@demo.local`, senha `demo-futebol`. Admin: `admin@futebol.dev` / `futebol-admin` (ou `SEED_ADMIN_PASSWORD`). `demo1`–`demo3` (Ana Souza, Bruno Lima, Carla Mendes) autorizam o perfil público, então os rankings mostram os nomes deles; `demo4` e `demo5` aparecem como "Participante".
 - Bolão `DEMO01` ([`/pools`](http://localhost:3000/pools)), dono `demo1`, com os 5 usuários e 150 palpites nas rodadas 1–10.
 - Rodadas 1–4 e 6 finalizadas e pontuadas; rodada 5 ao vivo; rodadas 7–10 agendadas para os próximos domingos (as datas avançam se já tiverem passado).
 - Scouts das partidas finalizadas do Brasileirão (`db/seeds/scouts.rb`): os 11 de cada lado jogam, os gols batem com o placar e há um destaque por partida. Alimentam o "Ranking de atletas" da home e os preços dos jogadores. Bancos semeados antes ganham os scouts no próximo `db:seed`.
-- Escalação 4-3-3 de `demo1` na rodada 7: [`/lineup?round=7`](http://localhost:3000/lineup?round=7).
-- 5 campeonatos fictícios de 6 a 12 times (`db/seeds/small_championships.yml`), em turno único, com a rodada do meio hoje: os 3 públicos alimentam "Jogos de hoje" na home; Liga Amadora Carioca e Liga Sulista Sub-20 são privados (só aparecem para quem está logado, como no Simulador). Rodar o seed em outro dia traz essa rodada para o dia corrente. Os times não têm elenco.
+- Escalação 4-3-3 de `demo1` na rodada 7: [`/lineup?round=7`](http://localhost:3000/lineup?round=7). `demo2`–`demo5` têm escalação na rodada 6, já pontuada, para o Top 3 Esquadrão.
+- 5 campeonatos fictícios de 6 a 12 times (`db/seeds/small_championships.yml`), em turno único, com a rodada do meio hoje: os 3 públicos alimentam "Jogos de hoje" na home; Liga Amadora Carioca e Liga Sulista Sub-20 são privados (só aparecem para quem está logado, como no Simulador). Rodar o seed em outro dia traz essa rodada para o dia corrente.
+- Cada campeonato pequeno tem elenco de 11 por time, um bolão com os 5 usuários e palpites até a rodada de hoje, scouts e pontuação nas partidas encerradas, e uma escalação de cada usuário na última rodada encerrada: os cards da home mostram Top 3 Bolão e Top 3 Esquadrão.
 
 Fora de development/test, os dados demo não são criados: a senha acima é pública.
 

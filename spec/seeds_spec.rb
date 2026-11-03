@@ -25,7 +25,7 @@ RSpec.describe 'db/seeds.rb' do
 
   def demo_users = Core::User.where('email_address LIKE ?', '%@demo.local')
 
-  # Each load costs ~1.5s, so the data checks share one double load committed outside the example transactions.
+  # Each load costs ~8s, so the data checks share one double load committed outside the example transactions.
   describe 'loaded twice in a row' do
     before(:context) do
       stdout = $stdout
@@ -54,9 +54,9 @@ RSpec.describe 'db/seeds.rb' do
       expect(serie_a_teams.pluck(:short_name)).to include('FLA', 'PAL', 'COR', 'SAO', 'REM', 'MIR')
     end
 
-    it 'gives every Série A team an 11-player squad (1 GOL, 2 LAT, 2 ZAG, 3 MEI, 3 ATA), and players to no one else' do
-      expect(Core::Player.where.not(team: serie_a_teams)).to be_empty
-      serie_a_teams.includes(:players).find_each do |team|
+    it 'gives every team, Série A and small championships, an 11-player squad (1 GOL, 2 LAT, 2 ZAG, 3 MEI, 3 ATA)' do
+      expect(Core::Team.count).to be > 20
+      Core::Team.includes(:players).find_each do |team|
         expect(team.players.map(&:position).tally).to eq('GOL' => 1, 'LAT' => 2, 'ZAG' => 2, 'MEI' => 3, 'ATA' => 3)
         expect(team.players.map(&:shirt_number)).to match_array(1..11)
       end
@@ -119,18 +119,37 @@ RSpec.describe 'db/seeds.rb' do
         expect(Core::Championship.publicly_visible).not_to include(*private_ones)
       end
 
-      it 'plays the middle round today: earlier rounds finished, later ones scheduled' do
+      it 'plays the middle round today: earlier rounds scored, later ones scheduled' do
         small_championships.each do |championship|
           today_round = championship.matches.map(&:round).max.succ / 2
           by_round = championship.matches.group_by(&:round)
 
           expect(by_round[today_round].map(&:match_date)).to all(be_today)
           expect(by_round.select { |round, _| round < today_round }.values.flatten)
-            .to all(have_attributes(status: 'finished', home_score: Integer, away_score: Integer))
+            .to all(have_attributes(status: 'scored', home_score: Integer, away_score: Integer))
           expect(by_round.select { |round, _| round > today_round }.values.flatten)
             .to all(have_attributes(status: 'scheduled', home_score: nil))
           expect(by_round[today_round].select { |match| match.match_date.future? }).to all(be_scheduled)
         end
+      end
+
+      it 'fills the Top 3 Bolão and Top 3 Esquadrão of every championship, with consented names only' do
+        rankings = Core::ChampionshipRankingsService.top(Core::Championship.all)
+
+        expect(rankings.size).to eq(small_championships.size + 1)
+        rankings.each_value do |top|
+          expect(top.values).to all(have_attributes(size: 3))
+          expect(top.values.map { |rows| rows.first.points }).to all(be_positive)
+          expect(top.values.flatten.map(&:points)).to all(be >= 0)
+          expect(top.values.flatten.map(&:name)).to all(be_in(['Ana S.', 'Bruno L.', 'Carla M.', 'Participante']))
+        end
+      end
+
+      it 'fields every Esquadrão lineup with players of its own championship, one round per squad' do
+        Cartola::Lineup.includes(:championship, :players).find_each do |lineup|
+          expect(lineup.players.map(&:team_id)).to all(be_in(lineup.championship.teams.ids))
+        end
+        expect(Cartola::Lineup.group(:squad_id, :round).having('COUNT(*) > 1').count).to be_empty
       end
     end
 

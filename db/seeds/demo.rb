@@ -3,7 +3,7 @@ module Seeds
   def self.demo_password = 'demo-futebol'
 
   # Rounds 1-4 and 6 end scored, 5 is live, 7-10 stay scheduled. Predictions go in before the matches close,
-  # so the scoring job finds them.
+  # so the scoring job finds them. demo1 has the upcoming round 7 lineup; the others fill round 6's Esquadrão.
   def self.demo(championship)
     users = demo_users
     pool = demo_pool(championship, users)
@@ -11,17 +11,28 @@ module Seeds
     demo_results(championship)
     demo_upcoming_dates(championship)
     demo_lineup(users.first, championship)
+    users.drop(1).each.with_index(2) { |user, number| demo_lineup(user, championship, round: 6, pick: number) }
   end
 
   # Signup público disponível em /signup; estas contas existem só para a demo local.
+  # demo1-3 consent to a public profile, so the rankings show both their names and "Participante".
   def self.demo_users
-    (1..5).map do |number|
-      Core::User.find_or_create_by!(email_address: "demo#{number}@demo.local") do |user|
-        user.name = "Demo #{number}"
-        user.password = demo_password
+    demo_names.each.with_index(1).map do |name, number|
+      user = Core::User.find_or_create_by!(email_address: "demo#{number}@demo.local") do |new_user|
+        new_user.assign_attributes(name:, password: demo_password)
       end
+      demo_profile(user, name, number)
     end
   end
+
+  # Databases seeded before the names and consent catch up; a name changed in /minha-conta stays.
+  def self.demo_profile(user, name, number)
+    user.name = name if user.name == "Demo #{number}"
+    user.public_profile_consented_at ||= Time.current if number <= 3
+    user.tap { user.save! if user.changed? }
+  end
+
+  def self.demo_names = ['Ana Souza', 'Bruno Lima', 'Carla Mendes', 'Diego Rocha', 'Elisa Prado']
 
   def self.demo_pool(championship, users)
     pool = Bolao::Pool.find_or_create_by!(code: 'DEMO01') do |new_pool|
@@ -34,27 +45,31 @@ module Seeds
   def self.demo_predictions(pool, championship, users)
     (1..10).each do |round|
       demo_round(championship, round).first(3).each_with_index do |match, index|
-        users.each.with_index(1) do |user, number|
-          prediction = Bolao::Prediction.kept.find_or_initialize_by(pool:, user:, match:)
-          next if prediction.persisted?
-
-          prediction.home_guess, prediction.away_guess = demo_guess(number, round, index)
-          prediction.save!(context: :backfill)
-        end
+        users.each.with_index(1) { |user, number| demo_predict(pool, user, match, demo_guess(number, round, index)) }
       end
     end
   end
 
-  # Scouts go in before the scoring job, so prices move as after a real match.
+  def self.demo_predict(pool, user, match, guess)
+    prediction = Bolao::Prediction.kept.find_or_initialize_by(pool:, user:, match:)
+    return if prediction.persisted?
+
+    prediction.home_guess, prediction.away_guess = guess
+    prediction.save!(context: :backfill)
+  end
+
   def self.demo_results(championship)
     [1, 2, 3, 4, 6].each do |round|
-      demo_round(championship, round).each_with_index do |match, index|
-        demo_finish(match, *demo_score(round, index))
-        demo_scouts(match)
-        ProcessMatchPointsJob.perform_now(match.id, demo_scoring_token(match))
-      end
+      demo_round(championship, round).each_with_index { |match, index| demo_close(match, demo_score(round, index)) }
     end
     demo_round(championship, 5).each { |match| match.start_match! if match.may_start_match? }
+  end
+
+  # Scouts go in before the scoring job, so prices move as after a real match.
+  def self.demo_close(match, score)
+    demo_finish(match, *score)
+    demo_scouts(match)
+    ProcessMatchPointsJob.perform_now(match.id, demo_scoring_token(match))
   end
 
   def self.demo_finish(match, home_score, away_score)
@@ -76,30 +91,6 @@ module Seeds
   end
 
   def self.weeks_until_future(time) = (((Time.current - time) / 1.week).floor + 1).weeks
-
-  # Bought through the wallet, so the demo user's balance reflects it.
-  def self.demo_lineup(user, championship)
-    squad = Cartola::Squad.find_or_create_by!(user:) { |new_squad| new_squad.name = "Time de #{user.name}" }
-    lineup = squad.lineups.find_or_initialize_by(championship:, round: 7)
-    return if lineup.persisted?
-
-    lineup.formation = '4-3-3'
-    assign_demo_players(lineup)
-    Cartola::WalletService.save(lineup) || raise("demo lineup: #{lineup.errors.full_messages.to_sentence}")
-  end
-
-  def self.assign_demo_players(lineup)
-    players = demo_lineup_players
-    lineup.assign_players(players)
-    lineup.assign_captain(players.last&.id)
-  end
-
-  # The cheapest players per position, up to the championship's default limits (1 / 2 / 3 / 3).
-  def self.demo_lineup_players
-    { 'GOL' => 1, 'LAT' => 1, 'ZAG' => 1, 'MEI' => 3, 'ATA' => 3 }.flat_map do |position, count|
-      Core::Player.where(position:).order(:base_value, :external_id).first(count)
-    end
-  end
 
   def self.demo_round(championship, round)
     championship.matches.where(round:).order(:external_id)

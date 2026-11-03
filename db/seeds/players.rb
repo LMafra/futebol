@@ -1,13 +1,14 @@
 module Seeds
-  def self.players(teams)
-    teams.each_with_index do |team, team_index|
-      squad.each do |shirt_number, position|
-        Core::Player.find_or_create_by!(external_id: "#{team.external_id}-#{shirt_number}") do |player|
-          player.assign_attributes(team:, position:, shirt_number:,
-                                   **player_traits((team_index * squad.size) + shirt_number, position))
-        end
+  # offset: teams already given squads, so other championships get names and prices of their own.
+  # One insert for all squads; players already there (same external_id) are left as they are.
+  def self.players(teams, offset: 0)
+    rows = teams.each.with_index(offset).flat_map do |team, team_index|
+      squad.map do |shirt_number, position|
+        { external_id: "#{team.external_id}-#{shirt_number}", team_id: team.id, position:, shirt_number:,
+          **player_traits((team_index * squad.size) + shirt_number, position) }
       end
     end
+    Core::Player.insert_all(rows, unique_by: :external_id)
   end
 
   # Fictional demo squads: shirt number => position (4-3-3).

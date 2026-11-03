@@ -1,19 +1,39 @@
 # Small amateur championships (6-12 teams, single round robin, public and private) with their middle round
 # today, so the home's "Jogos de hoje" mixes several championships. Dates use the app time zone, the same one
 # the home filters by.
-# The teams get no squads: the Esquadrão picker lists every player in the database, not only the championship's.
+# Each has the demo users' Bolão (predictions up to today's round) and Esquadrão (lineups in the last finished
+# round), so its home card shows a Top 3 of each. Finished matches get scouts and are scored like the demo's.
 module Seeds
   def self.small_championships
+    users = demo_users
     data = YAML.load_file(Rails.root.join('db/seeds/small_championships.yml'))
     data.each_with_index.map do |attributes, offset|
       championship = small_championship(attributes)
-      teams = attributes.fetch('teams').map { |team| small_team(team) }
-      today_round = teams.size / 2
-      small_fixtures(championship, teams, today_round, offset)
-      small_today(championship, today_round)
-      small_results(championship, today_round)
+      small_round(championship, attributes.fetch('teams').map { |team| small_team(team) }, users, offset)
       championship
     end
+  end
+
+  # Squads get offsets past the Série A's 20 teams, 12 per championship (the largest size).
+  def self.small_round(championship, teams, users, offset)
+    today_round = teams.size / 2
+    players(teams, offset: 20 + (12 * offset))
+    small_fixtures(championship, teams, today_round, offset)
+    small_today(championship, today_round)
+    small_predictions(small_pool(championship, users), championship, users, today_round)
+    small_results(championship, today_round)
+    users.each.with_index(1) do |user, number|
+      demo_lineup(user, championship, round: small_lineup_round(user, championship, today_round), pick: number)
+    end
+  end
+
+  # The latest finished round the user has no lineup in yet, in any championship: reverting the migration that
+  # scoped lineups by championship recreates the unique index on squad and round.
+  def self.small_lineup_round(user, championship, today_round)
+    lineups = Cartola::Lineup.joins(:squad).where(cartola_squads: { user_id: user.id })
+    lineups.find_by(championship:)&.round ||
+      (1...today_round).reverse_each.find { |round| !lineups.exists?(round:) } ||
+      raise("no free round for #{user.email_address} in #{championship.name}")
   end
 
   # Visibility follows the YAML on every load, so databases seeded before the flag existed catch up.
@@ -64,16 +84,37 @@ module Seeds
                                      days, Time.current])
   end
 
-  # Past rounds and kickoffs over two hours ago end finished, kickoffs within two hours are live.
+  def self.small_pool(championship, users)
+    pool = Bolao::Pool.find_or_create_by!(championship:, name: "Bolão #{championship.name}") do |new_pool|
+      new_pool.owner = users.first
+    end
+    users.each { |user| pool.memberships.find_or_create_by!(user:) }
+    pool
+  end
+
+  # Same order and index as small_results, so each guess is built around the score the match ends with.
+  def self.small_predictions(pool, championship, users, today_round)
+    small_played(championship, today_round).each_with_index do |match, index|
+      users.each.with_index(1) do |user, number|
+        demo_predict(pool, user, match, demo_guess(number, match.round, index))
+      end
+    end
+  end
+
+  # Past rounds and kickoffs over two hours ago end scored, kickoffs within two hours are live.
   def self.small_results(championship, today_round)
-    championship.matches.where(round: ..today_round).order(:round, :external_id).each_with_index do |match, index|
+    small_played(championship, today_round).each_with_index do |match, index|
       score = demo_score(match.round, index)
       if small_over?(match, today_round)
-        demo_finish(match, *score)
+        demo_close(match, score)
       elsif match.match_date.past?
         small_start(match, score.map { |goals| goals / 2 })
       end
     end
+  end
+
+  def self.small_played(championship, today_round)
+    championship.matches.where(round: ..today_round).order(:round, :external_id)
   end
 
   def self.small_over?(match, today_round) = match.round < today_round || match.match_date <= 2.hours.ago
