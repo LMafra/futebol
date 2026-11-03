@@ -9,6 +9,15 @@ RSpec.describe Core::Championship do
     expect(build(:championship, season: 1899)).not_to be_valid
   end
 
+  it 'lists the teams with a match in the championship, home or away, once each' do
+    championship = create(:championship)
+    first = create(:match, championship:)
+    create(:match, championship:, home_team: first.away_team, away_team: first.home_team)
+    create(:match)
+
+    expect(championship.teams).to contain_exactly(first.home_team, first.away_team)
+  end
+
   describe 'visibility scopes' do
     let!(:public_championship) { create(:championship) }
     let!(:private_championship) { create(:championship, private: true) }

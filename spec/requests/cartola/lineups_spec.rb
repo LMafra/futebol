@@ -4,11 +4,12 @@ RSpec.describe 'Cartola lineups', type: :request do
   let(:user) { create(:user) }
   let(:squad) { create(:cartola_squad, user:) }
   let!(:championship) { create(:championship) }
+  let(:team) { create(:match, championship:).home_team }
 
   # The default limits: 1 goalkeeper, 2 defenders, 3 midfielders, 3 forwards.
   def valid_players(base_value: 5)
     { 'GOL' => 1, 'LAT' => 1, 'ZAG' => 1, 'MEI' => 3, 'ATA' => 3 }.flat_map do |position, count|
-      create_list(:player, count, position:, base_value:)
+      create_list(:player, count, position:, base_value:, team:)
     end
   end
 
@@ -65,6 +66,30 @@ RSpec.describe 'Cartola lineups', type: :request do
       expect(page.at_css('[data-role="budget-remaining"]').text).to include('100')
     end
 
+    it 'lista só os jogadores dos times do campeonato e os já escalados' do
+      player = create(:player, team:)
+      away = create(:player, team: Core::Match.find_by!(home_team: team).away_team)
+      outsider = create(:player)
+      lineup = create(:cartola_lineup, squad:, championship:, round: 7)
+
+      get edit_lineup_path(round: 7)
+
+      listed = Nokogiri::HTML(response.body).css('input[type="checkbox"][name="lineup[player_ids][]"]')
+                       .map { |input| input['value'] }
+      expect(listed).to match_array([player, away, *lineup.players].map { |listed_player| listed_player.id.to_s })
+      expect(listed).not_to include(outsider.id.to_s)
+    end
+
+    it 'ignora jogador de time fora do campeonato' do
+      squad
+      players = valid_players.first(8)
+
+      submit(players + [create(:player, position: 'ATA')])
+
+      expect(response).to redirect_to(lineup_path(round: 7))
+      expect(squad.lineups.find_by!(championship:, round: 7).players).to match_array(players)
+    end
+
     it 'salva uma escalação dentro dos limites e debita a carteira' do
       squad
       players = valid_players
@@ -79,7 +104,7 @@ RSpec.describe 'Cartola lineups', type: :request do
     it 'cobra só os jogadores trocados ao editar' do
       players = valid_players
       submit(players)
-      substitute = create(:player, position: 'ATA', base_value: 8)
+      substitute = create(:player, position: 'ATA', base_value: 8, team:)
 
       submit(players.first(8) + [substitute])
 
@@ -126,7 +151,8 @@ RSpec.describe 'Cartola lineups', type: :request do
     it 'recusa mais jogadores numa posição do que o campeonato permite' do
       squad
 
-      expect { submit(valid_players + [create(:player, position: 'GOL')]) }.not_to change(Cartola::Lineup, :count)
+      expect { submit(valid_players + [create(:player, position: 'GOL', team:)]) }
+        .not_to change(Cartola::Lineup, :count)
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include('o limite do campeonato é 1')
     end

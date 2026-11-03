@@ -1,7 +1,8 @@
 module Cartola
   # One lineup per squad, championship and round (?round=, default 1; ?championship_id=, default the latest).
   # Without ?squad_id= it is the signed-in user's squad, created on first access; with it, someone else's lineup
-  # (read-only for admins, 403 for everybody else). Players are bought from the user's wallet (WalletService).
+  # (read-only for admins, 403 for everybody else). Players are bought from the user's wallet (WalletService), and
+  # only players of the championship's teams can be picked.
   # ::ApplicationController: inside Cartola, the bare constant resolves to the engine's Cartola::ApplicationController.
   class LineupsController < ::ApplicationController
     rescue_from Pundit::NotAuthorizedError do |exception|
@@ -72,12 +73,17 @@ module Cartola
     def assign_lineup
       attributes = params.expect(lineup: [:formation, :captain_id, { player_ids: [] }])
       @lineup.formation = attributes[:formation]
-      @lineup.assign_players(Core::Player.includes(:team).where(id: attributes[:player_ids]).to_a)
+      @lineup.assign_players(available_players.includes(:team).where(id: attributes[:player_ids]).to_a)
       @lineup.assign_captain(attributes[:captain_id])
     end
 
+    # The championship's players, plus those already in the lineup so an older lineup stays editable.
+    def available_players
+      Core::Player.where(team: championship.teams).or(Core::Player.where(id: @lineup.lineup_players.map(&:player_id)))
+    end
+
     def load_players
-      @players = Core::Player.includes(:team).order(:position, :name).to_a
+      @players = available_players.includes(:team).order(:position, :name).to_a
       @prices = Cartola::PlayerValue.prices_for(@players, championship)
       load_budget(@prices)
     end
