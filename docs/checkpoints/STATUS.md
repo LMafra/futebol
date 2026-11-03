@@ -370,3 +370,7 @@ Branch `craquefy/u-seed-rankings`, empilhada sobre `craquefy/t-esquadrao-elenco`
 - Os 5 campeonatos pequenos ganham elencos, bolão, palpites, scouts, pontuação e escalações dos usuários demo; no Brasileirão, `demo2`–`demo5` escalam na rodada 6. Todos os cards da home mostram Top 3 Bolão e Top 3 Esquadrão. Verificado no navegador, com o seed rodado no banco local.
 - `demo1`–`demo3` autorizam o perfil público (Ana S., Bruno L., Carla M.); os outros aparecem como "Participante".
 - Uma carga do zero leva cerca de 8 s no spec (o job de pontuação roda por partida encerrada); a segunda carga não cria nada.
+
+### "Como funciona" logo depois dos módulos (TICKET-0055)
+Branch `craquefy/v-como-funciona`, empilhada sobre `craquefy/u-seed-rankings`, com um commit assinado.
+- A home passa a ter "Como funciona" entre "Três jeitos de jogar" e "Jogos de hoje". Verificado no navegador.

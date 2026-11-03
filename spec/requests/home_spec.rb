@@ -12,7 +12,7 @@ RSpec.describe 'Public home', type: :request do
     create(:bolao_prediction_score, prediction:, points:)
   end
 
-  it 'abre sem login, com hero, contadores, módulos, jogos de hoje, campeonatos, atletas e como funciona' do
+  it 'abre sem login, com hero, contadores, módulos, como funciona, jogos de hoje, campeonatos e atletas' do
     get root_path
 
     expect(response).to have_http_status(:ok)
@@ -23,6 +23,8 @@ RSpec.describe 'Public home', type: :request do
       expect(page.at_css("[data-role='#{role}']")).to be_present, role
     end
     expect(page.css('[data-role="module-card"] h3').map(&:text)).to eq(%w[Bolão Esquadrão Simulador])
+    expect(page.css('[data-role="home-sections"] h2').map { |heading| heading.text.squish })
+      .to eq(['Três jeitos de jogar', 'Como funciona', 'Jogos de hoje', 'Campeonatos', 'Ranking de atletas'])
     expect(page.at_css('footer').text.squish).to include('© ', 'Craquefy', 'GitHub', 'Documentação', 'Licença MIT')
   end
 
