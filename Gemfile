@@ -65,7 +65,7 @@ gem 'simulador', path: 'engines/simulador'
 # (config/initializers/opentelemetry.rb).
 gem 'opentelemetry-exporter-otlp', '~> 0.37'
 gem 'opentelemetry-exporter-otlp-logs', '~> 0.7'
-gem 'opentelemetry-instrumentation-all', '~> 0.99'
+gem 'opentelemetry-instrumentation-all', '~> 0.100'
 gem 'opentelemetry-instrumentation-logger', '~> 0.5'
 gem 'opentelemetry-logs-sdk', '~> 0.8'
 gem 'opentelemetry-sdk', '~> 1.13'
