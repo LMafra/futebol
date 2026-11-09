@@ -54,7 +54,7 @@ gem 'stoplight', '~> 6.0'
 # Blocks unsafe migrations (locks, rewrites); in every group because migrations call safety_assured and the
 # deploy runs them (db:prepare) [https://github.com/ankane/strong_migrations]
 gem 'strong_migrations', '~> 2.8'
-gem 'view_component', '~> 4.20'
+gem 'view_component', '~> 4.23'
 
 gem 'bolao', path: 'engines/bolao'
 gem 'cartola', path: 'engines/cartola'
