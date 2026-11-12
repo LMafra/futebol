@@ -1,6 +1,7 @@
 // Stimulus for ActiveAdmin pages, loaded through ActiveAdmin.importmap (config/initializers/active_admin.rb).
 import { Application } from "@hotwired/stimulus"
 import DismissController from "controllers/dismiss_controller"
+import FormWizardController from "controllers/form_wizard_controller"
 import ScoutsController from "controllers/scouts_controller"
 
 // The admin is light-only (docs/design/0001-critique.md Q5). AA's dark_mode_toggle adds `.dark` on
@@ -32,4 +33,5 @@ desktop.addEventListener("change", syncFilters)
 
 const application = Application.start()
 application.register("dismiss", DismissController)
+application.register("form-wizard", FormWizardController)
 application.register("scouts", ScoutsController)

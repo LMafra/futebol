@@ -11,6 +11,7 @@ module AdminHelper
                               'disabled:bg-rule/40 disabled:text-graphite'.freeze
   ADMIN_INPUT_CLASSES = 'block min-h-10 w-full rounded-md border border-graphite/70 bg-white px-3 py-2 text-sm ' \
                         "font-body text-ink tabular-nums #{ADMIN_FIELD_STATE_CLASSES}".freeze
+  ADMIN_CHOICE_INPUT_CLASSES = 'mr-2 h-5 w-5 cursor-pointer rounded align-middle text-pitch focus:ring-2'.freeze
   ADMIN_COMPACT_INPUT_CLASSES = 'min-h-10 w-12 rounded-md border border-graphite/70 bg-white px-1 py-1 text-center ' \
                                 "text-sm font-body tabular-nums text-ink #{ADMIN_FIELD_STATE_CLASSES}".freeze
   ADMIN_BUTTON_BASE_CLASSES = 'inline-flex min-h-10 cursor-pointer items-center justify-center rounded-md px-3 py-2 ' \

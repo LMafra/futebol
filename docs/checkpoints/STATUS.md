@@ -497,7 +497,7 @@ Tickets **0074–0078**. Chrome unificado; 1º viewport especializado (Admin = g
 | H1 — limpar CTAs | [0074](../tickets/TICKET-0074.md) | ok | `action_item :new_championship` (Admin e Gestor) | sem Ações rápidas / Atalhos; 1º viewport = KPIs + fila |
 | H2 — fila Admin | [0075](../tickets/TICKET-0075.md) | ok | `Users::PendingManagerQueue`, `_pending_managers`, `_reject_manager_form` | Aprovar inline; recusa exige motivo (`metadata.reason`) |
 | H3 — fila Gestor | [0076](../tickets/TICKET-0076.md) | ok | `Gestor::MatchQueue`, `_match_queue`, badge `scored` | 1 CTA por estado (scout-aware); Reverter só no overflow |
-| H4 — wizard new | [0077](../tickets/TICKET-0077.md) | planned | — | staged disclosure só no create |
+| H4 — wizard new | [0077](../tickets/TICKET-0077.md) | ok | `form_wizard_controller.js` + `ChampionshipWizardHelper` | `new` em 4 etapas (um POST, abre na etapa com erro, `aria-current="step"`); `edit` segue página única; sem JS, todas as seções visíveis |
 | H5 — Red Routes | [0078](../tickets/TICKET-0078.md) | planned | — | SEQ + clicks nos 3 cenários |
 | G — docs H | — | ok | INDEX, STATUS, README; tip `fe0e194` | em `cursor/admin-ui-docs-e3a0`; PR #87 |
 

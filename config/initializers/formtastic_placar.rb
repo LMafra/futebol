@@ -3,8 +3,16 @@ module FormtasticPlacar
   module InputHtml
     def input_html_options
       options = super
-      options[:class] = Array(options[:class]) + AdminHelper::ADMIN_INPUT_CLASSES.split
+      options[:class] = Array(options[:class]) + field_classes.split
       options
+    end
+
+    private
+
+    def field_classes
+      choice = [Formtastic::Inputs::BooleanInput, Formtastic::Inputs::CheckBoxesInput,
+                Formtastic::Inputs::RadioInput].any? { is_a?(_1) }
+      choice ? AdminHelper::ADMIN_CHOICE_INPUT_CLASSES : AdminHelper::ADMIN_INPUT_CLASSES
     end
   end
 

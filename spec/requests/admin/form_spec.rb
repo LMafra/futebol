@@ -12,6 +12,14 @@ RSpec.describe 'ActiveAdmin Placar forms', type: :request do
     expect(response.body).to match(/formtastic|championship/i)
   end
 
+  it 'keeps checkboxes compact instead of full-width text-field styling' do
+    get '/admin/championships/new'
+
+    checkbox = Nokogiri::HTML(response.body).at_css('input#championship_private[type="checkbox"]')
+    expect(checkbox['class'].split).to include('h-5', 'w-5', 'text-pitch')
+    expect(checkbox['class'].split).not_to include('w-full', 'min-h-10')
+  end
+
   it 'groups championship form into Dados, Esquadrão, Bolão and Premiação' do
     get '/admin/championships/new'
 

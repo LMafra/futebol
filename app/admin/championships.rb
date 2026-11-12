@@ -49,16 +49,17 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
     active_admin_comments_for resource
   end
 
-  form do |f|
+  form html: { data: { controller: 'form-wizard', action: 'keydown->form-wizard#submitOrAdvance' } } do |f|
     f.semantic_errors
-    f.inputs 'Dados' do
+    text_node championship_wizard_nav if f.object.new_record?
+    f.inputs 'Dados', data: { form_wizard_target: 'step' } do
       f.input :name
       f.input :season
       f.input :external_id
       f.input :private, label: 'Campeonato privado?',
                         hint: 'Campeonatos privados não aparecem na home, na página pública nem no Simulador.'
     end
-    f.inputs 'Esquadrão' do
+    f.inputs 'Esquadrão', data: { form_wizard_target: 'step' } do
       f.input :cartola_goalkeeper_limit, label: 'Limite de goleiros', input_html: { min: 0 }
       f.input :cartola_defender_limit, label: 'Limite de defensores', input_html: { min: 0 }
       f.input :cartola_midfielder_limit, label: 'Limite de meio-campistas', input_html: { min: 0 }
@@ -68,7 +69,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
                                           hint: 'Usado para jogadores sem valor base próprio.',
                                           input_html: { min: 0, step: '0.01' }
     end
-    f.inputs 'Bolão' do
+    f.inputs 'Bolão', data: { form_wizard_target: 'step' } do
       li class: 'input optional' do
         label 'Regras'
         para class: 'inline-hints' do
@@ -78,12 +79,13 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
         end
       end
     end
-    f.inputs 'Premiação' do
+    f.inputs 'Premiação', data: { form_wizard_target: 'step' } do
       f.input :prize_description, label: 'Descrição geral', input_html: { rows: 3 }
       Core::Championship::PRIZE_PLACES.each do |place|
         f.input place, label: place.to_s.humanize
       end
     end
+    text_node championship_wizard_controls if f.object.new_record?
     f.actions
   end
 
