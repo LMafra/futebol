@@ -1,5 +1,5 @@
 ActiveAdmin.register Cartola::ScoringRule, as: 'EsquadraoScoringRule' do
-  menu parent: 'Pontuação', label: 'Regras do Esquadrão'
+  menu parent: 'Configurações', label: 'Regras do Esquadrão'
 
   permit_params :name, *Cartola::ScoringRule::POINT_COLUMNS
 

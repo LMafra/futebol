@@ -1,5 +1,5 @@
 ActiveAdmin.register Cartola::Lineup, as: 'EsquadraoLineup', namespace: :gestor do
-  menu parent: 'Esquadrão', label: 'Escalações', priority: 1
+  menu parent: 'Configurações', label: 'Escalações', priority: 3
 
   actions :index, :show
   includes :squad, :championship

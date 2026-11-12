@@ -46,4 +46,26 @@ module AdminHelper
     label = "#{log.auditable_type} ##{log.auditable_id}"
     log.auditable_type == 'Core::Match' ? link_to(label, admin_match_path(log.auditable_id)) : label
   end
+
+  # Compact Heroicons-style paths for task sidebar sections (no emoji).
+  ADMIN_NAV_ICON_PATHS = {
+    'Visão geral' => 'M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z',
+    'Painel' => 'M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z',
+    'Dashboard' => 'M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z',
+    'Meus campeonatos' => 'M4.5 5.25h15v13.5h-15zM8.25 9h7.5M8.25 12.75h7.5',
+    'Partidas' => 'M12 6v6h4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+    'Participantes' => 'M15 19.5a3 3 0 00-6 0M15 8.25a3 3 0 11-6 0 3 3 0 016 0zM19.5 19.5a2.25 2.25 0 00-2.25-2.25',
+    'Configurações' => 'M12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5zM4.5 12h3M16.5 12h3M12 4.5v3M12 16.5v3',
+    'Auditoria' => 'M8.25 6.75h7.5v12h-7.5zM10.5 9.75h3M10.5 12.75h3M10.5 15.75h3'
+  }.freeze
+
+  def admin_nav_section_icon(label)
+    path = ADMIN_NAV_ICON_PATHS[label.to_s]
+    return ''.html_safe if path.blank?
+
+    tag.svg(class: 'h-5 w-5 shrink-0', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor',
+            'stroke-width': '1.5', 'aria-hidden': true) do
+      tag.path(d: path, 'stroke-linecap': 'round', 'stroke-linejoin': 'round')
+    end
+  end
 end

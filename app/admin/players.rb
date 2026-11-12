@@ -1,5 +1,5 @@
 ActiveAdmin.register Core::Player, as: 'Player' do
-  menu parent: 'Cadastros', label: 'Jogadores'
+  menu parent: 'Participantes', label: 'Jogadores'
 
   permit_params :team_id, :name, :position, :shirt_number, :base_value, :external_id
   includes :team

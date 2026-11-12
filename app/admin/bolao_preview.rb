@@ -1,5 +1,5 @@
 ActiveAdmin.register_page 'BolaoPreview' do
-  menu parent: 'Pontuação', label: 'Preview do Bolão', priority: 1
+  menu parent: 'Partidas', label: 'Preview do Bolão', priority: 4
 
   content title: 'Preview do Bolão' do
     render partial: 'admin/bolao_preview/panel', locals: {

@@ -5,22 +5,27 @@
   child_idle = "text-ink hover:text-cartola block rounded-md py-1.5 px-2 text-sm font-body no-underline"
 %>
 <aside id="main-menu" class="fixed top-0 xl:top-16 bottom-0 inset-s-0 z-40 w-72 xl:w-60 p-4 overflow-y-auto transition-transform duration-200 -translate-x-full xl:translate-x-0 bg-paper xl:border-e xl:border-rule" tabindex="-1" data-role="craquefy-admin-sidebar" aria-label="<%= t('active_admin.main_navigation', default: 'Menu principal') %>">
-  <ul role="list" class="flex flex-1 flex-col space-y-1.5 font-body">
+  <ul role="list" class="flex flex-1 flex-col space-y-1.5 font-body" data-role="craquefy-admin-task-nav">
     <% current_menu.items(self).each do |item| %>
       <% children = item.items(self).presence %>
       <% url = item.url(self) %>
+      <% section_label = item.label(self) %>
       <% label = capture do %>
         <% if url.present? %>
-          <%= link_to item.label(self), url, item.html_options.merge(class: "#{nav_idle} #{(current_menu_item?(item, children: false) ? nav_active : '')}") %>
+          <%= link_to url, item.html_options.merge(class: "#{nav_idle} #{(current_menu_item?(item, children: false) ? nav_active : '')}") do %>
+            <%= admin_nav_section_icon(section_label) %>
+            <span><%= section_label %></span>
+          <% end %>
         <% else %>
-          <%= item.label(self) %>
+          <span class="<%= nav_idle %>"><%= admin_nav_section_icon(section_label) %><span><%= section_label %></span></span>
         <% end %>
       <% end %>
-      <li <%= current_menu_item?(item) && "data-open" %> class="group" data-item-id="<%= item.id %>">
+      <li <%= current_menu_item?(item) && "data-open" %> class="group" data-item-id="<%= item.id %>" data-nav-section="<%= section_label %>">
         <% if children %>
           <% if url.present? && url == "#" %>
             <button data-menu-button class="<%= nav_idle %>" aria-label="<%= t('active_admin.toggle_section') %>">
-              <%= item.label(self) %>
+              <%= admin_nav_section_icon(section_label) %>
+              <span class="grow text-start"><%= section_label %></span>
               <svg class="group-data-open:rotate-90 group-data-open:rtl:-rotate-90 ms-auto h-5 w-5 shrink-0 rtl:-scale-x-100" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
               </svg>

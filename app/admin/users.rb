@@ -1,5 +1,5 @@
 ActiveAdmin.register Core::User, as: 'User' do
-  menu label: 'Usuários', priority: 3
+  menu parent: 'Participantes', label: 'Usuários', priority: 1
 
   actions :index, :show
 

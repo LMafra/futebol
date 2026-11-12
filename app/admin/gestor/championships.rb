@@ -1,5 +1,5 @@
 ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor do
-  menu parent: 'Cadastros', label: 'Campeonatos', priority: 1
+  menu parent: 'Meus campeonatos', label: 'Campeonatos', priority: 1
 
   permit_params :name, :season, :private, :cartola_goalkeeper_limit, :cartola_defender_limit,
                 :cartola_midfielder_limit, :cartola_forward_limit, :cartola_initial_budget, :cartola_base_player_value,

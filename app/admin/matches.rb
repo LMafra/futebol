@@ -1,5 +1,5 @@
 ActiveAdmin.register Core::Match, as: 'Match' do
-  menu priority: 2, label: 'Partidas'
+  menu parent: 'Partidas', label: 'Partidas', priority: 1
 
   actions :index, :show
   includes :home_team, :away_team, :championship

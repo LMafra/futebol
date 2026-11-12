@@ -1,6 +1,6 @@
 %i[admin gestor].each do |ns|
   ActiveAdmin.register_page 'MatchFinalizer', namespace: ns do
-    menu parent: 'Pontuação', label: 'Finalizar partida', priority: 2
+    menu parent: 'Partidas', label: 'Finalizar partida', priority: 2
 
     content title: 'Finalizar partida' do
       render partial: 'admin/match_finalizer/form',

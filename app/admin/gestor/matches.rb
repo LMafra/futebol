@@ -1,5 +1,5 @@
 ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
-  menu priority: 5, label: 'Partidas'
+  menu parent: 'Partidas', label: 'Partidas', priority: 1
 
   actions :index, :show, :new, :create, :edit, :update
   permit_params do

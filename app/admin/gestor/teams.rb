@@ -1,5 +1,5 @@
 ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
-  menu parent: 'Cadastros', label: 'Times', priority: 2
+  menu parent: 'Participantes', label: 'Times', priority: 1
 
   permit_params :name, :short_name, :crest_url
 

@@ -1,5 +1,5 @@
 ActiveAdmin.register Core::Team, as: 'Team' do
-  menu parent: 'Cadastros', label: 'Times'
+  menu parent: 'Participantes', label: 'Times'
 
   permit_params :name, :short_name, :crest_url, :external_id
 

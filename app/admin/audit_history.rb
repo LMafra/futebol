@@ -1,5 +1,5 @@
 ActiveAdmin.register_page 'AuditHistory' do
-  menu parent: 'Pontuação', label: 'Histórico de auditoria', priority: 5
+  menu parent: 'Auditoria', label: 'Histórico', priority: 1
 
   content title: 'Histórico de auditoria' do
     render partial: 'admin/audit_history/list', locals: { logs: assigns[:logs], actions: assigns[:actions] }
