@@ -465,7 +465,7 @@ Tickets **0063–0067** (os números 0042–0046 do plano original já estavam o
 | F — status/ranking | [0067](../tickets/TICKET-0067.md) | ok | `StatusBadgeComponent`; medalhas SVG no leaderboard |
 | G — docs | — | ok | INDEX, STATUS, README |
 | polish | — | ok | labels pt-BR; panel/header/flash/blank slate; filters; attributes; logged-out; pagination pitch; comments |
-| publish | — | blocked | hook do ambiente bloqueia publicação remota; integração A–G + UX + work-queue docs |
+| publish | — | ok | tip remoto `fe0e194` em `cursor/admin-ui-docs-e3a0`; PR #87 |
 | Mobbin | — | n/a | MCP Mobbin exige plano pago; estrutura 8/4 e 3/9 já aplicada via design docs |
 
 **Branch canônica:** [`cursor/admin-ui-docs-e3a0`](https://github.com/LMafra/futebol/tree/cursor/admin-ui-docs-e3a0) — concentra tema Placar (0063–0067), UX status-first (0068–0073) e tickets work-queue (0074–0078). Branches auxiliares (`admin-theme-*`, `admin-ux-*`, `admin-work-queue-*`) são históricas e não devem receber commits novos.
@@ -483,7 +483,7 @@ Tickets **0068–0073** (0047–0052 do plano UX já estavam ocupados). Sem alte
 | E — forms | [0072](../tickets/TICKET-0072.md) | ok | seções + Toast + Turbo Stream | tip `ab7d231` |
 | F — empty/mobile | [0073](../tickets/TICKET-0073.md) | ok | EmptyState; sidebar `< md` | tip `23be79d` |
 | G — docs | — | ok | INDEX, STATUS, README | neste tip |
-| publish | — | blocked | push do agente bloqueado; tip em `cursor/admin-ui-docs-e3a0` | bundle artifacts |
+| publish | — | ok | tip remoto `fe0e194`; PR #87 | — |
 | Mobbin | — | n/a | MCP pago; tokens via design docs | — |
 
 Gate `.cursor/environment.json` `test`: 1076 examples, 0 failures (após Bloco F).
@@ -499,7 +499,7 @@ Tickets **0074–0078**. Chrome unificado; 1º viewport especializado (Admin = g
 | H3 — fila Gestor | [0076](../tickets/TICKET-0076.md) | planned | — | 1 CTA por status; Reverter no overflow |
 | H4 — wizard new | [0077](../tickets/TICKET-0077.md) | planned | — | staged disclosure só no create |
 | H5 — Red Routes | [0078](../tickets/TICKET-0078.md) | planned | — | SEQ + clicks nos 3 cenários |
-| G — docs H | — | ok (local) | INDEX, STATUS, README; tip `ec1aa89`+ | em `cursor/admin-ui-docs-e3a0`; push bloqueado — bundle `/opt/cursor/artifacts/admin-ui-docs.bundle` |
+| G — docs H | — | ok | INDEX, STATUS, README; tip `fe0e194` | em `cursor/admin-ui-docs-e3a0`; PR #87 |
 
 Diagnóstico: tip status-first ainda trata setup e operação com o mesmo peso (button soup). Alvo: work queue + progressive disclosure.
 
