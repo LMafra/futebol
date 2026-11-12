@@ -1,5 +1,10 @@
 {
   "name": "futebol-rails8",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "user": "ubuntu",
   "install": "bash .cursor/install.sh",
   "start": "bash .cursor/start.sh",
   "test": "bundle exec rspec && bundle exec rubocop && bundle exec packwerk check && bin/rails zeitwerk:check"
