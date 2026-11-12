@@ -508,6 +508,7 @@ Tickets **0074–0078**. Chrome unificado; 1º viewport especializado (Admin = g
 | H3 — fila Gestor | [0076](../tickets/TICKET-0076.md) | planned | — | 1 CTA por status; Reverter no overflow |
 | H4 — wizard new | [0077](../tickets/TICKET-0077.md) | planned | — | staged disclosure só no create |
 | H5 — Red Routes | [0078](../tickets/TICKET-0078.md) | planned | — | SEQ + clicks nos 3 cenários |
+| G — docs H | — | ok (local) | INDEX, STATUS, README; tip `ec1aa89` | branch `cursor/admin-work-queue-docs-e3a0`; push bloqueado — bundle `/opt/cursor/artifacts/admin-work-queue-docs.bundle` |
 
 Diagnóstico: tip status-first ainda trata setup e operação com o mesmo peso (button soup). Alvo: work queue + progressive disclosure.
 
