@@ -110,6 +110,22 @@ a {
   @apply cursor-pointer rounded-md border-0 bg-cartola px-3 py-2 font-body font-semibold text-ink hover:bg-cartola/90;
 }
 
+.formtastic :where(fieldset) {
+  @apply mb-6 rounded-md border border-rule bg-paper px-4 py-3;
+}
+
+.formtastic :where(fieldset > legend) {
+  @apply px-1 font-display text-xl text-ink;
+}
+
+.formtastic :where(label) {
+  @apply font-body font-semibold text-ink;
+}
+
+.formtastic :where(input:not([type=submit]):not([type=checkbox]):not([type=radio]):not([type=file]), select, textarea) {
+  @apply rounded-md border border-rule bg-paper font-body text-ink;
+}
+
 .action-item-button {
   @apply inline-flex cursor-pointer items-center rounded-md bg-cartola px-3 py-2 text-sm font-body font-semibold text-ink no-underline hover:bg-cartola/90;
 }

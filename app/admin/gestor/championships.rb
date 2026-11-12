@@ -7,15 +7,6 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
 
   actions :index, :show, :new, :create, :edit, :update
 
-  controller do
-    include GestorResource
-
-    before_build do |championship|
-      championship.manager = current_user if current_user.manager?
-      assign_external_id(championship)
-    end
-  end
-
   filter :name
   filter :season
 
@@ -61,17 +52,11 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
 
   form do |f|
     f.semantic_errors
-    f.inputs do
+    f.inputs 'Dados' do
       f.input :name
       f.input :season
       f.input :private, label: 'Campeonato privado?',
                         hint: 'Campeonatos privados não aparecem na home, na página pública nem no Simulador.'
-    end
-    f.inputs 'Premiação' do
-      f.input :prize_description, label: 'Descrição geral', input_html: { rows: 3 }
-      Core::Championship::PRIZE_PLACES.each do |place|
-        f.input place, label: place.to_s.humanize
-      end
     end
     f.inputs 'Esquadrão' do
       f.input :cartola_goalkeeper_limit, label: 'Limite de goleiros', input_html: { min: 0 }
@@ -83,6 +68,38 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
                                           hint: 'Usado para jogadores sem valor base próprio.',
                                           input_html: { min: 0, step: '0.01' }
     end
+    f.inputs 'Bolão' do
+      li class: 'input optional' do
+        label 'Regras'
+        para class: 'inline-hints' do
+          text_node 'As regras de pontuação do bolão ficam em '
+          a 'Pontuação do Bolão', href: gestor_bolao_scoring_rules_path
+          text_node '.'
+        end
+      end
+    end
+    f.inputs 'Premiação' do
+      f.input :prize_description, label: 'Descrição geral', input_html: { rows: 3 }
+      Core::Championship::PRIZE_PLACES.each do |place|
+        f.input place, label: place.to_s.humanize
+      end
+    end
     f.actions
+  end
+
+  controller do
+    include GestorResource
+
+    before_build do |championship|
+      championship.manager = current_user if current_user.manager?
+      assign_external_id(championship)
+    end
+
+    def update
+      update! do |success, failure|
+        success.html { redirect_to resource_path, notice: 'Campeonato atualizado' }
+        failure.html { render :edit, status: :unprocessable_entity }
+      end
+    end
   end
 end

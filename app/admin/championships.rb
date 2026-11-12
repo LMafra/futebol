@@ -2,7 +2,8 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
   menu parent: 'Meus campeonatos', label: 'Campeonatos'
 
   permit_params :name, :season, :external_id, :private, :cartola_goalkeeper_limit, :cartola_defender_limit,
-                :cartola_midfielder_limit, :cartola_forward_limit, :cartola_initial_budget, :cartola_base_player_value
+                :cartola_midfielder_limit, :cartola_forward_limit, :cartola_initial_budget, :cartola_base_player_value,
+                :prize_description, *Core::Championship::PRIZE_PLACES
 
   filter :name
   filter :season
@@ -50,7 +51,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
 
   form do |f|
     f.semantic_errors
-    f.inputs do
+    f.inputs 'Dados' do
       f.input :name
       f.input :season
       f.input :external_id
@@ -67,6 +68,31 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
                                           hint: 'Usado para jogadores sem valor base próprio.',
                                           input_html: { min: 0, step: '0.01' }
     end
+    f.inputs 'Bolão' do
+      li class: 'input optional' do
+        label 'Regras'
+        para class: 'inline-hints' do
+          text_node 'As regras de pontuação do bolão ficam em '
+          a 'Pontuação do Bolão', href: admin_bolao_scoring_rules_path
+          text_node '.'
+        end
+      end
+    end
+    f.inputs 'Premiação' do
+      f.input :prize_description, label: 'Descrição geral', input_html: { rows: 3 }
+      Core::Championship::PRIZE_PLACES.each do |place|
+        f.input place, label: place.to_s.humanize
+      end
+    end
     f.actions
+  end
+
+  controller do
+    def update
+      update! do |success, failure|
+        success.html { redirect_to resource_path, notice: 'Campeonato atualizado' }
+        failure.html { render :edit, status: :unprocessable_entity }
+      end
+    end
   end
 end

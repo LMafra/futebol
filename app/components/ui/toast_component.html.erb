@@ -1,0 +1,27 @@
+<% classes = "mb-2 flex items-center gap-3 rounded-md border #{style[:border]} #{style[:bg]} p-4 font-body text-ink" %>
+<% attrs = root_attributes(label: 'Aviso').merge(class: classes, role: style[:role],
+                                                 data: { ui_state: rendered_state, role: 'admin-toast', variant: variant }) %>
+<div <%= tag.attributes(attrs) %>>
+  <% case rendered_state %>
+  <% when :default %>
+    <% if variant.to_s.in?(%w[success notice]) %>
+      <svg class="h-5 w-5 shrink-0 <%= style[:ink] %>" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" clip-rule="evenodd"/>
+      </svg>
+    <% else %>
+      <svg class="h-5 w-5 shrink-0 <%= style[:ink] %>" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM10 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4a1 1 0 0 1-2 0V6a1 1 0 0 1 2 0v5Z"/>
+      </svg>
+    <% end %>
+    <p class="m-0"><%= message %></p>
+  <% when :loading %>
+    <span class="sr-only">Carregando aviso…</span>
+    <div class="h-5 w-full <%= skeleton_classes %>" aria-hidden="true"></div>
+  <% when :empty %>
+    <%= empty_notice('Sem avisos.') %>
+  <% when :error %>
+    <div class="<%= error_classes %>" role="alert">
+      <span class="font-bold">Falha ao montar o aviso.</span>
+    </div>
+  <% end %>
+</div>

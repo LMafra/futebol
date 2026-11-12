@@ -11,4 +11,24 @@ RSpec.describe 'ActiveAdmin Placar forms', type: :request do
     expect(response.body).to include('bg-cartola')
     expect(response.body).to match(/formtastic|championship/i)
   end
+
+  it 'groups championship form into Dados, Esquadrão, Bolão and Premiação' do
+    get '/admin/championships/new'
+
+    expect(response.body).to include('Dados', 'Esquadrão', 'Bolão', 'Premiação')
+    expect(response.body).to include('Pontuação do Bolão')
+    expect(response.body).to include('fieldset')
+  end
+
+  it 'shows Campeonato atualizado after saving' do
+    championship = create(:championship)
+
+    patch "/admin/championships/#{championship.id}", params: {
+      championship: { name: 'Copa Atualizada', season: championship.season }
+    }
+
+    expect(response).to redirect_to(admin_championship_path(championship))
+    follow_redirect!
+    expect(response.body).to include('Campeonato atualizado', 'data-role="admin-toast"')
+  end
 end

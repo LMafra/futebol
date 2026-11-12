@@ -28,7 +28,9 @@ ActiveAdmin.register Core::User, as: 'User' do
       row :name
       row :email_address
       row(:role) { |user| I18n.t("activerecord.enums.core/user.role.#{user.role}") }
-      row(:manager_status) { |user| I18n.t("activerecord.enums.core/user.manager_status.#{user.manager_status}") }
+      row(:manager_status) do |user|
+        render partial: 'admin/users/manager_status', locals: { user: }
+      end
       row :active
       row :created_at
     end
@@ -38,14 +40,38 @@ ActiveAdmin.register Core::User, as: 'User' do
     authorize! :approve_manager, resource
     Users::ReviewManagerRequestService.call(user: resource, decision: :approved, actor: current_user,
                                             ip_address: request.remote_ip)
-    redirect_to admin_user_path(resource), notice: 'Gestor aprovado.', status: :see_other
+    resource.reload
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.replace('manager-status-badge',
+                               partial: 'admin/users/manager_status', locals: { user: resource }),
+          turbo_stream.prepend('admin-toasts',
+                               partial: 'admin/shared/toast',
+                               locals: { message: 'Gestor aprovado.', variant: :success })
+        ]
+      end
+      format.html { redirect_to admin_user_path(resource), notice: 'Gestor aprovado.', status: :see_other }
+    end
   end
 
   member_action :reject_manager, method: :put do
     authorize! :reject_manager, resource
     Users::ReviewManagerRequestService.call(user: resource, decision: :rejected, actor: current_user,
                                             ip_address: request.remote_ip)
-    redirect_to admin_user_path(resource), notice: 'Pedido recusado.', status: :see_other
+    resource.reload
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.replace('manager-status-badge',
+                               partial: 'admin/users/manager_status', locals: { user: resource }),
+          turbo_stream.prepend('admin-toasts',
+                               partial: 'admin/shared/toast',
+                               locals: { message: 'Pedido recusado.', variant: :notice })
+        ]
+      end
+      format.html { redirect_to admin_user_path(resource), notice: 'Pedido recusado.', status: :see_other }
+    end
   end
 
   action_item :approve_manager, only: :show, if: proc { resource.manager_pending? } do
