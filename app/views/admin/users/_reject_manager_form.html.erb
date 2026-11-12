@@ -1,0 +1,17 @@
+<% field_id = "reject-reason-#{user.id}" %>
+<% error_id = "#{field_id}-error" %>
+<% invalid = flash[:manager_reject_error].to_s == user.id.to_s %>
+<%= form_with url: reject_manager_admin_user_path(user), method: :put, class: "flex flex-col gap-2", data: { role: "reject-manager-form" } do %>
+  <%= hidden_field_tag :return_to, return_to, id: nil if return_to %>
+  <label for="<%= field_id %>" class="text-sm font-body font-semibold text-ink">Motivo da recusa (obrigatório)</label>
+  <textarea id="<%= field_id %>" name="reason" rows="2" maxlength="500" required
+            class="<%= AdminHelper::ADMIN_INPUT_CLASSES %>"
+            <%= "aria-invalid=true aria-describedby=#{error_id}" if invalid %>></textarea>
+  <% if invalid %>
+    <p id="<%= error_id %>" class="text-sm font-body font-semibold text-ink" data-role="reject-reason-error">Informe o motivo da recusa.</p>
+  <% end %>
+  <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">O motivo fica no histórico de auditoria; o e-mail ao usuário não muda.</p>
+  <div>
+    <%= button_tag "Recusar pedido", type: :submit, class: AdminHelper::ADMIN_DANGER_BUTTON_CLASSES %>
+  </div>
+<% end %>

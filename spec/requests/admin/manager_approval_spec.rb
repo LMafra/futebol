@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Admin manager approval', type: :request do
   let(:admin) { create(:user, :admin) }
-  let(:pending_manager) { create(:user, :pending_manager) }
+  let(:pending_manager) { create(:user, :pending_manager, name: 'Pedro') }
 
   before { sign_in(admin) }
 
@@ -16,6 +16,7 @@ RSpec.describe 'Admin manager approval', type: :request do
     expect(approve_form.at_css('input[name=_method]')['value']).to eq('put')
     expect(reject_form.at_css('input[name=_method]')['value']).to eq('put')
     expect(approve_form.at_css('button')['data-confirm']).to be_present
+    expect(reject_form.at_css('textarea[name="reason"][required]')).to be_present
     expect(response.body).not_to include('data-turbo-method', 'data-turbo-confirm')
   end
 
@@ -23,15 +24,23 @@ RSpec.describe 'Admin manager approval', type: :request do
     put approve_manager_admin_user_path(pending_manager)
 
     expect(response).to redirect_to(admin_user_path(pending_manager))
-    expect(flash[:notice]).to eq('Gestor aprovado.')
+    expect(flash[:notice]).to eq('Gestor aprovado: Pedro.')
     expect(pending_manager.reload.manager_status).to eq('approved')
   end
 
-  it 'rejects the request and redirects back with a flash' do
+  it 'rejects the request with a reason and redirects back with a flash' do
+    put reject_manager_admin_user_path(pending_manager), params: { reason: 'Perfil incompleto' }
+
+    expect(response).to redirect_to(admin_user_path(pending_manager))
+    expect(flash[:notice]).to eq('Pedido recusado: Pedro.')
+    expect(pending_manager.reload.manager_status).to eq('rejected')
+  end
+
+  it 'refuses to reject without a reason' do
     put reject_manager_admin_user_path(pending_manager)
 
     expect(response).to redirect_to(admin_user_path(pending_manager))
-    expect(flash[:notice]).to eq('Pedido recusado.')
-    expect(pending_manager.reload.manager_status).to eq('rejected')
+    expect(flash[:alert]).to eq('Informe o motivo da recusa.')
+    expect(pending_manager.reload.manager_status).to eq('pending')
   end
 end

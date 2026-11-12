@@ -495,7 +495,7 @@ Tickets **0074–0078**. Chrome unificado; 1º viewport especializado (Admin = g
 | Bloco | Ticket | Status | Artefatos | Observações |
 |---|---|---|---|---|
 | H1 — limpar CTAs | [0074](../tickets/TICKET-0074.md) | planned | — | remove Ações rápidas / Atalhos |
-| H2 — fila Admin | [0075](../tickets/TICKET-0075.md) | planned | — | Aprovar inline; rejeitar com justificativa |
+| H2 — fila Admin | [0075](../tickets/TICKET-0075.md) | ok | `Users::PendingManagerQueue`, `_pending_managers`, `_reject_manager_form` | Aprovar inline; recusa exige motivo (`metadata.reason`) |
 | H3 — fila Gestor | [0076](../tickets/TICKET-0076.md) | planned | — | 1 CTA por status; Reverter no overflow |
 | H4 — wizard new | [0077](../tickets/TICKET-0077.md) | planned | — | staged disclosure só no create |
 | H5 — Red Routes | [0078](../tickets/TICKET-0078.md) | planned | — | SEQ + clicks nos 3 cenários |

@@ -1,0 +1,51 @@
+<% overdue = manager_queue.count(&:overdue?) %>
+<section class="mb-6 rounded-md border border-rule bg-white" aria-labelledby="pending-managers-title" data-role="admin-pending-managers">
+  <div class="flex flex-wrap items-baseline justify-between gap-2 border-b border-rule px-4 py-3">
+    <h3 class="font-display text-xl text-ink" id="pending-managers-title">Pedidos de gestor</h3>
+    <p class="text-sm font-body text-ink" data-role="pending-managers-count">
+      <span class="font-semibold tabular-nums"><%= manager_queue.size %></span> <%= manager_queue.one? ? "pendente" : "pendentes" %> ·
+      <span class="font-semibold tabular-nums"><%= overdue %></span> há mais de 24h
+    </p>
+  </div>
+  <div class="px-4 py-3">
+    <% if manager_queue.empty? %>
+      <%= render Ui::EmptyStateComponent.new(title: "Nenhum pedido de gestor pendente.", description: "Novos pedidos aparecem aqui assim que chegam.") %>
+    <% else %>
+      <div class="overflow-x-auto">
+        <table class="data-table" data-role="pending-managers-table">
+          <thead>
+            <tr><th scope="col">Nome</th><th scope="col">E-mail</th><th scope="col">Pedido em</th><th scope="col">Ações</th></tr>
+          </thead>
+          <tbody>
+            <% manager_queue.each do |entry| %>
+              <% user = entry.user %>
+              <% rejecting = flash[:manager_reject_error].to_s == user.id.to_s %>
+              <tr id="pending-manager-<%= user.id %>" data-role="pending-manager" data-user-id="<%= user.id %>" data-overdue="<%= entry.overdue? %>">
+                <td class="font-semibold"><%= link_to user.name, admin_user_path(user), class: "text-ink" %></td>
+                <td class="[overflow-wrap:anywhere]"><%= user.email_address %></td>
+                <td class="whitespace-nowrap tabular-nums">
+                  <%= l(entry.requested_at, format: "%d/%m %H:%M") %>
+                  <% if entry.overdue? %><span class="ms-1 rounded-sm bg-loss px-1.5 py-0.5 text-xs font-semibold text-ink">+24h</span><% end %>
+                </td>
+                <td>
+                  <div class="flex flex-wrap items-start gap-2">
+                    <%= button_to "Aprovar", approve_manager_admin_user_path(user), method: :put,
+                                  params: { return_to: "dashboard" }, class: AdminHelper::ADMIN_BUTTON_CLASSES,
+                                  form: { data: { role: "approve-manager-form" } },
+                                  aria: { label: "Aprovar #{user.name} como gestor" } %>
+                    <details class="group/reject" <%= "open" if rejecting %>>
+                      <summary class="<%= AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES %> list-none" aria-label="Recusar pedido de <%= user.name %>">Recusar</summary>
+                      <div class="mt-2 w-72 max-w-full">
+                        <%= render "admin/users/reject_manager_form", user:, return_to: "dashboard" %>
+                      </div>
+                    </details>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </div>
+</section>

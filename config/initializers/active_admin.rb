@@ -125,6 +125,11 @@ ActiveAdmin.setup do |config|
   # Default:
   # config.root_to = 'dashboard#index'
 
+  # == Flash keys
+  #
+  # manager_reject_error carries a user id back to the reject form (field-level error), not a message.
+  config.flash_keys_to_except = %w[timedout manager_reject_error]
+
   # == Admin Comments
   #
   # This allows your users to comment on any resource registered with Active Admin.
