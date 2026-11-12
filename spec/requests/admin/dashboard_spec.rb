@@ -23,4 +23,12 @@ RSpec.describe 'ActiveAdmin dashboard', type: :request do
     expect(response.body).to include('Painel Administrativo', 'lang="pt-BR"')
     expect(response.body).to match(%r{/assets/active_admin-\h+\.css})
   end
+
+  it 'shows metric cards including Campeonatos on an 8/4 grid' do
+    sign_in(create(:user, :admin))
+    get '/admin'
+
+    expect(response.body).to include('data-role="admin-metrics"', 'Campeonatos', 'lg:col-span-8', 'lg:col-span-4')
+    expect(response.body).to include('font-numeric', 'text-3xl')
+  end
 end

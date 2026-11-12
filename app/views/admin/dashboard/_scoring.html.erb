@@ -1,40 +1,87 @@
+<% metrics = [
+     { label: "Campeonatos", value: metrics_counts[:championships], href: admin_championships_path },
+     { label: "Times", value: metrics_counts[:teams], href: admin_teams_path },
+     { label: "Jogadores", value: metrics_counts[:players], href: admin_players_path },
+     { label: "Partidas", value: metrics_counts[:matches], href: admin_matches_path }
+   ] %>
+
+<div class="mb-6 grid gap-4 lg:grid-cols-12" data-role="admin-metrics">
+  <div class="grid grid-cols-2 gap-3 lg:col-span-8 sm:grid-cols-4">
+    <% metrics.each do |metric| %>
+      <%= link_to metric[:href], class: "block rounded-md border border-rule bg-paper px-4 py-3 no-underline text-ink hover:border-cartola" do %>
+        <p class="text-xs font-body font-bold uppercase tracking-widest text-graphite"><%= metric[:label] %></p>
+        <p class="mt-1 font-numeric text-3xl font-bold tabular-nums text-ink"><%= metric[:value] %></p>
+      <% end %>
+    <% end %>
+  </div>
+  <nav class="flex flex-col justify-center gap-2 rounded-md border border-rule bg-paper px-4 py-3 lg:col-span-4" aria-label="Atalhos" data-role="admin-shortcuts">
+    <p class="text-xs font-body font-bold uppercase tracking-widest text-graphite">Atalhos</p>
+    <ul class="flex flex-col gap-2 font-body text-sm">
+      <li>
+        <%= link_to admin_championships_path, class: "inline-flex items-center gap-2 font-semibold text-ink no-underline hover:text-cartola" do %>
+          <svg class="h-4 w-4 text-pitch" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          Campeonatos
+        <% end %>
+      </li>
+      <li>
+        <%= link_to admin_teams_path, class: "inline-flex items-center gap-2 font-semibold text-ink no-underline hover:text-cartola" do %>
+          <svg class="h-4 w-4 text-pitch" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Times
+        <% end %>
+      </li>
+      <li>
+        <%= link_to admin_players_path, class: "inline-flex items-center gap-2 font-semibold text-ink no-underline hover:text-cartola" do %>
+          <svg class="h-4 w-4 text-pitch" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Jogadores
+        <% end %>
+      </li>
+      <li>
+        <%= link_to admin_matches_path, class: "inline-flex items-center gap-2 font-semibold text-ink no-underline hover:text-cartola" do %>
+          <svg class="h-4 w-4 text-pitch" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Partidas
+        <% end %>
+      </li>
+    </ul>
+  </nav>
+</div>
+
 <div class="grid gap-6 lg:grid-cols-12">
   <div class="flex flex-col gap-6 lg:col-span-8">
-    <section class="panel" aria-labelledby="live-title">
-      <h3 class="panel-title" id="live-title">Ao vivo: aguardando placar final (<%= live.size %>)</h3>
-      <div class="panel-body">
+    <section class="rounded-md border border-rule bg-paper" aria-labelledby="live-title">
+      <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="live-title">Ao vivo: aguardando placar final (<%= live.size %>)</h3>
+      <div class="px-4 py-3">
         <% if live.empty? %>
-          <p class="text-gray-600 dark:text-gray-400">Nenhuma partida ao vivo.</p>
+          <p class="font-body text-graphite">Nenhuma partida ao vivo.</p>
         <% else %>
-          <table class="data-table">
-            <thead><tr><th>Partida</th><th>Início</th><th>Placar</th><th></th></tr></thead>
-            <tbody>
-              <% live.each do |match| %>
-                <tr>
-                  <td><%= link_to match, admin_match_path(match) %></td>
-                  <td class="tabular-nums"><%= l(match.match_date, format: "%d/%m %H:%M") %></td>
-                  <td class="tabular-nums"><%= admin_score(match) %></td>
-                  <td class="whitespace-nowrap text-right">
-                    <%= link_to "Preview", admin_bolaopreview_path(match_id: match.id), class: "font-semibold underline underline-offset-2" %>
-                    · <%= link_to "Finalizar", admin_matchfinalizer_path(match_id: match.id), class: "font-semibold underline underline-offset-2" %>
-                  </td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
+          <%= render Ui::AdminTableComponent.new(
+                headers: ["Partida", { label: "Início", numeric: true }, { label: "Placar", numeric: true }, ""],
+                rows: live.map { |match|
+                  [
+                    link_to(match, admin_match_path(match), class: "font-semibold text-ink no-underline hover:text-cartola"),
+                    l(match.match_date, format: "%d/%m %H:%M"),
+                    admin_score(match),
+                    safe_join([
+                      link_to("Preview", admin_bolaopreview_path(match_id: match.id), class: "font-semibold underline underline-offset-2"),
+                      " · ".html_safe,
+                      link_to("Finalizar", admin_matchfinalizer_path(match_id: match.id), class: "font-semibold underline underline-offset-2")
+                    ])
+                  ]
+                },
+                texts: { label: "Partidas ao vivo", empty: "Nenhuma partida ao vivo." }
+              ) %>
         <% end %>
       </div>
     </section>
 
-    <section class="panel" aria-labelledby="pending-title">
-      <h3 class="panel-title" id="pending-title">Encerradas com pontuação pendente (<%= pending.size %>)</h3>
-      <div class="panel-body">
+    <section class="rounded-md border border-rule bg-paper" aria-labelledby="pending-title">
+      <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="pending-title">Encerradas com pontuação pendente (<%= pending.size %>)</h3>
+      <div class="px-4 py-3">
         <% if pending.empty? %>
-          <p class="text-gray-600 dark:text-gray-400">Nada pendente: toda partida encerrada já foi pontuada.</p>
+          <p class="font-body text-graphite">Nada pendente: toda partida encerrada já foi pontuada.</p>
         <% else %>
-          <ul class="flex flex-col gap-1">
+          <ul class="flex flex-col gap-1 font-body">
             <% pending.each do |match| %>
-              <li><%= link_to match, admin_match_path(match) %> · <span class="tabular-nums"><%= admin_score(match) %></span></li>
+              <li><%= link_to match, admin_match_path(match), class: "font-semibold text-ink no-underline hover:text-cartola" %> · <span class="tabular-nums"><%= admin_score(match) %></span></li>
             <% end %>
           </ul>
         <% end %>
@@ -42,23 +89,21 @@
     </section>
   </div>
 
-  <section class="panel lg:col-span-4" aria-labelledby="log-title">
-    <h3 class="panel-title" id="log-title">Últimas ações</h3>
-    <div class="panel-body">
-      <% if recent_logs.empty? %>
-        <p class="text-gray-600 dark:text-gray-400">Nenhum registro ainda.</p>
-      <% else %>
-        <ul class="flex flex-col gap-2 text-sm">
-          <% recent_logs.each do |log| %>
-            <li>
-              <span class="status-tag"><%= log.action %></span>
-              <%= admin_auditable_link(log) %>
-              <span class="block text-gray-600 dark:text-gray-400"><%= log.user || "sistema" %> · <%= l(log.created_at, format: "%d/%m %H:%M") %></span>
-            </li>
-          <% end %>
-        </ul>
-      <% end %>
-      <%= link_to "Ver histórico completo", admin_audithistory_path, class: "mt-4 inline-block font-semibold underline underline-offset-2" %>
+  <section class="rounded-md border border-rule bg-paper lg:col-span-4" aria-labelledby="log-title">
+    <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="log-title">Últimas ações</h3>
+    <div class="px-4 py-3">
+      <%= render Ui::AdminTableComponent.new(
+            headers: ["Ação", "Quem"],
+            rows: recent_logs.map { |log|
+              [
+                safe_join([tag.span(log.action, class: "status-tag"), " ".html_safe, admin_auditable_link(log)]),
+                "#{log.user || 'sistema'} · #{l(log.created_at, format: '%d/%m %H:%M')}"
+              ]
+            },
+            texts: { label: "Últimas ações", empty: "Nenhum registro ainda." },
+            table_role: "recent-audit-logs"
+          ) %>
+      <%= link_to "Ver histórico completo", admin_audithistory_path, class: "mt-4 inline-block font-body font-semibold text-ink underline underline-offset-2 hover:text-cartola" %>
     </div>
   </section>
 </div>

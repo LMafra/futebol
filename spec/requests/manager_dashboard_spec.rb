@@ -17,12 +17,12 @@ RSpec.describe 'Gestor dashboard', type: :request do
     get '/gestor/dashboard'
 
     expect(response).to have_http_status(:ok)
-    row = page_html.at_css("tr[data-championship-id='#{championship.id}']")
-    expect(row).to be_present
-    expect(row.at_css('[data-counter="teams"]').text.to_i).to eq(2)
-    expect(row.at_css('[data-counter="players"]').text.to_i).to eq(1)
-    expect(row.at_css('[data-counter="matches"]').text).to include('1')
-    expect(row.at_css('[data-counter="pools"]').text.to_i).to eq(1)
+    card = page_html.at_css("[data-championship-id='#{championship.id}']")
+    expect(card).to be_present
+    expect(card.at_css('[data-counter="teams"]').text.to_i).to eq(2)
+    expect(card.at_css('[data-counter="players"]').text.to_i).to eq(1)
+    expect(card.at_css('[data-counter="matches"]').text).to include('1')
+    expect(card.at_css('[data-counter="pools"]').text.to_i).to eq(1)
   end
 
   it 'atalhos incluem Scouts, Finalizar e Reverter' do
@@ -39,7 +39,7 @@ RSpec.describe 'Gestor dashboard', type: :request do
 
     expect(response).to have_http_status(:ok)
     expect(response.body).to include('Você ainda não tem campeonatos')
-    expect(page_html.at_css('[data-role="gestor-championships"] tbody tr')).to be_nil
+    expect(page_html.at_css('[data-role="gestor-championships"]')).to be_nil
   end
 
   it 'salva premiação pelo formulário do campeonato' do
