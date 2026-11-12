@@ -1,0 +1,5 @@
+<% unless skip_sidebar? || sidebar_sections_for_action.blank? %>
+  <aside class="space-y-4" data-role="admin-filter-bar" aria-label="Filtros">
+    <%= render "active_admin/shared/sidebar_sections" %>
+  </aside>
+<% end %>

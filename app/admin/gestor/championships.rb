@@ -25,8 +25,10 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
     column :season
     column('Privado') { |championship| status_tag(championship.private? ? 'sim' : 'não') }
     actions defaults: false do |championship|
-      item 'Ver', gestor_championship_path(championship)
-      item 'Editar', edit_gestor_championship_path(championship) if authorized?(:update, championship)
+      text_node admin_icon_action_link('Ver', gestor_championship_path(championship), :view)
+      if authorized?(:update, championship)
+        text_node admin_icon_action_link('Editar', edit_gestor_championship_path(championship), :edit)
+      end
     end
   end
 

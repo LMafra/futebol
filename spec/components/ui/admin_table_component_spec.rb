@@ -13,6 +13,7 @@ RSpec.describe Ui::AdminTableComponent do
 
     expect(page.at_css('section')['aria-label']).to eq('Ranking')
     expect(page.at_css('thead')['class']).to include('bg-pitch', 'text-paper')
+    expect(page.at_css('thead tr')['class']).to include('text-sm', 'uppercase', 'tracking-wide')
     expect(page.css('[data-role="admin-table-row"]').map { |row| row['class'] })
       .to contain_exactly(a_string_including('bg-paper'), a_string_including('bg-white'))
     expect(page.at_css('th:last-child')['class']).to include('text-right', 'tabular-nums')

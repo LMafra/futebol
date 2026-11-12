@@ -1,0 +1,12 @@
+<div class="inline-flex items-center gap-2" data-role="admin-table-actions">
+  <% if show_action_authorized?(resource) %>
+    <%= admin_icon_action_link(view_label, resource_path(resource), :view) %>
+  <% end %>
+  <% if edit_action_authorized?(resource) %>
+    <%= admin_icon_action_link(edit_label, edit_resource_path(resource), :edit) %>
+  <% end %>
+  <% if destroy_action_authorized?(resource) %>
+    <%= admin_icon_action_link(delete_label, resource_path(resource), :delete,
+                               method: :delete, data: { confirm: delete_confirmation_text }) %>
+  <% end %>
+</div>

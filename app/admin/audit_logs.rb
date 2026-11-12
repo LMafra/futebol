@@ -12,10 +12,10 @@ ActiveAdmin.register Core::AuditLog, as: 'AuditLog' do
 
   index do
     id_column
-    column :action
+    column(:action) { |log| status_tag(log.action) }
     column :user
-    column(:auditable) { |log| "#{log.auditable_type} ##{log.auditable_id}" if log.auditable_type }
-    column(:ip_address) { |log| log.ip_address.to_s }
+    column(:auditable) { |log| admin_auditable_link(log) || "#{log.auditable_type} ##{log.auditable_id}" }
+    column(:ip_address, class: 'tabular-nums') { |log| log.ip_address.to_s }
     column :created_at
     actions
   end

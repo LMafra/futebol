@@ -69,7 +69,21 @@ a {
 }
 
 .filters-form-title {
-  @apply mb-4 font-display text-lg font-bold text-ink;
+  @apply mb-3 font-display text-lg font-bold text-ink;
+}
+
+/* Visible filter bar above the index table (not a narrow right rail). */
+#filters_sidebar_section,
+[data-role="admin-filter-bar"] {
+  @apply w-full rounded-md border border-rule bg-paper px-4 py-3;
+}
+
+.filters-form {
+  @apply grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4;
+}
+
+.filters-form-buttons {
+  @apply col-span-full flex flex-wrap items-center gap-3;
 }
 
 .filters-form-submit {
@@ -125,7 +139,7 @@ a {
 }
 
 .data-table :where(thead > tr > th) {
-  @apply border-b border-pitch bg-pitch px-3 py-3.5 text-start text-xs font-semibold uppercase tracking-widest text-paper;
+  @apply border-b border-pitch bg-pitch px-3 py-3.5 text-start text-sm font-body font-semibold uppercase tracking-wide text-paper;
 }
 
 .data-table :where(thead > tr > th > a) {

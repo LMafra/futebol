@@ -3,7 +3,7 @@
   <% when :default %>
     <table class="data-table w-full border-collapse border border-rule text-sm font-body" data-role="<%= table_role %>">
       <thead class="bg-pitch text-paper">
-        <tr class="text-xs font-bold uppercase tracking-widest">
+        <tr class="text-sm font-body font-semibold uppercase tracking-wide">
           <% headers.each do |header| %>
             <th scope="col" class="border-b border-pitch px-3 py-3.5 <%= header[:numeric] ? 'text-right tabular-nums' : 'text-start' %>">
               <%= header[:label] %>

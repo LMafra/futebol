@@ -24,7 +24,9 @@ ActiveAdmin.register Core::Match, as: 'Match' do
     column(:status) { |match| admin_match_status_badge(match) }
     column :scores_calculated_at
     actions do |match|
-      item 'Preview', admin_bolaopreview_path(match_id: match.id) if authorized?(:preview, match)
+      next unless authorized?(:preview, match)
+
+      text_node admin_icon_action_link('Preview', admin_bolaopreview_path(match_id: match.id), :preview)
     end
   end
 
