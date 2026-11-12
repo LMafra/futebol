@@ -1,0 +1,51 @@
+<%
+  # Placar sidebar: paper surface, rule borders, task navigation (Block A/B).
+  nav_idle = "text-ink hover:text-cartola flex items-center w-full rounded-md p-2 gap-x-2 text-sm font-body no-underline"
+  nav_active = "bg-cartola/10 text-cartola selected"
+  child_idle = "text-ink hover:text-cartola block rounded-md py-1.5 px-2 text-sm font-body no-underline"
+%>
+<aside id="main-menu" class="fixed top-0 xl:top-16 bottom-0 inset-s-0 z-40 w-72 xl:w-60 p-4 overflow-y-auto transition-transform duration-200 -translate-x-full xl:translate-x-0 bg-paper xl:border-e xl:border-rule" tabindex="-1" data-role="craquefy-admin-sidebar" aria-label="<%= t('active_admin.main_navigation', default: 'Menu principal') %>">
+  <ul role="list" class="flex flex-1 flex-col space-y-1.5 font-body">
+    <% current_menu.items(self).each do |item| %>
+      <% children = item.items(self).presence %>
+      <% url = item.url(self) %>
+      <% label = capture do %>
+        <% if url.present? %>
+          <%= link_to item.label(self), url, item.html_options.merge(class: "#{nav_idle} #{(current_menu_item?(item, children: false) ? nav_active : '')}") %>
+        <% else %>
+          <%= item.label(self) %>
+        <% end %>
+      <% end %>
+      <li <%= current_menu_item?(item) && "data-open" %> class="group" data-item-id="<%= item.id %>">
+        <% if children %>
+          <% if url.present? && url == "#" %>
+            <button data-menu-button class="<%= nav_idle %>" aria-label="<%= t('active_admin.toggle_section') %>">
+              <%= item.label(self) %>
+              <svg class="group-data-open:rotate-90 group-data-open:rtl:-rotate-90 ms-auto h-5 w-5 shrink-0 rtl:-scale-x-100" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          <% elsif url.present? && url != "#" %>
+            <div data-parent-id="<%= item.id %>" data-menu-button class="flex">
+              <%= label %>
+              <button class="<%= nav_idle %>" aria-label="<%= t('active_admin.toggle_section') %>">
+                <svg class="group-data-open:rotate-90 group-data-open:rtl:-rotate-90 ms-auto h-5 w-5 shrink-0 rtl:-scale-x-100" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          <% end %>
+          <ul role="list" class="mt-1 space-y-1 hidden group-data-open:block ms-1 ps-2 border-s-2 border-rule">
+            <% children.each do |j| %>
+              <li data-item-id="<%= j.id %>">
+                <%= link_to j.label(self), j.url(self), j.html_options.merge(class: "#{child_idle} #{(current_menu_item?(j) ? nav_active : '')}") %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <%= label %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</aside>
