@@ -21,7 +21,7 @@ ActiveAdmin.register Core::Match, as: 'Match' do
     column :championship
     column :match_date
     column('Placar', class: 'tabular-nums') { |match| admin_score(match) }
-    column(:status) { |match| status_tag match.status }
+    column(:status) { |match| admin_match_status_badge(match) }
     column :scores_calculated_at
     actions do |match|
       item 'Preview', admin_bolaopreview_path(match_id: match.id) if authorized?(:preview, match)
@@ -58,7 +58,7 @@ ActiveAdmin.register Core::Match, as: 'Match' do
       row :match_date
       row('Rodada', &:round)
       row('Placar') { |match| admin_score(match) }
-      row(:status) { |match| status_tag match.status }
+      row(:status) { |match| admin_match_status_badge(match) }
       row :scores_calculated_at
       row :scoring_token
       row :reversal_token

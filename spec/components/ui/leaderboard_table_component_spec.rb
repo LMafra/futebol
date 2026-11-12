@@ -15,6 +15,8 @@ RSpec.describe Ui::LeaderboardTableComponent do
     expect(page.css('[data-role="leaderboard-row"]').map { |row| row.text.squish })
       .to eq(['1 Ana S. 12', '2 Participante 7.50'])
     expect(page.at_css('tr td')['class']).to include('border-cartola')
+    expect(page.at_css('[data-role="medal"]')['data-position']).to eq('1')
+    expect(page.at_css('thead')['class']).to include('bg-pitch', 'text-paper')
   end
 
   it 'adds the extra columns before the points, with the detail next to the name' do

@@ -1,8 +1,8 @@
 <section class="w-full" <%= tag.attributes(root_attributes(label: text(:label))) %>>
   <% case rendered_state %>
   <% when :default %>
-    <table class="w-full border-collapse tabular-nums lining-nums <%= compact? ? "text-sm" : "text-sm md:text-base" %>">
-      <thead class="<%= compact? ? "sr-only" : "bg-pitch text-white" %>">
+    <table class="w-full border-collapse border border-rule tabular-nums lining-nums font-body <%= compact? ? "text-sm" : "text-sm md:text-base" %>">
+      <thead class="<%= compact? ? "sr-only" : "bg-pitch text-paper" %>">
         <tr class="text-xs font-bold uppercase tracking-widest">
           <th scope="col" class="<%= cell_classes %> text-left">#</th>
           <th scope="col" class="<%= cell_classes %> text-left"><%= text(:name_header) %></th>
@@ -13,9 +13,11 @@
         </tr>
       </thead>
       <tbody>
-        <% rows.each do |row| %>
-          <tr class="border-b border-rule last:border-b-0 <%= "even:bg-white" unless compact? %>" data-role="leaderboard-row">
-            <td class="<%= cell_classes %> w-8 font-bold <%= "border-l-4 border-cartola" if row.position == 1 %>"><%= row.position %></td>
+        <% rows.each_with_index do |row, index| %>
+          <tr class="border-b border-rule last:border-b-0 <%= compact? ? '' : (index.even? ? 'bg-paper' : 'bg-white') %>" data-role="leaderboard-row">
+            <td class="<%= cell_classes %> w-10 font-bold <%= "border-l-4 border-cartola" if row.position == 1 %>">
+              <%= position_cell(row.position) %>
+            </td>
             <th scope="row" class="<%= cell_classes %> text-left font-semibold">
               <%= row.name %>
               <% if row.try(:detail).present? %>

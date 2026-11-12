@@ -26,7 +26,7 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
     column('Rodada', &:round)
     column :match_date
     column('Placar', class: 'tabular-nums') { |match| admin_score(match) }
-    column(:status) { |match| status_tag match.status }
+    column(:status) { |match| admin_match_status_badge(match) }
     actions defaults: false do |match|
       item 'Ver', gestor_match_path(match), class: 'view_link member_link'
       item 'Editar', edit_gestor_match_path(match), class: 'edit_link member_link' if match.scheduled?
@@ -57,7 +57,7 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
       row :match_date
       row('Rodada', &:round)
       row('Placar') { |match| admin_score(match) }
-      row(:status) { |match| status_tag match.status }
+      row(:status) { |match| admin_match_status_badge(match) }
     end
   end
 

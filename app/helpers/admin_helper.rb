@@ -23,6 +23,14 @@ module AdminHelper
     [match.home_score, match.away_score].map { |goals| goals.nil? ? '–' : goals }.join(' × ')
   end
 
+  def admin_match_status_badge(match)
+    status = match.status.to_s
+    status = 'finished' if status == 'scored'
+    return status_tag(match.status) unless Ui::StatusBadgeComponent::STYLES.key?(status.to_sym)
+
+    render Ui::StatusBadgeComponent.new(status:)
+  end
+
   def admin_match_option(match)
     "#{match.match_date&.strftime('%d/%m %H:%M')} · #{match} · #{match.status} · #{admin_score(match)}"
   end
