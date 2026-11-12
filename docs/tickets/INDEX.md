@@ -1,4 +1,4 @@
-# Tickets — INDEX (73 tickets)
+# Tickets — INDEX (84 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -80,6 +80,12 @@
 | [0076](TICKET-0076.md) | H3 | Fila Gestor: 1 CTA por status de partida | 0074, 0061 | — |
 | [0077](TICKET-0077.md) | H4 | Create campeonato: wizard só em `new` | 0072, 0074 | — |
 | [0078](TICKET-0078.md) | H5 | Teste usabilidade Red Routes | 0075, 0076, 0077 | — |
+| [0079](TICKET-0079.md) | A1 | Bug: Aprovar/Recusar gestor sem Turbo no Admin | 0057, 0072 | — |
+| [0080](TICKET-0080.md) | A2 | Base CSS Admin/Gestor: links, campos, foco, dark mode | 0079 | — |
+| [0081](TICKET-0081.md) | A3 | Acessibilidade de componentes do Admin | 0080 | — |
+| [0082](TICKET-0082.md) | P1 | Base visual pública: bundles CSS, escala, campos, foco | 0080 | — |
+| [0083](TICKET-0083.md) | P2 | Consistência pública: botões, tabelas, ARIA | 0082 | — |
+| [0084](TICKET-0084.md) | A4 | Consistência Admin/Gestor: i18n, papéis de botão, CSV | 0081, 0077 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -95,3 +101,4 @@
 - UI Admin/Gestor (Placar): 0063 → 0064 → 0065 → 0066 → 0067
 - UI/UX Admin/Gestor (status-first): 0068 → 0069 → 0070 → 0071 → 0072 → 0073
 - UI/UX Admin/Gestor (work queue): 0074 → {0075, 0076} → 0077 → 0078
+- Auditoria UI/UX completa (ordem dos commits): 0079 → 0080 → 0081 → 0075 → 0076 → 0074 → 0077 → 0084 → 0082 → 0083 → 0078

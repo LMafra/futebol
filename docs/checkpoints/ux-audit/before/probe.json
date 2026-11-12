@@ -1,0 +1,1591 @@
+{
+  "admin-dashboard": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "SPAN",
+        "text": "Painel Administrativo",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      }
+    ],
+    "lowCount": 1,
+    "fields": []
+  },
+  "admin-users": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/users",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Usuários",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      }
+    ],
+    "lowCount": 1,
+    "fields": [
+      {
+        "name": "q[role_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "q[manager_status_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "admin-user-pending": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/users/8",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Usuários",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      },
+      {
+        "tag": "SPAN",
+        "text": "Sim",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.464717 -0.101903 0.0502845 / 0.1)",
+        "contrast": 3.18
+      }
+    ],
+    "lowCount": 2,
+    "fields": []
+  },
+  "admin-championship-new": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/championships/new",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Campeonatos",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      }
+    ],
+    "lowCount": 1,
+    "fields": [
+      {
+        "name": "championship[name]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[season]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[external_id]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[cartola_goalkeeper_limit]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[cartola_defender_limit]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "admin-championship-edit": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/championships/1/edit",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Campeonatos",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      }
+    ],
+    "lowCount": 1,
+    "fields": [
+      {
+        "name": "championship[name]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[season]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[external_id]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[cartola_goalkeeper_limit]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[cartola_defender_limit]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "admin-matches": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/matches",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Partidas",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      },
+      {
+        "tag": "A",
+        "text": "1",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      }
+    ],
+    "lowCount": 2,
+    "fields": [
+      {
+        "name": "q[championship_id_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "q[round_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "q[status_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "admin-matches-empty": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/matches?q[id_eq]=999999",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Partidas",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      },
+      {
+        "tag": "A",
+        "text": "1",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      }
+    ],
+    "lowCount": 2,
+    "fields": [
+      {
+        "name": "q[championship_id_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "q[round_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "q[status_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "admin-match-show": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/matches/41",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Partidas",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      }
+    ],
+    "lowCount": 1,
+    "fields": []
+  },
+  "admin-scouts": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/matchscouts?match_id=41",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Scouts da partida",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Visitante · Remo",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.9)",
+        "contrast": 1.16
+      }
+    ],
+    "lowCount": 2,
+    "fields": [
+      {
+        "name": "match_id",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "scouts[1][goals]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "scouts[1][assists]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "scouts[1][penalty_saves]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "scouts[1][saves]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "admin-finalizer": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/matchfinalizer",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Finalizar partida",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      }
+    ],
+    "lowCount": 1,
+    "fields": [
+      {
+        "name": "match_id",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "admin-reversal": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/matchreversal",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Reverter pontuação",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      }
+    ],
+    "lowCount": 1,
+    "fields": [
+      {
+        "name": "match_id",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "admin-preview": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/bolaopreview?match_id=41",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Preview do Bolão",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      }
+    ],
+    "lowCount": 1,
+    "fields": [
+      {
+        "name": "match_id",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "candidate_home",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(255, 255, 255)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.49
+      },
+      {
+        "name": "candidate_away",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(255, 255, 255)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.49
+      }
+    ]
+  },
+  "admin-csv-new": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/csv_imports/new",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Importações CSV",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      }
+    ],
+    "lowCount": 1,
+    "fields": [
+      {
+        "name": "csv_import[csv_file]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "admin-tester": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/scoringruletester",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Testar regras",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      }
+    ],
+    "lowCount": 1,
+    "fields": [
+      {
+        "name": "bolao[pool_id]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(255, 255, 255)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.49
+      },
+      {
+        "name": "bolao[guess_home]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(255, 255, 255)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.49
+      },
+      {
+        "name": "bolao[guess_away]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(255, 255, 255)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.49
+      },
+      {
+        "name": "bolao[result_home]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(255, 255, 255)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.49
+      },
+      {
+        "name": "bolao[result_away]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(255, 255, 255)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.49
+      }
+    ]
+  },
+  "admin-dashboard-dark": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin",
+    "dark": true,
+    "lowContrast": [
+      {
+        "tag": "SPAN",
+        "text": "Painel Administrativo",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      }
+    ],
+    "lowCount": 1,
+    "fields": []
+  },
+  "admin-users-dark": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/users",
+    "dark": true,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Usuários",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      }
+    ],
+    "lowCount": 1,
+    "fields": [
+      {
+        "name": "q[role_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "q[manager_status_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "admin-user-pending-dark": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/users/8",
+    "dark": true,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Usuários",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      },
+      {
+        "tag": "SPAN",
+        "text": "Sim",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.464717 -0.101903 0.0502845 / 0.1)",
+        "contrast": 3.18
+      }
+    ],
+    "lowCount": 2,
+    "fields": []
+  },
+  "admin-championship-new-dark": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/championships/new",
+    "dark": true,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Campeonatos",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      }
+    ],
+    "lowCount": 1,
+    "fields": [
+      {
+        "name": "championship[name]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[season]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[external_id]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[cartola_goalkeeper_limit]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[cartola_defender_limit]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "admin-championship-edit-dark": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/championships/1/edit",
+    "dark": true,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Campeonatos",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      }
+    ],
+    "lowCount": 1,
+    "fields": [
+      {
+        "name": "championship[name]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[season]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[external_id]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[cartola_goalkeeper_limit]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[cartola_defender_limit]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "admin-matches-dark": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/admin/matches",
+    "dark": true,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Partidas",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      },
+      {
+        "tag": "A",
+        "text": "1",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      }
+    ],
+    "lowCount": 2,
+    "fields": [
+      {
+        "name": "q[championship_id_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "q[round_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "q[status_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "gestor-dashboard": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/gestor",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "SPAN",
+        "text": "Painel",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      }
+    ],
+    "lowCount": 1,
+    "fields": []
+  },
+  "gestor-championship-new": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/gestor/championships/new",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Campeonatos",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      }
+    ],
+    "lowCount": 1,
+    "fields": [
+      {
+        "name": "championship[name]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[season]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[cartola_goalkeeper_limit]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[cartola_defender_limit]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "championship[cartola_midfielder_limit]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "gestor-matches": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/gestor/matches",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Partidas",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      },
+      {
+        "tag": "SPAN",
+        "text": "Encerrada",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.464717 -0.101903 0.0502845 / 0.1)",
+        "contrast": 3.18
+      },
+      {
+        "tag": "SPAN",
+        "text": "Encerrada",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.464717 -0.101903 0.0502845 / 0.1)",
+        "contrast": 3.18
+      },
+      {
+        "tag": "SPAN",
+        "text": "Encerrada",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.464717 -0.101903 0.0502845 / 0.1)",
+        "contrast": 3.18
+      },
+      {
+        "tag": "SPAN",
+        "text": "Encerrada",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.464717 -0.101903 0.0502845 / 0.1)",
+        "contrast": 3.18
+      },
+      {
+        "tag": "SPAN",
+        "text": "Encerrada",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.464717 -0.101903 0.0502845 / 0.1)",
+        "contrast": 3.18
+      },
+      {
+        "tag": "SPAN",
+        "text": "Encerrada",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.464717 -0.101903 0.0502845 / 0.1)",
+        "contrast": 3.18
+      },
+      {
+        "tag": "SPAN",
+        "text": "Encerrada",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.464717 -0.101903 0.0502845 / 0.1)",
+        "contrast": 3.18
+      },
+      {
+        "tag": "SPAN",
+        "text": "Encerrada",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.464717 -0.101903 0.0502845 / 0.1)",
+        "contrast": 3.18
+      },
+      {
+        "tag": "SPAN",
+        "text": "Encerrada",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.464717 -0.101903 0.0502845 / 0.1)",
+        "contrast": 3.18
+      }
+    ],
+    "lowCount": 10,
+    "fields": [
+      {
+        "name": "q[championship_id_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "q[round_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "q[status_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "q[match_date_gteq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "gestor-players": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/gestor/players",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Jogadores",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "oklab(0.649068 0.137078 0.130292 / 0.1)",
+        "contrast": 3.17
+      },
+      {
+        "tag": "A",
+        "text": "1",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      }
+    ],
+    "lowCount": 2,
+    "fields": [
+      {
+        "name": "q[team_id_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "q[name_cont]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "q[position_eq]",
+        "bg": "rgb(244, 241, 234)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "public-home": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Craquefy",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      }
+    ],
+    "lowCount": 1,
+    "fields": []
+  },
+  "public-championship": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/campeonatos/1",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Craquefy",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      },
+      {
+        "tag": "A",
+        "text": "Times",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(232, 93, 4)",
+        "contrast": 1.89
+      }
+    ],
+    "lowCount": 2,
+    "fields": []
+  },
+  "public-pools": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/pools",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Craquefy",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      },
+      {
+        "tag": "A",
+        "text": "Criar bolão",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      }
+    ],
+    "lowCount": 2,
+    "fields": [
+      {
+        "name": "code",
+        "bg": "oklch(0.985 0.002 247.839)",
+        "around": "rgb(255, 255, 255)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.49
+      }
+    ]
+  },
+  "public-pool": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/pools/1",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Craquefy",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      },
+      {
+        "tag": "SPAN",
+        "text": "Dono",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(11, 107, 58, 0.15)",
+        "contrast": 2.74
+      },
+      {
+        "tag": "A",
+        "text": "Palpites",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      }
+    ],
+    "lowCount": 3,
+    "fields": []
+  },
+  "public-bets": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/pools/1/bets",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Craquefy",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      },
+      {
+        "tag": "SPAN",
+        "text": "Exato",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(11, 107, 58, 0.15)",
+        "contrast": 2.74
+      },
+      {
+        "tag": "SPAN",
+        "text": "✓",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(11, 107, 58, 0.15)",
+        "contrast": 2.74
+      },
+      {
+        "tag": "SPAN",
+        "text": "Exato",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(11, 107, 58, 0.15)",
+        "contrast": 2.74
+      },
+      {
+        "tag": "SPAN",
+        "text": "✓",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(11, 107, 58, 0.15)",
+        "contrast": 2.74
+      },
+      {
+        "tag": "SPAN",
+        "text": "Errou",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(164, 22, 26, 0.15)",
+        "contrast": 2.33
+      },
+      {
+        "tag": "SPAN",
+        "text": "✗",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(164, 22, 26, 0.15)",
+        "contrast": 2.33
+      },
+      {
+        "tag": "SPAN",
+        "text": "Exato",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(11, 107, 58, 0.15)",
+        "contrast": 2.74
+      },
+      {
+        "tag": "SPAN",
+        "text": "✓",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(11, 107, 58, 0.15)",
+        "contrast": 2.74
+      },
+      {
+        "tag": "SPAN",
+        "text": "Exato",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(11, 107, 58, 0.15)",
+        "contrast": 2.74
+      },
+      {
+        "tag": "SPAN",
+        "text": "✓",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(11, 107, 58, 0.15)",
+        "contrast": 2.74
+      },
+      {
+        "tag": "SPAN",
+        "text": "Exato",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(11, 107, 58, 0.15)",
+        "contrast": 2.74
+      },
+      {
+        "tag": "SPAN",
+        "text": "✓",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(11, 107, 58, 0.15)",
+        "contrast": 2.74
+      },
+      {
+        "tag": "SPAN",
+        "text": "Errou",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(164, 22, 26, 0.15)",
+        "contrast": 2.33
+      },
+      {
+        "tag": "SPAN",
+        "text": "✗",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(164, 22, 26, 0.15)",
+        "contrast": 2.33
+      },
+      {
+        "tag": "SPAN",
+        "text": "Errou",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(164, 22, 26, 0.15)",
+        "contrast": 2.33
+      },
+      {
+        "tag": "SPAN",
+        "text": "✗",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(164, 22, 26, 0.15)",
+        "contrast": 2.33
+      },
+      {
+        "tag": "SPAN",
+        "text": "Exato",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(11, 107, 58, 0.15)",
+        "contrast": 2.74
+      },
+      {
+        "tag": "SPAN",
+        "text": "✓",
+        "fg": "rgb(22, 22, 22)",
+        "bg": "rgba(11, 107, 58, 0.15)",
+        "contrast": 2.74
+      }
+    ],
+    "lowCount": 19,
+    "fields": []
+  },
+  "public-esquadrao": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/esquadrao",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Craquefy",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      },
+      {
+        "tag": "P",
+        "text": "Formação",
+        "fg": "rgb(217, 211, 196)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 4.43
+      },
+      {
+        "tag": "SPAN",
+        "text": "4-3-3",
+        "fg": "rgb(217, 211, 196)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 4.43
+      },
+      {
+        "tag": "A",
+        "text": "Editar escalação",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(232, 93, 4)",
+        "contrast": 1.89
+      }
+    ],
+    "lowCount": 4,
+    "fields": []
+  },
+  "public-lineup-edit": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/lineup/edit",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Craquefy",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      }
+    ],
+    "lowCount": 1,
+    "fields": [
+      {
+        "name": "",
+        "bg": "rgba(0, 0, 0, 0)",
+        "around": "rgb(255, 255, 255)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.49
+      }
+    ]
+  },
+  "public-esquadrao-rankings": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/esquadrao/rankings",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Craquefy",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      },
+      {
+        "tag": "A",
+        "text": "Pontos",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(232, 93, 4)",
+        "contrast": 1.89
+      }
+    ],
+    "lowCount": 2,
+    "fields": [
+      {
+        "name": "championship_id",
+        "bg": "rgba(0, 0, 0, 0)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "public-simulador": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/simulador/1",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Craquefy",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      },
+      {
+        "tag": "SPAN",
+        "text": "AO VIVO",
+        "fg": "rgb(232, 93, 4)",
+        "bg": "rgb(255, 255, 255)",
+        "contrast": 3.5
+      },
+      {
+        "tag": "SPAN",
+        "text": "AO VIVO",
+        "fg": "rgb(232, 93, 4)",
+        "bg": "rgb(255, 255, 255)",
+        "contrast": 3.5
+      },
+      {
+        "tag": "SPAN",
+        "text": "AO VIVO",
+        "fg": "rgb(232, 93, 4)",
+        "bg": "rgb(255, 255, 255)",
+        "contrast": 3.5
+      },
+      {
+        "tag": "SPAN",
+        "text": "AO VIVO",
+        "fg": "rgb(232, 93, 4)",
+        "bg": "rgb(255, 255, 255)",
+        "contrast": 3.5
+      },
+      {
+        "tag": "SPAN",
+        "text": "AO VIVO",
+        "fg": "rgb(232, 93, 4)",
+        "bg": "rgb(255, 255, 255)",
+        "contrast": 3.5
+      },
+      {
+        "tag": "SPAN",
+        "text": "AO VIVO",
+        "fg": "rgb(232, 93, 4)",
+        "bg": "rgb(255, 255, 255)",
+        "contrast": 3.5
+      },
+      {
+        "tag": "SPAN",
+        "text": "AO VIVO",
+        "fg": "rgb(232, 93, 4)",
+        "bg": "rgb(255, 255, 255)",
+        "contrast": 3.5
+      },
+      {
+        "tag": "SPAN",
+        "text": "AO VIVO",
+        "fg": "rgb(232, 93, 4)",
+        "bg": "rgb(255, 255, 255)",
+        "contrast": 3.5
+      },
+      {
+        "tag": "SPAN",
+        "text": "AO VIVO",
+        "fg": "rgb(232, 93, 4)",
+        "bg": "rgb(255, 255, 255)",
+        "contrast": 3.5
+      },
+      {
+        "tag": "SPAN",
+        "text": "AO VIVO",
+        "fg": "rgb(232, 93, 4)",
+        "bg": "rgb(255, 255, 255)",
+        "contrast": 3.5
+      }
+    ],
+    "lowCount": 11,
+    "fields": [
+      {
+        "name": "guesses[41][home]",
+        "bg": "oklch(0.985 0.002 247.839)",
+        "around": "rgb(255, 255, 255)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.49
+      },
+      {
+        "name": "guesses[41][away]",
+        "bg": "oklch(0.985 0.002 247.839)",
+        "around": "rgb(255, 255, 255)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.49
+      },
+      {
+        "name": "guesses[44][home]",
+        "bg": "oklch(0.985 0.002 247.839)",
+        "around": "rgb(255, 255, 255)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.49
+      },
+      {
+        "name": "guesses[44][away]",
+        "bg": "oklch(0.985 0.002 247.839)",
+        "around": "rgb(255, 255, 255)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.49
+      },
+      {
+        "name": "guesses[47][home]",
+        "bg": "oklch(0.985 0.002 247.839)",
+        "around": "rgb(255, 255, 255)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.49
+      }
+    ]
+  },
+  "public-account": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/minha-conta",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Craquefy",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      }
+    ],
+    "lowCount": 1,
+    "fields": []
+  },
+  "public-login": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/entrar",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Craquefy",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      },
+      {
+        "tag": "A",
+        "text": "Entrar",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      }
+    ],
+    "lowCount": 2,
+    "fields": [
+      {
+        "name": "email_address",
+        "bg": "rgb(255, 255, 255)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "password",
+        "bg": "rgb(255, 255, 255)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "public-signup": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/signup",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Craquefy",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      },
+      {
+        "tag": "A",
+        "text": "Entrar",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      }
+    ],
+    "lowCount": 2,
+    "fields": [
+      {
+        "name": "user[name]",
+        "bg": "rgb(255, 255, 255)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "user[email_address]",
+        "bg": "rgb(255, 255, 255)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "user[password]",
+        "bg": "rgb(255, 255, 255)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      },
+      {
+        "name": "user[password_confirmation]",
+        "bg": "rgb(255, 255, 255)",
+        "around": "rgb(244, 241, 234)",
+        "border": "rgb(217, 211, 196)",
+        "borderVsAround": 1.32
+      }
+    ]
+  },
+  "public-home-anon": {
+    "status": 200,
+    "url": "http://127.0.0.1:3005/",
+    "dark": false,
+    "lowContrast": [
+      {
+        "tag": "A",
+        "text": "Craquefy",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      },
+      {
+        "tag": "A",
+        "text": "Entrar",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(11, 107, 58)",
+        "contrast": 1
+      },
+      {
+        "tag": "A",
+        "text": "Entrar",
+        "fg": "rgb(11, 107, 58)",
+        "bg": "rgb(232, 93, 4)",
+        "contrast": 1.89
+      }
+    ],
+    "lowCount": 3,
+    "fields": []
+  }
+}

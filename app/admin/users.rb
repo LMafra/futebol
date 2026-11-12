@@ -40,49 +40,24 @@ ActiveAdmin.register Core::User, as: 'User' do
     authorize! :approve_manager, resource
     Users::ReviewManagerRequestService.call(user: resource, decision: :approved, actor: current_user,
                                             ip_address: request.remote_ip)
-    resource.reload
-    respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: [
-          turbo_stream.replace('manager-status-badge',
-                               partial: 'admin/users/manager_status', locals: { user: resource }),
-          turbo_stream.prepend('admin-toasts',
-                               partial: 'admin/shared/toast',
-                               locals: { message: 'Gestor aprovado.', variant: :success })
-        ]
-      end
-      format.html { redirect_to admin_user_path(resource), notice: 'Gestor aprovado.', status: :see_other }
-    end
+    redirect_to admin_user_path(resource), notice: 'Gestor aprovado.', status: :see_other
   end
 
   member_action :reject_manager, method: :put do
     authorize! :reject_manager, resource
     Users::ReviewManagerRequestService.call(user: resource, decision: :rejected, actor: current_user,
                                             ip_address: request.remote_ip)
-    resource.reload
-    respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: [
-          turbo_stream.replace('manager-status-badge',
-                               partial: 'admin/users/manager_status', locals: { user: resource }),
-          turbo_stream.prepend('admin-toasts',
-                               partial: 'admin/shared/toast',
-                               locals: { message: 'Pedido recusado.', variant: :notice })
-        ]
-      end
-      format.html { redirect_to admin_user_path(resource), notice: 'Pedido recusado.', status: :see_other }
-    end
+    redirect_to admin_user_path(resource), notice: 'Pedido recusado.', status: :see_other
   end
 
+  # The admin importmap has rails-ujs but no Turbo: data-turbo-* attributes are inert here.
   action_item :approve_manager, only: :show, if: proc { resource.manager_pending? } do
-    link_to 'Aprovar gestor', approve_manager_admin_user_path(resource),
-            data: { turbo_method: :put, turbo_confirm: 'Aprovar este pedido de gestor?' },
-            class: 'action-item-button'
+    button_to 'Aprovar gestor', approve_manager_admin_user_path(resource),
+              method: :put, class: 'action-item-button', data: { confirm: 'Aprovar este pedido de gestor?' }
   end
 
   action_item :reject_manager, only: :show, if: proc { resource.manager_pending? } do
-    link_to 'Recusar pedido', reject_manager_admin_user_path(resource),
-            data: { turbo_method: :put, turbo_confirm: 'Recusar este pedido de gestor?' },
-            class: 'action-item-button'
+    button_to 'Recusar pedido', reject_manager_admin_user_path(resource),
+              method: :put, class: 'action-item-button', data: { confirm: 'Recusar este pedido de gestor?' }
   end
 end

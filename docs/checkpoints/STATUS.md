@@ -521,3 +521,18 @@ curl -sS -o /dev/null -w '%{http_code} %{redirect_url}\n' -H "$HDR" "$HOST/admin
 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}\n' -H "$HDR" "$HOST/gestor"
 ```
 
+## Auditoria UI/UX completa (Admin, Gestor e público)
+
+Tickets **0079–0084**, executados junto com a work queue na ordem 0079 → 0080 → 0081 → 0075 → 0076 → 0074 → 0077 → 0084 → 0082 → 0083 → 0078, na branch canônica `cursor/admin-ui-docs-e3a0`. Evidência em `docs/checkpoints/ux-audit/` (`before/` e `after/`: 1440px e 390px; Admin também com `prefers-color-scheme: dark`; `probe.json` com contraste medido no navegador).
+
+| Bloco | Ticket | Status | Artefatos | Observações |
+|---|---|---|---|---|
+| A1 — bug aprovar | [0079](../tickets/TICKET-0079.md) | ok | `button_to` PUT + redirect | Admin sem Turbo; `data-turbo-*` era inerte |
+| A2 — base CSS Admin | [0080](../tickets/TICKET-0080.md) | planned | — | link fora de `@layer`, campos, foco, dark mode |
+| A3 — a11y Admin | [0081](../tickets/TICKET-0081.md) | planned | — | abas de scouts, sidebar, alvos de toque |
+| A4 — consistência Admin | [0084](../tickets/TICKET-0084.md) | planned | — | i18n, papéis de botão, CSV |
+| P1 — base pública | [0082](../tickets/TICKET-0082.md) | planned | — | `:app` inclui CSS do Admin; escala |
+| P2 — consistência pública | [0083](../tickets/TICKET-0083.md) | planned | — | botões, tabelas, ARIA |
+
+Ambiente local (WSL): Postgres do projeto na porta 5440 (`~/.local/share/futebol-pg`); rodar `bin/dev` (ou `bin/rails tailwindcss:build`) antes de abrir o Admin, porque `rails s` sozinho serve um `app/assets/builds/active_admin.css` velho.
+
