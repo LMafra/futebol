@@ -75,6 +75,11 @@
 | [0071](TICKET-0071.md) | D | Tabelas pitch + barra de filtros | 0065, 0070 | — |
 | [0072](TICKET-0072.md) | E | Formulários em seções + toast | 0071 | — |
 | [0073](TICKET-0073.md) | F | EmptyState, mobile e skeleton | 0072 | — |
+| [0074](TICKET-0074.md) | H1 | Remover Ações rápidas / Atalhos do 1º viewport | 0070, 0073 | — |
+| [0075](TICKET-0075.md) | H2 | Fila Admin: gestores pendentes com Aprovar inline | 0074, 0057 | — |
+| [0076](TICKET-0076.md) | H3 | Fila Gestor: 1 CTA por status de partida | 0074, 0061 | — |
+| [0077](TICKET-0077.md) | H4 | Create campeonato: wizard só em `new` | 0072, 0074 | — |
+| [0078](TICKET-0078.md) | H5 | Teste usabilidade Red Routes | 0075, 0076, 0077 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -89,3 +94,4 @@
 - RBAC (3 níveis): 0056 → 0057 → 0058 → 0059 → 0060 → 0061 → 0062
 - UI Admin/Gestor (Placar): 0063 → 0064 → 0065 → 0066 → 0067
 - UI/UX Admin/Gestor (status-first): 0068 → 0069 → 0070 → 0071 → 0072 → 0073
+- UI/UX Admin/Gestor (work queue): 0074 → {0075, 0076} → 0077 → 0078

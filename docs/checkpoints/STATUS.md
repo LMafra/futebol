@@ -497,6 +497,20 @@ Branches (1 commit assinado por bloco):
 
 Gate `.cursor/environment.json` `test`: 1076 examples, 0 failures (após Bloco F).
 
+## UI/UX work queue (pós-Gemini / IHC)
+
+Tickets **0074–0078**. Chrome unificado; 1º viewport especializado (Admin = governança/exceções; Gestor = ownership/fila de partidas). Sem alteração em engines/models/ADRs `0001–0005` nem em `docs/design/*`.
+
+| Bloco | Ticket | Status | Artefatos | Observações |
+|---|---|---|---|---|
+| H1 — limpar CTAs | [0074](../tickets/TICKET-0074.md) | planned | — | remove Ações rápidas / Atalhos |
+| H2 — fila Admin | [0075](../tickets/TICKET-0075.md) | planned | — | Aprovar inline; rejeitar com justificativa |
+| H3 — fila Gestor | [0076](../tickets/TICKET-0076.md) | planned | — | 1 CTA por status; Reverter no overflow |
+| H4 — wizard new | [0077](../tickets/TICKET-0077.md) | planned | — | staged disclosure só no create |
+| H5 — Red Routes | [0078](../tickets/TICKET-0078.md) | planned | — | SEQ + clicks nos 3 cenários |
+
+Diagnóstico: tip status-first ainda trata setup e operação com o mesmo peso (button soup). Alvo: work queue + progressive disclosure.
+
 Checklist anti-AI (`0001-critique`): sem gradiente roxo, glass, Inter/Roboto só, emoji decorativo, glow; badges estáticos; Fraunces ≥ `text-xl`; `loss` como tint + texto ink.
 
 Validação local (após login):
