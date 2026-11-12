@@ -26,3 +26,7 @@
 ## Teste antes/depois
 - Antes: validação só por gate RSpec / screenshots
 - Depois: Red Routes com SEQ e clicks-to-complete
+
+## Resultado
+- Protocolo, cenários e passagem interna em [UX-RED-ROUTES.md](../checkpoints/UX-RED-ROUTES.md) (2026-11-12): 3/3 com sucesso, cliques iguais ao ideal (1, 6, 5), 0 erros.
+- Screenshots finais em `docs/checkpoints/ux-audit/after/`, incluindo o modo escuro do sistema.
