@@ -21,7 +21,7 @@
                                                   captain_id: @lineup.captain_id,
                                                   state: @lineup.errors[:players].any? || @lineup.errors[:base].any? ? :error : :default) %>
     <div class="flex items-center gap-4">
-      <button type="submit" class="cursor-pointer rounded-sm bg-cartola px-4 py-2 font-semibold text-ink hover:bg-ink hover:text-white">Salvar escalação</button>
+      <button type="submit" class="<%= primary_button_classes %>">Salvar escalação</button>
       <%= link_to "Cancelar", main_app.lineup_path(lineup_location), class: "text-graphite underline underline-offset-2 hover:no-underline" %>
     </div>
   <% end %>

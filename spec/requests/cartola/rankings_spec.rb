@@ -31,7 +31,7 @@ RSpec.describe 'Esquadrão rankings', type: :request do
       page = Nokogiri::HTML(response.body)
       expect(page.at_css('p.uppercase').text).to start_with('Esquadrão')
       expect(page.at_css('thead').text).to include('Técnico')
-      expect(page.at_css('[role="tab"][aria-selected="true"]').text).to eq('Pontos')
+      expect(page.at_css('nav[aria-label="Rankings"] a[aria-current="page"]').text).to eq('Pontos')
       expect(page.css('[data-role="ranking-row"]').map { |row| row.text.squish }).to eq(['1 Ana 18.00'])
     end
 
@@ -41,7 +41,7 @@ RSpec.describe 'Esquadrão rankings', type: :request do
       get esquadrao_rankings_path(tab: 'coins', championship_id: championship.id)
 
       page = Nokogiri::HTML(response.body)
-      expect(page.at_css('[role="tab"][aria-selected="true"]').text).to eq('Moedas')
+      expect(page.at_css('nav[aria-label="Rankings"] a[aria-current="page"]').text).to eq('Moedas')
       expect(page.css('[data-role="ranking-row"]').map { |row| row.text.squish }).to eq(['1 Bia C$ 70.00'])
     end
 

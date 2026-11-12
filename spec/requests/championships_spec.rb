@@ -18,6 +18,7 @@ RSpec.describe 'Public championship page', type: :request do
     expect(page.at_css('h1').text).to eq('Copa Teste')
     expect(page.css('[data-role="championship-tab"]').map(&:text)).to eq(%w[Times Partidas Bolão Esquadrão])
     expect(page.at_css('[aria-current="page"]').text).to eq('Times')
+    expect(page.css('[role="tab"], [role="tablist"], [aria-selected]')).to be_empty
     standings = page.css('[data-role="standing-row"]').map do |row|
       [row.at_css('th').text.squish.delete_prefix(row.at_css('th span').text), row.css('td')[1].text]
     end
@@ -38,6 +39,10 @@ RSpec.describe 'Public championship page', type: :request do
     get public_championship_path(championship, tab: 'partidas', rodada: 1)
 
     expect(page.at_css('[data-role="match-row"]').text.squish).to include('Alfa', '1 × 1', 'Beta')
+    next_link = page.at_css('nav[aria-label="Rodadas"] [data-role="round-next"]')
+    expect(next_link.text.squish).to eq('Rodada 2')
+    expect(next_link.at_css('svg[aria-hidden="true"]')).to be_present
+    expect(page.at_css('[data-role="round-previous"]')).to be_nil
   end
 
   it 'lista os rankings do Bolão e do Esquadrão sem e-mails, com o nome público' do

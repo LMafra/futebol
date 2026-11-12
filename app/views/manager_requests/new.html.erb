@@ -12,7 +12,7 @@
 
   <%= form_with url: manager_request_path, method: :post, class: "mt-8 border-t border-rule pt-6" do %>
     <%= submit_tag "Enviar pedido", name: nil,
-                   class: "cursor-pointer rounded-sm bg-cartola px-4 py-2 font-bold text-ink transition-colors duration-fast ease-editorial hover:bg-pitch hover:text-white" %>
+                   class: primary_button_classes %>
   <% end %>
 
   <p class="mt-4 text-sm">

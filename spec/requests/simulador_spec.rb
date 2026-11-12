@@ -172,7 +172,7 @@ RSpec.describe 'Simulador', type: :request do
       projection = page.css('[data-role="projection"] [data-role="standing-row"]')
       expect(projection.map { |row| team_name(row) })
         .to eq(%w[Fortaleza Cruzeiro Atlético Botafogo])
-      expect(projection.first.at_css('[data-role="position-change"]')['aria-label']).to eq('Subiu 2')
+      expect(projection.first.at_css('[data-role="position-change"] .sr-only').text).to eq('Subiu 2')
     end
 
     it 'mostra a tabela projetada no lugar da atual, com o botão de zerar a simulação' do

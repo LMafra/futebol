@@ -1,8 +1,9 @@
 <section class="w-full" <%= tag.attributes(root_attributes(label: "Classificação")) %>>
   <% case rendered_state %>
   <% when :default %>
+    <div class="overflow-x-auto" data-role="table-scroll">
     <table class="w-full border-collapse text-sm tabular-nums lining-nums">
-      <thead class="bg-pitch text-white">
+      <thead class="bg-pitch text-paper">
         <tr class="text-xs font-bold uppercase tracking-widest">
           <th scope="col" class="px-2 py-2 text-left">#</th>
           <% if changes? %>
@@ -43,6 +44,7 @@
         <% end %>
       </tbody>
     </table>
+    </div>
   <% when :loading %>
     <span class="sr-only">Carregando classificação…</span>
     <div class="flex flex-col gap-1" aria-hidden="true">

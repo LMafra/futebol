@@ -10,20 +10,24 @@
   <% if form? %>
     <%= form_with model: prediction, scope: :prediction, url: form_url, class: "flex items-center gap-2" do |form| %>
       <%= form.hidden_field :match_id unless prediction.persisted? %>
-      <%= form.number_field :home_guess, min: 0, required: true, class: guess_input_classes, aria: { label: "Gols do mandante" } %>
+      <%= form.number_field :home_guess, min: 0, required: true, class: guess_input_classes, aria: guess_aria("Gols do mandante") %>
       <span class="text-graphite" aria-hidden="true">×</span>
-      <%= form.number_field :away_guess, min: 0, required: true, class: guess_input_classes, aria: { label: "Gols do visitante" } %>
-      <%= form.submit submit_label, class: "min-h-12 cursor-pointer rounded-sm bg-pitch px-4 py-2 font-semibold text-white hover:bg-night" %>
+      <%= form.number_field :away_guess, min: 0, required: true, class: guess_input_classes, aria: guess_aria("Gols do visitante") %>
+      <%= form.submit submit_label, class: primary_button_classes %>
     <% end %>
-    <% %i[home_guess away_guess].filter_map { |attribute| field_error(attribute) }.uniq.each do |message| %>
-      <p class="text-sm text-ink" data-role="field-error"><%= message %></p>
+    <% if field_errors.any? %>
+      <div id="<%= error_id %>" class="text-sm font-semibold text-ink">
+        <% field_errors.each do |message| %>
+          <p data-role="field-error"><%= message %></p>
+        <% end %>
+      </div>
     <% end %>
   <% elsif loading? %>
     <div class="flex items-center gap-2" aria-hidden="true">
       <span class="h-12 w-16 <%= skeleton_classes %>"></span>
       <span class="text-graphite">×</span>
       <span class="h-12 w-16 <%= skeleton_classes %>"></span>
-      <button type="button" disabled class="inline-flex min-h-12 items-center gap-2 rounded-sm bg-pitch px-4 py-2 font-semibold text-white opacity-60">
+      <button type="button" disabled class="<%= primary_button_classes %>">
         <span class="size-3 animate-spin rounded-full border-2 border-white border-t-transparent motion-reduce:animate-none" data-role="spinner"></span>
         Salvando…
       </button>

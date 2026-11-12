@@ -6,7 +6,7 @@
         <span class="text-sm font-bold text-graphite tabular-nums" data-role="today-count"><%= pluralize(matches.size, "jogo", plural: "jogos") %></span>
         <div class="flex gap-2" data-scroller-target="nav" hidden>
           <% [["previous", "Jogos anteriores", "m15 18-6-6 6-6"], ["next", "Próximos jogos", "m9 18 6-6-6-6"]].each do |action, label, path| %>
-            <button type="button" class="flex size-12 cursor-pointer items-center justify-center rounded-sm border border-ink hover:bg-ink hover:text-white"
+            <button type="button" class="flex size-12 cursor-pointer items-center justify-center rounded-sm border border-graphite bg-white text-ink hover:border-ink hover:bg-rule"
                     data-action="scroller#<%= action %>" aria-label="<%= label %>">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="<%= path %>"/></svg>
             </button>
@@ -16,27 +16,31 @@
     <% end %>
   </div>
   <% if matches.empty? %>
-    <p class="text-graphite">Nenhum jogo hoje.</p>
+    <%= empty_notice("Nenhum jogo hoje.") %>
   <% else %>
     <%# The gap is each item's right padding and the list reaches past the right edge by the same amount, so a whole
         number of cards fills the width and the last visible one is never cut. %>
     <ul class="scrollbar-none -mr-3 flex snap-x snap-mandatory overflow-x-auto" aria-label="Jogos de hoje, em ordem de horário" data-scroller-target="list" data-action="scroll->scroller#scrolled">
       <% matches.each do |match| %>
         <li class="flex w-full shrink-0 snap-start pr-3 sm:w-1/2 md:w-1/3 lg:w-1/4" data-role="today-match">
-          <div class="flex w-full flex-col gap-2 rounded-md border border-rule bg-white px-4 py-3">
-            <%= link_to match.championship.name, public_championship_path(match.championship),
-                        class: "truncate text-xs font-bold uppercase tracking-widest text-pitch hover:underline", data: { role: "today-match-championship" } %>
-            <p class="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-graphite">
-              <span><%= Ui::ScoreboardComponent::STATUS_LABELS.fetch(match.status, match.status) %></span>
+          <%= link_to public_championship_path(match.championship), data: { live: match.live? },
+                      class: "group flex w-full flex-col gap-2 rounded-md border bg-white px-4 py-3 transition-colors duration-fast ease-editorial hover:border-ink hover:bg-rule #{match.live? ? 'border-cartola' : 'border-rule'}" do %>
+            <span class="truncate text-xs font-bold uppercase tracking-widest text-pitch group-hover:underline" data-role="today-match-championship"><%= match.championship.name %></span>
+            <span class="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-graphite">
+              <% if match.live? %>
+                <span class="rounded-sm bg-cartola px-2 py-1 text-ink" data-role="live-chip"><%= Ui::ScoreboardComponent::STATUS_LABELS.fetch(match.status) %></span>
+              <% else %>
+                <span><%= Ui::ScoreboardComponent::STATUS_LABELS.fetch(match.status, match.status) %></span>
+              <% end %>
               <span class="tabular-nums"><%= l(match.match_date, format: "%H:%M") %></span>
-            </p>
+            </span>
             <% [[match.home_team, match.home_score], [match.away_team, match.away_score]].each do |team, score| %>
-              <p class="flex items-center justify-between gap-4 font-semibold">
+              <span class="flex items-center justify-between gap-4 font-semibold">
                 <span><%= team.name %></span>
                 <span class="tabular-nums"><%= score || "–" %></span>
-              </p>
+              </span>
             <% end %>
-          </div>
+          <% end %>
         </li>
       <% end %>
     </ul>

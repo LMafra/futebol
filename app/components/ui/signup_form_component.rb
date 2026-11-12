@@ -36,9 +36,6 @@ module Ui
 
     def input_classes(attribute) = form_control_classes('mt-1 block w-full', invalid: field_error(attribute).present?)
 
-    def button_classes
-      'cursor-pointer rounded-sm bg-cartola px-4 py-2 font-bold text-ink transition-colors duration-fast ' \
-        'ease-editorial hover:bg-pitch hover:text-white'
-    end
+    def button_classes = primary_button_classes('w-fit')
   end
 end

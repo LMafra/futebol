@@ -1,24 +1,26 @@
 <section class="w-full" <%= tag.attributes(root_attributes(label: "Ranking")) %>>
   <% case rendered_state %>
   <% when :default %>
+    <div class="overflow-x-auto rounded-md border border-rule bg-white" data-role="table-scroll">
     <table class="w-full border-collapse text-left">
-      <thead>
-        <tr class="border-b-2 border-ink text-xs uppercase tracking-widest text-graphite">
-          <th scope="col" class="py-2 pr-4">#</th>
-          <th scope="col" class="py-2 pr-4">Técnico</th>
-          <th scope="col" class="py-2 text-right"><%= value_header %></th>
+      <thead class="bg-pitch text-paper">
+        <tr class="text-xs font-bold uppercase tracking-widest">
+          <th scope="col" class="px-4 py-2">#</th>
+          <th scope="col" class="px-4 py-2">Técnico</th>
+          <th scope="col" class="px-4 py-2 text-right"><%= value_header %></th>
         </tr>
       </thead>
       <tbody>
         <% rows.each do |row| %>
-          <tr class="border-b border-rule" data-role="ranking-row">
-            <td class="py-2 pr-4 font-bold tabular-nums" data-role="ranking-position"><%= row.position %></td>
-            <td class="py-2 pr-4" data-role="ranking-user"><%= player_name(row.user) %></td>
-            <td class="py-2 text-right font-semibold tabular-nums" data-role="ranking-value"><%= formatted(row.value) %></td>
+          <tr class="border-b border-rule last:border-b-0" data-role="ranking-row">
+            <td class="px-4 py-2 font-bold tabular-nums" data-role="ranking-position"><%= row.position %></td>
+            <td class="px-4 py-2" data-role="ranking-user"><%= player_name(row.user) %></td>
+            <td class="px-4 py-2 text-right font-semibold tabular-nums" data-role="ranking-value"><%= formatted(row.value) %></td>
           </tr>
         <% end %>
       </tbody>
     </table>
+    </div>
   <% when :loading %>
     <span class="sr-only">Carregando ranking…</span>
     <div class="flex flex-col gap-2" aria-hidden="true">

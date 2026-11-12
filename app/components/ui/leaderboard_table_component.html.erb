@@ -1,6 +1,7 @@
 <section class="w-full" <%= tag.attributes(root_attributes(label: text(:label))) %>>
   <% case rendered_state %>
   <% when :default %>
+    <div class="overflow-x-auto" data-role="table-scroll">
     <table class="w-full border-collapse border border-rule tabular-nums lining-nums font-sans <%= compact? ? "text-sm" : "text-sm md:text-base" %>">
       <thead class="<%= compact? ? "sr-only" : "bg-pitch text-paper" %>">
         <tr class="text-xs font-bold uppercase tracking-widest">
@@ -32,6 +33,7 @@
         <% end %>
       </tbody>
     </table>
+    </div>
   <% when :loading %>
     <span class="sr-only">Carregando ranking…</span>
     <div class="flex flex-col gap-1" aria-hidden="true">

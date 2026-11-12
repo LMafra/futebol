@@ -12,16 +12,15 @@
         <%= label_tag :championship_id, "Campeonato" %>
         <%= select_tag :championship_id, options_from_collection_for_select(@championships, :id, :to_s, @championship&.id),
                        class: form_control_classes %>
-        <button type="submit" class="min-h-12 cursor-pointer rounded-sm border border-ink px-4 py-2 hover:bg-ink hover:text-white">Ver</button>
+        <button type="submit" class="<%= secondary_button_classes %>">Ver</button>
       <% end %>
     <% end %>
   </header>
 
-  <nav class="flex gap-2" aria-label="Rankings" role="tablist">
+  <nav class="flex flex-wrap gap-2" aria-label="Rankings">
     <% Cartola::RankingsController::TABS.each do |tab, label| %>
-      <%= link_to label, main_app.esquadrao_rankings_path(tab:, championship_id: @championship&.id), role: "tab",
-                  aria: { selected: tab == @tab, current: (tab == @tab ? "page" : nil) },
-                  class: "rounded-sm border px-3 py-2 font-semibold #{tab == @tab ? 'border-cartola bg-cartola text-ink' : 'border-rule hover:bg-paper'}" %>
+      <%= link_to label, main_app.esquadrao_rankings_path(tab:, championship_id: @championship&.id),
+                  aria: { current: (tab == @tab ? "page" : nil) }, class: tab_link_classes(tab == @tab) %>
     <% end %>
   </nav>
 

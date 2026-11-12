@@ -4,12 +4,12 @@
       <p class="text-xs font-bold uppercase tracking-widest text-graphite">Bolão</p>
       <h1 class="mt-1 font-display text-4xl font-extrabold tracking-tight">Meus bolões</h1>
     </div>
-    <%= link_to "Criar bolão", new_pool_path, class: "rounded-sm bg-pitch px-4 py-2 font-semibold text-white transition-colors duration-base ease-editorial hover:bg-night" %>
+    <%= link_to "Criar bolão", new_pool_path, class: primary_button_classes %>
   </header>
 
   <% if error? %>
     <div class="<%= error_classes %>" role="alert">
-      <span class="font-bold" data-role="error-message"><%= error_message %></span>
+      <span id="pools-error" class="font-bold" data-role="error-message"><%= error_message %></span>
     </div>
   <% end %>
 
@@ -25,9 +25,10 @@
       <div class="flex flex-col gap-1">
         <%= form.label :code, "Entrar com código", class: "text-sm font-semibold" %>
         <%= form.text_field :code, maxlength: Bolao::Pool::CODE_LENGTH, required: true, autocomplete: "off", placeholder: "EX: K7P2QD",
-                              class: form_control_classes("w-[10rem] font-semibold uppercase tabular-nums tracking-widest") %>
+                              class: form_control_classes("w-[10rem] font-semibold uppercase tabular-nums tracking-widest", invalid: join_error?),
+                              aria: { invalid: join_error? || nil, describedby: ("pools-error" if join_error?) } %>
       </div>
-      <%= form.submit "Entrar", class: "cursor-pointer rounded-sm border border-ink px-4 py-2 font-semibold hover:bg-paper" %>
+      <%= form.submit "Entrar", class: secondary_button_classes %>
     <% end %>
 
     <% if empty? %>

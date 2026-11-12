@@ -21,6 +21,9 @@ RSpec.describe Pools::ShowComponent do
     memberships = pool.memberships.to_a
 
     expect(render_inline(described_class.new(pool:, memberships:)).text).not_to include('Excluir bolão')
-    expect(render_inline(described_class.new(pool:, memberships:, can_destroy: true)).text).to include('Excluir bolão')
+    page = render_inline(described_class.new(pool:, memberships:, can_destroy: true))
+    expect(page.text).to include('Excluir bolão')
+    delete_button = page.at_css('form button, form input[type="submit"]')
+    expect(delete_button['class'].split).to include('bg-loss-solid', 'text-white')
   end
 end

@@ -9,7 +9,8 @@
         <%= over_budget? ? "Estourou #{money(-remaining)}" : "Resta #{money(remaining)}" %> de <%= money(budget) %>
       </span>
     </div>
-    <div class="mt-2 h-2 w-full overflow-hidden rounded-sm bg-rule" role="progressbar" aria-valuemin="0" aria-valuemax="<%= budget %>" aria-valuenow="<%= spent %>">
+    <div class="mt-2 h-2 w-full overflow-hidden rounded-sm bg-graphite/30" role="progressbar" aria-label="Orçamento usado"
+         aria-valuemin="0" aria-valuemax="<%= budget %>" aria-valuenow="<%= [spent, budget].min %>" aria-valuetext="<%= value_text %>" data-role="budget-progress">
       <div class="h-2 <%= over_budget? ? 'bg-ink' : 'bg-cartola' %>" style="width: <%= percent %>%"></div>
     </div>
   <% when :loading %>

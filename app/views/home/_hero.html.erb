@@ -10,12 +10,12 @@
   <div class="flex flex-col justify-end gap-3 md:col-span-4" data-role="hero-actions">
     <% if user_signed_in? %>
       <p class="text-sm font-semibold text-graphite">Continue de onde parou</p>
-      <%= link_to "Meus bolões", pools_path, class: "rounded-sm border-2 border-ink px-4 py-3 text-center font-bold transition-colors duration-fast ease-editorial hover:bg-ink hover:text-white" %>
-      <%= link_to "Meu #{module_label(:fantasy).downcase}", esquadrao_path, class: "rounded-sm border-2 border-ink px-4 py-3 text-center font-bold transition-colors duration-fast ease-editorial hover:bg-ink hover:text-white" %>
-      <%= link_to "Simulador", simulador_path, class: "rounded-sm border-2 border-ink px-4 py-3 text-center font-bold transition-colors duration-fast ease-editorial hover:bg-ink hover:text-white" %>
+      <%= link_to "Meus bolões", pools_path, class: secondary_button_classes(size: :lg) %>
+      <%= link_to "Meu #{module_label(:fantasy).downcase}", esquadrao_path, class: secondary_button_classes(size: :lg) %>
+      <%= link_to "Simulador", simulador_path, class: secondary_button_classes(size: :lg) %>
     <% else %>
-      <%= link_to "Entrar", login_path, class: "rounded-sm bg-cartola px-4 py-3 text-center text-lg font-bold text-ink transition-colors duration-fast ease-editorial hover:bg-ink hover:text-white" %>
-      <%= link_to "Criar conta", signup_path, class: "rounded-sm border-2 border-ink px-4 py-3 text-center text-lg font-bold transition-colors duration-fast ease-editorial hover:bg-ink hover:text-white" %>
+      <%= link_to "Entrar", login_path, class: primary_button_classes(size: :lg) %>
+      <%= link_to "Criar conta", signup_path, class: secondary_button_classes(size: :lg) %>
     <% end %>
   </div>
 </section>

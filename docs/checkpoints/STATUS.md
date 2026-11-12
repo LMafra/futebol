@@ -532,7 +532,7 @@ Tickets **0079–0084**, executados junto com a work queue na ordem 0079 → 008
 | A3 — a11y Admin | [0081](../tickets/TICKET-0081.md) | ok | abas WAI-ARIA, `aria-current`/`aria-expanded`, empty results, toast com fechar | alvos de 40px; filtros recolhidos em 390px |
 | A4 — consistência Admin | [0084](../tickets/TICKET-0084.md) | ok | `AdminLabelsHelper`, `admin_match_step_classes`, locale de atributos | status/atributos em pt-BR; 1 primária no show da partida, Reverter danger; KPI Pontuação pendente; CSV com componente; obrigatório unificado |
 | P1 — base pública | [0082](../tickets/TICKET-0082.md) | ok | layout `tailwind`+`application`, `FormControlHelper`, foco global | sem CSS do Admin no público; classes na escala; campos 48px `graphite`; AO VIVO `bg-cartola text-ink` |
-| P2 — consistência pública | [0083](../tickets/TICKET-0083.md) | planned | — | botões, tabelas, ARIA |
+| P2 — consistência pública | [0083](../tickets/TICKET-0083.md) | ok | `ButtonClassesHelper`, `StateNoticeHelper`, `RoundNavHelper`, `tab_link_classes` | 3 papéis de botão (danger `loss-solid`); tabelas `bg-pitch` + `overflow-x-auto`; abas com `aria-current`; erros ligados ao campo; orçamento com `aria-valuetext`; card de jogo clicável |
 
 Ambiente local (WSL): Postgres do projeto na porta 5440 (`~/.local/share/futebol-pg`); rodar `bin/dev` (ou `bin/rails tailwindcss:build`) antes de abrir o Admin, porque `rails s` sozinho serve um `app/assets/builds/active_admin.css` velho.
 

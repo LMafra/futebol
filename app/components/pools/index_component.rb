@@ -14,5 +14,7 @@ module Pools
     def error_message = error.presence || 'Não foi possível carregar seus bolões.'
 
     def listed_pools = Array(pools)
+
+    def join_error? = error.present?
   end
 end

@@ -42,6 +42,19 @@ RSpec.describe Ui::PredictionFormComponent do
 
     expect(page.at_css('[data-role="errors"]').text).to include('Palpites encerrados para esta partida.')
     expect(page.at_css('[data-role="field-error"]').text).to eq('deve ser maior ou igual a 0')
+
+    home = page.at_css('input[name="prediction[home_guess]"]')
+    expect(home['aria-invalid']).to eq('true')
+    expect(page.at_css("##{home['aria-describedby']}").text).to include('deve ser maior ou igual a 0')
+    expect(home['class'].split).to include('border-ink')
+  end
+
+  it 'leaves the guesses valid without field errors' do
+    home = render_inline(described_class.new(match:, prediction: Bolao::Prediction.new(pool:, match:)))
+           .at_css('input[name="prediction[home_guess]"]')
+
+    expect(home['aria-invalid']).to be_nil
+    expect(home['aria-describedby']).to be_nil
   end
 
   it 'builds the guess inputs and the submit with 48px targets (TICKET-0082)' do

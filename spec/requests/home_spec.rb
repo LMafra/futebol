@@ -126,6 +126,18 @@ RSpec.describe 'Public home', type: :request do
     expect(page.at_css('[data-role="today-match"]').text).to include(today.home_team.name, '21:00')
   end
 
+  it 'faz do card de jogo de hoje um link inteiro e destaca o jogo ao vivo com o chip (TICKET-0083)' do
+    create(:match, championship: public_championship, status: 'live', match_date: Time.current.change(hour: 21))
+
+    get root_path
+
+    card = page.at_css('[data-role="today-match"] > a')
+    expect(card['href']).to eq(public_championship_path(public_championship))
+    expect(card['class'].split).to include('border-cartola', 'hover:border-ink')
+    expect(card.at_css('[data-role="live-chip"]')['class'].split).to include('bg-cartola', 'text-ink')
+    expect(card.css('a')).to be_empty
+  end
+
   it 'conta "hoje" no horário de Brasília, mesmo quando já é o dia seguinte em UTC' do
     brasilia = Time.find_zone!('America/Sao_Paulo')
     tonight = create(:match, championship: public_championship, match_date: brasilia.local(2026, 11, 1, 21))

@@ -4,21 +4,21 @@
       Partidas<% if @round %> · Rodada <span class="tabular-nums"><%= @round %></span><% end %>
     </h2>
     <% if @round %>
-      <nav class="flex items-center gap-4 text-sm font-semibold" aria-label="Rodadas">
+      <nav class="flex items-center gap-2" aria-label="Rodadas">
         <% previous_round = @rounds.reverse.find { |round| round < @round } %>
         <% next_round = @rounds.find { |round| round > @round } %>
         <% if previous_round %>
-          <%= link_to "← Rodada #{previous_round}", public_championship_path(@championship, tab: "partidas", rodada: previous_round), class: "text-pitch underline underline-offset-2 hover:no-underline" %>
+          <%= round_nav_link(previous_round, public_championship_path(@championship, tab: "partidas", rodada: previous_round), direction: :previous) %>
         <% end %>
         <% if next_round %>
-          <%= link_to "Rodada #{next_round} →", public_championship_path(@championship, tab: "partidas", rodada: next_round), class: "text-pitch underline underline-offset-2 hover:no-underline" %>
+          <%= round_nav_link(next_round, public_championship_path(@championship, tab: "partidas", rodada: next_round), direction: :next) %>
         <% end %>
       </nav>
     <% end %>
   </div>
 
   <% if @matches.empty? %>
-    <p class="rounded-md border border-dashed border-rule px-4 py-8 text-center text-graphite">Nenhuma partida cadastrada.</p>
+    <%= empty_notice("Nenhuma partida cadastrada.") %>
   <% else %>
     <ul class="flex flex-col divide-y divide-rule rounded-md border border-rule bg-white">
       <% @matches.each do |match| %>

@@ -11,6 +11,13 @@ RSpec.describe Cartola::RankingTableComponent do
     expect(page.css('[data-role="ranking-row"]').map { |tr| tr.text.squish }).to eq(['1 Ana 12.50', '2 Bia 3.00'])
   end
 
+  it 'uses the pitch header inside a horizontal scroll wrapper' do
+    page = render_inline(described_class.new(rows: [row(1, 'Ana', 1)]))
+
+    expect(page.at_css('[data-role="table-scroll"]')['class']).to include('overflow-x-auto')
+    expect(page.at_css('thead')['class'].split).to include('bg-pitch', 'text-paper')
+  end
+
   it 'shows coins as money' do
     page = render_inline(described_class.new(rows: [row(1, 'Ana', 80)], kind: :coins))
 

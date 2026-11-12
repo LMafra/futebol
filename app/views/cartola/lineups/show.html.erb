@@ -6,14 +6,14 @@
       <p class="text-xs font-bold uppercase tracking-widest text-graphite"><%= module_label(:fantasy) %> · <%= @lineup.squad.name %> · <%= @lineup.championship %></p>
       <h1 class="mt-1 font-display text-4xl font-extrabold tracking-tight">Rodada <span class="tabular-nums"><%= @lineup.round %></span></h1>
     </div>
-    <nav class="flex items-center gap-4 text-sm font-semibold" aria-label="Rodadas">
+    <nav class="flex flex-wrap items-center gap-2 text-sm font-semibold" aria-label="Rodadas">
       <% if @lineup.round > 1 %>
-        <%= link_to "← Rodada #{@lineup.round - 1}", main_app.lineup_path(lineup_location(round: @lineup.round - 1)), class: "text-pitch underline underline-offset-2 hover:no-underline" %>
+        <%= round_nav_link(@lineup.round - 1, main_app.lineup_path(lineup_location(round: @lineup.round - 1)), direction: :previous) %>
       <% end %>
       <% if @lineup.round < 38 %>
-        <%= link_to "Rodada #{@lineup.round + 1} →", main_app.lineup_path(lineup_location(round: @lineup.round + 1)), class: "text-pitch underline underline-offset-2 hover:no-underline" %>
+        <%= round_nav_link(@lineup.round + 1, main_app.lineup_path(lineup_location(round: @lineup.round + 1)), direction: :next) %>
       <% end %>
-      <%= link_to "Rankings", main_app.esquadrao_rankings_path(championship_id: @lineup.championship_id), class: "text-pitch underline underline-offset-2 hover:no-underline" %>
+      <%= link_to "Rankings", main_app.esquadrao_rankings_path(championship_id: @lineup.championship_id), class: "ml-2 text-pitch underline underline-offset-2 hover:no-underline" %>
     </nav>
   </header>
 
@@ -25,11 +25,11 @@
   <% if policy(@lineup).update? %>
     <div class="flex flex-wrap items-center gap-4">
       <%= link_to(@lineup.persisted? ? "Editar escalação" : "Escalar time", main_app.edit_lineup_path(lineup_location),
-                  class: "rounded-sm bg-cartola px-4 py-2 font-semibold text-ink hover:bg-ink hover:text-white") %>
+                  class: primary_button_classes) %>
       <% if policy(@lineup).destroy? %>
         <%= button_to "Desfazer escalação", main_app.lineup_path(lineup_location), method: :delete,
                       form: { data: { turbo_confirm: "Desfazer a escalação e devolver os jogadores à carteira?" } },
-                      class: "cursor-pointer text-graphite underline underline-offset-2 hover:no-underline" %>
+                      class: danger_button_classes %>
       <% end %>
     </div>
   <% end %>

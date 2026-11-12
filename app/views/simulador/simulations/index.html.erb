@@ -8,7 +8,7 @@
   </header>
 
   <% if @championships.empty? %>
-    <p class="rounded-md border border-dashed border-rule px-4 py-8 text-center text-graphite">Nenhum campeonato disponível para simular.</p>
+    <%= empty_notice("Nenhum campeonato disponível para simular.") %>
   <% else %>
     <ul class="grid gap-6 md:grid-cols-2" aria-label="Campeonatos para simular">
       <% @championships.each do |championship| %>
@@ -18,7 +18,7 @@
             <p class="text-sm text-graphite">Temporada <span class="tabular-nums"><%= championship.season %></span></p>
           </div>
           <%= link_to "Simular", main_app.simulador_championship_path(championship),
-                      class: "rounded-sm border-2 border-ink px-4 py-2 font-bold transition-colors duration-fast ease-editorial hover:bg-ink hover:text-white",
+                      class: secondary_button_classes,
                       aria: { label: "Simular #{championship.name}" } %>
         </li>
       <% end %>

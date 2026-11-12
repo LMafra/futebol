@@ -32,7 +32,7 @@
       <% FIELDS.size.times do %>
         <div class="h-12 w-full <%= skeleton_classes %>" data-role="skeleton"></div>
       <% end %>
-      <button type="button" disabled class="inline-flex w-fit items-center gap-2 rounded-sm bg-cartola px-4 py-2 font-bold text-ink opacity-60">
+      <button type="button" disabled class="<%= primary_button_classes("w-fit") %>">
         <span class="size-3 animate-spin rounded-full border-2 border-ink border-t-transparent motion-reduce:animate-none" data-role="spinner"></span>
         Criando conta…
       </button>

@@ -22,5 +22,9 @@ RSpec.describe Pools::NewComponent do
 
     expect(page.at_css('[data-role="errors"]')).to be_present
     expect(page.at_css('[data-role="field-error"]')).to be_present
+
+    name = page.at_css('input[name="pool[name]"]')
+    expect(name['aria-invalid']).to eq('true')
+    expect(page.at_css("##{name['aria-describedby']}")['data-role']).to eq('field-error')
   end
 end

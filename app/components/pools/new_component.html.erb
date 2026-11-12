@@ -27,20 +27,26 @@
     <%= form_with model: pool, url: pools_path, scope: :pool, class: "flex flex-col gap-4 rounded-md border border-rule bg-white p-4" do |form| %>
       <div class="flex flex-col gap-1">
         <%= form.label :name, "Nome", class: "text-sm font-semibold" %>
-        <%= form.text_field :name, required: true, class: form_control_classes %>
-        <% if (message = field_error(:name)) %>
-          <p class="text-sm text-ink" data-role="field-error"><%= message %></p>
+        <% name_error = field_error(:name) %>
+        <%= form.text_field :name, required: true, class: form_control_classes(invalid: name_error.present?),
+                                   aria: { invalid: name_error.present? || nil, describedby: ("pool-name-error" if name_error) } %>
+        <% if name_error %>
+          <p id="pool-name-error" class="text-sm font-semibold text-ink" data-role="field-error"><%= name_error %></p>
         <% end %>
       </div>
       <div class="flex flex-col gap-1">
         <%= form.label :championship_id, "Campeonato", class: "text-sm font-semibold" %>
-        <%= form.collection_select :championship_id, championships, :id, :to_s, {}, class: form_control_classes %>
-        <% if (message = field_error(:championship)) %>
-          <p class="text-sm text-ink" data-role="field-error"><%= message %></p>
+        <% championship_error = field_error(:championship) %>
+        <%= form.collection_select :championship_id, championships, :id, :to_s, {},
+                                   class: form_control_classes(invalid: championship_error.present?),
+                                   aria: { invalid: championship_error.present? || nil,
+                                           describedby: ("pool-championship-error" if championship_error) } %>
+        <% if championship_error %>
+          <p id="pool-championship-error" class="text-sm font-semibold text-ink" data-role="field-error"><%= championship_error %></p>
         <% end %>
       </div>
       <div class="flex items-center gap-4">
-        <%= form.submit "Criar bolão", class: "cursor-pointer rounded-sm bg-pitch px-4 py-2 font-semibold text-white hover:bg-night" %>
+        <%= form.submit "Criar bolão", class: primary_button_classes %>
         <%= link_to "Cancelar", pools_path, class: "text-graphite underline underline-offset-2 hover:no-underline" %>
       </div>
     <% end %>

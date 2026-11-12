@@ -17,6 +17,7 @@ RSpec.describe Ui::LeaderboardTableComponent do
     expect(page.at_css('tr td')['class']).to include('border-cartola')
     expect(page.at_css('[data-role="medal"]')['data-position']).to eq('1')
     expect(page.at_css('thead')['class']).to include('bg-pitch', 'text-paper')
+    expect(page.at_css('[data-role="table-scroll"]')['class']).to include('overflow-x-auto')
   end
 
   it 'adds the extra columns before the points, with the detail next to the name' do
