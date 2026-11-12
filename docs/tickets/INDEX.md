@@ -1,4 +1,4 @@
-# Tickets — INDEX (67 tickets)
+# Tickets — INDEX (73 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -69,6 +69,12 @@
 | [0065](TICKET-0065.md) | C | Tabelas e formulários Placar | 0063, 0064 | — |
 | [0066](TICKET-0066.md) | D | Dashboards admin e gestor | 0065, 0060 | — |
 | [0067](TICKET-0067.md) | E | StatusBadge + Leaderboard medalhas | 0065, 0011 | — |
+| [0068](TICKET-0068.md) | A | Layout Admin/Gestor (sidebar paper) | 0063, 0064 | — |
+| [0069](TICKET-0069.md) | B | Navegação por tarefa + ícones SVG | 0068 | — |
+| [0070](TICKET-0070.md) | C | Dashboards status-first (8/4) | 0066, 0069 | — |
+| [0071](TICKET-0071.md) | D | Tabelas pitch + barra de filtros | 0065, 0070 | — |
+| [0072](TICKET-0072.md) | E | Formulários em seções + toast | 0071 | — |
+| [0073](TICKET-0073.md) | F | EmptyState, mobile e skeleton | 0072 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -82,3 +88,4 @@
 - Craquefy (ordem das branches): 0032 (flag) → 0034 → 0037 → 0033 → 0038 → 0039 → 0040 → 0035 → 0032 (home) → 0036 → 0041 → 0042 → 0043 → 0044 → 0045 → 0046 → 0047 → 0048 → 0049 → 0050 → 0051 → 0052 → 0053 → 0054 → 0055
 - RBAC (3 níveis): 0056 → 0057 → 0058 → 0059 → 0060 → 0061 → 0062
 - UI Admin/Gestor (Placar): 0063 → 0064 → 0065 → 0066 → 0067
+- UI/UX Admin/Gestor (status-first): 0068 → 0069 → 0070 → 0071 → 0072 → 0073

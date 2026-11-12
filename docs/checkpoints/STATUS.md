@@ -468,19 +468,34 @@ Tickets **0063–0067** (os números 0042–0046 do plano original já estavam o
 | publish | — | blocked | hook do ambiente bloqueia publicação remota; integração com 7 commits A–G; bundle em artifacts |
 | Mobbin | — | n/a | MCP Mobbin exige plano pago; estrutura 8/4 e 3/9 já aplicada via design docs |
 
-Branches locais (1 commit base por bloco; a integração empilha polish + docs):
+## UI/UX de admin e gestor (status-first)
 
-| Bloco | Branch | Tip base |
+Tickets **0068–0073** (0047–0052 do plano UX já estavam ocupados). Sem alteração em engines/models/ADRs `0001–0004` nem em `docs/design/*`.
+
+| Bloco | Ticket | Status | Artefatos | Observações |
+|---|---|---|---|---|
+| A — layout | [0068](../tickets/TICKET-0068.md) | ok | `_site_sidebar`; `layout_spec` | paper/rule |
+| B — nav | [0069](../tickets/TICKET-0069.md) | ok | menus por tarefa + SVG | tip `0bc6668` |
+| C — dashboards | [0070](../tickets/TICKET-0070.md) | ok | KPIs 8/4; cards gestor | tip `89b74ef` |
+| D — tabelas | [0071](../tickets/TICKET-0071.md) | ok | filter bar + ações SVG | tip `d2437c8` |
+| E — forms | [0072](../tickets/TICKET-0072.md) | ok | seções + Toast + Turbo Stream | tip `ab7d231` |
+| F — empty/mobile | [0073](../tickets/TICKET-0073.md) | ok | EmptyState; sidebar `< md` | tip `23be79d` |
+| G — docs | — | ok | INDEX, STATUS, README | este bloco |
+| publish | — | blocked | push do agente bloqueado pelo hook; bundles em `/opt/cursor/artifacts/admin-ux-*.bundle` | tip UX empilha A–F |
+| Mobbin | — | n/a | MCP pago; tokens via design docs | — |
+
+Branches (1 commit assinado por bloco):
+
+| Bloco | Branch | Tip |
 |---|---|---|
-| A | `cursor/admin-theme-tokens-e3a0` | `ca09376` |
-| B | `cursor/admin-layout-chrome-e3a0` | `fd750b9` |
-| C | `cursor/admin-tables-e3a0` | `ad8a3e5` |
-| D | `cursor/admin-forms-e3a0` | `526bd5b` |
-| E | `cursor/admin-dashboards-e3a0` | `6567ff1` |
-| F | `cursor/admin-status-leaderboard-e3a0` | `d028fcd` |
-| G+polish | `cursor/admin-ui-docs-e3a0` | tip da branch (docs + polish) |
+| A+B | `cursor/admin-ux-nav-e3a0` (layout+nav) | `0bc6668` |
+| C | `cursor/admin-ux-dashboards-e3a0` | `89b74ef` |
+| D | `cursor/admin-ux-tables-e3a0` | `d2437c8` |
+| E | `cursor/admin-ux-forms-e3a0` | `ab7d231` |
+| F | `cursor/admin-ux-feedback-e3a0` | `23be79d` |
+| G | `cursor/admin-ux-docs-e3a0` | tip docs |
 
-Scan HTML em `/admin`, show/new, `/admin/matches`, `/admin/users`, `/gestor`: 0 ocorrências de `bg-blue-*` / `bg-gray-50` / `dark:` nas classes renderizadas.
+Gate `.cursor/environment.json` `test`: 1076 examples, 0 failures (após Bloco F).
 
 Checklist anti-AI (`0001-critique`): sem gradiente roxo, glass, Inter/Roboto só, emoji decorativo, glow; badges estáticos; Fraunces ≥ `text-xl`; `loss` como tint + texto ink.
 
