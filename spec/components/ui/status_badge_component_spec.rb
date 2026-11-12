@@ -7,6 +7,7 @@ RSpec.describe Ui::StatusBadgeComponent do
     scheduled: %w[bg-rule text-ink Agendada],
     live: ['bg-cartola', 'text-ink', 'Ao vivo'],
     finished: ['bg-pitch/10', 'text-pitch', 'Encerrada'],
+    scored: %w[bg-pitch text-paper Pontuada],
     reverted: %w[bg-loss text-ink Revertida]
   }.each do |status, (bg, color, label)|
     it "renders the #{status} badge" do
@@ -17,6 +18,13 @@ RSpec.describe Ui::StatusBadgeComponent do
       expect(badge['data-status']).to eq(status.to_s)
       expect(badge.text.squish).to eq(label)
     end
+  end
+
+  it 'accepts a contextual label without changing the status style' do
+    badge = render_inline(described_class.new(status: :finished, label: 'Pontuando'))
+            .at_css('[data-role="status-badge"]')
+
+    expect([badge.text.squish, badge['data-status']]).to eq(%w[Pontuando finished])
   end
 
   it 'never uses cartola as text colour' do

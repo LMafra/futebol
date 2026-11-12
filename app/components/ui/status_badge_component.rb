@@ -6,6 +6,7 @@ module Ui
       # cartola is a fill, never text on a light background (≈3:1); ink on cartola is 5.2:1.
       live: 'bg-cartola text-ink',
       finished: 'bg-pitch/10 text-pitch',
+      scored: 'bg-pitch text-paper',
       # loss token is already a ≤15% tint (critique Q1) — text stays ink.
       reverted: 'bg-loss text-ink'
     }.freeze
@@ -14,20 +15,22 @@ module Ui
       scheduled: 'Agendada',
       live: 'Ao vivo',
       finished: 'Encerrada',
+      scored: 'Pontuada',
       reverted: 'Revertida'
     }.freeze
 
     attr_reader :status
 
-    def initialize(status: :scheduled, state: :default)
+    def initialize(status: :scheduled, label: nil, state: :default)
       super(state:)
       @status = status.to_s.to_sym
+      @label = label
       return if STYLES.key?(@status)
 
       raise ArgumentError, "invalid status #{status.inspect} (expected one of: #{STYLES.keys.join(', ')})"
     end
 
-    def label = LABELS.fetch(status)
+    def label = @label || LABELS.fetch(status)
 
     def badge_classes
       base = 'inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-body ' \

@@ -212,7 +212,8 @@
 }
 
 .data-table :where(td.tabular-nums),
-.data-table :where(th.tabular-nums) {
+.data-table :where(th.tabular-nums),
+.data-table :is(th, td).text-right {
   @apply text-right;
 }
 

@@ -36,12 +36,11 @@ module AdminHelper
     [match.home_score, match.away_score].map { |goals| goals.nil? ? '–' : goals }.join(' × ')
   end
 
-  def admin_match_status_badge(match)
+  def admin_match_status_badge(match, label: nil)
     status = match.status.to_s
-    status = 'finished' if status == 'scored'
     return status_tag(match.status) unless Ui::StatusBadgeComponent::STYLES.key?(status.to_sym)
 
-    render Ui::StatusBadgeComponent.new(status:)
+    render Ui::StatusBadgeComponent.new(status:, label:)
   end
 
   def admin_match_option(match)
@@ -110,9 +109,9 @@ module AdminHelper
     'Partidas ao vivo' => 'M12 6v6h4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
     'Pendentes de finalização' => 'M4.5 12.75l6 6 9-13.5',
     'Gestores pendentes' => 'M15 19.5a3 3 0 00-6 0M15 8.25a3 3 0 11-6 0 3 3 0 016 0z',
-    'Times cadastrados' => 'M3.75 6.75h16.5v10.5H3.75zM8.25 19.5h7.5',
-    'Jogadores' => 'M15 19.5a3 3 0 00-6 0M15 8.25a3 3 0 11-6 0 3 3 0 016 0z',
-    'Partidas pendentes' => 'M12 6v6h4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+    'Partidas hoje' => 'M6.75 3v2.25M17.25 3v2.25M3.75 7.5h16.5v12H3.75z',
+    'Aguardando scouts' => 'M16.5 6.75h-9v10.5h9zM9.75 9.75h4.5M9.75 12.75h4.5M9.75 15.75h3',
+    'Aguardando finalização' => 'M4.5 12.75l6 6 9-13.5'
   }.freeze
 
   def admin_kpi_icon(label)
