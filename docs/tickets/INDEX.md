@@ -1,4 +1,4 @@
-# Tickets — INDEX (62 tickets)
+# Tickets — INDEX (67 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -64,6 +64,11 @@
 | [0060](TICKET-0060.md) | E | Painel do gestor e premiação | 0059 | — |
 | [0061](TICKET-0061.md) | F | Gestor: scouts, finalizar e reverter | 0039, 0059, 0058 | — |
 | [0062](TICKET-0062.md) | G | Tabela de comentários do ActiveAdmin | 0010, 0059 | — |
+| [0063](TICKET-0063.md) | A | Tema ActiveAdmin (Tailwind v4 / Placar) | 0010, 0011 | — |
+| [0064](TICKET-0064.md) | B | Layout header/nav/footer unificado | 0063 | — |
+| [0065](TICKET-0065.md) | C | Tabelas e formulários Placar | 0063, 0064 | — |
+| [0066](TICKET-0066.md) | D | Dashboards admin e gestor | 0065, 0060 | — |
+| [0067](TICKET-0067.md) | E | StatusBadge + Leaderboard medalhas | 0065, 0011 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -76,3 +81,4 @@
 - Lacunas de produto: {0011, 0014, 0019} → 0028 · {0004, 0006, 0010, 0016} → 0029 · {0007, 0010, 0025} → 0030 → 0031 (+ 0011, 0026)
 - Craquefy (ordem das branches): 0032 (flag) → 0034 → 0037 → 0033 → 0038 → 0039 → 0040 → 0035 → 0032 (home) → 0036 → 0041 → 0042 → 0043 → 0044 → 0045 → 0046 → 0047 → 0048 → 0049 → 0050 → 0051 → 0052 → 0053 → 0054 → 0055
 - RBAC (3 níveis): 0056 → 0057 → 0058 → 0059 → 0060 → 0061 → 0062
+- UI Admin/Gestor (Placar): 0063 → 0064 → 0065 → 0066 → 0067

@@ -8,7 +8,7 @@
     <h3 class="panel-title" id="scouts-title">Scouts · <%= match %> · <%= admin_score(match) %></h3>
     <div class="panel-body">
       <% if errors.any? %>
-        <div class="mb-4 rounded-md border-l-4 border-red-700 bg-red-50 px-4 py-3 text-sm text-red-900 dark:bg-red-950 dark:text-red-100" role="alert" data-role="form-errors">
+        <div class="mb-4 <%= AdminHelper::ADMIN_ALERT_CLASSES %>" role="alert" data-role="form-errors">
           <p class="font-semibold">Os scouts não foram salvos:</p>
           <ul class="mt-1 list-disc ps-5">
             <% errors.each do |message| %>
@@ -59,7 +59,7 @@
                     <% name = "scouts[#{line.player.id}]" %>
                     <tr data-scouts-target="row" data-side="<%= side %>" data-player-id="<%= line.player.id %>">
                       <td class="whitespace-nowrap">
-                        <%= line.player.name %> <span class="text-xs text-gray-500"><%= line.player.position %></span>
+                        <%= line.player.name %> <span class="text-xs font-body text-graphite"><%= line.player.position %></span>
                         <%= hidden_field_tag "#{name}[team_id]", line.team_id, id: nil %>
                       </td>
                       <% scouts.each_key do |scout| %>
@@ -69,7 +69,7 @@
                           <div class="flex items-center gap-1">
                             <button type="button" class="cursor-pointer px-1 font-bold" aria-label="menos" data-action="scouts#step" data-scouts-delta-param="-1" <%= "disabled" if disabled %>>−</button>
                             <%= number_field_tag "#{name}[#{scout}]", line.values[scout], id: nil, min: range.min, max: range.max, step: 1,
-                                                 disabled:, class: "w-12 rounded-md border border-gray-300 px-1 py-1 text-center text-sm tabular-nums dark:border-gray-600 dark:bg-gray-800",
+                                                 disabled:, class: AdminHelper::ADMIN_COMPACT_INPUT_CLASSES,
                                                  data: { scout: }, aria: { label: "#{scouts[scout]} de #{line.player.name}" } %>
                             <button type="button" class="cursor-pointer px-1 font-bold" aria-label="mais" data-action="scouts#step" data-scouts-delta-param="1" <%= "disabled" if disabled %>>+</button>
                           </div>

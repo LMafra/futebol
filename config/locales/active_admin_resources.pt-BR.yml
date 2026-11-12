@@ -1,0 +1,89 @@
+# Labels dos recursos ActiveAdmin (register as: 'Championship' etc.).
+# Escopo activerecord.models.<i18n_key> — ver ActiveAdmin::Resource::Naming.
+pt-BR:
+  activerecord:
+    models:
+      championship:
+        one: Campeonato
+        other: Campeonatos
+      team:
+        one: Time
+        other: Times
+      player:
+        one: Jogador
+        other: Jogadores
+      match:
+        one: Partida
+        other: Partidas
+      user:
+        one: Usuário
+        other: Usuários
+      pool:
+        one: Bolão
+        other: Bolões
+      bolao_scoring_rule:
+        one: Regra do Bolão
+        other: Regras do Bolão
+      audit_log:
+        one: Log de auditoria
+        other: Logs de auditoria
+      csv_import:
+        one: Importação CSV
+        other: Importações CSV
+      esquadrao_squad:
+        one: Time do Esquadrão
+        other: Times do Esquadrão
+      esquadrao_scoring_rule:
+        one: Regra do Esquadrão
+        other: Regras do Esquadrão
+      esquadrao_lineup:
+        one: Escalação
+        other: Escalações
+      core/championship:
+        one: Campeonato
+        other: Campeonatos
+      core/team:
+        one: Time
+        other: Times
+      core/player:
+        one: Jogador
+        other: Jogadores
+      core/match:
+        one: Partida
+        other: Partidas
+      core/user:
+        one: Usuário
+        other: Usuários
+    attributes:
+      championship:
+        name: Nome
+        season: Temporada
+        external_id: Externo
+        private: Privado
+      core/championship:
+        name: Nome
+        season: Temporada
+        external_id: Externo
+        private: Privado
+      team:
+        name: Nome
+        short_name: Sigla
+      core/team:
+        name: Nome
+        short_name: Sigla
+      player:
+        name: Nome
+        position: Posição
+      core/player:
+        name: Nome
+        position: Posição
+      match:
+        home_score: Placar mandante
+        away_score: Placar visitante
+        status: Status
+        kickoff_at: Início
+      core/match:
+        home_score: Placar mandante
+        away_score: Placar visitante
+        status: Status
+        kickoff_at: Início

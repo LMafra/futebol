@@ -5,7 +5,7 @@
     <h3 class="panel-title" id="finalize-title">Placar final · <%= match %></h3>
     <div class="panel-body">
       <% if form.scouts? %>
-        <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+        <p class="mb-4 <%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">
           O placar vem dos scouts da partida. Encerra a partida e enfileira o cálculo dos pontos. Para confirmar, digite o placar no formato <strong>2x1</strong>.
           <%= link_to "Revisar os scouts", scoring_path("matchscouts", match_id: match.id), class: "font-semibold underline underline-offset-2" %>
           <% if scoring_admin_namespace? %>

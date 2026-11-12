@@ -15,10 +15,10 @@ ActiveAdmin.register Core::User, as: 'User' do
     column :name
     column :email_address
     column :role do |user|
-      Core::User.human_enum_name(:role, user.role)
+      I18n.t("activerecord.enums.core/user.role.#{user.role}")
     end
     column :manager_status do |user|
-      Core::User.human_enum_name(:manager_status, user.manager_status)
+      I18n.t("activerecord.enums.core/user.manager_status.#{user.manager_status}")
     end
     actions
   end
@@ -27,8 +27,8 @@ ActiveAdmin.register Core::User, as: 'User' do
     attributes_table do
       row :name
       row :email_address
-      row(:role) { |user| Core::User.human_enum_name(:role, user.role) }
-      row(:manager_status) { |user| Core::User.human_enum_name(:manager_status, user.manager_status) }
+      row(:role) { |user| I18n.t("activerecord.enums.core/user.role.#{user.role}") }
+      row(:manager_status) { |user| I18n.t("activerecord.enums.core/user.manager_status.#{user.manager_status}") }
       row :active
       row :created_at
     end

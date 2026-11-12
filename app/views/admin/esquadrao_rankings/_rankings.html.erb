@@ -1,5 +1,5 @@
 <% if championship.nil? %>
-  <p class="text-gray-600 dark:text-gray-400">Nenhum campeonato cadastrado.</p>
+  <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Nenhum campeonato cadastrado.</p>
 <% else %>
   <%= form_with url: admin_esquadraorankings_path, method: :get, class: "mb-6 flex flex-wrap items-end gap-3", data: { turbo: false } do %>
     <div class="w-64">
@@ -14,7 +14,7 @@
       <h3 class="panel-title" id="ranking-<%= kind %>"><%= title %></h3>
       <div class="panel-body">
         <% if rows.empty? %>
-          <p class="text-gray-600 dark:text-gray-400">Ninguém no ranking ainda.</p>
+          <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Ninguém no ranking ainda.</p>
         <% else %>
           <table class="data-table" data-role="ranking-<%= kind %>">
             <thead><tr><th>#</th><th>Usuário</th><th><%= title %></th></tr></thead>

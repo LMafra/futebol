@@ -18,6 +18,11 @@ module AdminHelper
   ADMIN_DANGER_BUTTON_CLASSES = 'inline-flex cursor-pointer items-center rounded-md border border-ink ' \
                                 'bg-loss px-3 py-2 text-sm font-body font-semibold text-ink ' \
                                 'hover:bg-loss/80 focus:outline-none focus:ring-2 focus:ring-ink'.freeze
+  ADMIN_MUTED_TEXT_CLASSES = 'text-sm font-body text-graphite'.freeze
+  # `loss` is already a ≤15% tint in @theme — use as background, ink text/border.
+  ADMIN_ALERT_CLASSES = 'rounded-md border-l-4 border-ink bg-loss px-4 py-3 text-sm font-body text-ink'.freeze
+  ADMIN_COMPACT_INPUT_CLASSES = 'w-12 rounded-md border border-rule bg-paper px-1 py-1 text-center ' \
+                                'text-sm font-body tabular-nums text-ink focus:border-cartola focus:ring-cartola'.freeze
 
   def admin_score(match)
     [match.home_score, match.away_score].map { |goals| goals.nil? ? '–' : goals }.join(' × ')

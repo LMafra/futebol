@@ -4,7 +4,7 @@
   <section class="panel" aria-labelledby="revert-title">
     <h3 class="panel-title" id="revert-title">Reverter pontos · <%= match %> (<%= admin_score(match) %>)</h3>
     <div class="panel-body">
-      <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+      <p class="mb-4 <%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">
         Descarta (soft delete) os pontos calculados para esta partida e registra a reversão no histórico de auditoria,
         com o seu usuário, o IP e o motivo. A partida pode ser pontuada de novo depois.
       </p>

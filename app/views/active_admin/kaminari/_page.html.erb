@@ -1,0 +1,5 @@
+<% if page.current? %>
+  <%= link_to page, url, { remote: remote, rel: page.rel, class: 'flex h-8 items-center justify-center rounded bg-pitch px-2.5 py-3 font-body leading-tight text-paper no-underline hover:bg-pitch hover:text-paper' } %>
+<% else %>
+  <%= link_to page, url, { remote: remote, rel: page.rel, class: 'flex h-8 items-center justify-center rounded border border-rule bg-paper px-2.5 py-3 font-body leading-tight text-ink no-underline hover:border-cartola hover:text-cartola' } %>
+<% end %>

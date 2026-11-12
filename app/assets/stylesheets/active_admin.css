@@ -20,45 +20,8 @@
   --font-sans: "Source Sans 3", "IBM Plex Sans", system-ui, sans-serif;
 }
 
-/* Index/resource tables: Placar thead + zebra (overrides ActiveAdmin plugin gray). */
+/* Forms stay in @layer; table thead must be unlayered to beat AA plugin th backgrounds. */
 @layer components {
-  .data-table {
-    @apply w-full border-collapse border border-rule text-sm text-ink font-body;
-  }
-
-  .data-table > thead {
-    @apply bg-pitch text-paper;
-  }
-
-  .data-table :where(thead > tr > th) {
-    @apply border-b border-pitch bg-pitch px-3 py-3.5 text-start text-xs font-semibold uppercase tracking-widest text-paper;
-  }
-
-  .data-table :where(thead > tr > th > a) {
-    @apply inline-flex items-center gap-2 text-inherit no-underline;
-  }
-
-  .data-table :where(tbody > tr) {
-    @apply border-b border-rule last:border-b-0;
-  }
-
-  .data-table :where(tbody > tr:nth-child(odd)) {
-    @apply bg-paper;
-  }
-
-  .data-table :where(tbody > tr:nth-child(even)) {
-    @apply bg-white;
-  }
-
-  .data-table :where(td) {
-    @apply px-3 py-4;
-  }
-
-  .data-table :where(td.tabular-nums),
-  .data-table :where(th.tabular-nums) {
-    @apply text-right;
-  }
-
   /* Forms: Placar inputs, labels, and cartola primary actions. */
   .formtastic :where(.label) {
     @apply mb-1 block text-sm font-body font-semibold text-ink;
@@ -83,5 +46,191 @@
   .action-item-button {
     @apply inline-flex cursor-pointer items-center rounded-md bg-cartola px-3 py-2 text-sm font-body font-semibold text-ink no-underline hover:bg-cartola/90;
   }
+
 }
 
+/* Unlayered overrides win over the ActiveAdmin plugin @layer components (blue Flowbite).
+   Keep `a` specificity low (0,0,1) so header/thead paper links can beat it. */
+a {
+  @apply text-pitch underline underline-offset-[.2rem];
+}
+
+[data-role="craquefy-admin-header"] a,
+[data-role="craquefy-admin-header"] a:hover {
+  color: #F4F1EA;
+  text-decoration: none;
+}
+
+/* thead sortable links stay paper on pitch. */
+.data-table thead th a,
+.data-table thead th a:hover {
+  color: #F4F1EA;
+  text-decoration: none;
+}
+
+.filters-form-title {
+  @apply mb-4 font-display text-lg font-bold text-ink;
+}
+
+.filters-form-submit {
+  @apply min-w-24 cursor-pointer rounded-md border-0 bg-cartola px-3 py-2 text-center font-body font-semibold text-ink hover:bg-cartola/90 focus:outline-hidden focus:ring-2 focus:ring-cartola;
+}
+
+.filters-form-clear {
+  @apply font-body font-semibold text-ink no-underline hover:text-cartola;
+}
+
+.index-button {
+  @apply inline-flex items-center justify-center border border-rule bg-paper px-3 py-2 text-sm font-body font-medium text-ink no-underline hover:bg-white focus:z-10 focus:ring-2 focus:ring-cartola first:rounded-s-md last:rounded-e-md;
+}
+
+.index-button-selected {
+  @apply bg-cartola/10 text-cartola hover:bg-cartola/10;
+}
+
+.page-title {
+  @apply font-display text-ink;
+}
+
+.formtastic :where([type=submit]) {
+  @apply cursor-pointer rounded-md border-0 bg-cartola px-3 py-2 font-body font-semibold text-ink hover:bg-cartola/90;
+}
+
+.action-item-button {
+  @apply inline-flex cursor-pointer items-center rounded-md bg-cartola px-3 py-2 text-sm font-body font-semibold text-ink no-underline hover:bg-cartola/90;
+}
+
+
+.status-tag {
+  @apply rounded-sm bg-rule px-2 py-0.5 text-xs font-body font-semibold uppercase tracking-wide text-ink;
+}
+
+.status-tag:where([data-status=yes]),
+.status-tag:where([data-status=sim]) {
+  @apply bg-pitch/10 text-pitch;
+}
+
+.status-tag:where([data-status=no]),
+.status-tag:where([data-status=não]) {
+  @apply bg-rule text-graphite;
+}
+
+/* Unlayered data-table beats ActiveAdmin plugin @layer th/td styles. */
+.data-table {
+  @apply w-full border-collapse border border-rule text-sm text-ink font-body;
+}
+
+.data-table > thead {
+  @apply bg-pitch text-paper;
+}
+
+.data-table :where(thead > tr > th) {
+  @apply border-b border-pitch bg-pitch px-3 py-3.5 text-start text-xs font-semibold uppercase tracking-widest text-paper;
+}
+
+.data-table :where(thead > tr > th > a) {
+  @apply inline-flex items-center gap-2 text-paper no-underline hover:text-paper;
+}
+
+.data-table :where(tbody > tr) {
+  @apply border-b border-rule last:border-b-0;
+}
+
+.data-table :where(tbody > tr:nth-child(odd)) {
+  @apply bg-paper;
+}
+
+.data-table :where(tbody > tr:nth-child(even)) {
+  @apply bg-white;
+}
+
+.data-table :where(td) {
+  @apply px-3 py-4;
+}
+
+.data-table :where(td.tabular-nums),
+.data-table :where(th.tabular-nums) {
+  @apply text-right;
+}
+
+/* Panels / attribute tables: drop Flowbite gray + dark mode from AA plugin. */
+.panel {
+  @apply mb-6 rounded-md border border-rule bg-white shadow-none;
+}
+
+.panel-title {
+  @apply rounded-t-md border-b border-rule bg-paper p-3 font-display text-xl font-bold text-ink;
+}
+
+.panel-body {
+  @apply px-3 py-5 font-body text-ink;
+}
+
+.attributes-table {
+  @apply mb-6 overflow-hidden rounded-md border border-rule shadow-none;
+}
+
+.attributes-table > :where(table) {
+  @apply w-full text-sm font-body text-ink;
+}
+
+.batch-actions-dropdown-toggle {
+  @apply inline-flex items-center gap-2 rounded-md border border-rule bg-paper px-3 py-2 text-sm font-body font-semibold text-ink hover:bg-white disabled:opacity-50;
+}
+
+.scopes-count {
+  @apply ms-2 inline-flex items-center justify-center rounded-full bg-cartola/10 px-1.5 py-1 text-xs font-body font-semibold leading-none text-cartola;
+}
+
+.paginated-collection {
+  @apply overflow-hidden rounded-md border border-rule shadow-none;
+}
+
+.paginated-collection-pagination,
+.paginated-collection-footer {
+  @apply border-t border-rule;
+}
+
+[data-test-page-header] {
+  @apply border-rule bg-paper;
+}
+
+.filters-form :where(.label) {
+  @apply mb-1.5 block text-sm font-body font-semibold text-ink;
+}
+
+.filters-form-field :where(input, select, textarea) {
+  @apply rounded-md border border-rule bg-paper font-body text-ink;
+}
+
+.active-filters-title {
+  @apply mb-4 font-display text-lg font-bold text-ink;
+}
+
+.active-filters-list {
+  @apply list-disc space-y-1 ps-5 font-body text-ink;
+}
+
+.batch-actions-dropdown-menu {
+  @apply rounded-md border border-rule bg-paper py-1 text-sm font-body text-ink shadow-none ring-0;
+}
+
+.batch-actions-dropdown-menu :where(li > a) {
+  @apply block px-2.5 py-2 font-body text-ink no-underline hover:bg-cartola/10 hover:text-cartola;
+}
+
+.attributes-table :where(tbody > tr) {
+  @apply border-b border-rule last:border-b-0 align-baseline;
+}
+
+.attributes-table :where(tbody > tr > th) {
+  @apply w-32 bg-paper text-start text-xs font-body font-semibold uppercase tracking-wide text-ink sm:w-40;
+}
+
+.attributes-table :where(tbody > tr > th, tbody > tr > td) {
+  @apply p-3 font-body text-ink;
+}
+
+.attributes-table-empty-value {
+  @apply text-xs font-body font-semibold uppercase text-graphite;
+}

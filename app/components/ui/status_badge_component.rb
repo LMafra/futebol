@@ -5,7 +5,8 @@ module Ui
       scheduled: 'bg-rule text-ink',
       live: 'bg-cartola/10 text-cartola',
       finished: 'bg-pitch/10 text-pitch',
-      reverted: 'bg-loss/10 text-loss'
+      # loss token is already a ≤15% tint (critique Q1) — text stays ink.
+      reverted: 'bg-loss text-ink'
     }.freeze
 
     LABELS = {

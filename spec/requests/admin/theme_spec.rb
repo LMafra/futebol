@@ -14,5 +14,6 @@ RSpec.describe 'ActiveAdmin Placar de Domingo theme', type: :request do
     expect(admin_css).to exist
     css = admin_css.read
     expect(css).to include('--color-paper', '--color-pitch', '--color-cartola')
+    expect(css).to include('.attributes-table')
   end
 end

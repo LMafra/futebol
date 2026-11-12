@@ -450,3 +450,53 @@ done
 Esperado após o merge RBAC: `/up` 200; `/entrar`, `/admin/login` e `/gestor/login` 200; `/gestor` e `/admin` anônimos 302 para o login correspondente ou `/session/new`; gestor autenticado acessa `/gestor` e leva 403 em `/admin`.
 
 **Nota:** scouts, finalizar e reverter no `/gestor` **já estão disponíveis** para o gestor nos próprios campeonatos (bloco G / TICKET-0061); não ficam mais como pendência do STATUS.
+
+## UI unificada de admin e gestor (Placar de Domingo)
+
+Tickets **0063–0067** (os números 0042–0046 do plano original já estavam ocupados). `docs/design/*` não foi alterado (regra agents); a decisão de aplicar o tema ao ActiveAdmin fica aqui e nos tickets.
+
+| Bloco | Ticket | Status | Artefatos |
+|---|---|---|---|
+| A — tema Tailwind v4 | [0063](../tickets/TICKET-0063.md) | ok | `@theme` em `active_admin.css`; `site_title = Craquefy Admin`; `theme_spec` |
+| B — chrome | [0064](../tickets/TICKET-0064.md) | ok | `_site_header` / `_main_navigation` / `_site_footer`; layout paper; sem dark FOUC |
+| C — tabelas | [0065](../tickets/TICKET-0065.md) | ok | `.data-table` pitch/zebra; `Ui::AdminTableComponent` |
+| D — forms | [0065](../tickets/TICKET-0065.md) | ok | Formtastic Placar + `AdminHelper` cartola |
+| E — dashboards | [0066](../tickets/TICKET-0066.md) | ok | métricas 8/4 admin; cards 3/9 gestor |
+| F — status/ranking | [0067](../tickets/TICKET-0067.md) | ok | `StatusBadgeComponent`; medalhas SVG no leaderboard |
+| G — docs | — | ok | INDEX, STATUS, README |
+| polish | — | ok | labels pt-BR; panel/header/flash/blank slate; filters; attributes; logged-out; pagination pitch; comments |
+| publish | — | blocked | hook do ambiente bloqueia publicação remota; integração com 7 commits A–G; bundle em artifacts |
+| Mobbin | — | n/a | MCP Mobbin exige plano pago; estrutura 8/4 e 3/9 já aplicada via design docs |
+
+Branches locais (1 commit base por bloco; a integração empilha polish + docs):
+
+| Bloco | Branch | Tip base |
+|---|---|---|
+| A | `cursor/admin-theme-tokens-e3a0` | `ca09376` |
+| B | `cursor/admin-layout-chrome-e3a0` | `fd750b9` |
+| C | `cursor/admin-tables-e3a0` | `ad8a3e5` |
+| D | `cursor/admin-forms-e3a0` | `526bd5b` |
+| E | `cursor/admin-dashboards-e3a0` | `6567ff1` |
+| F | `cursor/admin-status-leaderboard-e3a0` | `d028fcd` |
+| G+polish | `cursor/admin-ui-docs-e3a0` | tip da branch (docs + polish) |
+
+Scan HTML em `/admin`, show/new, `/admin/matches`, `/admin/users`, `/gestor`: 0 ocorrências de `bg-blue-*` / `bg-gray-50` / `dark:` nas classes renderizadas.
+
+Checklist anti-AI (`0001-critique`): sem gradiente roxo, glass, Inter/Roboto só, emoji decorativo, glow; badges estáticos; Fraunces ≥ `text-xl`; `loss` como tint + texto ink.
+
+Validação local (após login):
+
+```bash
+curl -sS -o /dev/null -w '%{http_code}\n' -H 'Accept: text/html' http://127.0.0.1:3000/admin
+curl -sS -o /dev/null -w '%{http_code}\n' -H 'Accept: text/html' http://127.0.0.1:3000/gestor
+```
+
+Produção (`https://futebol-web.onrender.com`):
+
+```bash
+HOST=https://futebol-web.onrender.com
+HDR='Accept: text/html'
+curl -sS -o /dev/null -w '%{http_code} %{redirect_url}\n' -H "$HDR" "$HOST/admin"
+curl -sS -o /dev/null -w '%{http_code} %{redirect_url}\n' -H "$HDR" "$HOST/gestor"
+```
+

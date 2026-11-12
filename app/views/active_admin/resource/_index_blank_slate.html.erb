@@ -1,0 +1,14 @@
+<div class="w-full rounded-md border-2 border-dashed border-rule bg-paper px-6 py-12 text-center hover:border-pitch/40" data-role="craquefy-admin-blank-slate">
+  <h2 class="mb-4 block font-display text-xl font-semibold leading-6 text-ink only:mb-0">
+    <%= I18n.t('active_admin.blank_slate.content', resource_name: active_admin_config.plural_resource_label) %>
+  </h2>
+  <% if new_action_authorized?(active_admin_config.resource_class) %>
+    <%= if page_presenter.options.has_key?(:blank_slate_link)
+          link = page_presenter.options[:blank_slate_link]
+          instance_exec(&link) if link.is_a?(Proc)
+        else
+          link_to(I18n.t('active_admin.blank_slate.link'), new_resource_path, class: AdminHelper::ADMIN_BUTTON_CLASSES)
+        end
+    %>
+  <% end %>
+</div>

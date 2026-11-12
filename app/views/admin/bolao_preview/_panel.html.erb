@@ -4,7 +4,7 @@
   <section class="panel" aria-labelledby="candidate-title">
     <h3 class="panel-title" id="candidate-title">Placar candidato · <%= match %></h3>
     <div class="panel-body">
-      <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+      <p class="mb-4 <%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">
         Simula a pontuação dos palpites com um placar hipotético. Nada é gravado; o placar real (<%= admin_score(match) %>) não é usado.
       </p>
       <%= form_with url: admin_bolaopreview_path, method: :get, class: "flex flex-wrap items-end gap-3", data: { turbo: false } do %>
@@ -22,7 +22,7 @@
       <% end %>
 
       <% if preview_error %>
-        <p class="mt-4 rounded-md border-l-4 border-red-700 bg-red-50 px-4 py-3 text-sm text-red-900 dark:bg-red-950 dark:text-red-100" role="alert"><%= preview_error %></p>
+        <p class="mt-4 <%= AdminHelper::ADMIN_ALERT_CLASSES %>" role="alert"><%= preview_error %></p>
       <% end %>
     </div>
   </section>
@@ -34,7 +34,7 @@
       </h3>
       <div class="panel-body">
         <% if preview.rows.empty? %>
-          <p class="text-gray-600 dark:text-gray-400">Nenhum palpite para esta partida.</p>
+          <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Nenhum palpite para esta partida.</p>
         <% else %>
           <table class="data-table">
             <thead>
@@ -62,7 +62,7 @@
                         admin_matchfinalizer_path(match_id: match.id, home_score: candidate_home, away_score: candidate_away),
                         class: AdminHelper::ADMIN_BUTTON_CLASSES, data: { role: "confirm-score" } %>
           <% else %>
-            <span class="text-sm text-gray-600 dark:text-gray-400">A partida está <%= match.status %>; só partidas ao vivo podem ser finalizadas.</span>
+            <span class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">A partida está <%= match.status %>; só partidas ao vivo podem ser finalizadas.</span>
           <% end %>
         </div>
       </div>
