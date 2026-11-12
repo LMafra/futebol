@@ -529,7 +529,7 @@ Tickets **0079–0084**, executados junto com a work queue na ordem 0079 → 008
 |---|---|---|---|---|
 | A1 — bug aprovar | [0079](../tickets/TICKET-0079.md) | ok | `button_to` PUT + redirect | Admin sem Turbo; `data-turbo-*` era inerte |
 | A2 — base CSS Admin | [0080](../tickets/TICKET-0080.md) | ok | `active_admin.css` base `:root`, `darkMode` never, `AdminHelper` papéis | campos brancos/`graphite`; sem `text-cartola`; sweeper do importmap do Admin |
-| A3 — a11y Admin | [0081](../tickets/TICKET-0081.md) | planned | — | abas de scouts, sidebar, alvos de toque |
+| A3 — a11y Admin | [0081](../tickets/TICKET-0081.md) | ok | abas WAI-ARIA, `aria-current`/`aria-expanded`, empty results, toast com fechar | alvos de 40px; filtros recolhidos em 390px |
 | A4 — consistência Admin | [0084](../tickets/TICKET-0084.md) | planned | — | i18n, papéis de botão, CSV |
 | P1 — base pública | [0082](../tickets/TICKET-0082.md) | planned | — | `:app` inclui CSS do Admin; escala |
 | P2 — consistência pública | [0083](../tickets/TICKET-0083.md) | planned | — | botões, tabelas, ARIA |

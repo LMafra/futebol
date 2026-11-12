@@ -1,5 +1,5 @@
 <% if page.current? %>
-  <%= link_to page, url, { remote: remote, rel: page.rel, class: 'flex h-8 items-center justify-center rounded bg-pitch px-2.5 py-3 font-body leading-tight text-paper no-underline hover:bg-pitch hover:text-paper' } %>
+  <%= link_to page, url, { remote: remote, rel: page.rel, class: 'flex min-h-10 min-w-10 items-center justify-center rounded bg-pitch px-2.5 font-body font-semibold leading-tight text-paper no-underline hover:bg-pitch hover:text-paper focus:outline-hidden focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2', aria: { current: 'page' } } %>
 <% else %>
-  <%= link_to page, url, { remote: remote, rel: page.rel, class: 'flex h-8 items-center justify-center rounded border border-rule bg-white px-2.5 py-3 font-body leading-tight text-ink no-underline hover:border-ink' } %>
+  <%= link_to page, url, { remote: remote, rel: page.rel, class: 'flex min-h-10 min-w-10 items-center justify-center rounded border border-graphite/70 bg-white px-2.5 font-body leading-tight text-ink no-underline hover:border-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-ink' } %>
 <% end %>

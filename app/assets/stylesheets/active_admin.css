@@ -38,6 +38,10 @@
     @apply border-graphite/70 bg-white text-ink placeholder:text-graphite focus:border-ink focus:ring-ink;
   }
 
+  :root :is(input, select, textarea, button):disabled {
+    @apply cursor-not-allowed bg-rule/40 text-graphite;
+  }
+
   :root :is([type=checkbox], [type=radio]) {
     @apply border-graphite/70 bg-white text-pitch focus:ring-pitch;
   }
@@ -226,7 +230,16 @@
 }
 
 .attributes-table {
-  @apply mb-6 overflow-hidden rounded-md border border-rule shadow-none;
+  @apply mb-6 overflow-x-auto rounded-md border border-rule shadow-none;
+}
+
+.attributes-table :where(td) {
+  overflow-wrap: anywhere;
+}
+
+.panel-body :where(pre),
+.attributes-table :where(pre) {
+  @apply max-w-full overflow-x-auto whitespace-pre-wrap break-words;
 }
 
 .attributes-table > :where(table) {

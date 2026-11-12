@@ -21,6 +21,13 @@ module AdminHelper
   ADMIN_SECONDARY_BUTTON_CLASSES = "#{ADMIN_BUTTON_BASE_CLASSES} border border-graphite/70 bg-white text-ink " \
                                    'hover:bg-paper'.freeze
   ADMIN_DANGER_BUTTON_CLASSES = "#{ADMIN_BUTTON_BASE_CLASSES} bg-loss-solid text-paper hover:bg-loss-solid/90".freeze
+  ADMIN_TAB_CLASSES = "#{ADMIN_BUTTON_BASE_CLASSES} border aria-[selected=true]:border-cartola " \
+                      'aria-[selected=true]:bg-cartola aria-[selected=false]:border-graphite/70 ' \
+                      'aria-[selected=false]:bg-white text-ink aria-[selected=false]:hover:bg-paper'.freeze
+  ADMIN_STEPPER_CLASSES = 'inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-md ' \
+                          'border border-graphite/70 bg-white font-bold text-ink hover:bg-paper focus:outline-hidden ' \
+                          'focus-visible:ring-2 focus-visible:ring-ink disabled:cursor-not-allowed ' \
+                          'disabled:border-rule disabled:bg-rule/40 disabled:text-graphite'.freeze
   ADMIN_MUTED_TEXT_CLASSES = 'text-sm font-body text-graphite'.freeze
   # `loss` is already a ≤15% tint in @theme — use as background, ink text/border.
   ADMIN_ALERT_CLASSES = 'rounded-md border-l-4 border-ink bg-loss px-4 py-3 text-sm font-body text-ink'.freeze
@@ -80,8 +87,9 @@ module AdminHelper
 
   def admin_icon_action_link(label, href, icon, **html_options)
     path = ADMIN_ACTION_ICON_PATHS.fetch(icon.to_sym)
-    classes = 'inline-flex items-center justify-center rounded-md border border-graphite/70 bg-white p-1.5 ' \
-              'text-ink no-underline hover:border-ink hover:bg-paper focus:outline-hidden ' \
+    hover = icon.to_sym == :delete ? 'hover:border-ink hover:bg-loss' : 'hover:border-ink hover:bg-paper'
+    classes = 'inline-flex h-10 w-10 items-center justify-center rounded-md border border-graphite/70 bg-white ' \
+              "text-ink no-underline #{hover} focus:outline-hidden " \
               'focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2'
     data = (html_options.delete(:data) || {}).merge(role: 'admin-table-action')
     link_to(href, **html_options, class: classes, title: label, 'aria-label': label, data:) do

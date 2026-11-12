@@ -28,4 +28,15 @@ RSpec.describe Ui::ToastComponent do
     expect(toast['class']).to include('bg-cartola/15', 'border-cartola')
     expect(page.to_html).not_to include('text-cartola')
   end
+
+  it 'lets the message name the toast and offers a 40px close button' do
+    page = render_inline(described_class.new(message: 'Salvo', variant: :notice))
+
+    toast = page.at_css('[data-role="admin-toast"]')
+    expect(toast['aria-label']).to be_nil
+    expect(toast['data-controller']).to eq('dismiss')
+    close = page.at_css('button[data-role="toast-close"]')
+    expect([close['aria-label'], close['data-action']]).to eq(['Fechar aviso', 'dismiss#close'])
+    expect(close['class']).to include('h-10', 'w-10')
+  end
 end

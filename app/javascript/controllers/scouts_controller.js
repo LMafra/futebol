@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Admin "Scouts da partida": switches between the Mandante and Visitante tables, steps the counters within their
+// Admin "Scouts da partida": switches between the Mandante and Visitante tables (WAI-ARIA tabs: arrows, Home, End),
+// steps the counters within their
 // min/max, marks "Jogou" for the visible side and previews SG and each player's points. The server recomputes
 // both on save; without JavaScript the number inputs still work.
 export default class extends Controller {
@@ -12,8 +13,30 @@ export default class extends Controller {
   }
 
   show({ params: { side } }) {
+    this.select(side)
+  }
+
+  navigate(event) {
+    const tabs = this.tabTargets
+    const current = tabs.indexOf(event.target)
+    if (current < 0) return
+
+    const next = { ArrowRight: current + 1, ArrowLeft: current - 1, Home: 0, End: tabs.length - 1 }[event.key]
+    if (next === undefined) return
+
+    event.preventDefault()
+    const tab = tabs[(next + tabs.length) % tabs.length]
+    this.select(tab.dataset.side)
+    tab.focus()
+  }
+
+  select(side) {
     this.teamTargets.forEach((team) => { team.hidden = team.dataset.side !== side })
-    this.tabTargets.forEach((tab) => tab.setAttribute("aria-selected", tab.dataset.side === side))
+    this.tabTargets.forEach((tab) => {
+      const selected = tab.dataset.side === side
+      tab.setAttribute("aria-selected", selected)
+      tab.tabIndex = selected ? 0 : -1
+    })
   }
 
   step({ currentTarget, params: { delta } }) {

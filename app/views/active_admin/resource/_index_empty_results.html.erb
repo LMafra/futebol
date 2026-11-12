@@ -1,0 +1,8 @@
+<%= render Ui::EmptyStateComponent.new(
+      title: I18n.t('active_admin.pagination.empty', model: active_admin_config.plural_resource_label),
+      description: 'Nenhum registro corresponde aos filtros ou à aba escolhida.'
+    ) do |empty| %>
+  <% empty.with_action do %>
+    <%= link_to 'Limpar filtros', url_for(only_path: true), class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES, data: { role: 'clear-filters' } %>
+  <% end %>
+<% end %>
