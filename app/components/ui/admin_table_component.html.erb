@@ -1,0 +1,39 @@
+<section class="w-full overflow-x-auto" <%= tag.attributes(root_attributes(label: text(:label))) %>>
+  <% case rendered_state %>
+  <% when :default %>
+    <table class="data-table w-full border-collapse border border-rule text-sm font-body" data-role="<%= table_role %>">
+      <thead class="bg-pitch text-paper">
+        <tr class="text-xs font-bold uppercase tracking-widest">
+          <% headers.each do |header| %>
+            <th scope="col" class="border-b border-pitch px-3 py-3.5 <%= header[:numeric] ? 'text-right tabular-nums' : 'text-start' %>">
+              <%= header[:label] %>
+            </th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% rows.each_with_index do |row, index| %>
+          <tr class="border-b border-rule last:border-b-0 <%= index.even? ? 'bg-paper' : 'bg-white' %>" data-role="admin-table-row">
+            <% row.each_with_index do |cell, cell_index| %>
+              <% numeric = headers[cell_index]&.dig(:numeric) %>
+              <td class="px-3 py-4 <%= 'text-right tabular-nums' if numeric %>"><%= cell %></td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% when :loading %>
+    <span class="sr-only">Carregando tabela…</span>
+    <div class="flex flex-col gap-1" aria-hidden="true">
+      <% 4.times do %>
+        <div class="h-8 w-full <%= skeleton_classes %>" data-role="skeleton"></div>
+      <% end %>
+    </div>
+  <% when :empty %>
+    <%= empty_notice(text(:empty)) %>
+  <% when :error %>
+    <div class="<%= error_classes %>" role="alert">
+      <span class="font-bold">Não foi possível montar a tabela.</span>
+    </div>
+  <% end %>
+</section>

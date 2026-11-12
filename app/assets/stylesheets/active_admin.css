@@ -19,3 +19,44 @@
   --font-numeric: "Source Sans 3", "IBM Plex Sans", system-ui, sans-serif;
   --font-sans: "Source Sans 3", "IBM Plex Sans", system-ui, sans-serif;
 }
+
+/* Index/resource tables: Placar thead + zebra (overrides ActiveAdmin plugin gray). */
+@layer components {
+  .data-table {
+    @apply w-full border-collapse border border-rule text-sm text-ink font-body;
+  }
+
+  .data-table > thead {
+    @apply bg-pitch text-paper;
+  }
+
+  .data-table :where(thead > tr > th) {
+    @apply border-b border-pitch bg-pitch px-3 py-3.5 text-start text-xs font-semibold uppercase tracking-widest text-paper;
+  }
+
+  .data-table :where(thead > tr > th > a) {
+    @apply inline-flex items-center gap-2 text-inherit no-underline;
+  }
+
+  .data-table :where(tbody > tr) {
+    @apply border-b border-rule last:border-b-0;
+  }
+
+  .data-table :where(tbody > tr:nth-child(odd)) {
+    @apply bg-paper;
+  }
+
+  .data-table :where(tbody > tr:nth-child(even)) {
+    @apply bg-white;
+  }
+
+  .data-table :where(td) {
+    @apply px-3 py-4;
+  }
+
+  .data-table :where(td.tabular-nums),
+  .data-table :where(th.tabular-nums) {
+    @apply text-right;
+  }
+}
+
