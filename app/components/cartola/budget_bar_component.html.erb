@@ -13,7 +13,7 @@
       <div class="h-2 <%= over_budget? ? 'bg-ink' : 'bg-cartola' %>" style="width: <%= percent %>%"></div>
     </div>
   <% when :loading %>
-    <div class="mt-2 h-5 w-1/2 <%= skeleton_classes %>" data-role="skeleton" aria-hidden="true"></div>
+    <div class="mt-2 h-6 w-1/2 <%= skeleton_classes %>" data-role="skeleton" aria-hidden="true"></div>
     <div class="mt-2 h-2 w-full <%= skeleton_classes %>" aria-hidden="true"></div>
   <% when :empty %>
     <div class="mt-2"><%= empty_notice("Escolha jogadores para ver o orçamento.") %></div>

@@ -27,6 +27,14 @@ RSpec.describe 'Simulador', type: :request do
   end
 
   describe 'GET /simulador/:championship_id' do
+    it 'marca o jogo ao vivo com um chip legível e campos de 48px (TICKET-0082)' do
+      get simulador_championship_path(championship)
+
+      chip = page.at_css("[data-match-id='#{live_match.id}'] [data-role='live-chip']")
+      expect(chip['class'].split).to include('bg-cartola', 'text-ink')
+      expect(page.at_css("input[name='guesses[#{live_match.id}][home]']")['class'].split).to include('min-h-12')
+    end
+
     it 'é público: mostra a tabela atual e o formulário dos jogos em aberto (200)' do
       get simulador_championship_path(championship)
 

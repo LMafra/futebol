@@ -11,8 +11,8 @@
         <%= hidden_field_tag :tab, @tab %>
         <%= label_tag :championship_id, "Campeonato" %>
         <%= select_tag :championship_id, options_from_collection_for_select(@championships, :id, :to_s, @championship&.id),
-                       class: "rounded-sm border border-rule px-2 py-1" %>
-        <button type="submit" class="cursor-pointer rounded-sm border border-ink px-3 py-1 hover:bg-ink hover:text-white">Ver</button>
+                       class: form_control_classes %>
+        <button type="submit" class="min-h-12 cursor-pointer rounded-sm border border-ink px-4 py-2 hover:bg-ink hover:text-white">Ver</button>
       <% end %>
     <% end %>
   </header>

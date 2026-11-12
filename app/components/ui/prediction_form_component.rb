@@ -32,8 +32,6 @@ module Ui
       "#{prediction.home_guess} × #{prediction.away_guess}"
     end
 
-    def guess_input_classes
-      'w-14 rounded-sm border border-rule px-2 py-1 text-center text-lg font-bold tabular-nums'
-    end
+    def guess_input_classes = form_control_classes('w-16 text-center text-lg font-bold tabular-nums')
   end
 end

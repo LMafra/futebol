@@ -25,7 +25,7 @@
       <div class="flex flex-col gap-1">
         <%= form.label :code, "Entrar com código", class: "text-sm font-semibold" %>
         <%= form.text_field :code, maxlength: Bolao::Pool::CODE_LENGTH, required: true, autocomplete: "off", placeholder: "EX: K7P2QD",
-                              class: "w-40 rounded-sm border border-rule px-3 py-2 font-semibold uppercase tabular-nums tracking-widest" %>
+                              class: form_control_classes("w-[10rem] font-semibold uppercase tabular-nums tracking-widest") %>
       </div>
       <%= form.submit "Entrar", class: "cursor-pointer rounded-sm border border-ink px-4 py-2 font-semibold hover:bg-paper" %>
     <% end %>

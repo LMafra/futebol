@@ -19,7 +19,7 @@
   <% elsif loading? %>
     <div class="flex gap-2" aria-hidden="true">
       <% 4.times do %>
-        <span class="h-10 w-16 <%= skeleton_classes %>" data-role="skeleton"></span>
+        <span class="h-12 w-16 <%= skeleton_classes %>" data-role="skeleton"></span>
       <% end %>
     </div>
   <% elsif empty? %>

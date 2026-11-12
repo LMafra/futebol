@@ -1,7 +1,7 @@
 <section class="w-full" <%= tag.attributes(root_attributes(label: text(:label))) %>>
   <% case rendered_state %>
   <% when :default %>
-    <table class="w-full border-collapse border border-rule tabular-nums lining-nums font-body <%= compact? ? "text-sm" : "text-sm md:text-base" %>">
+    <table class="w-full border-collapse border border-rule tabular-nums lining-nums font-sans <%= compact? ? "text-sm" : "text-sm md:text-base" %>">
       <thead class="<%= compact? ? "sr-only" : "bg-pitch text-paper" %>">
         <tr class="text-xs font-bold uppercase tracking-widest">
           <th scope="col" class="<%= cell_classes %> text-left">#</th>
@@ -15,7 +15,7 @@
       <tbody>
         <% rows.each_with_index do |row, index| %>
           <tr class="border-b border-rule last:border-b-0 <%= compact? ? '' : (index.even? ? 'bg-paper' : 'bg-white') %>" data-role="leaderboard-row">
-            <td class="<%= cell_classes %> w-10 font-bold <%= "border-l-4 border-cartola" if row.position == 1 %>">
+            <td class="<%= cell_classes %> w-12 font-bold <%= "border-l-4 border-cartola" if row.position == 1 %>">
               <%= position_cell(row.position) %>
             </td>
             <th scope="row" class="<%= cell_classes %> text-left font-semibold">
@@ -36,7 +36,7 @@
     <span class="sr-only">Carregando ranking…</span>
     <div class="flex flex-col gap-1" aria-hidden="true">
       <% skeleton_rows.times do %>
-        <div class="h-7 w-full <%= skeleton_classes %>" data-role="skeleton"></div>
+        <div class="h-8 w-full <%= skeleton_classes %>" data-role="skeleton"></div>
       <% end %>
     </div>
   <% when :empty %>

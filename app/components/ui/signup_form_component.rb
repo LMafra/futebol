@@ -34,10 +34,7 @@ module Ui
 
     def error_id(attribute) = "signup-#{attribute}-error"
 
-    def input_classes(attribute)
-      border = field_error(attribute) ? 'border-2 border-ink' : 'border border-rule'
-      "mt-1 block w-full rounded-sm #{border} bg-white px-3 py-2 focus:outline-2 focus:outline-pitch"
-    end
+    def input_classes(attribute) = form_control_classes('mt-1 block w-full', invalid: field_error(attribute).present?)
 
     def button_classes
       'cursor-pointer rounded-sm bg-cartola px-4 py-2 font-bold text-ink transition-colors duration-fast ' \

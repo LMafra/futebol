@@ -41,13 +41,13 @@
                     data: { controller: "rounds", rounds_index_value: start_index } do %>
         <%= hidden_field_tag :round_index, start_index, data: { rounds_target: "position" } %>
         <div class="flex items-center justify-between gap-2" data-rounds-target="nav" data-role="rounds-nav" hidden>
-          <button type="button" class="flex cursor-pointer items-center gap-1 rounded-sm border border-ink px-3 py-2 text-sm font-semibold hover:bg-ink hover:text-white disabled:cursor-not-allowed disabled:border-rule disabled:text-graphite disabled:hover:bg-transparent"
+          <button type="button" class="flex min-h-12 cursor-pointer items-center gap-1 rounded-sm border border-ink px-3 py-2 text-sm font-semibold hover:bg-ink hover:text-white disabled:cursor-not-allowed disabled:border-rule disabled:text-graphite disabled:hover:bg-transparent"
                   data-action="rounds#previous" data-rounds-target="previous" aria-label="Rodada anterior">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
             Anterior
           </button>
           <p class="text-center text-sm font-bold" aria-live="polite" data-rounds-target="label"></p>
-          <button type="button" class="flex cursor-pointer items-center gap-1 rounded-sm border border-ink px-3 py-2 text-sm font-semibold hover:bg-ink hover:text-white disabled:cursor-not-allowed disabled:border-rule disabled:text-graphite disabled:hover:bg-transparent"
+          <button type="button" class="flex min-h-12 cursor-pointer items-center gap-1 rounded-sm border border-ink px-3 py-2 text-sm font-semibold hover:bg-ink hover:text-white disabled:cursor-not-allowed disabled:border-rule disabled:text-graphite disabled:hover:bg-transparent"
                   data-action="rounds#next" data-rounds-target="next" aria-label="Próxima rodada">
             Próxima
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
@@ -74,15 +74,15 @@
                 <% end %>
                 <% error = simulation.errors[match.id.to_s] %>
                 <li class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 text-sm" data-role="open-match" data-match-id="<%= match.id %>">
-                  <span class="truncate text-right font-semibold"><%= match.home_team.name %><% if match.live? %> <span class="text-xs font-bold text-cartola">AO VIVO</span><% end %></span>
+                  <span class="flex min-w-0 items-center justify-end gap-1 font-semibold"><span class="truncate"><%= match.home_team.name %></span><% if match.live? %><span class="shrink-0 rounded-sm bg-cartola px-1 text-xs font-bold text-ink" data-role="live-chip">AO VIVO</span><% end %></span>
                   <span class="flex items-center gap-1 tabular-nums">
                     <%= number_field_tag "guesses[#{match.id}][home]", simulador_goals(simulation, raw, match, :home), min: 0, max: 99,
-                                         class: "w-12 rounded-sm border border-rule px-1 py-1 text-center",
+                                         class: form_control_classes("w-16 text-center", invalid: error.present?),
                                          aria: { label: "Gols do #{match.home_team.name}", invalid: error.present? || nil,
                                                  describedby: ("simulador-error-#{match.id}" if error) } %>
                     <span aria-hidden="true">×</span>
                     <%= number_field_tag "guesses[#{match.id}][away]", simulador_goals(simulation, raw, match, :away), min: 0, max: 99,
-                                         class: "w-12 rounded-sm border border-rule px-1 py-1 text-center",
+                                         class: form_control_classes("w-16 text-center", invalid: error.present?),
                                          aria: { label: "Gols do #{match.away_team.name}", invalid: error.present? || nil,
                                                  describedby: ("simulador-error-#{match.id}" if error) } %>
                   </span>

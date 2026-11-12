@@ -20,29 +20,28 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%= render "layouts/fonts" %>
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind", "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body class="min-h-screen bg-paper text-ink">
     <header class="snap-start bg-pitch text-white">
       <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
-        <%= link_to brand(:name), main_app.root_path, class: "font-display text-2xl font-extrabold tracking-tight" %>
+        <%= link_to brand(:name), main_app.root_path, class: "inline-flex min-h-12 items-center font-display text-2xl font-extrabold tracking-tight" %>
         <nav class="flex items-center gap-4 text-sm font-semibold" aria-label="Principal">
           <% if user_signed_in? %>
             <details class="relative" data-role="account-menu">
-              <summary class="cursor-pointer list-none underline-offset-2 hover:underline">Minha conta</summary>
-              <ul class="absolute right-0 z-10 mt-2 flex w-48 flex-col rounded-sm border border-rule bg-white py-1 text-ink">
-                <li><%= link_to "Minha conta", main_app.account_path, class: "block px-3 py-2 hover:bg-paper" %></li>
-                <li><%= link_to "Meus bolões", main_app.pools_path, class: "block px-3 py-2 hover:bg-paper" %></li>
-                <li><%= link_to "Meu #{module_label(:fantasy).downcase}", main_app.esquadrao_path, class: "block px-3 py-2 hover:bg-paper" %></li>
-                <li><%= link_to "Rankings", main_app.esquadrao_rankings_path, class: "block px-3 py-2 hover:bg-paper" %></li>
+              <summary class="flex min-h-12 cursor-pointer list-none items-center underline-offset-2 hover:underline [&::-webkit-details-marker]:hidden">Minha conta</summary>
+              <ul class="absolute right-0 z-10 mt-2 flex w-max min-w-[12rem] flex-col rounded-sm border border-rule bg-white py-1 text-ink">
+                <li><%= link_to "Minha conta", main_app.account_path, class: "flex min-h-12 items-center px-3 py-2 hover:bg-paper" %></li>
+                <li><%= link_to "Meus bolões", main_app.pools_path, class: "flex min-h-12 items-center px-3 py-2 hover:bg-paper" %></li>
+                <li><%= link_to "Meu #{module_label(:fantasy).downcase}", main_app.esquadrao_path, class: "flex min-h-12 items-center px-3 py-2 hover:bg-paper" %></li>
+                <li><%= link_to "Rankings", main_app.esquadrao_rankings_path, class: "flex min-h-12 items-center px-3 py-2 hover:bg-paper" %></li>
               </ul>
             </details>
-            <%= button_to "Sair", main_app.session_path, method: :delete, class: "cursor-pointer underline-offset-2 hover:underline" %>
+            <%= button_to "Sair", main_app.session_path, method: :delete, class: "min-h-12 cursor-pointer px-2 underline-offset-2 hover:underline" %>
           <% else %>
-            <%= link_to "Entrar", main_app.login_path, class: "rounded-sm border border-white px-3 py-1 font-bold transition-colors duration-fast ease-editorial hover:bg-white hover:text-pitch" %>
+            <%= link_to "Entrar", main_app.login_path, class: "inline-flex min-h-12 items-center rounded-sm border border-white px-4 py-2 font-bold transition-colors duration-fast ease-editorial hover:bg-white hover:text-pitch" %>
           <% end %>
         </nav>
       </div>
@@ -75,7 +74,7 @@
             <div class="absolute bottom-full right-0 z-10 mb-2 flex w-max flex-col gap-2 rounded-md border border-rule bg-white p-4 text-ink" data-controller="clipboard">
               <p class="text-xs font-bold uppercase tracking-widest text-graphite">Chave Pix</p>
               <code class="font-sans text-sm" data-clipboard-target="source"><%= brand(:pix_key) %></code>
-              <button type="button" class="cursor-pointer self-start rounded-sm border border-ink px-3 py-1 text-sm font-semibold hover:bg-ink hover:text-white"
+              <button type="button" class="min-h-12 cursor-pointer self-start rounded-sm border border-ink px-4 py-2 text-sm font-semibold hover:bg-ink hover:text-white"
                       data-action="clipboard#copy" data-clipboard-target="button">Copiar chave</button>
             </div>
           </details>

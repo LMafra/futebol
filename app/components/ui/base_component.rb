@@ -1,5 +1,7 @@
 module Ui
   class BaseComponent < ViewComponent::Base
+    include FormControlHelper
+
     STATES = %i[default loading empty error].freeze
 
     attr_reader :state

@@ -27,4 +27,11 @@ RSpec.describe Cartola::PitchComponent do
     expect(count_on(page, 'forward', 'pitch-open-slot')).to eq(2)
     expect(count_on(page, 'goalkeeper', 'pitch-open-slot')).to eq(0)
   end
+
+  it 'keeps text on the pitch green white, not rule (TICKET-0082)' do
+    page = render_inline(described_class.new(lineup: create(:cartola_lineup, formation: '4-3-3')))
+
+    expect(page.at_css('[data-role="formation"]')['class']).to include('text-white')
+    expect(page.at_css('[data-role="pitch-open-slot"]')&.[]('class').to_s).not_to include('text-rule')
+  end
 end
