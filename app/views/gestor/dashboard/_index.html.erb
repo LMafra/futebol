@@ -1,69 +1,92 @@
-<div class="grid gap-6 lg:grid-cols-12">
-  <section class="rounded-md border border-rule bg-paper lg:col-span-3" aria-labelledby="shortcuts-title">
-    <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="shortcuts-title">Atalhos</h3>
-    <div class="px-4 py-3">
-      <ul class="flex flex-col gap-2 font-body text-sm" data-role="gestor-shortcuts">
-        <li><%= link_to "Novo campeonato", new_gestor_championship_path, class: "inline-flex items-center gap-2 font-semibold text-ink no-underline hover:text-cartola" %></li>
-        <li><%= link_to "Novo time", new_gestor_team_path, class: "inline-flex items-center gap-2 font-semibold text-ink no-underline hover:text-cartola" %></li>
-        <li><%= link_to "Novo jogador", new_gestor_player_path, class: "inline-flex items-center gap-2 font-semibold text-ink no-underline hover:text-cartola" %></li>
-        <li><%= link_to "Agendar partida", new_gestor_match_path, class: "inline-flex items-center gap-2 font-semibold text-ink no-underline hover:text-cartola" %></li>
-        <li><%= link_to "Pontuação do Bolão", gestor_bolao_scoring_rules_path, class: "inline-flex items-center gap-2 font-semibold text-ink no-underline hover:text-cartola" %></li>
-        <li><%= link_to "Scouts", scoring_path("matchscouts"), class: "inline-flex items-center gap-2 font-semibold text-ink no-underline hover:text-cartola" %></li>
-        <li><%= link_to "Finalizar", scoring_path("matchfinalizer"), class: "inline-flex items-center gap-2 font-semibold text-ink no-underline hover:text-cartola" %></li>
-        <li><%= link_to "Reverter", scoring_path("matchreversal"), class: "inline-flex items-center gap-2 font-semibold text-ink no-underline hover:text-cartola" %></li>
-      </ul>
+<section class="mb-6" aria-labelledby="championships-title">
+  <h3 class="mb-3 font-display text-xl text-ink" id="championships-title">Seus campeonatos (<%= overview.size %>)</h3>
+  <% if overview.empty? %>
+    <div class="rounded-md border border-rule bg-paper px-4 py-6 font-body text-graphite">
+      Você ainda não tem campeonatos. <%= link_to "Crie o primeiro", new_gestor_championship_path, class: "font-semibold text-ink underline underline-offset-2 hover:text-cartola" %>
+      e depois cadastre os times e agende as partidas.
     </div>
-  </section>
-
-  <section class="lg:col-span-9" aria-labelledby="championships-title">
-    <h3 class="mb-3 font-display text-xl text-ink" id="championships-title">Seus campeonatos (<%= overview.size %>)</h3>
-    <% if overview.empty? %>
-      <div class="rounded-md border border-rule bg-paper px-4 py-6 font-body text-graphite">
-        Você ainda não tem campeonatos. <%= link_to "Crie o primeiro", new_gestor_championship_path, class: "font-semibold text-ink underline underline-offset-2 hover:text-cartola" %>
-        e depois cadastre os times e agende as partidas.
-      </div>
-    <% else %>
-      <div class="grid gap-4 sm:grid-cols-2" data-role="gestor-championships">
-        <% overview.each do |row| %>
-          <% championship = row.championship %>
-          <article class="rounded-md border border-rule bg-paper p-4" data-championship-id="<%= championship.id %>">
-            <div class="flex items-start justify-between gap-3">
-              <h4 class="font-display text-xl text-ink">
-                <%= link_to championship, gestor_championship_path(championship), class: "text-ink no-underline hover:text-cartola" %>
-              </h4>
-              <span class="rounded-sm bg-rule px-2 py-0.5 text-xs font-body font-semibold uppercase tracking-wide text-ink">
-                <%= championship.private? ? "privado" : "público" %>
-              </span>
+  <% else %>
+    <div class="grid gap-4 sm:grid-cols-2" data-role="gestor-championships">
+      <% overview.each do |row| %>
+        <% championship = row.championship %>
+        <article class="rounded-md border border-rule border-l-[3px] border-l-pitch bg-paper p-4" data-championship-id="<%= championship.id %>">
+          <div class="flex items-start justify-between gap-3">
+            <h4 class="font-display text-xl text-ink">
+              <%= link_to championship, gestor_championship_path(championship), class: "text-ink no-underline hover:text-cartola" %>
+            </h4>
+            <span class="rounded-sm bg-rule px-2 py-0.5 text-xs font-body font-semibold uppercase tracking-wide text-ink">
+              <%= championship.private? ? "privado" : "público" %>
+            </span>
+          </div>
+          <dl class="mt-3 grid grid-cols-2 gap-2 font-body text-sm">
+            <div>
+              <dt class="text-xs uppercase tracking-widest text-graphite">Times</dt>
+              <dd class="font-numeric text-2xl tabular-nums text-ink" data-counter="teams"><%= row.teams %></dd>
             </div>
-            <dl class="mt-3 grid grid-cols-2 gap-2 font-body text-sm">
-              <div>
-                <dt class="text-xs uppercase tracking-widest text-graphite">Times</dt>
-                <dd class="font-numeric text-2xl tabular-nums text-ink" data-counter="teams"><%= row.teams %></dd>
-              </div>
-              <div>
-                <dt class="text-xs uppercase tracking-widest text-graphite">Jogadores</dt>
-                <dd class="font-numeric text-2xl tabular-nums text-ink" data-counter="players"><%= row.players %></dd>
-              </div>
-              <div>
-                <dt class="text-xs uppercase tracking-widest text-graphite">Partidas</dt>
-                <dd class="font-numeric text-2xl tabular-nums text-ink" data-counter="matches"><%= row.matches %></dd>
-                <p class="text-xs text-graphite"><%= row.scheduled %> agendada<%= "s" unless row.scheduled == 1 %></p>
-              </div>
-              <div>
-                <dt class="text-xs uppercase tracking-widest text-graphite">Bolões</dt>
-                <dd class="font-numeric text-2xl tabular-nums text-ink" data-counter="pools"><%= row.pools %></dd>
-              </div>
-            </dl>
-            <p class="mt-2 font-body text-sm text-graphite">Premiação: <%= championship.prize? ? "definida" : "a definir" %></p>
-            <p class="mt-3 flex flex-wrap gap-x-3 gap-y-1 font-body text-sm">
-              <%= link_to "Partida", new_gestor_match_path(match: { championship_id: championship.id }), class: "font-semibold text-ink underline underline-offset-2 hover:text-cartola" %>
-              <%= link_to "Scouts", scoring_path("matchscouts"), class: "font-semibold text-ink underline underline-offset-2 hover:text-cartola" %>
-              <%= link_to "Finalizar", scoring_path("matchfinalizer"), class: "font-semibold text-ink underline underline-offset-2 hover:text-cartola" %>
-              <%= link_to "Esquadrão e premiação", edit_gestor_championship_path(championship), class: "font-semibold text-ink underline underline-offset-2 hover:text-cartola" %>
-            </p>
-          </article>
-        <% end %>
+            <div>
+              <dt class="text-xs uppercase tracking-widest text-graphite">Jogadores</dt>
+              <dd class="font-numeric text-2xl tabular-nums text-ink" data-counter="players"><%= row.players %></dd>
+            </div>
+            <div>
+              <dt class="text-xs uppercase tracking-widest text-graphite">Partidas</dt>
+              <dd class="font-numeric text-2xl tabular-nums text-ink" data-counter="matches"><%= row.matches %></dd>
+              <p class="text-xs text-graphite"><%= row.scheduled %> agendada<%= "s" unless row.scheduled == 1 %></p>
+            </div>
+            <div>
+              <dt class="text-xs uppercase tracking-widest text-graphite">Bolões</dt>
+              <dd class="font-numeric text-2xl tabular-nums text-ink" data-counter="pools"><%= row.pools %></dd>
+            </div>
+          </dl>
+          <p class="mt-3 flex flex-wrap gap-x-3 gap-y-1 font-body text-sm">
+            <%= link_to "Partida", new_gestor_match_path(match: { championship_id: championship.id }), class: "font-semibold text-ink underline underline-offset-2 hover:text-cartola" %>
+            <%= link_to "Finalizar", scoring_path("matchfinalizer"), class: "font-semibold text-ink underline underline-offset-2 hover:text-cartola" %>
+            <%= link_to "Editar", edit_gestor_championship_path(championship), class: "font-semibold text-ink underline underline-offset-2 hover:text-cartola" %>
+          </p>
+        </article>
+      <% end %>
+    </div>
+  <% end %>
+</section>
+
+<div class="mb-6 grid gap-4 lg:grid-cols-12" data-role="gestor-kpis">
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:col-span-8">
+    <% [
+         { label: "Times cadastrados", value: kpis[:teams] },
+         { label: "Jogadores", value: kpis[:players] },
+         { label: "Partidas pendentes", value: kpis[:pending_matches] }
+       ].each do |metric| %>
+      <div class="rounded-md border border-rule border-l-[3px] border-l-pitch bg-paper px-4 py-3">
+        <p class="text-xs font-body font-bold uppercase tracking-widest text-graphite"><%= metric[:label] %></p>
+        <p class="mt-1 font-numeric text-3xl font-bold tabular-nums text-ink"><%= metric[:value] %></p>
       </div>
     <% end %>
-  </section>
+  </div>
+  <nav class="flex flex-col justify-center gap-2 rounded-md border border-rule bg-paper px-4 py-3 lg:col-span-4" aria-label="Atalhos" data-role="gestor-shortcuts">
+    <p class="text-xs font-body font-bold uppercase tracking-widest text-graphite">Atalhos</p>
+    <ul class="flex flex-col gap-2 font-body text-sm">
+      <li><%= link_to "Novo campeonato", new_gestor_championship_path, class: "font-semibold text-ink no-underline hover:text-cartola" %></li>
+      <li><%= link_to "Agendar partida", new_gestor_match_path, class: "font-semibold text-ink no-underline hover:text-cartola" %></li>
+      <li><%= link_to "Scouts", scoring_path("matchscouts"), class: "font-semibold text-ink no-underline hover:text-cartola" %></li>
+      <li><%= link_to "Finalizar", scoring_path("matchfinalizer"), class: "font-semibold text-ink no-underline hover:text-cartola" %></li>
+      <li><%= link_to "Reverter", scoring_path("matchreversal"), class: "font-semibold text-ink no-underline hover:text-cartola" %></li>
+    </ul>
+  </nav>
 </div>
+
+<section class="rounded-md border border-rule bg-paper" aria-labelledby="upcoming-title" data-role="gestor-upcoming-matches">
+  <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="upcoming-title">Próximas partidas</h3>
+  <div class="px-4 py-3">
+    <%= render Ui::AdminTableComponent.new(
+          headers: ["Partida", { label: "Início", numeric: true }, "Status", ""],
+          rows: upcoming.map { |match|
+            [
+              link_to(match, gestor_match_path(match), class: "font-semibold text-ink no-underline hover:text-cartola"),
+              l(match.match_date, format: "%d/%m %H:%M"),
+              admin_match_status_badge(match),
+              link_to("Finalizar", scoring_path("matchfinalizer", match_id: match.id), class: "font-semibold underline underline-offset-2")
+            ]
+          },
+          texts: { label: "Próximas partidas", empty: "Nenhuma partida agendada." }
+        ) %>
+  </div>
+</section>

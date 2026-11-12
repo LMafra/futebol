@@ -4,7 +4,7 @@ ActiveAdmin.register_page 'Dashboard' do
   content title: 'Painel de pontuação' do
     render partial: 'admin/dashboard/scoring', locals: {
       live: assigns[:live], pending: assigns[:pending], recent_logs: assigns[:recent_logs],
-      metrics_counts: assigns[:metrics_counts]
+      metrics_counts: assigns[:metrics_counts], recent_matches: assigns[:recent_matches]
     }
   end
 
@@ -18,6 +18,7 @@ ActiveAdmin.register_page 'Dashboard' do
       @live = matches.where(status: 'live')
       @pending = matches.where(status: 'finished', scores_calculated_at: nil)
       @recent_logs = recent_audit_logs
+      @recent_matches = matches.reorder(match_date: :desc).limit(8)
       @metrics_counts = metric_counts
     end
 
@@ -27,8 +28,12 @@ ActiveAdmin.register_page 'Dashboard' do
     end
 
     def metric_counts
-      { championships: Core::Championship.count, teams: Core::Team.count,
-        players: Core::Player.count, matches: Core::Match.count }
+      {
+        active_championships: Core::Championship.count,
+        live_matches: @live.size,
+        pending_finalization: @pending.size,
+        pending_managers: Core::User.where(manager_status: :pending).count
+      }
     end
   end
 end
