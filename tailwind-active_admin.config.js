@@ -14,6 +14,8 @@ export default {
     './app/admin/**/*.{arb,erb,html,rb}',
     './app/views/active_admin/**/*.{arb,erb,html,rb}',
     './app/views/admin/**/*.{arb,erb,html,rb}',
+    './app/views/gestor/**/*.{arb,erb,html,rb}',
+    './app/components/**/*.{rb,erb}',
     './app/helpers/admin_helper.rb',
     './app/views/layouts/active_admin*.{erb,html}',
     './app/javascript/**/*.js'

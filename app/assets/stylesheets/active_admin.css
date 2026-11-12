@@ -1,3 +1,21 @@
 @import "tailwindcss";
 
 @config "../../../tailwind-active_admin.config.js";
+
+/* Placar de Domingo tokens — docs/design/0001-direction.md (60-30-10). */
+@theme {
+  --color-paper: #F4F1EA;
+  --color-pitch: #0B6B3A;
+  --color-cartola: #E85D04;
+  --color-ink: #161616;
+  --color-graphite: #4A4A45;
+  --color-rule: #D9D3C4;
+  --color-night: #0E1A13;
+  --color-win: rgb(11 107 58 / 0.15);
+  --color-draw: rgb(138 133 119 / 0.15);
+  --color-loss: rgb(164 22 26 / 0.15);
+  --font-display: "Fraunces", "Bitter", Georgia, serif;
+  --font-body: "Source Sans 3", "IBM Plex Sans", system-ui, sans-serif;
+  --font-numeric: "Source Sans 3", "IBM Plex Sans", system-ui, sans-serif;
+  --font-sans: "Source Sans 3", "IBM Plex Sans", system-ui, sans-serif;
+}
