@@ -15,8 +15,10 @@ ActiveAdmin.register Core::Player, as: 'Player' do
     column :name
     column :team
     column :position
-    column :shirt_number
-    column('Valor base') { |player| player.base_value ? format('C$ %.2f', player.base_value) : 'padrão do campeonato' }
+    column :shirt_number, class: 'text-right tabular-nums'
+    column('Valor base', class: 'text-right tabular-nums') do |player|
+      player.base_value ? format('C$ %.2f', player.base_value) : 'padrão do campeonato'
+    end
     actions
   end
 

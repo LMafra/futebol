@@ -3,8 +3,8 @@ ActiveAdmin.register Core::User, as: 'User' do
 
   actions :index, :show
 
-  filter :role, as: :select, collection: Core::User.roles.keys
-  filter :manager_status, as: :select, collection: Core::User.manager_statuses.keys
+  filter :role, as: :select, collection: -> { admin_user_enum_options(:role) }
+  filter :manager_status, as: :select, collection: -> { admin_user_enum_options(:manager_status) }
 
   scope :all, default: true
   scope('Pedidos pendentes', :pending) { |users| users.where(manager_status: :pending) }
@@ -14,12 +14,8 @@ ActiveAdmin.register Core::User, as: 'User' do
     id_column
     column :name
     column :email_address
-    column :role do |user|
-      I18n.t("activerecord.enums.core/user.role.#{user.role}")
-    end
-    column :manager_status do |user|
-      I18n.t("activerecord.enums.core/user.manager_status.#{user.manager_status}")
-    end
+    column(:role) { |user| admin_user_enum_label(:role, user.role) }
+    column(:manager_status) { |user| admin_user_enum_label(:manager_status, user.manager_status) }
     actions
   end
 
@@ -27,11 +23,11 @@ ActiveAdmin.register Core::User, as: 'User' do
     attributes_table do
       row :name
       row :email_address
-      row(:role) { |user| I18n.t("activerecord.enums.core/user.role.#{user.role}") }
+      row(:role) { |user| admin_user_enum_label(:role, user.role) }
       row(:manager_status) do |user|
         render partial: 'admin/users/manager_status', locals: { user: }
       end
-      row :active
+      row(:active) { |user| user.active? ? 'Sim' : 'Não' }
       row :created_at
     end
     if resource.manager_pending?

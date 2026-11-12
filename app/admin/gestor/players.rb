@@ -21,10 +21,12 @@ ActiveAdmin.register Core::Player, as: 'Player', namespace: :gestor do
     column :name
     column(:team) { |player| player.team.name }
     column :position
-    column :shirt_number
+    column :shirt_number, class: 'text-right tabular-nums'
     actions defaults: false do |player|
-      item 'Ver', gestor_player_path(player)
-      item 'Editar', edit_gestor_player_path(player) if gestor_team_editable?(player.team)
+      text_node admin_icon_action_link('Ver', gestor_player_path(player), :view)
+      if gestor_team_editable?(player.team)
+        text_node admin_icon_action_link('Editar', edit_gestor_player_path(player), :edit)
+      end
     end
   end
 

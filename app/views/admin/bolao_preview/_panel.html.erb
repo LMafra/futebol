@@ -10,12 +10,12 @@
       <%= form_with url: admin_bolaopreview_path, method: :get, class: "flex flex-wrap items-end gap-3", data: { turbo: false } do %>
         <%= hidden_field_tag :match_id, match.id %>
         <div class="w-32">
-          <%= label_tag :candidate_home, match.home_team.name, class: AdminHelper::ADMIN_LABEL_CLASSES %>
+          <%= label_tag :candidate_home, admin_required_label(match.home_team.name), class: AdminHelper::ADMIN_LABEL_CLASSES %>
           <%= number_field_tag :candidate_home, candidate_home, min: 0, step: 1, required: true, class: AdminHelper::ADMIN_INPUT_CLASSES %>
         </div>
         <span class="pb-2 text-lg font-bold" aria-hidden="true">×</span>
         <div class="w-32">
-          <%= label_tag :candidate_away, match.away_team.name, class: AdminHelper::ADMIN_LABEL_CLASSES %>
+          <%= label_tag :candidate_away, admin_required_label(match.away_team.name), class: AdminHelper::ADMIN_LABEL_CLASSES %>
           <%= number_field_tag :candidate_away, candidate_away, min: 0, step: 1, required: true, class: AdminHelper::ADMIN_INPUT_CLASSES %>
         </div>
         <%= submit_tag "Calcular preview", name: nil, class: AdminHelper::ADMIN_BUTTON_CLASSES %>
@@ -34,7 +34,8 @@
       </h3>
       <div class="panel-body">
         <% if preview.rows.empty? %>
-          <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Nenhum palpite para esta partida.</p>
+          <%= render Ui::EmptyStateComponent.new(title: "Nenhum palpite para esta partida",
+                                                 description: "Quando houver palpites, a pontuação simulada aparece aqui.") %>
         <% else %>
           <table class="data-table">
             <thead>
@@ -58,11 +59,11 @@
 
         <div class="mt-4 flex flex-wrap items-center gap-3">
           <% if match.live? || match.may_start_match? %>
-            <%= link_to "Confirmar este placar na finalização",
-                        admin_matchfinalizer_path(match_id: match.id, home_score: candidate_home, away_score: candidate_away),
+            <%= link_to "Ir para a finalização", admin_matchfinalizer_path(match_id: match.id),
                         class: AdminHelper::ADMIN_BUTTON_CLASSES, data: { role: "confirm-score" } %>
+            <span class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Na finalização vale o placar dos scouts, não o placar simulado.</span>
           <% else %>
-            <span class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">A partida está <%= match.status %>; só partidas ao vivo podem ser finalizadas.</span>
+            <span class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">A partida está <%= admin_match_status_label(match.status).downcase %>; só partidas ao vivo podem ser finalizadas.</span>
           <% end %>
         </div>
       </div>

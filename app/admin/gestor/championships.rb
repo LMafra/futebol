@@ -74,7 +74,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
         label 'Regras'
         para class: 'inline-hints' do
           text_node 'As regras de pontuação do bolão ficam em '
-          a 'Pontuação do Bolão', href: gestor_bolao_scoring_rules_path
+          a 'Regras do Bolão', href: gestor_bolao_scoring_rules_path
           text_node '.'
         end
       end
@@ -82,7 +82,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
     f.inputs 'Premiação', data: { form_wizard_target: 'step' } do
       f.input :prize_description, label: 'Descrição geral', input_html: { rows: 3 }
       Core::Championship::PRIZE_PLACES.each do |place|
-        f.input place, label: place.to_s.humanize
+        f.input place
       end
     end
     text_node championship_wizard_controls if f.object.new_record?

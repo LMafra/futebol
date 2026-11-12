@@ -11,8 +11,8 @@ ActiveAdmin.register Bolao::ScoringRule, as: 'BolaoScoringRule' do
     selectable_column
     id_column
     column('Escopo', &:scope_label)
-    column 'Pontos por placar exato', :exact_score_points
-    column 'Pontos por vencedor', :winner_points
+    column 'Pontos por placar exato', :exact_score_points, class: 'text-right tabular-nums'
+    column 'Pontos por vencedor', :winner_points, class: 'text-right tabular-nums'
     actions
   end
 

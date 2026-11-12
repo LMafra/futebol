@@ -34,11 +34,16 @@ ActiveAdmin.register_page 'Dashboard' do
                                 .includes(:user).order(created_at: :desc).limit(8)
     end
 
+    # Active = still has a match that is not scored yet (scheduled, live, finished awaiting scoring or reverted).
+    def active_championships_count
+      Core::Championship.where(id: Core::Match.where.not(status: 'scored').select(:championship_id)).count
+    end
+
     def metric_counts
       {
-        active_championships: Core::Championship.count,
+        active_championships: active_championships_count,
         live_matches: @live.size,
-        pending_finalization: @pending.size,
+        pending_scoring: @pending.size,
         pending_managers: @manager_queue.size
       }
     end

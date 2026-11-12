@@ -43,8 +43,8 @@
               </div>
             </dl>
             <p class="mt-3 flex flex-wrap gap-x-3 gap-y-1 font-body text-sm">
-              <%= link_to "Partida", new_gestor_match_path(match: { championship_id: championship.id }), class: "font-semibold text-ink underline underline-offset-2 hover:no-underline" %>
-              <%= link_to "Editar", edit_gestor_championship_path(championship), class: "font-semibold text-ink underline underline-offset-2 hover:no-underline" %>
+              <%= link_to "Agendar partida", new_gestor_match_path(match: { championship_id: championship.id }), class: "font-semibold text-ink underline underline-offset-2 hover:no-underline" %>
+              <%= link_to "Editar campeonato", edit_gestor_championship_path(championship), class: "font-semibold text-ink underline underline-offset-2 hover:no-underline" %>
             </p>
           </article>
         <% end %>

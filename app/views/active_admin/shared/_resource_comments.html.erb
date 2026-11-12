@@ -7,7 +7,7 @@
       f.inputs do
         f.input :resource_type, as: :hidden, input_html: { value: ActiveAdmin::Comment.resource_type(resource) }
         f.input :resource_id, as: :hidden, input_html: { value: resource.id }
-        f.input :body, label: false, input_html: { size: '80x4', required: true }
+        f.input :body, label: 'Novo comentário', input_html: { size: '80x4', required: true }
       end
       f.actions do
         f.action :submit, label: I18n.t('active_admin.comments.add')

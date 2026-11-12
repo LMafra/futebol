@@ -11,7 +11,7 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
 
   filter :championship, collection: -> { gestor_championships }
   filter :round, label: 'Rodada'
-  filter :status, as: :select, collection: -> { Core::Match::STATUSES }
+  filter :status, as: :select, collection: -> { admin_match_status_options }
   filter :match_date
 
   before_build do |match|
@@ -23,7 +23,7 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
     id_column
     column('Partida') { |match| link_to match.to_s, gestor_match_path(match) }
     column :championship
-    column('Rodada', &:round)
+    column('Rodada', class: 'text-right tabular-nums', &:round)
     column :match_date
     column('Placar', class: 'tabular-nums') { |match| admin_score(match) }
     column(:status) { |match| admin_match_status_badge(match) }
@@ -37,16 +37,19 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
                        if: lambda {
                          authorized?(:record_scouts, resource) && (!resource.scheduled? || resource.may_start_match?)
                        } do
-    link_to 'Scouts', scoring_path('matchscouts', match_id: resource.id), class: 'action-item-button'
+    link_to 'Scouts', scoring_path('matchscouts', match_id: resource.id),
+            class: admin_match_step_classes(resource, :scouts)
   end
 
   action_item :finalize, only: :show,
                          if: -> { authorized?(:finalize, resource) && (resource.live? || resource.may_start_match?) } do
-    link_to 'Finalizar', scoring_path('matchfinalizer', match_id: resource.id), class: 'action-item-button'
+    link_to 'Finalizar', scoring_path('matchfinalizer', match_id: resource.id),
+            class: admin_match_step_classes(resource, :finalize)
   end
 
   action_item :revert, only: :show, if: -> { authorized?(:revert, resource) && resource.may_revert_match? } do
-    link_to 'Reverter pontuação', scoring_path('matchreversal', match_id: resource.id), class: 'action-item-button'
+    link_to 'Reverter pontuação', scoring_path('matchreversal', match_id: resource.id),
+            class: AdminHelper::ADMIN_DANGER_BUTTON_CLASSES
   end
 
   show title: :to_s do
@@ -67,7 +70,8 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
       f.input :championship, collection: gestor_championships, include_blank: false if f.object.new_record?
       f.input :home_team, collection: gestor_teams
       f.input :away_team, collection: gestor_teams
-      f.input :match_date, hint: 'Depois de agendar, use Scouts e Finalizar para lançar o placar e a pontuação.'
+      f.input :match_date, as: :datetime_picker,
+                           hint: 'Depois de agendar, use Scouts e Finalizar para lançar o placar e a pontuação.'
       f.input :round, label: 'Rodada', input_html: { min: 1 }
     end
     f.actions if f.object.new_record? || f.object.scheduled?

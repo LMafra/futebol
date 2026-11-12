@@ -11,10 +11,10 @@ ActiveAdmin.register Cartola::Lineup, as: 'EsquadraoLineup', namespace: :gestor 
     id_column
     column :championship
     column :squad
-    column :round
+    column :round, class: 'text-right tabular-nums'
     column :formation
     actions defaults: false do |lineup|
-      item 'Ver', gestor_esquadrao_lineup_path(lineup)
+      text_node admin_icon_action_link('Ver', gestor_esquadrao_lineup_path(lineup), :view)
     end
   end
 

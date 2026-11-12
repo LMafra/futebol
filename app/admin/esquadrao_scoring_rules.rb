@@ -9,7 +9,7 @@ ActiveAdmin.register Cartola::ScoringRule, as: 'EsquadraoScoringRule' do
     selectable_column
     id_column
     column :name
-    Cartola::ScoringRule::POINT_COLUMNS.each { |points| column points }
+    Cartola::ScoringRule::POINT_COLUMNS.each { |points| column points, class: 'text-right tabular-nums' }
     actions
   end
 

@@ -1,5 +1,5 @@
 ActiveAdmin.register Core::Championship, as: 'Championship' do
-  menu parent: 'Meus campeonatos', label: 'Campeonatos'
+  menu label: 'Campeonatos', priority: 2
 
   permit_params :name, :season, :external_id, :private, :cartola_goalkeeper_limit, :cartola_defender_limit,
                 :cartola_midfielder_limit, :cartola_forward_limit, :cartola_initial_budget, :cartola_base_player_value,
@@ -21,12 +21,13 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
   end
 
   action_item :simulador, only: :show do
-    link_to 'Simulador', main_app.simulador_championship_path(resource), class: 'action-item-button'
+    link_to 'Simulador', main_app.simulador_championship_path(resource),
+            class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
   end
 
   action_item :esquadrao_rankings, only: :show do
     link_to 'Rankings do Esquadrão', admin_esquadraorankings_path(championship_id: resource.id),
-            class: 'action-item-button'
+            class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
   end
 
   show title: :to_s do
@@ -74,7 +75,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
         label 'Regras'
         para class: 'inline-hints' do
           text_node 'As regras de pontuação do bolão ficam em '
-          a 'Pontuação do Bolão', href: admin_bolao_scoring_rules_path
+          a 'Regras do Bolão', href: admin_bolao_scoring_rules_path
           text_node '.'
         end
       end
@@ -82,7 +83,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
     f.inputs 'Premiação', data: { form_wizard_target: 'step' } do
       f.input :prize_description, label: 'Descrição geral', input_html: { rows: 3 }
       Core::Championship::PRIZE_PLACES.each do |place|
-        f.input place, label: place.to_s.humanize
+        f.input place
       end
     end
     text_node championship_wizard_controls if f.object.new_record?

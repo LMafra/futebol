@@ -21,9 +21,14 @@
           <p class="text-2xl font-bold tabular-nums" data-role="derived-score">
             <%= match.home_team.name %> <%= form.home_score %> × <%= form.away_score %> <%= match.away_team.name %>
           </p>
+          <% confirmation_errors = form.errors[:score_confirmation] %>
           <div class="w-64">
-            <%= f.label :score_confirmation, "Confirme o placar (ex.: 2x1)", class: AdminHelper::ADMIN_LABEL_CLASSES %>
-            <%= f.text_field :score_confirmation, required: true, autocomplete: "off", class: AdminHelper::ADMIN_INPUT_CLASSES %>
+            <%= f.label :score_confirmation, admin_required_label("Confirme o placar, ex.: 2x1"), class: AdminHelper::ADMIN_LABEL_CLASSES %>
+            <%= f.text_field :score_confirmation, required: true, autocomplete: "off", class: AdminHelper::ADMIN_INPUT_CLASSES,
+                             aria: (confirmation_errors.any? ? { invalid: true, describedby: "score-confirmation-error" } : {}) %>
+            <% if confirmation_errors.any? %>
+              <p id="score-confirmation-error" class="mt-1 text-sm font-body font-semibold text-ink" data-role="field-error"><%= confirmation_errors.to_sentence %></p>
+            <% end %>
           </div>
           <div>
             <%= f.submit "Finalizar partida", class: AdminHelper::ADMIN_BUTTON_CLASSES %>

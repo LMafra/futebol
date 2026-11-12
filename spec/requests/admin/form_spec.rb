@@ -24,7 +24,7 @@ RSpec.describe 'ActiveAdmin Placar forms', type: :request do
     get '/admin/championships/new'
 
     expect(response.body).to include('Dados', 'Esquadrão', 'Bolão', 'Premiação')
-    expect(response.body).to include('Pontuação do Bolão')
+    expect(response.body).to include('Regras do Bolão')
     expect(response.body).to include('fieldset')
   end
 

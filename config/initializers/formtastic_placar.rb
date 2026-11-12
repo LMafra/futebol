@@ -32,6 +32,7 @@ module FormtasticPlacar
 end
 
 Rails.application.config.to_prepare do
+  Formtastic::FormBuilder.required_string = proc { AdminLabelsHelper::REQUIRED_MARKER.html_safe }
   Formtastic::Inputs::Base::Html.prepend(FormtasticPlacar::InputHtml)
   Formtastic::Inputs::Base::Labelling.prepend(FormtasticPlacar::LabelHtml)
   Formtastic::Actions::Base.prepend(FormtasticPlacar::ButtonHtml)

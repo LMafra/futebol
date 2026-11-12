@@ -1,7 +1,7 @@
 <% metrics = [
      { label: "Campeonatos ativos", value: metrics_counts[:active_championships], href: admin_championships_path, accent: "border-l-pitch" },
      { label: "Partidas ao vivo", value: metrics_counts[:live_matches], href: admin_matches_path(q: { status_eq: "live" }), accent: "border-l-cartola" },
-     { label: "Pendentes de finalização", value: metrics_counts[:pending_finalization], href: admin_matchfinalizer_path, accent: "border-l-ink" },
+     { label: "Pontuação pendente", value: metrics_counts[:pending_scoring], href: admin_matches_path(scope: "encerradas_sem_pontuacao"), accent: "border-l-ink" },
      { label: "Gestores pendentes", value: metrics_counts[:pending_managers], href: admin_users_path(scope: "pending"), accent: "border-l-graphite" }
    ] %>
 
@@ -26,26 +26,22 @@
     <section class="rounded-md border border-rule bg-white" aria-labelledby="live-title">
       <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="live-title">Ao vivo: aguardando placar final (<%= live.size %>)</h3>
       <div class="px-4 py-3">
-        <% if live.empty? %>
-          <p class="font-body text-graphite">Nenhuma partida ao vivo.</p>
-        <% else %>
-          <%= render Ui::AdminTableComponent.new(
-                headers: ["Partida", { label: "Início", numeric: true }, { label: "Placar", numeric: true }, ""],
-                rows: live.map { |match|
-                  [
-                    link_to(match, admin_match_path(match), class: "font-semibold text-ink no-underline hover:underline"),
-                    l(match.match_date, format: "%d/%m %H:%M"),
-                    admin_score(match),
-                    safe_join([
-                      link_to("Preview", admin_bolaopreview_path(match_id: match.id), class: "font-semibold underline underline-offset-2"),
-                      " · ".html_safe,
-                      link_to("Finalizar", admin_matchfinalizer_path(match_id: match.id), class: "font-semibold underline underline-offset-2")
-                    ])
-                  ]
-                },
-                texts: { label: "Partidas ao vivo", empty: "Nenhuma partida ao vivo." }
-              ) %>
-        <% end %>
+        <%= render Ui::AdminTableComponent.new(
+              headers: ["Partida", { label: "Início", numeric: true }, { label: "Placar", numeric: true }, ""],
+              rows: live.map { |match|
+                [
+                  link_to(match, admin_match_path(match), class: "font-semibold text-ink no-underline hover:underline"),
+                  l(match.match_date, format: "%d/%m %H:%M"),
+                  admin_score(match),
+                  safe_join([
+                    link_to("Preview", admin_bolaopreview_path(match_id: match.id), class: "font-semibold underline underline-offset-2"),
+                    " · ".html_safe,
+                    link_to("Finalizar", admin_matchfinalizer_path(match_id: match.id), class: "font-semibold underline underline-offset-2")
+                  ])
+                ]
+              },
+              texts: { label: "Partidas ao vivo", empty: "Nenhuma partida ao vivo." }
+            ) %>
       </div>
     </section>
 
@@ -70,15 +66,17 @@
     <section class="rounded-md border border-rule bg-white" aria-labelledby="pending-title">
       <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="pending-title">Encerradas com pontuação pendente (<%= pending.size %>)</h3>
       <div class="px-4 py-3">
-        <% if pending.empty? %>
-          <p class="font-body text-graphite">Nada pendente: toda partida encerrada já foi pontuada.</p>
-        <% else %>
-          <ul class="flex flex-col gap-1 font-body">
-            <% pending.each do |match| %>
-              <li><%= link_to match, admin_match_path(match), class: "font-semibold text-ink no-underline hover:underline" %> · <span class="tabular-nums"><%= admin_score(match) %></span></li>
-            <% end %>
-          </ul>
-        <% end %>
+        <%= render Ui::AdminTableComponent.new(
+              headers: ["Partida", { label: "Placar", numeric: true }],
+              rows: pending.map { |match|
+                [
+                  link_to(match, admin_match_path(match), class: "font-semibold text-ink no-underline hover:underline"),
+                  admin_score(match)
+                ]
+              },
+              texts: { label: "Encerradas com pontuação pendente", empty: "Nada pendente: toda partida encerrada já foi pontuada." },
+              table_role: "pending-scoring"
+            ) %>
       </div>
     </section>
   </div>

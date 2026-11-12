@@ -9,7 +9,9 @@ RSpec.describe 'ActiveAdmin task navigation', type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('data-role="craquefy-admin-task-nav"')
-      expect(response.body).to include('Meus campeonatos', 'Partidas', 'Participantes', 'Configurações', 'Auditoria')
+      sidebar = Nokogiri::HTML(response.body).at_css('[data-role="craquefy-admin-task-nav"]').text
+      expect(sidebar).to include('Campeonatos', 'Partidas', 'Participantes', 'Configurações', 'Auditoria')
+      expect(sidebar).not_to include('Meus campeonatos')
       expect(response.body).to include('Usuários', 'Histórico')
       expect(response.body).to include('stroke="currentColor"')
     end

@@ -7,7 +7,7 @@ ActiveAdmin.register Core::Match, as: 'Match' do
 
   filter :championship
   filter :round, label: 'Rodada'
-  filter :status, as: :select, collection: -> { Core::Match::STATUSES }
+  filter :status, as: :select, collection: -> { admin_match_status_options }
   filter :external_id
   filter :match_date
 
@@ -31,25 +31,30 @@ ActiveAdmin.register Core::Match, as: 'Match' do
   end
 
   action_item :preview, only: :show, if: -> { authorized?(:preview, resource) } do
-    link_to 'Preview do Bolão', admin_bolaopreview_path(match_id: resource.id), class: 'action-item-button'
+    link_to 'Preview do Bolão', admin_bolaopreview_path(match_id: resource.id),
+            class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
   end
 
   scouts_open = -> { authorized?(:record_scouts, resource) && (!resource.scheduled? || resource.may_start_match?) }
   action_item :scouts, only: :show, if: scouts_open do
-    link_to 'Scouts', admin_matchscouts_path(match_id: resource.id), class: 'action-item-button'
+    link_to 'Scouts', admin_matchscouts_path(match_id: resource.id),
+            class: admin_match_step_classes(resource, :scouts)
   end
 
   action_item :finalize, only: :show,
                          if: -> { authorized?(:finalize, resource) && (resource.live? || resource.may_start_match?) } do
-    link_to 'Finalizar', admin_matchfinalizer_path(match_id: resource.id), class: 'action-item-button'
+    link_to 'Finalizar', admin_matchfinalizer_path(match_id: resource.id),
+            class: admin_match_step_classes(resource, :finalize)
   end
 
   action_item :revert, only: :show, if: -> { authorized?(:revert, resource) && resource.may_revert_match? } do
-    link_to 'Reverter pontuação', admin_matchreversal_path(match_id: resource.id), class: 'action-item-button'
+    link_to 'Reverter pontuação', admin_matchreversal_path(match_id: resource.id),
+            class: AdminHelper::ADMIN_DANGER_BUTTON_CLASSES
   end
 
   action_item :history, only: :show do
-    link_to 'Histórico', admin_audithistory_path(match_id: resource.id), class: 'action-item-button'
+    link_to 'Histórico', admin_audithistory_path(match_id: resource.id),
+            class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
   end
 
   show title: :to_s do

@@ -17,6 +17,7 @@ export default {
     './app/views/gestor/**/*.{arb,erb,html,rb}',
     './app/components/**/*.{rb,erb}',
     './app/helpers/admin_helper.rb',
+    './app/helpers/admin_icons_helper.rb',
     './app/helpers/championship_wizard_helper.rb',
     './app/views/layouts/active_admin*.{erb,html}',
     './app/javascript/**/*.js'

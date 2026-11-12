@@ -30,7 +30,7 @@ RSpec.describe 'ActiveAdmin dashboard', type: :request do
 
     expect(response.body).to include('data-role="admin-metrics"', 'lg:grid-cols-4')
     expect(response.body).to include('Campeonatos ativos', 'Partidas ao vivo')
-    expect(response.body).to include('Pendentes de finalização', 'Gestores pendentes')
+    expect(response.body).to include('Pontuação pendente', 'Gestores pendentes')
     expect(response.body).not_to include('admin-quick-actions', 'Ações rápidas')
     header_cta = Nokogiri::HTML(response.body).at_css('[data-test-page-header] a[data-role="header-cta"]')
     expect([header_cta.text, header_cta['href']]).to eq(['Criar campeonato', '/admin/championships/new'])
