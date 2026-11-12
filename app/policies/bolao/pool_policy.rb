@@ -7,6 +7,7 @@ module Bolao
     def show? = admin? || (pool_record? && record.member?(user))
     def destroy? = admin? || (pool_record? && record.owned_by?(user))
     def destroy_all? = admin?
+    def manage? = record_instance? && manages?(record.championship)
 
     private
 

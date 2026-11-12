@@ -1,0 +1,5 @@
+Olá<%= @user.name.present? ? ", #{@user.name}" : '' %>!
+
+Seu pedido para atuar como gestor de campeonatos no Craquefy foi aprovado.
+
+Entrar na área do gestor: <%= gestor_login_url %>

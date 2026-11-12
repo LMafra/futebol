@@ -1,4 +1,4 @@
-<%= render "admin/shared/match_picker", url: admin_matchscouts_path, matches: matches, match: match %>
+<%= render "admin/shared/match_picker", url: scoring_path("matchscouts"), matches: matches, match: match %>
 
 <% if match %>
   <% sides = { "home" => ["Mandante", match.home_team], "away" => ["Visitante", match.away_team] } %>
@@ -33,7 +33,7 @@
         <% end %>
       </div>
 
-      <%= form_with url: admin_matchscouts_record_path, method: :post, data: { turbo: false, action: "input->scouts#refresh change->scouts#refresh" } do %>
+      <%= form_with url: scoring_path("matchscouts_record"), method: :post, data: { turbo: false, action: "input->scouts#refresh change->scouts#refresh" } do %>
         <%= hidden_field_tag :match_id, match.id %>
         <% sides.each_with_index do |(side, (label, team)), index| %>
           <% lines = sheet.lines_for(team) %>
@@ -100,7 +100,7 @@
               <%= radio_button_tag :highlight, "", sheet.highlight_player_id.nil?, id: nil %> Sem destaque
             </label>
             <%= submit_tag "Salvar scouts", name: nil, class: AdminHelper::ADMIN_BUTTON_CLASSES %>
-            <%= link_to "Ir para a finalização", admin_matchfinalizer_path(match_id: match.id), class: "text-sm font-semibold underline underline-offset-2" if match.live? || match.may_start_match? %>
+            <%= link_to "Ir para a finalização", scoring_path("matchfinalizer", match_id: match.id), class: "text-sm font-semibold underline underline-offset-2" if match.live? || match.may_start_match? %>
           </div>
         <% end %>
       <% end %>

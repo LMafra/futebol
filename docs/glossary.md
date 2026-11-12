@@ -10,3 +10,4 @@
 - **Pool**: grupo de usuários que disputam um Bolão.
 - **Lineup**: escalação de um Squad numa rodada do Cartola.
 - **Preview**: cálculo sem persistir (dry-run) dos pontos que um placar candidato geraria.
+- **Gestor de campeonato**: usuário com `role: :manager` e `manager_status: :approved`; opera em `/gestor` só campeonatos cujo `manager_id` é ele (cadastro, partidas, scouts, finalização e reversão). Pedido via `/gestor/solicitar`; aprovação no admin. _Avoid_: chamar gestor de "admin"; o admin vê a plataforma inteira.

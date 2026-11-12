@@ -4,6 +4,7 @@ module Cartola
     def show? = owner? || admin?
     def update? = owner?
     def destroy? = owner? && record.persisted?
+    def manage? = record_instance? && manages?(record.championship)
 
     private
 

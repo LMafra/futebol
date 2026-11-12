@@ -1,4 +1,4 @@
-# Tickets — INDEX (55 tickets)
+# Tickets — INDEX (62 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -57,6 +57,13 @@
 | [0053](TICKET-0053.md) | — | Esquadrão só com jogadores dos times do campeonato | 0025, 0040 | — |
 | [0054](TICKET-0054.md) | — | Top 3 Bolão e Esquadrão no seed de todos os campeonatos | 0042, 0052, 0053 | — |
 | [0055](TICKET-0055.md) | — | "Como funciona" entre "Três jeitos de jogar" e "Jogos de hoje" | 0032 | — |
+| [0056](TICKET-0056.md) | A | Papéis (enum) e `manager_id` no campeonato | 0014, 0015 | — |
+| [0057](TICKET-0057.md) | B | Pedido e aprovação de gestor | 0056 | — |
+| [0058](TICKET-0058.md) | C | Policies com escopo por campeonato | 0056, 0015, 0010 | — |
+| [0059](TICKET-0059.md) | D | Namespace `/gestor` e logins por área | 0058, 0010, 0033 | — |
+| [0060](TICKET-0060.md) | E | Painel do gestor e premiação | 0059 | — |
+| [0061](TICKET-0061.md) | F | Gestor: scouts, finalizar e reverter | 0039, 0059, 0058 | — |
+| [0062](TICKET-0062.md) | G | Tabela de comentários do ActiveAdmin | 0010, 0059 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -68,3 +75,4 @@
 - 0026 sem deps e não bloqueia nenhum ticket (tickets derivados saem do ADR)
 - Lacunas de produto: {0011, 0014, 0019} → 0028 · {0004, 0006, 0010, 0016} → 0029 · {0007, 0010, 0025} → 0030 → 0031 (+ 0011, 0026)
 - Craquefy (ordem das branches): 0032 (flag) → 0034 → 0037 → 0033 → 0038 → 0039 → 0040 → 0035 → 0032 (home) → 0036 → 0041 → 0042 → 0043 → 0044 → 0045 → 0046 → 0047 → 0048 → 0049 → 0050 → 0051 → 0052 → 0053 → 0054 → 0055
+- RBAC (3 níveis): 0056 → 0057 → 0058 → 0059 → 0060 → 0061 → 0062

@@ -1,0 +1,4 @@
+class ManagerRequestPolicy < ApplicationPolicy
+  def new? = user.present?
+  def create? = user.present?
+end

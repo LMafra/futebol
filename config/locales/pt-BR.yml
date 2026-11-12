@@ -8,6 +8,9 @@ pt-BR:
     pix_key: "chagas.lucas.mafra@gmail.com"
   activerecord:
     attributes:
+      core/user:
+        role: "Papel"
+        manager_status: "Status do gestor"
       cartola/scoring_rule:
         name: "Nome"
         goal_points: "Gol (G)"
@@ -20,6 +23,17 @@ pt-BR:
         own_goal_penalty: "Gol contra (GC, desconta)"
         played_points: "Jogou"
         highlight_points: "Destaque"
+    enums:
+      core/user:
+        role:
+          user: "Usuário"
+          manager: "Gestor"
+          admin: "Administrador"
+        manager_status:
+          none: "Nenhum"
+          pending: "Pendente"
+          approved: "Aprovado"
+          rejected: "Recusado"
   activemodel:
     attributes:
       finalization:

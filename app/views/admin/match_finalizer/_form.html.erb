@@ -1,4 +1,4 @@
-<%= render "admin/shared/match_picker", url: admin_matchfinalizer_path, matches: matches, match: match %>
+<%= render "admin/shared/match_picker", url: scoring_path("matchfinalizer"), matches: matches, match: match %>
 
 <% if match %>
   <section class="panel" aria-labelledby="finalize-title">
@@ -7,14 +7,16 @@
       <% if form.scouts? %>
         <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
           O placar vem dos scouts da partida. Encerra a partida e enfileira o cálculo dos pontos. Para confirmar, digite o placar no formato <strong>2x1</strong>.
-          <%= link_to "Revisar os scouts", admin_matchscouts_path(match_id: match.id), class: "font-semibold underline underline-offset-2" %>
-          ·
-          <%= link_to "Simular no Preview do Bolão", admin_bolaopreview_path(match_id: match.id, candidate_home: form.home_score, candidate_away: form.away_score), class: "font-semibold underline underline-offset-2" %>
+          <%= link_to "Revisar os scouts", scoring_path("matchscouts", match_id: match.id), class: "font-semibold underline underline-offset-2" %>
+          <% if scoring_admin_namespace? %>
+            ·
+            <%= link_to "Simular no Preview do Bolão", admin_bolaopreview_path(match_id: match.id, candidate_home: form.home_score, candidate_away: form.away_score), class: "font-semibold underline underline-offset-2" %>
+          <% end %>
         </p>
 
         <%= render "admin/shared/errors", form: form %>
 
-        <%= form_with model: form, url: admin_matchfinalizer_finalize_path, method: :post, class: "flex flex-col gap-4", data: { turbo: false } do |f| %>
+        <%= form_with model: form, url: scoring_path("matchfinalizer_finalize"), method: :post, class: "flex flex-col gap-4", data: { turbo: false } do |f| %>
           <%= hidden_field_tag "finalization[match_id]", match.id %>
           <p class="text-2xl font-bold tabular-nums" data-role="derived-score">
             <%= match.home_team.name %> <%= form.home_score %> × <%= form.away_score %> <%= match.away_team.name %>
@@ -30,7 +32,7 @@
       <% else %>
         <p class="text-sm" data-role="no-scouts" role="status">
           <strong><%= MatchFinalizationForm::NO_SCOUTS %>.</strong>
-          <%= link_to "Abrir os scouts da partida", admin_matchscouts_path(match_id: match.id), class: "font-semibold underline underline-offset-2" %>
+          <%= link_to "Abrir os scouts da partida", scoring_path("matchscouts", match_id: match.id), class: "font-semibold underline underline-offset-2" %>
         </p>
       <% end %>
     </div>

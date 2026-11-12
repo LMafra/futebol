@@ -7,11 +7,19 @@ module Core
 
     has_secure_password
     has_many :sessions, class_name: 'Core::Session', dependent: :destroy
+    has_many :managed_championships, class_name: 'Core::Championship', foreign_key: :manager_id,
+                                     inverse_of: :manager, dependent: :restrict_with_error
+
+    # prefix: :role — without it, role value :admin collides with the boolean column admin.
+    enum :role, { user: 0, manager: 1, admin: 2 }, prefix: :role
+    # prefix: :manager — without it, value :none collides with ActiveRecord::Base.none.
+    enum :manager_status, { none: 0, pending: 1, approved: 2, rejected: 3 }, prefix: :manager
 
     normalizes :email_address, with: ->(email) { email.strip.downcase }
     normalizes :cpf, with: ->(cpf) { cpf.gsub(/\D/, '').presence }
 
     scope :active, -> { where(active: true) }
+    scope :managers, -> { where(role: :manager) }
 
     validates :email_address, presence: { message: 'não pode ficar em branco' },
                               uniqueness: { message: 'já está em uso' },
@@ -21,6 +29,8 @@ module Core
     # Only on create: accounts made before signup existed (e.g. the seeded admin) may have no name.
     validates :name, presence: { message: 'não pode ficar em branco' }, on: :create
     validate :email_address_not_anonymized, on: :create
+
+    def self.ransackable_attributes(_auth_object = nil) = %w[name email_address role manager_status]
 
     def to_s = email_address
 
@@ -33,6 +43,13 @@ module Core
 
       [first_name, other_names.last&.then { |last_name| "#{last_name[0].upcase}." }].compact.join(' ')
     end
+
+    # The enum is the source of truth; the boolean stays during the migration.
+    def admin? = role_admin? || self[:admin]
+
+    def manager? = role_manager? && manager_approved?
+
+    def can_manage?(championship) = admin? || (manager? && championship.manager_id == id)
 
     private
 

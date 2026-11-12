@@ -3,6 +3,8 @@ class ApplicationController < ActionController::Base
   include CurrentUser
   include Pundit::Authorization
 
+  helper GestorHelper
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
@@ -39,6 +41,13 @@ class ApplicationController < ActionController::Base
     return if current_user&.admin?
 
     render_forbidden(Pundit::NotAuthorizedError.new('admin required'))
+  end
+
+  def authenticate_manager!
+    return request_authentication unless authenticated?
+    return if current_user&.admin? || current_user&.manager?
+
+    render_forbidden(Pundit::NotAuthorizedError.new('manager required'))
   end
 
   # ActiveAdmin denials (config.on_unauthorized_access): a redirect would loop back into the admin.

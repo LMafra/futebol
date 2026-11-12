@@ -1,0 +1,21 @@
+<% content_for(:title, brand_title("Solicitar acesso de gestor")) %>
+
+<section class="max-w-xl">
+  <%= render "shared/flash" %>
+
+  <p class="text-xs font-bold uppercase tracking-widest text-graphite">Gestor</p>
+  <h1 class="mt-1 border-b-4 border-ink pb-2 font-display text-4xl font-extrabold tracking-tight">Solicitar acesso de gestor</h1>
+
+  <p class="mt-4 text-sm text-graphite">
+    Gestores podem cadastrar campeonatos, times e partidas. Um administrador analisa cada pedido antes de liberar o acesso.
+  </p>
+
+  <%= form_with url: manager_request_path, method: :post, class: "mt-8 border-t border-rule pt-6" do %>
+    <%= submit_tag "Enviar pedido", name: nil,
+                   class: "cursor-pointer rounded-sm bg-cartola px-4 py-2 font-bold text-ink transition-colors duration-fast ease-editorial hover:bg-pitch hover:text-white" %>
+  <% end %>
+
+  <p class="mt-4 text-sm">
+    <%= link_to "Voltar à minha conta", account_path, class: "underline underline-offset-2 hover:no-underline" %>
+  </p>
+</section>

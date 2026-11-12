@@ -1,0 +1,5 @@
+<p>Olá<%= @user.name.present? ? ", #{@user.name}" : '' %>!</p>
+<p>Seu pedido para atuar como gestor de campeonatos no Craquefy foi aprovado.</p>
+<p>
+  <%= link_to "Entrar na área do gestor", gestor_login_url %>.
+</p>

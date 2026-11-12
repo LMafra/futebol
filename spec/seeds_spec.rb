@@ -23,7 +23,7 @@ RSpec.describe 'db/seeds.rb' do
 
   def small_championships = Core::Championship.where.not(external_id: 'brasileirao-2026').includes(matches: :home_team)
 
-  def demo_users = Core::User.where('email_address LIKE ?', '%@demo.local')
+  def demo_users = Core::User.where('email_address LIKE ?', 'demo%@demo.local')
 
   # Each load costs ~8s, so the data checks share one double load committed outside the example transactions.
   describe 'loaded twice in a row' do
@@ -157,6 +157,15 @@ RSpec.describe 'db/seeds.rb' do
       it 'creates demo1..demo5@demo.local, non-admin, with the documented password' do
         expect(demo_users.pluck(:email_address)).to match_array((1..5).map { |n| "demo#{n}@demo.local" })
         expect(demo_users).to all(satisfy { |user| !user.admin? && user.authenticate('demo-futebol') })
+      end
+
+      it 'creates gestor@demo.local as an approved championship manager' do
+        gestor = Core::User.find_by!(email_address: 'gestor@demo.local')
+
+        expect(gestor).to be_manager
+        expect(gestor).to be_manager_approved
+        expect(gestor.authenticate('demo-futebol')).to eq(gestor)
+        expect(gestor.managed_championships).not_to be_empty
       end
 
       it 'puts the 5 demo users in pool DEMO01, owned by demo1' do

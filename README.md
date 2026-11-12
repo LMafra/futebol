@@ -179,9 +179,9 @@ Detalhes e custo em horas free: [OPERATIONS.md → Keep-alive](docs/OPERATIONS.m
 2. **Bolão:** crie um bolão em [`/pools/new`](http://localhost:3000/pools/new) e compartilhe o código; os amigos entram por [`/pools`](http://localhost:3000/pools).
 3. **Palpites:** cada participante palpita o placar das partidas na página de palpites do bolão.
 4. **Escalação:** monte o time da rodada no Esquadrão em [`/esquadrao`](http://localhost:3000/esquadrao), com um capitão, e acompanhe os rankings em [`/esquadrao/rankings`](http://localhost:3000/esquadrao/rankings).
-5. **Scouts e finalização:** no admin, Pontuação → Scouts da partida lança os scouts; Pontuação → Finalizar partida confirma o placar calculado deles, e o job pontua palpites e escalações (Pontuação → Reverter pontuação desfaz).
+5. **Scouts e finalização:** no `/admin` ou, para o próprio campeonato, no `/gestor`, Pontuação → Scouts da partida lança os scouts; Finalizar confirma o placar derivado e o job pontua palpites e escalações (Reverter desfaz).
 
-Login demo (só development/test, criado pelo `db:seed`): `demo1@demo.local` … `demo5@demo.local` / `demo-futebol` e o admin `admin@futebol.dev` / `futebol-admin`, com o bolão `DEMO01` já pontuado e mais 5 campeonatos pequenos (6 a 12 times; 3 públicos e 2 privados) com jogos hoje, para a seção "Jogos de hoje" da home. Detalhes dos dados demo, filas e comandos: [docs/OPERATIONS.md](docs/OPERATIONS.md).
+Login demo (só development/test, criado pelo `db:seed`): `demo1@demo.local` … `demo5@demo.local` / `demo-futebol`, o gestor `gestor@demo.local` / `demo-futebol` (campeonato demo atribuído) e o admin `admin@futebol.dev` / `futebol-admin`, com o bolão `DEMO01` já pontuado e mais 5 campeonatos pequenos (6 a 12 times; 3 públicos e 2 privados) com jogos hoje, para a seção "Jogos de hoje" da home. Detalhes dos dados demo, filas e comandos: [docs/OPERATIONS.md](docs/OPERATIONS.md).
 
 Em produção não há contas demo, porque a senha acima é pública: o seed cria só o admin, com senha forte guardada fora do repositório, além de times, jogadores e partidas. Novas contas saem do cadastro público em [`/signup`](http://localhost:3000/signup) (link "Criar conta" no login); ainda não há tela de usuários no admin.
 
@@ -189,9 +189,21 @@ Em produção não há contas demo, porque a senha acima é pública: o seed cri
 
 [`/`](http://localhost:3000/) abre sem login: hero com "Entrar" e "Criar conta", contadores, os três módulos, jogos de hoje, os campeonatos públicos com o Top 3 do Bolão e do Esquadrão e o top 10 de atletas (jogos, gols, assistências e pontos). Campeonatos marcados como privados no admin ("Campeonato privado?") não aparecem nas listas, mas entram nos contadores (campeonatos, partidas e jogadores no total). Fora do admin, nenhum texto diz se um campeonato é público ou privado. A home encaixa as seções ao parar de rolar perto do início de uma delas (scroll snap por proximidade).
 
+### Níveis de acesso
+
+Três papéis, com áreas separadas no ActiveAdmin e login dedicado onde a conta não serve para a outra área:
+
+| Papel | Onde entra | Escopo |
+|---|---|---|
+| **Admin** | [`/admin`](http://localhost:3000/admin) ou [`/admin/login`](http://localhost:3000/admin/login) | Plataforma inteira: usuários, importações CSV, auditoria, comentários nos recursos, preview do Bolão |
+| **Gestor** | [`/gestor`](http://localhost:3000/gestor) ou [`/gestor/login`](http://localhost:3000/gestor/login) | Só os campeonatos com `manager_id` dele: cadastro, partidas, regras do Bolão, premiação; **scouts**, **finalizar** e **reverter** partidas nesses campeonatos (mesmas telas de Pontuação, em `/gestor`) |
+| **Usuário** | [`/entrar`](http://localhost:3000/entrar) | Bolão, Esquadrão, conta e pedido de acesso de gestor em [`/gestor/solicitar`](http://localhost:3000/gestor/solicitar) |
+
+Detalhes dos tickets: [0056–0062](docs/tickets/INDEX.md).
+
 ### Login
 
-O link "Entrar" leva a [`/entrar`](http://localhost:3000/entrar); páginas que exigem sessão continuam redirecionando para `/session/new`. Logado, o cabeçalho mostra o menu "Minha conta" (Minha conta, Meus bolões, Meu esquadrão, Rankings) e "Sair". O rodapé tem "Acesso administrativo" para `/admin`.
+O link "Entrar" leva a [`/entrar`](http://localhost:3000/entrar); páginas que exigem sessão continuam redirecionando para `/session/new`. Operação restringida usa [`/admin/login`](http://localhost:3000/admin/login) e [`/gestor/login`](http://localhost:3000/gestor/login) (campo oculto `area`, para não abrir sessão na área errada). Logado, o cabeçalho mostra o menu "Minha conta" (Minha conta, Meus bolões, Meu esquadrão, Rankings) e "Sair". O rodapé mostra "Área do gestor" para admin ou gestor e "Acesso administrativo" só para admin (visitante ainda vê o link do admin).
 
 ### Módulos
 
@@ -213,11 +225,11 @@ Os rankings públicos mostram "primeiro nome + inicial" (ex.: "Lucas M.") só de
 
 ### Scouts
 
-O admin lança os scouts oficiais de cada partida (G, A, DP, DE só para goleiros, CA, CV, GC, Jogou e Destaque) em Pontuação → Scouts da partida; SG é calculado. O placar vem dos gols lançados, e a pontuação do Esquadrão e a valorização dos jogadores seguem o [ADR 0005](docs/adr/0005-esquadrao-pontuacao-valorizacao.md).
+O admin e o **gestor do campeonato** lançam os scouts oficiais (G, A, DP, DE só para goleiros, CA, CV, GC, Jogou e Destaque) em Pontuação → Scouts da partida, no `/admin` ou `/gestor`; SG é calculado. O placar vem dos gols lançados, e a pontuação do Esquadrão e a valorização dos jogadores seguem o [ADR 0005](docs/adr/0005-esquadrao-pontuacao-valorizacao.md).
 
 ## Roadmap
 
-Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 41 tickets ([INDEX](docs/tickets/INDEX.md)).
+Escopo e contratos em [spec v3](docs/spec-v3.md); trabalho em 62 tickets ([INDEX](docs/tickets/INDEX.md)).
 
 - [x] Monolito modular com 4 engines e Packwerk
 - [x] Core, AASM das partidas e pontuação idempotente e reversível com auditoria

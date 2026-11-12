@@ -130,7 +130,7 @@ ActiveAdmin.setup do |config|
   # This allows your users to comment on any resource registered with Active Admin.
   #
   # You can completely disable comments:
-  config.comments = false
+  config.comments = true
   #
   # You can change the name under which comments are registered:
   # config.comments_registration_name = 'AdminComment'
@@ -275,6 +275,16 @@ ActiveAdmin.setup do |config|
   # You can inherit it with own class and inject it for all resources
   #
   # config.order_clause = MyOrderClause
+
+  config.namespace :gestor do |gestor|
+    gestor.site_title = proc { "#{I18n.t('brand.name')} · Gestor" }
+    gestor.authentication_method = :authenticate_manager!
+    gestor.current_user_method = :current_user
+    gestor.authorization_adapter = 'Gestor::PunditAdapter'
+    gestor.batch_actions = false
+    gestor.download_links = false
+    gestor.comments = false
+  end
 end
 
 # The admin has its own importmap (ActiveAdmin 4): Stimulus and app/javascript/admin.js, imported by the

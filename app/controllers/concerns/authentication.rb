@@ -35,8 +35,23 @@ module Authentication
     redirect_to new_session_path
   end
 
-  def after_authentication_url
-    session.delete(:return_to_after_authenticating) || root_url
+  # The page that asked for the login wins; otherwise the area of the login page, then the user's own area.
+  def after_authentication_url(area: nil)
+    session.delete(:return_to_after_authenticating) || area_root_url(area || home_area_of(Current.user))
+  end
+
+  def home_area_of(user)
+    if user&.admin? then 'admin'
+    elsif user&.manager? then 'gestor'
+    end
+  end
+
+  def area_root_url(area)
+    case area.to_s
+    when 'admin' then admin_root_url
+    when 'gestor' then gestor_root_url
+    else root_url
+    end
   end
 
   def start_new_session_for(user)
