@@ -11,6 +11,7 @@ RSpec.describe 'Gestor dashboard', type: :request do
     expect(response).to have_http_status(:ok)
     expect(response.body).to include('Copa do Gestor', 'data-role="gestor-championships"')
     expect(response.body).to include('data-role="gestor-kpis"', 'Times cadastrados', 'Jogadores', 'Partidas pendentes')
+    expect(response.body).to include('data-role="gestor-kpi"', '<svg')
     expect(response.body).to include('lg:col-span-8', 'lg:col-span-4')
     expect(response.body).to include('data-role="gestor-upcoming-matches"', 'Próximas partidas')
   end

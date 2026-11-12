@@ -59,8 +59,11 @@
          { label: "Jogadores", value: kpis[:players] },
          { label: "Partidas pendentes", value: kpis[:pending_matches] }
        ].each do |metric| %>
-      <div class="rounded-md border border-rule border-l-[3px] border-l-pitch bg-paper px-4 py-3">
-        <p class="text-xs font-body font-bold uppercase tracking-widest text-graphite"><%= metric[:label] %></p>
+      <div class="rounded-md border border-rule border-l-[3px] border-l-pitch bg-paper px-4 py-3" data-role="gestor-kpi">
+        <div class="flex items-center justify-between gap-2">
+          <p class="text-xs font-body font-bold uppercase tracking-widest text-graphite"><%= metric[:label] %></p>
+          <%= admin_kpi_icon(metric[:label]) %>
+        </div>
         <p class="mt-1 font-numeric text-3xl font-bold tabular-nums text-ink"><%= metric[:value] %></p>
       </div>
     <% end %>

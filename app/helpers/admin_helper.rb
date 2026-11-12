@@ -93,4 +93,22 @@ module AdminHelper
       tag.path(d: path, 'stroke-linecap': 'round', 'stroke-linejoin': 'round')
     end
   end
+
+  # Discrete KPI glyphs (no emoji) for status-first dashboard cards.
+  ADMIN_KPI_ICON_PATHS = {
+    'Campeonatos ativos' => 'M4.5 5.25h15v13.5h-15zM8.25 9h7.5M8.25 12.75h7.5',
+    'Partidas ao vivo' => 'M12 6v6h4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+    'Pendentes de finalização' => 'M4.5 12.75l6 6 9-13.5',
+    'Gestores pendentes' => 'M15 19.5a3 3 0 00-6 0M15 8.25a3 3 0 11-6 0 3 3 0 016 0z',
+    'Times cadastrados' => 'M3.75 6.75h16.5v10.5H3.75zM8.25 19.5h7.5',
+    'Jogadores' => 'M15 19.5a3 3 0 00-6 0M15 8.25a3 3 0 11-6 0 3 3 0 016 0z',
+    'Partidas pendentes' => 'M12 6v6h4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+  }.freeze
+
+  def admin_kpi_icon(label)
+    path = ADMIN_KPI_ICON_PATHS[label.to_s]
+    return ''.html_safe if path.blank?
+
+    admin_svg_icon(path, 'h-4 w-4 shrink-0 text-graphite')
+  end
 end

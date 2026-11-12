@@ -33,6 +33,7 @@ RSpec.describe 'ActiveAdmin dashboard', type: :request do
     expect(response.body).to include('Pendentes de finalização', 'Gestores pendentes')
     expect(response.body).to include('data-role="admin-quick-actions"', 'Criar campeonato', 'Aprovar gestor')
     expect(response.body).to include('font-numeric', 'text-3xl', 'border-l-[3px]')
+    expect(response.body).to include('data-role="admin-kpi"', '<svg')
     expect(response.body).to include('data-role="admin-recent-matches"', 'Últimas partidas')
   end
 end
