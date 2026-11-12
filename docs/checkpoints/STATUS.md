@@ -476,7 +476,7 @@ Tickets **0068–0073** (0047–0052 do plano UX já estavam ocupados). Sem alte
 |---|---|---|---|---|
 | A — layout | [0068](../tickets/TICKET-0068.md) | ok | `_site_sidebar`; `layout_spec` | paper/rule |
 | B — nav | [0069](../tickets/TICKET-0069.md) | ok | menus por tarefa + SVG | tip `0bc6668` |
-| C — dashboards | [0070](../tickets/TICKET-0070.md) | ok | KPIs 8/4; cards gestor | tip `89b74ef` |
+| C — dashboards | [0070](../tickets/TICKET-0070.md) | ok | KPIs 8/4 + SVG; cards gestor | tip `89b74ef` (+ KPI SVG fix no tip) |
 | D — tabelas | [0071](../tickets/TICKET-0071.md) | ok | filter bar + ações SVG | tip `d2437c8` |
 | E — forms | [0072](../tickets/TICKET-0072.md) | ok | seções + Toast + Turbo Stream | tip `ab7d231` |
 | F — empty/mobile | [0073](../tickets/TICKET-0073.md) | ok | EmptyState; sidebar `< md` | tip `23be79d` |
@@ -493,7 +493,7 @@ Branches (1 commit assinado por bloco):
 | D | `cursor/admin-ux-tables-e3a0` | `d2437c8` |
 | E | `cursor/admin-ux-forms-e3a0` | `ab7d231` |
 | F | `cursor/admin-ux-feedback-e3a0` | `23be79d` |
-| G | `cursor/admin-ux-docs-e3a0` | tip docs |
+| G | `cursor/admin-ux-docs-e3a0` | `c9e2d92` (+ `8d2492b` KPI SVG) |
 
 Gate `.cursor/environment.json` `test`: 1076 examples, 0 failures (após Bloco F).
 
