@@ -21,6 +21,8 @@ RSpec.describe 'Gestor dashboard', type: :request do
       .to eq(['Partidas hoje', 'Aguardando scouts', 'Aguardando finalização'])
     expect(response.body).to include('data-role="gestor-match-queue"', 'Fila de partidas')
     expect(page_html.at_css('[data-role="gestor-championships"]').text).not_to include('Finalizar')
+    order = %w[gestor-kpis gestor-match-queue gestor-championships].map { response.body.index("data-role=\"#{_1}\"") }
+    expect(order).to eq(order.sort)
   end
 
   it 'exposes at most one filled CTA per match, matching its state' do

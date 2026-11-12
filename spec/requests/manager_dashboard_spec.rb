@@ -25,12 +25,12 @@ RSpec.describe 'Gestor dashboard', type: :request do
     expect(card.at_css('[data-counter="pools"]').text.to_i).to eq(1)
   end
 
-  it 'leva Scouts, Finalizar e Reverter para a fila de partidas, não para atalhos globais' do
+  it 'não tem atalhos globais; Novo campeonato fica no cabeçalho' do
     sign_in(manager)
     get '/gestor/dashboard'
 
-    shortcuts = page_html.at_css('[data-role="gestor-shortcuts"]')
-    expect(shortcuts.text).not_to include('Scouts', 'Finalizar', 'Reverter')
+    expect(page_html.at_css('[data-role="gestor-shortcuts"]')).to be_nil
+    expect(page_html.at_css('[data-test-page-header] a[data-role="header-cta"]').text).to eq('Novo campeonato')
   end
 
   it 'mostra estado vazio sem campeonatos' do

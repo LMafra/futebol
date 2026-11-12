@@ -24,14 +24,18 @@ RSpec.describe 'ActiveAdmin dashboard', type: :request do
     expect(response.body).to match(%r{/assets/active_admin-\h+\.css})
   end
 
-  it 'shows four status-first KPIs and quick actions on an 8/4 grid' do
+  it 'shows four status-first KPIs with no quick-action grid, and Criar campeonato as a header CTA' do
     sign_in(create(:user, :admin))
     get '/admin'
 
-    expect(response.body).to include('data-role="admin-metrics"', 'lg:col-span-8', 'lg:col-span-4')
+    expect(response.body).to include('data-role="admin-metrics"', 'lg:grid-cols-4')
     expect(response.body).to include('Campeonatos ativos', 'Partidas ao vivo')
     expect(response.body).to include('Pendentes de finalização', 'Gestores pendentes')
-    expect(response.body).to include('data-role="admin-quick-actions"', 'Criar campeonato', 'Aprovar gestor')
+    expect(response.body).not_to include('admin-quick-actions', 'Ações rápidas')
+    header_cta = Nokogiri::HTML(response.body).at_css('[data-test-page-header] a[data-role="header-cta"]')
+    expect([header_cta.text, header_cta['href']]).to eq(['Criar campeonato', '/admin/championships/new'])
+    expect(header_cta['class'].split).to include('bg-white')
+    expect(header_cta['class'].split).not_to include('bg-cartola')
     expect(response.body).to include('font-numeric', 'text-3xl', 'border-l-[3px]')
     expect(response.body).to include('data-role="admin-kpi"', '<svg')
     expect(response.body).to include('data-role="admin-recent-matches"', 'Últimas partidas')

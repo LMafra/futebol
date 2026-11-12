@@ -1,6 +1,11 @@
 ActiveAdmin.register_page 'Dashboard' do
   menu priority: 1, label: proc { I18n.t('active_admin.dashboard') }
 
+  action_item :new_championship do
+    link_to 'Criar campeonato', new_admin_championship_path, class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES,
+                                                             data: { role: 'header-cta' }
+  end
+
   content title: 'Painel de pontuação' do
     render partial: 'admin/dashboard/scoring', locals: {
       live: assigns[:live], pending: assigns[:pending], recent_logs: assigns[:recent_logs],
