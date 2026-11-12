@@ -58,5 +58,30 @@
   .data-table :where(th.tabular-nums) {
     @apply text-right;
   }
+
+  /* Forms: Placar inputs, labels, and cartola primary actions. */
+  .formtastic :where(.label) {
+    @apply mb-1 block text-sm font-body font-semibold text-ink;
+  }
+
+  .formtastic :where([type=email], [type=number], [type=password], [type=tel], [type=text], [type=url], select, textarea) {
+    @apply rounded-md border border-rule bg-paper font-body text-ink;
+  }
+
+  .formtastic :where([type=email], [type=number], [type=password], [type=tel], [type=text], [type=url], select, textarea):focus {
+    @apply border-cartola ring-cartola;
+  }
+
+  .formtastic :where([type=submit]) {
+    @apply cursor-pointer rounded-md border-0 bg-cartola px-3 py-2 font-body font-semibold text-ink hover:bg-cartola/90;
+  }
+
+  .formtastic :where(.actions .cancel-link) {
+    @apply rounded-md border border-rule bg-paper px-3 py-2 font-body font-semibold text-ink no-underline hover:bg-white;
+  }
+
+  .action-item-button {
+    @apply inline-flex cursor-pointer items-center rounded-md bg-cartola px-3 py-2 text-sm font-body font-semibold text-ink no-underline hover:bg-cartola/90;
+  }
 }
 
