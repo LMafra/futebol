@@ -20,7 +20,9 @@ export default {
     './app/views/layouts/active_admin*.{erb,html}',
     './app/javascript/**/*.js'
   ],
-  darkMode: "selector",
+  // Editorial light admin only: AA's dark_mode_toggle.js adds `.dark` from the OS preference,
+  // so `dark:` variants must target a selector the app never renders.
+  darkMode: ["selector", "[data-theme=never]"],
   plugins: [
     activeAdminPlugin
   ]

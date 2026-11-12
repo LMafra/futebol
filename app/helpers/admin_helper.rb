@@ -7,22 +7,23 @@ module AdminHelper
 
   def scoring_admin_namespace? = active_admin_namespace.name.to_sym == :admin
   ADMIN_LABEL_CLASSES = 'mb-1 block text-sm font-body font-semibold text-ink'.freeze
-  ADMIN_INPUT_CLASSES = 'block w-full rounded-md border border-rule bg-paper px-3 py-2 text-sm font-body text-ink ' \
-                        'tabular-nums focus:border-cartola focus:ring-cartola'.freeze
-  ADMIN_BUTTON_CLASSES = 'inline-flex cursor-pointer items-center rounded-md bg-cartola px-3 py-2 ' \
-                         'text-sm font-body font-semibold text-ink hover:bg-cartola/90 focus:outline-none ' \
-                         'focus:ring-2 focus:ring-cartola'.freeze
-  ADMIN_SECONDARY_BUTTON_CLASSES = 'inline-flex cursor-pointer items-center rounded-md border border-rule ' \
-                                   'bg-paper px-3 py-2 text-sm font-body font-semibold text-ink ' \
-                                   'hover:bg-white focus:outline-none focus:ring-2 focus:ring-rule'.freeze
-  ADMIN_DANGER_BUTTON_CLASSES = 'inline-flex cursor-pointer items-center rounded-md border border-ink ' \
-                                'bg-loss px-3 py-2 text-sm font-body font-semibold text-ink ' \
-                                'hover:bg-loss/80 focus:outline-none focus:ring-2 focus:ring-ink'.freeze
+  ADMIN_FIELD_STATE_CLASSES = 'focus:border-ink focus:ring-2 focus:ring-ink disabled:cursor-not-allowed ' \
+                              'disabled:bg-rule/40 disabled:text-graphite'.freeze
+  ADMIN_INPUT_CLASSES = 'block min-h-10 w-full rounded-md border border-graphite/70 bg-white px-3 py-2 text-sm ' \
+                        "font-body text-ink tabular-nums #{ADMIN_FIELD_STATE_CLASSES}".freeze
+  ADMIN_COMPACT_INPUT_CLASSES = 'min-h-10 w-12 rounded-md border border-graphite/70 bg-white px-1 py-1 text-center ' \
+                                "text-sm font-body tabular-nums text-ink #{ADMIN_FIELD_STATE_CLASSES}".freeze
+  ADMIN_BUTTON_BASE_CLASSES = 'inline-flex min-h-10 cursor-pointer items-center justify-center rounded-md px-3 py-2 ' \
+                              'text-sm font-body font-semibold no-underline focus:outline-hidden ' \
+                              'focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 ' \
+                              'disabled:cursor-not-allowed disabled:opacity-60'.freeze
+  ADMIN_BUTTON_CLASSES = "#{ADMIN_BUTTON_BASE_CLASSES} bg-cartola text-ink hover:bg-cartola/90".freeze
+  ADMIN_SECONDARY_BUTTON_CLASSES = "#{ADMIN_BUTTON_BASE_CLASSES} border border-graphite/70 bg-white text-ink " \
+                                   'hover:bg-paper'.freeze
+  ADMIN_DANGER_BUTTON_CLASSES = "#{ADMIN_BUTTON_BASE_CLASSES} bg-loss-solid text-paper hover:bg-loss-solid/90".freeze
   ADMIN_MUTED_TEXT_CLASSES = 'text-sm font-body text-graphite'.freeze
   # `loss` is already a ≤15% tint in @theme — use as background, ink text/border.
   ADMIN_ALERT_CLASSES = 'rounded-md border-l-4 border-ink bg-loss px-4 py-3 text-sm font-body text-ink'.freeze
-  ADMIN_COMPACT_INPUT_CLASSES = 'w-12 rounded-md border border-rule bg-paper px-1 py-1 text-center ' \
-                                'text-sm font-body tabular-nums text-ink focus:border-cartola focus:ring-cartola'.freeze
 
   def admin_score(match)
     [match.home_score, match.away_score].map { |goals| goals.nil? ? '–' : goals }.join(' × ')
@@ -79,8 +80,9 @@ module AdminHelper
 
   def admin_icon_action_link(label, href, icon, **html_options)
     path = ADMIN_ACTION_ICON_PATHS.fetch(icon.to_sym)
-    classes = 'inline-flex items-center justify-center rounded-md border border-rule bg-paper p-1.5 ' \
-              'text-ink no-underline hover:border-cartola hover:text-cartola'
+    classes = 'inline-flex items-center justify-center rounded-md border border-graphite/70 bg-white p-1.5 ' \
+              'text-ink no-underline hover:border-ink hover:bg-paper focus:outline-hidden ' \
+              'focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2'
     data = (html_options.delete(:data) || {}).merge(role: 'admin-table-action')
     link_to(href, **html_options, class: classes, title: label, 'aria-label': label, data:) do
       admin_svg_icon(path, 'h-4 w-4')

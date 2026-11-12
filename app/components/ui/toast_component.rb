@@ -5,7 +5,7 @@ module Ui
       success: { role: 'status', border: 'border-pitch/30', bg: 'bg-pitch/10', ink: 'text-pitch' },
       error: { role: 'alert', border: 'border-ink', bg: 'bg-loss', ink: 'text-ink' },
       notice: { role: 'status', border: 'border-pitch/30', bg: 'bg-pitch/10', ink: 'text-pitch' },
-      alert: { role: 'status', border: 'border-cartola/30', bg: 'bg-cartola/10', ink: 'text-cartola' }
+      alert: { role: 'alert', border: 'border-cartola', bg: 'bg-cartola/15', ink: 'text-ink' }
     }.freeze
 
     attr_reader :message, :variant

@@ -3,7 +3,8 @@ module Ui
   class StatusBadgeComponent < BaseComponent
     STYLES = {
       scheduled: 'bg-rule text-ink',
-      live: 'bg-cartola/10 text-cartola',
+      # cartola is a fill, never text on a light background (≈3:1); ink on cartola is 5.2:1.
+      live: 'bg-cartola text-ink',
       finished: 'bg-pitch/10 text-pitch',
       # loss token is already a ≤15% tint (critique Q1) — text stays ink.
       reverted: 'bg-loss text-ink'

@@ -14,72 +14,64 @@
   --color-win: rgb(11 107 58 / 0.15);
   --color-draw: rgb(138 133 119 / 0.15);
   --color-loss: rgb(164 22 26 / 0.15);
+  --color-loss-solid: #A4161A;
   --font-display: "Fraunces", "Bitter", Georgia, serif;
   --font-body: "Source Sans 3", "IBM Plex Sans", system-ui, sans-serif;
   --font-numeric: "Source Sans 3", "IBM Plex Sans", system-ui, sans-serif;
   --font-sans: "Source Sans 3", "IBM Plex Sans", system-ui, sans-serif;
 }
 
-/* Forms stay in @layer; table thead must be unlayered to beat AA plugin th backgrounds. */
-@layer components {
-  /* Forms: Placar inputs, labels, and cartola primary actions. */
-  .formtastic :where(.label) {
-    @apply mb-1 block text-sm font-body font-semibold text-ink;
+/* Element defaults must stay in @layer base: unlayered element rules beat every Tailwind
+   utility, which made link-buttons and the current pagination page unreadable.
+   The AA plugin base is emitted after this block, so `:root` adds the specificity to win. */
+@layer base {
+  :root a {
+    @apply text-pitch underline underline-offset-[.2rem];
   }
 
-  .formtastic :where([type=email], [type=number], [type=password], [type=tel], [type=text], [type=url], select, textarea) {
-    @apply rounded-md border border-rule bg-paper font-body text-ink;
+  :root :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ink;
   }
 
-  .formtastic :where([type=email], [type=number], [type=password], [type=tel], [type=text], [type=url], select, textarea):focus {
-    @apply border-cartola ring-cartola;
+  :root :is([type=datetime-local], [type=month], [type=week], [type=search], [type=date], [type=email], [type=number],
+    [type=password], [type=tel], [type=text], [type=time], [type=url], select, textarea) {
+    @apply border-graphite/70 bg-white text-ink placeholder:text-graphite focus:border-ink focus:ring-ink;
   }
 
-  .formtastic :where([type=submit]) {
-    @apply cursor-pointer rounded-md border-0 bg-cartola px-3 py-2 font-body font-semibold text-ink hover:bg-cartola/90;
+  :root :is([type=checkbox], [type=radio]) {
+    @apply border-graphite/70 bg-white text-pitch focus:ring-pitch;
   }
 
-  .formtastic :where(.actions .cancel-link) {
-    @apply rounded-md border border-rule bg-paper px-3 py-2 font-body font-semibold text-ink no-underline hover:bg-white;
+  :root [type=file]::file-selector-button {
+    @apply border-graphite/70 bg-white font-body font-semibold text-ink hover:bg-paper;
   }
-
-  .action-item-button {
-    @apply inline-flex cursor-pointer items-center rounded-md bg-cartola px-3 py-2 text-sm font-body font-semibold text-ink no-underline hover:bg-cartola/90;
-  }
-
 }
 
-/* Unlayered overrides win over the ActiveAdmin plugin @layer components (blue Flowbite).
-   Keep `a` specificity low (0,0,1) so header/thead paper links can beat it. */
-a {
-  @apply text-pitch underline underline-offset-[.2rem];
+/* Unlayered class overrides beat the AA plugin @layer components (Flowbite blue/gray). */
+.page-title {
+  @apply font-display text-ink;
 }
 
-[data-role="craquefy-admin-header"] a,
-[data-role="craquefy-admin-header"] a:hover {
-  color: #F4F1EA;
-  text-decoration: none;
+.action-item-button {
+  @apply inline-flex min-h-10 cursor-pointer items-center rounded-md border-0 bg-cartola px-3 py-2 text-sm font-body font-semibold text-ink no-underline hover:bg-cartola/90 hover:text-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2;
 }
 
-/* thead sortable links stay paper on pitch. */
-.data-table thead th a,
-.data-table thead th a:hover {
-  color: #F4F1EA;
-  text-decoration: none;
+/* Visible filter bar above the index table (not a narrow right rail). */
+#filters_sidebar_section,
+[data-role="admin-filter-bar"] {
+  @apply w-full rounded-md border border-rule bg-white px-4 py-3;
 }
 
 .filters-form-title {
   @apply mb-3 font-display text-lg font-bold text-ink;
 }
 
-/* Visible filter bar above the index table (not a narrow right rail). */
-#filters_sidebar_section,
-[data-role="admin-filter-bar"] {
-  @apply w-full rounded-md border border-rule bg-paper px-4 py-3;
-}
-
 .filters-form {
   @apply grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4;
+}
+
+.filters-form :where(.label) {
+  @apply mb-1.5 block text-sm font-body font-semibold text-ink;
 }
 
 .filters-form-buttons {
@@ -87,49 +79,44 @@ a {
 }
 
 .filters-form-submit {
-  @apply min-w-24 cursor-pointer rounded-md border-0 bg-cartola px-3 py-2 text-center font-body font-semibold text-ink hover:bg-cartola/90 focus:outline-hidden focus:ring-2 focus:ring-cartola;
+  @apply min-h-10 min-w-24 cursor-pointer rounded-md border-0 bg-cartola px-3 py-2 text-center font-body font-semibold text-ink hover:bg-cartola/90 focus:outline-hidden focus:ring-0 focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2;
 }
 
 .filters-form-clear {
-  @apply font-body font-semibold text-ink no-underline hover:text-cartola;
+  @apply font-body font-semibold text-ink underline hover:bg-transparent hover:no-underline;
+}
+
+.active-filters-title {
+  @apply mb-4 font-display text-lg font-bold text-ink;
+}
+
+.active-filters-list {
+  @apply list-disc space-y-1 ps-5 font-body text-ink;
 }
 
 .index-button {
-  @apply inline-flex items-center justify-center border border-rule bg-paper px-3 py-2 text-sm font-body font-medium text-ink no-underline hover:bg-white focus:z-10 focus:ring-2 focus:ring-cartola first:rounded-s-md last:rounded-e-md;
+  @apply inline-flex min-h-10 items-center justify-center border border-rule bg-white px-3 py-2 text-sm font-body font-medium text-ink no-underline hover:bg-paper focus:z-10 focus:ring-0 focus-visible:ring-2 focus-visible:ring-ink first:rounded-s-md last:rounded-e-md;
 }
 
 .index-button-selected {
-  @apply bg-cartola/10 text-cartola hover:bg-cartola/10;
+  @apply bg-cartola/15 font-semibold text-ink hover:bg-cartola/15;
 }
 
-.page-title {
-  @apply font-display text-ink;
+.scopes-count {
+  @apply ms-2 inline-flex items-center justify-center rounded-full bg-cartola/15 px-1.5 py-1 text-xs font-body font-semibold leading-none text-ink;
 }
 
-.formtastic :where([type=submit]) {
-  @apply cursor-pointer rounded-md border-0 bg-cartola px-3 py-2 font-body font-semibold text-ink hover:bg-cartola/90;
+.batch-actions-dropdown-toggle {
+  @apply inline-flex min-h-10 items-center gap-2 rounded-md border border-graphite/70 bg-white px-3 py-2 text-sm font-body font-semibold text-ink hover:bg-paper hover:text-ink focus:text-ink focus:ring-0 focus-visible:ring-2 focus-visible:ring-ink disabled:opacity-50;
 }
 
-.formtastic :where(fieldset) {
-  @apply mb-6 rounded-md border border-rule bg-paper px-4 py-3;
+.batch-actions-dropdown-menu {
+  @apply rounded-md border border-rule bg-white py-1 text-sm font-body text-ink shadow-none ring-0;
 }
 
-.formtastic :where(fieldset > legend) {
-  @apply px-1 font-display text-xl text-ink;
+.batch-actions-dropdown-menu :where(li > a) {
+  @apply block px-2.5 py-2 font-body text-ink no-underline hover:bg-cartola/15;
 }
-
-.formtastic :where(label) {
-  @apply font-body font-semibold text-ink;
-}
-
-.formtastic :where(input:not([type=submit]):not([type=checkbox]):not([type=radio]):not([type=file]), select, textarea) {
-  @apply rounded-md border border-rule bg-paper font-body text-ink;
-}
-
-.action-item-button {
-  @apply inline-flex cursor-pointer items-center rounded-md bg-cartola px-3 py-2 text-sm font-body font-semibold text-ink no-underline hover:bg-cartola/90;
-}
-
 
 .status-tag {
   @apply rounded-sm bg-rule px-2 py-0.5 text-xs font-body font-semibold uppercase tracking-wide text-ink;
@@ -143,6 +130,48 @@ a {
 .status-tag:where([data-status=no]),
 .status-tag:where([data-status=não]) {
   @apply bg-rule text-graphite;
+}
+
+/* Forms: white fields on white fieldsets; hints/errors readable and on-palette. */
+.formtastic :where(fieldset) {
+  @apply mb-6 rounded-md border border-rule bg-white px-4 py-3;
+}
+
+.formtastic :where(fieldset > legend) {
+  @apply px-1 font-display text-xl text-ink;
+}
+
+.formtastic :where(.fieldset-title, .has-many-fields-title) {
+  @apply border-rule;
+}
+
+.formtastic :where(.label, label) {
+  @apply font-body font-semibold text-ink;
+}
+
+.formtastic :where(.inline-hints) {
+  @apply text-graphite;
+}
+
+.formtastic :where(.inline-errors) {
+  @apply font-semibold text-ink;
+}
+
+.formtastic :where(.errors) {
+  @apply border-l-4 border-ink bg-loss text-ink;
+}
+
+.formtastic :where(.error) :where([type=date], [type=datetime-local], [type=email], [type=number], [type=password],
+  [type=tel], [type=text], [type=time], [type=url], select, textarea) {
+  @apply border-2 border-ink bg-loss;
+}
+
+.formtastic :where([type=submit]) {
+  @apply min-h-10 cursor-pointer rounded-md border-0 bg-cartola px-3 py-2 font-body font-semibold text-ink hover:bg-cartola/90 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2;
+}
+
+.formtastic :where(.actions .cancel-link) {
+  @apply rounded-md border border-graphite/70 bg-white px-3 py-2 font-body font-semibold text-ink no-underline hover:bg-paper;
 }
 
 /* Unlayered data-table beats ActiveAdmin plugin @layer th/td styles. */
@@ -204,51 +233,6 @@ a {
   @apply w-full text-sm font-body text-ink;
 }
 
-.batch-actions-dropdown-toggle {
-  @apply inline-flex items-center gap-2 rounded-md border border-rule bg-paper px-3 py-2 text-sm font-body font-semibold text-ink hover:bg-white disabled:opacity-50;
-}
-
-.scopes-count {
-  @apply ms-2 inline-flex items-center justify-center rounded-full bg-cartola/10 px-1.5 py-1 text-xs font-body font-semibold leading-none text-cartola;
-}
-
-.paginated-collection {
-  @apply overflow-hidden rounded-md border border-rule shadow-none;
-}
-
-.paginated-collection-pagination,
-.paginated-collection-footer {
-  @apply border-t border-rule;
-}
-
-[data-test-page-header] {
-  @apply border-rule bg-paper;
-}
-
-.filters-form :where(.label) {
-  @apply mb-1.5 block text-sm font-body font-semibold text-ink;
-}
-
-.filters-form-field :where(input, select, textarea) {
-  @apply rounded-md border border-rule bg-paper font-body text-ink;
-}
-
-.active-filters-title {
-  @apply mb-4 font-display text-lg font-bold text-ink;
-}
-
-.active-filters-list {
-  @apply list-disc space-y-1 ps-5 font-body text-ink;
-}
-
-.batch-actions-dropdown-menu {
-  @apply rounded-md border border-rule bg-paper py-1 text-sm font-body text-ink shadow-none ring-0;
-}
-
-.batch-actions-dropdown-menu :where(li > a) {
-  @apply block px-2.5 py-2 font-body text-ink no-underline hover:bg-cartola/10 hover:text-cartola;
-}
-
 .attributes-table :where(tbody > tr) {
   @apply border-b border-rule last:border-b-0 align-baseline;
 }
@@ -263,4 +247,17 @@ a {
 
 .attributes-table-empty-value {
   @apply text-xs font-body font-semibold uppercase text-graphite;
+}
+
+.paginated-collection {
+  @apply overflow-hidden rounded-md border border-rule shadow-none;
+}
+
+.paginated-collection-pagination,
+.paginated-collection-footer {
+  @apply border-t border-rule;
+}
+
+[data-test-page-header] {
+  @apply border-rule bg-paper;
 }

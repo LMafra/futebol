@@ -5,7 +5,7 @@ RSpec.describe Ui::StatusBadgeComponent do
 
   {
     scheduled: %w[bg-rule text-ink Agendada],
-    live: ['bg-cartola/10', 'text-cartola', 'Ao vivo'],
+    live: ['bg-cartola', 'text-ink', 'Ao vivo'],
     finished: ['bg-pitch/10', 'text-pitch', 'Encerrada'],
     reverted: %w[bg-loss text-ink Revertida]
   }.each do |status, (bg, color, label)|
@@ -17,6 +17,10 @@ RSpec.describe Ui::StatusBadgeComponent do
       expect(badge['data-status']).to eq(status.to_s)
       expect(badge.text.squish).to eq(label)
     end
+  end
+
+  it 'never uses cartola as text colour' do
+    described_class::STYLES.each_value { |classes| expect(classes.split).not_to include('text-cartola') }
   end
 
   it 'rejects unknown statuses' do

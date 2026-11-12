@@ -19,4 +19,13 @@ RSpec.describe Ui::ToastComponent do
     expect(toast['role']).to eq('alert')
     expect(toast['class']).to include('bg-loss')
   end
+
+  it 'renders the alert toast as an alert with ink text on a cartola tint' do
+    page = render_inline(described_class.new(message: 'Atenção', variant: :alert))
+
+    toast = page.at_css('[data-role="admin-toast"]')
+    expect(toast['role']).to eq('alert')
+    expect(toast['class']).to include('bg-cartola/15', 'border-cartola')
+    expect(page.to_html).not_to include('text-cartola')
+  end
 end

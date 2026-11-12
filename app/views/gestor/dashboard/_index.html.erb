@@ -13,10 +13,10 @@
     <div class="grid gap-4 sm:grid-cols-2" data-role="gestor-championships">
       <% overview.each do |row| %>
         <% championship = row.championship %>
-        <article class="rounded-md border border-rule border-l-[3px] border-l-pitch bg-paper p-4" data-championship-id="<%= championship.id %>">
+        <article class="rounded-md border border-rule border-l-[3px] border-l-pitch bg-white p-4" data-championship-id="<%= championship.id %>">
           <div class="flex items-start justify-between gap-3">
             <h4 class="font-display text-xl text-ink">
-              <%= link_to championship, gestor_championship_path(championship), class: "text-ink no-underline hover:text-cartola" %>
+              <%= link_to championship, gestor_championship_path(championship), class: "text-ink no-underline hover:underline" %>
             </h4>
             <span class="rounded-sm bg-rule px-2 py-0.5 text-xs font-body font-semibold uppercase tracking-wide text-ink">
               <%= championship.private? ? "privado" : "público" %>
@@ -42,9 +42,9 @@
             </div>
           </dl>
           <p class="mt-3 flex flex-wrap gap-x-3 gap-y-1 font-body text-sm">
-            <%= link_to "Partida", new_gestor_match_path(match: { championship_id: championship.id }), class: "font-semibold text-ink underline underline-offset-2 hover:text-cartola" %>
-            <%= link_to "Finalizar", scoring_path("matchfinalizer"), class: "font-semibold text-ink underline underline-offset-2 hover:text-cartola" %>
-            <%= link_to "Editar", edit_gestor_championship_path(championship), class: "font-semibold text-ink underline underline-offset-2 hover:text-cartola" %>
+            <%= link_to "Partida", new_gestor_match_path(match: { championship_id: championship.id }), class: "font-semibold text-ink underline underline-offset-2 hover:no-underline" %>
+            <%= link_to "Finalizar", scoring_path("matchfinalizer"), class: "font-semibold text-ink underline underline-offset-2 hover:no-underline" %>
+            <%= link_to "Editar", edit_gestor_championship_path(championship), class: "font-semibold text-ink underline underline-offset-2 hover:no-underline" %>
           </p>
         </article>
       <% end %>
@@ -59,7 +59,7 @@
          { label: "Jogadores", value: kpis[:players] },
          { label: "Partidas pendentes", value: kpis[:pending_matches] }
        ].each do |metric| %>
-      <div class="rounded-md border border-rule border-l-[3px] border-l-pitch bg-paper px-4 py-3" data-role="gestor-kpi">
+      <div class="rounded-md border border-rule border-l-[3px] border-l-pitch bg-white px-4 py-3" data-role="gestor-kpi">
         <div class="flex items-center justify-between gap-2">
           <p class="text-xs font-body font-bold uppercase tracking-widest text-graphite"><%= metric[:label] %></p>
           <%= admin_kpi_icon(metric[:label]) %>
@@ -68,26 +68,26 @@
       </div>
     <% end %>
   </div>
-  <nav class="flex flex-col justify-center gap-2 rounded-md border border-rule bg-paper px-4 py-3 lg:col-span-4" aria-label="Atalhos" data-role="gestor-shortcuts">
+  <nav class="flex flex-col justify-center gap-2 rounded-md border border-rule bg-white px-4 py-3 lg:col-span-4" aria-label="Atalhos" data-role="gestor-shortcuts">
     <p class="text-xs font-body font-bold uppercase tracking-widest text-graphite">Atalhos</p>
     <ul class="flex flex-col gap-2 font-body text-sm">
-      <li><%= link_to "Novo campeonato", new_gestor_championship_path, class: "font-semibold text-ink no-underline hover:text-cartola" %></li>
-      <li><%= link_to "Agendar partida", new_gestor_match_path, class: "font-semibold text-ink no-underline hover:text-cartola" %></li>
-      <li><%= link_to "Scouts", scoring_path("matchscouts"), class: "font-semibold text-ink no-underline hover:text-cartola" %></li>
-      <li><%= link_to "Finalizar", scoring_path("matchfinalizer"), class: "font-semibold text-ink no-underline hover:text-cartola" %></li>
-      <li><%= link_to "Reverter", scoring_path("matchreversal"), class: "font-semibold text-ink no-underline hover:text-cartola" %></li>
+      <li><%= link_to "Novo campeonato", new_gestor_championship_path, class: "font-semibold text-ink no-underline hover:underline" %></li>
+      <li><%= link_to "Agendar partida", new_gestor_match_path, class: "font-semibold text-ink no-underline hover:underline" %></li>
+      <li><%= link_to "Scouts", scoring_path("matchscouts"), class: "font-semibold text-ink no-underline hover:underline" %></li>
+      <li><%= link_to "Finalizar", scoring_path("matchfinalizer"), class: "font-semibold text-ink no-underline hover:underline" %></li>
+      <li><%= link_to "Reverter", scoring_path("matchreversal"), class: "font-semibold text-ink no-underline hover:underline" %></li>
     </ul>
   </nav>
 </div>
 
-<section class="rounded-md border border-rule bg-paper" aria-labelledby="upcoming-title" data-role="gestor-upcoming-matches">
+<section class="rounded-md border border-rule bg-white" aria-labelledby="upcoming-title" data-role="gestor-upcoming-matches">
   <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="upcoming-title">Próximas partidas</h3>
   <div class="px-4 py-3">
     <%= render Ui::AdminTableComponent.new(
           headers: ["Partida", { label: "Início", numeric: true }, "Status", ""],
           rows: upcoming.map { |match|
             [
-              link_to(match, gestor_match_path(match), class: "font-semibold text-ink no-underline hover:text-cartola"),
+              link_to(match, gestor_match_path(match), class: "font-semibold text-ink no-underline hover:underline"),
               l(match.match_date, format: "%d/%m %H:%M"),
               admin_match_status_badge(match),
               link_to("Finalizar", scoring_path("matchfinalizer", match_id: match.id), class: "font-semibold underline underline-offset-2")

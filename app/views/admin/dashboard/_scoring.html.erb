@@ -14,7 +14,7 @@
 <div class="mb-6 grid gap-4 lg:grid-cols-12" data-role="admin-metrics">
   <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:col-span-8 lg:grid-cols-4">
     <% metrics.each do |metric| %>
-      <%= link_to metric[:href], class: "block rounded-md border border-rule border-l-[3px] #{metric[:accent]} bg-paper px-4 py-3 no-underline text-ink hover:border-cartola", data: { role: "admin-kpi", label: metric[:label] } do %>
+      <%= link_to metric[:href], class: "block rounded-md border border-rule border-l-[3px] #{metric[:accent]} bg-white px-4 py-3 no-underline text-ink hover:border-cartola", data: { role: "admin-kpi", label: metric[:label] } do %>
         <div class="flex items-center justify-between gap-2">
           <p class="text-xs font-body font-bold uppercase tracking-widest text-graphite"><%= metric[:label] %></p>
           <%= admin_kpi_icon(metric[:label]) %>
@@ -23,11 +23,11 @@
       <% end %>
     <% end %>
   </div>
-  <section class="rounded-md border border-rule bg-paper px-4 py-3 lg:col-span-4" aria-labelledby="quick-actions-title" data-role="admin-quick-actions">
+  <section class="rounded-md border border-rule bg-white px-4 py-3 lg:col-span-4" aria-labelledby="quick-actions-title" data-role="admin-quick-actions">
     <h3 class="text-xs font-body font-bold uppercase tracking-widest text-graphite" id="quick-actions-title">Ações rápidas</h3>
     <div class="mt-3 grid grid-cols-2 gap-2">
       <% quick_actions.each do |action| %>
-        <%= link_to action[:label], action[:href], class: "inline-flex items-center justify-center rounded-md border border-rule bg-paper px-3 py-2 text-center text-sm font-body font-semibold text-ink no-underline hover:border-cartola hover:text-cartola" %>
+        <%= link_to action[:label], action[:href], class: "inline-flex items-center justify-center rounded-md border border-rule bg-white px-3 py-2 text-center text-sm font-body font-semibold text-ink no-underline hover:border-ink" %>
       <% end %>
     </div>
   </section>
@@ -35,7 +35,7 @@
 
 <div class="grid gap-6 lg:grid-cols-12">
   <div class="flex flex-col gap-6 lg:col-span-8">
-    <section class="rounded-md border border-rule bg-paper" aria-labelledby="live-title">
+    <section class="rounded-md border border-rule bg-white" aria-labelledby="live-title">
       <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="live-title">Ao vivo: aguardando placar final (<%= live.size %>)</h3>
       <div class="px-4 py-3">
         <% if live.empty? %>
@@ -45,7 +45,7 @@
                 headers: ["Partida", { label: "Início", numeric: true }, { label: "Placar", numeric: true }, ""],
                 rows: live.map { |match|
                   [
-                    link_to(match, admin_match_path(match), class: "font-semibold text-ink no-underline hover:text-cartola"),
+                    link_to(match, admin_match_path(match), class: "font-semibold text-ink no-underline hover:underline"),
                     l(match.match_date, format: "%d/%m %H:%M"),
                     admin_score(match),
                     safe_join([
@@ -61,14 +61,14 @@
       </div>
     </section>
 
-    <section class="rounded-md border border-rule bg-paper" aria-labelledby="recent-matches-title" data-role="admin-recent-matches">
+    <section class="rounded-md border border-rule bg-white" aria-labelledby="recent-matches-title" data-role="admin-recent-matches">
       <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="recent-matches-title">Últimas partidas</h3>
       <div class="px-4 py-3">
         <%= render Ui::AdminTableComponent.new(
               headers: ["Partida", { label: "Início", numeric: true }, "Status", { label: "Placar", numeric: true }],
               rows: recent_matches.map { |match|
                 [
-                  link_to(match, admin_match_path(match), class: "font-semibold text-ink no-underline hover:text-cartola"),
+                  link_to(match, admin_match_path(match), class: "font-semibold text-ink no-underline hover:underline"),
                   l(match.match_date, format: "%d/%m %H:%M"),
                   admin_match_status_badge(match),
                   admin_score(match)
@@ -79,7 +79,7 @@
       </div>
     </section>
 
-    <section class="rounded-md border border-rule bg-paper" aria-labelledby="pending-title">
+    <section class="rounded-md border border-rule bg-white" aria-labelledby="pending-title">
       <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="pending-title">Encerradas com pontuação pendente (<%= pending.size %>)</h3>
       <div class="px-4 py-3">
         <% if pending.empty? %>
@@ -87,7 +87,7 @@
         <% else %>
           <ul class="flex flex-col gap-1 font-body">
             <% pending.each do |match| %>
-              <li><%= link_to match, admin_match_path(match), class: "font-semibold text-ink no-underline hover:text-cartola" %> · <span class="tabular-nums"><%= admin_score(match) %></span></li>
+              <li><%= link_to match, admin_match_path(match), class: "font-semibold text-ink no-underline hover:underline" %> · <span class="tabular-nums"><%= admin_score(match) %></span></li>
             <% end %>
           </ul>
         <% end %>
@@ -95,7 +95,7 @@
     </section>
   </div>
 
-  <section class="rounded-md border border-rule bg-paper lg:col-span-4" aria-labelledby="log-title">
+  <section class="rounded-md border border-rule bg-white lg:col-span-4" aria-labelledby="log-title">
     <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="log-title">Últimas ações</h3>
     <div class="px-4 py-3">
       <%= render Ui::AdminTableComponent.new(
@@ -109,7 +109,7 @@
             texts: { label: "Últimas ações", empty: "Nenhum registro ainda." },
             table_role: "recent-audit-logs"
           ) %>
-      <%= link_to "Ver histórico completo", admin_audithistory_path, class: "mt-4 inline-block font-body font-semibold text-ink underline underline-offset-2 hover:text-cartola" %>
+      <%= link_to "Ver histórico completo", admin_audithistory_path, class: "mt-4 inline-block font-body font-semibold text-ink underline underline-offset-2 hover:no-underline" %>
     </div>
   </section>
 </div>

@@ -294,3 +294,12 @@ ActiveAdmin.importmap.draw do
   pin 'admin', to: 'admin.js'
   pin 'controllers/scouts_controller', to: 'controllers/scouts_controller.js'
 end
+
+# importmap-rails only sweeps Rails.application.importmap; without this the admin map keeps serving the boot-time
+# digest of admin.js after an edit (404 until the server restarts).
+if Rails.application.config.importmap.sweep_cache && !Rails.application.config.cache_classes
+  ActiveAdmin.importmap.cache_sweeper(watches: Rails.root.join('app/javascript'))
+  ActiveSupport.on_load(:action_controller_base) do
+    before_action { ActiveAdmin.importmap.cache_sweeper.execute_if_updated }
+  end
+end

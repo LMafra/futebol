@@ -1,5 +1,5 @@
 <% attrs = root_attributes(label: title || 'Seção') %>
-<% attrs[:class] = 'mb-6 rounded-md border border-rule bg-paper' %>
+<% attrs[:class] = 'mb-6 rounded-md border border-rule bg-white' %>
 <% attrs[:data] = (attrs[:data] || {}).merge(role: 'form-section') %>
 <section <%= tag.attributes(attrs) %>>
   <% case rendered_state %>
