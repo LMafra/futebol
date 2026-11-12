@@ -1,4 +1,11 @@
 module AdminHelper
+  def scoring_path(page, **params) = public_send("#{active_admin_namespace.name}_#{page}_path", **params)
+
+  def scoring_url(page, **params) = public_send("#{active_admin_namespace.name}_#{page}_url", **params)
+
+  def scoring_match_path(match) = public_send("#{active_admin_namespace.name}_match_path", match)
+
+  def scoring_admin_namespace? = active_admin_namespace.name.to_sym == :admin
   ADMIN_LABEL_CLASSES = 'mb-1 block text-sm font-medium text-gray-900 dark:text-white'.freeze
   ADMIN_INPUT_CLASSES = 'block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 ' \
                         'tabular-nums focus:border-blue-600 focus:ring-blue-600 dark:border-gray-600 ' \

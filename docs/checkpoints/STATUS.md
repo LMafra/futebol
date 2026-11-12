@@ -374,3 +374,79 @@ Branch `craquefy/u-seed-rankings`, empilhada sobre `craquefy/t-esquadrao-elenco`
 ### "Como funciona" logo depois dos módulos (TICKET-0055)
 Branch `craquefy/v-como-funciona`, empilhada sobre `craquefy/u-seed-rankings`, com um commit assinado.
 - A home passa a ter "Como funciona" entre "Três jeitos de jogar" e "Jogos de hoje". Verificado no navegador.
+
+## RBAC: 3 níveis
+
+Trabalho concentrado na branch única `cursor/rbac-i-pendencias-9a4f`, recriando os blocos A–H+I que estavam em branches `rbac/*` locais e nunca foram enviadas ao remoto. Um push assinado cobre enums, pedido de gestor, policies com escopo, namespace `/gestor`, painel, pontuação pelo gestor e comentários no admin.
+
+### Blocos
+
+| bloco | status | ticket | observações |
+|---|---|---|---|
+| A — papéis e `manager_id` | ok | [0056](../tickets/TICKET-0056.md) | Migrations 043–046 no engine `core`; enums com `prefix` |
+| B — pedido de gestor | ok | [0057](../tickets/TICKET-0057.md) | `/gestor/solicitar`, mailer, aprovação no admin (Usuários) |
+| C — policies com escopo | ok | [0058](../tickets/TICKET-0058.md) | `ApplicationPolicy#Scope`, `Gestor::*` espelhando `Core::*` |
+| D — namespace `/gestor` | ok | [0059](../tickets/TICKET-0059.md) | `Gestor::PunditAdapter`, recursos em `app/admin/gestor/` |
+| E — logins por área | ok | [0059](../tickets/TICKET-0059.md) | `/admin/login`, `/gestor/login`, redirect por papel |
+| F — painel e premiação | ok | [0060](../tickets/TICKET-0060.md) | Migration 047; `Gestor::ChampionshipOverview`; classes `panel` / `data-table` |
+| G — scouts, finalizar, reverter | ok | [0061](../tickets/TICKET-0061.md) | Páginas Pontuação em `:admin` e `:gestor`; atalhos no painel |
+| H — docs e README | ok | [0056](../tickets/TICKET-0056.md)–[0062](../tickets/TICKET-0062.md) | Tickets 0056–0062, INDEX (62), glossário, esta seção |
+| I — comentários ActiveAdmin | ok | [0062](../tickets/TICKET-0062.md) | Migration 048; `comments = true` no admin; 404 em `/gestor/comments` |
+
+### Matriz de permissões (resumo)
+
+| Recurso / ação | Admin (`/admin`) | Gestor (`/gestor`, campeonatos próprios) | Usuário |
+|---|---|---|---|
+| Plataforma (import CSV, auditoria, usuários, preview Bolão) | sim | não (403 no `/admin`) | não |
+| Campeonatos (CRUD) | todos | criar; editar/ver os com `manager_id` dele | não |
+| Times e jogadores | todos | criar; editar times só nos próprios campeonatos | não |
+| Partidas (CRUD agendadas) | todos | criar/editar agendadas nos próprios campeonatos | não |
+| Partidas — **scouts** | sim | sim, nos próprios campeonatos | não |
+| Partidas — **finalizar** | sim | sim, nos próprios campeonatos | não |
+| Partidas — **reverter** | sim | sim, nos próprios campeonatos | não |
+| Regras do Bolão do campeonato | sim | sim, nos próprios | não |
+| Bolões e escalações (admin) | sim | só leitura nos próprios | não |
+| Comentários nos recursos | sim | não (`403` em `/admin/comments`; `/gestor/comments` → 404) | não |
+| Bolão / Esquadrão (app) | como usuário | como usuário | sim |
+| Pedir ser gestor | — | — | `/gestor/solicitar` |
+
+### Desvios
+
+- Tickets documentados como **0056–0062**, não 0037–0041 (numeração antiga do plano).
+- Namespace ActiveAdmin **`:gestor`**, não um controller Rails separado.
+- Enums `role` e `manager_status` com **`prefix`** para evitar colisão com `admin` e `none`.
+- Migrations de domínio no engine **`core`** (043–047); `active_admin_comments` no host (`db/migrate/048`).
+- Comentários do ActiveAdmin **habilitados** com tabela própria; desligados só no namespace gestor.
+- Painel do gestor usa as mesmas classes visuais das telas de pontuação do admin (`panel`, `panel-title`, `data-table`).
+- `curl` contra HTML deve enviar **`Accept: text/html`**; sem isso o Rails pode responder `406` em rotas que negam JSON.
+
+### Validação
+
+Local (`bin/rails s -p 3005`, seed com `gestor@demo.local` / `demo-futebol`; conferido no Playwright):
+
+| URL | esperado |
+|---|---|
+| `/gestor/login` | 200, campo `area=gestor` |
+| `/admin/login` | 200, campo `area=admin` |
+| `/gestor` sem sessão | 302 → login |
+| `/gestor` como gestor | 200, atalhos Scouts/Finalizar/Reverter |
+| `/gestor/matchscouts` e `/gestor/matchfinalizer` | 200 para o gestor |
+| `/admin/championships/:id` | painel de comentários (`active_admin_comments_for`) |
+| `/admin` como gestor | 403 |
+| `/gestor/matchscouts?match_id=…` (partida alheia) | 403 |
+
+Produção (`https://futebol-web.onrender.com`, depois do deploy da branch na `main`):
+
+```bash
+HOST=https://futebol-web.onrender.com
+HDR='Accept: text/html'
+
+for url in /up /entrar /admin/login /gestor/login /gestor /admin /; do
+  printf "%-18s " "$url"
+  curl -sS -o /dev/null --max-time 90 -H "$HDR" -w '%{http_code} %{redirect_url}\n' "$HOST$url"
+done
+```
+
+Esperado após o merge RBAC: `/up` 200; `/entrar`, `/admin/login` e `/gestor/login` 200; `/gestor` e `/admin` anônimos 302 para o login correspondente ou `/session/new`; gestor autenticado acessa `/gestor` e leva 403 em `/admin`.
+
+**Nota:** scouts, finalizar e reverter no `/gestor` **já estão disponíveis** para o gestor nos próprios campeonatos (bloco G / TICKET-0061); não ficam mais como pendência do STATUS.

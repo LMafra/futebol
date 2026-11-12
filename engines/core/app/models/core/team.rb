@@ -14,6 +14,20 @@ module Core
 
     def self.ransackable_attributes(_auth_object = nil) = %w[name short_name external_id]
 
+    # Teams that have a home or away match in any of the given championships.
+    scope :playing_in, lambda { |championships|
+      where(id: Core::Match.where(championship_id: championships).select(:home_team_id))
+        .or(where(id: Core::Match.where(championship_id: championships).select(:away_team_id)))
+    }
+    scope :without_matches, lambda {
+      where.not(id: Core::Match.select(:home_team_id)).where.not(id: Core::Match.select(:away_team_id))
+    }
+
+    def championships
+      Core::Championship.where(id: home_matches.select(:championship_id))
+                        .or(Core::Championship.where(id: away_matches.select(:championship_id)))
+    end
+
     def to_s = name
   end
 end

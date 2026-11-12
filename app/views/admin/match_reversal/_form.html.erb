@@ -1,4 +1,4 @@
-<%= render "admin/shared/match_picker", url: admin_matchreversal_path, matches: matches, match: match %>
+<%= render "admin/shared/match_picker", url: scoring_path("matchreversal"), matches: matches, match: match %>
 
 <% if match %>
   <section class="panel" aria-labelledby="revert-title">
@@ -11,7 +11,7 @@
 
       <%= render "admin/shared/errors", form: form %>
 
-      <%= form_with model: form, url: admin_matchreversal_revert_path, method: :post, class: "flex flex-col gap-4", data: { turbo: false } do |f| %>
+      <%= form_with model: form, url: scoring_path("matchreversal_revert"), method: :post, class: "flex flex-col gap-4", data: { turbo: false } do |f| %>
         <%= hidden_field_tag "reversal[match_id]", match.id %>
         <div class="max-w-2xl">
           <%= f.label :reason, "Motivo da reversão (obrigatório)", class: AdminHelper::ADMIN_LABEL_CLASSES %>

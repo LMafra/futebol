@@ -8,10 +8,16 @@ Rails.application.routes.draw do
 
   resource :session
   get 'entrar', to: 'sessions#new', as: :login
+  # Before ActiveAdmin.routes, which would read "login" as a resource id.
+  get 'admin/login', to: 'sessions#new', as: :admin_login, defaults: { area: 'admin' }
+  get 'gestor/login', to: 'sessions#new', as: :gestor_login, defaults: { area: 'gestor' }
   resources :passwords, param: :token
   resources :users, only: %i[new create]
   get 'signup', to: 'users#new'
   resource :account, path: 'minha-conta', only: %i[show update]
+  # Before ActiveAdmin.routes: /gestor is also the ActiveAdmin namespace of championship managers.
+  get 'gestor/solicitar', to: 'manager_requests#new', as: :new_manager_request
+  post 'gestor/solicitar', to: 'manager_requests#create', as: :manager_request
   get 'campeonatos/:id', to: 'championships#show', as: :public_championship, constraints: { id: /\d+/ }
 
   scope module: :bolao do
@@ -42,6 +48,8 @@ Rails.application.routes.draw do
   get 'admin/cartolarankings', to: moved_to.call('/admin/esquadraorankings')
   get 'admin/cartola_scoring_rules(/*rest)', to: moved_to.call('/admin/esquadrao_scoring_rules'), format: false
   get 'admin/squads(/*rest)', to: moved_to.call('/admin/esquadrao_squads'), format: false
+  # ActiveAdmin registers comments in every namespace even with comments disabled for :gestor.
+  match 'gestor/comments(/*rest)', to: proc { [404, { 'content-type' => 'text/plain' }, ['Not Found']] }, via: :all
   ActiveAdmin.routes(self)
   mount Lookbook::Engine, at: '/lookbook' if defined?(Lookbook::Engine)
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

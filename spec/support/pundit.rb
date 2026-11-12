@@ -14,11 +14,13 @@ RSpec.shared_examples 'an admin-only policy' do |allowed_for_admin: ADMIN_POLICY
   let(:record) { Object.new }
   let(:admin) { build_stubbed(:user, :admin) }
   let(:regular_user) { build_stubbed(:user) }
+  let(:manager) { build_stubbed(:user, :manager) }
 
   (allowed_for_admin + extra_admin_actions).each do |action|
     permissions action do
       it('grants an admin') { expect(policy).to permit(admin, record) }
       it('denies a regular user') { expect(policy).not_to permit(regular_user, record) }
+      it('denies an approved manager') { expect(policy).not_to permit(manager, record) }
       it('denies an anonymous visitor') { expect(policy).not_to permit(nil, record) }
     end
   end
@@ -44,6 +46,26 @@ RSpec.shared_examples 'an admin-only policy' do |allowed_for_admin: ADMIN_POLICY
 
       expect(resolve(regular_user)).to be_empty
       expect(resolve(nil)).to be_empty
+    end
+  end
+end
+
+# Needs let(:manager), :own_record, :foreign_record. Optional :actions (defaults to show/update/destroy).
+RSpec.shared_examples 'a championship-scoped policy' do |actions: %i[show? update? destroy?]|
+  subject(:policy) { described_class }
+
+  let(:admin) { create(:user, :admin) }
+  let(:regular_user) { create(:user) }
+  let(:pending_manager) { create(:user, role: :manager, manager_status: :pending) }
+
+  actions.each do |action|
+    permissions action do
+      it('grants an admin') { expect(policy).to permit(admin, own_record) }
+      it('grants the championship manager') { expect(policy).to permit(manager, own_record) }
+      it('denies another manager') { expect(policy).not_to permit(manager, foreign_record) }
+      it('denies a regular user') { expect(policy).not_to permit(regular_user, own_record) }
+      it('denies a pending manager') { expect(policy).not_to permit(pending_manager, own_record) }
+      it('denies an anonymous visitor') { expect(policy).not_to permit(nil, own_record) }
     end
   end
 end

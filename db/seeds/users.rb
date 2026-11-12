@@ -5,6 +5,7 @@ module Seeds
       user.name = 'Administrador'
       user.password = ENV.fetch('SEED_ADMIN_PASSWORD') { admin_password_fallback }
       user.admin = true
+      user.role = :admin
     end
   end
 

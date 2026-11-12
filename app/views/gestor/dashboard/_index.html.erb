@@ -1,0 +1,70 @@
+<div class="flex flex-col gap-6">
+  <section class="panel" aria-labelledby="shortcuts-title">
+    <h3 class="panel-title" id="shortcuts-title">Atalhos</h3>
+    <div class="panel-body">
+      <ul class="flex flex-wrap gap-x-6 gap-y-2" data-role="gestor-shortcuts">
+        <li><%= link_to "Novo campeonato", new_gestor_championship_path, class: "font-semibold underline underline-offset-2" %></li>
+        <li><%= link_to "Novo time", new_gestor_team_path, class: "font-semibold underline underline-offset-2" %></li>
+        <li><%= link_to "Novo jogador", new_gestor_player_path, class: "font-semibold underline underline-offset-2" %></li>
+        <li><%= link_to "Agendar partida", new_gestor_match_path, class: "font-semibold underline underline-offset-2" %></li>
+        <li><%= link_to "Pontuação do Bolão", gestor_bolao_scoring_rules_path, class: "font-semibold underline underline-offset-2" %></li>
+        <li><%= link_to "Scouts", scoring_path("matchscouts"), class: "font-semibold underline underline-offset-2" %></li>
+        <li><%= link_to "Finalizar", scoring_path("matchfinalizer"), class: "font-semibold underline underline-offset-2" %></li>
+        <li><%= link_to "Reverter", scoring_path("matchreversal"), class: "font-semibold underline underline-offset-2" %></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="championships-title">
+    <h3 class="panel-title" id="championships-title">Seus campeonatos (<%= overview.size %>)</h3>
+    <div class="panel-body">
+      <% if overview.empty? %>
+        <p class="text-gray-600 dark:text-gray-400">
+          Você ainda não tem campeonatos. <%= link_to "Crie o primeiro", new_gestor_championship_path, class: "font-semibold underline underline-offset-2" %>
+          e depois cadastre os times e agende as partidas.
+        </p>
+      <% else %>
+        <div class="overflow-x-auto">
+          <table class="data-table" data-role="gestor-championships">
+            <thead>
+              <tr>
+                <th>Campeonato</th>
+                <th>Visibilidade</th>
+                <th class="text-right">Times</th>
+                <th class="text-right">Jogadores</th>
+                <th class="text-right">Partidas</th>
+                <th class="text-right">Bolões</th>
+                <th>Premiação</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% overview.each do |row| %>
+                <% championship = row.championship %>
+                <tr data-championship-id="<%= championship.id %>">
+                  <td><%= link_to championship, gestor_championship_path(championship), class: "font-semibold" %></td>
+                  <td><span class="status-tag"><%= championship.private? ? "privado" : "público" %></span></td>
+                  <td class="tabular-nums text-right" data-counter="teams"><%= row.teams %></td>
+                  <td class="tabular-nums text-right" data-counter="players"><%= row.players %></td>
+                  <td class="tabular-nums text-right" data-counter="matches">
+                    <%= row.matches %>
+                    <span class="block text-xs text-gray-600 dark:text-gray-400"><%= row.scheduled %> agendada<%= "s" unless row.scheduled == 1 %></span>
+                  </td>
+                  <td class="tabular-nums text-right" data-counter="pools"><%= row.pools %></td>
+                  <td><%= championship.prize? ? "definida" : "a definir" %></td>
+                  <td class="whitespace-nowrap text-right">
+                    <%= link_to "Partida", new_gestor_match_path(match: { championship_id: championship.id }), class: "font-semibold underline underline-offset-2" %>
+                    · <%= link_to "Scouts", scoring_path("matchscouts"), class: "font-semibold underline underline-offset-2" %>
+                    · <%= link_to "Finalizar", scoring_path("matchfinalizer"), class: "font-semibold underline underline-offset-2" %>
+                    · <%= link_to "Reverter", scoring_path("matchreversal"), class: "font-semibold underline underline-offset-2" %>
+                    · <%= link_to "Esquadrão e premiação", edit_gestor_championship_path(championship), class: "font-semibold underline underline-offset-2" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
+    </div>
+  </section>
+</div>

@@ -16,7 +16,7 @@ ActiveRecord::Base.transaction do
   # The demo password is public (README), so these accounts never reach a deployed database.
   if Rails.env.local?
     Seeds.demo(Seeds.championship)
-    Seeds.small_championships
+    Seeds.demo_manager(Seeds.small_championships.first)
   end
 end
 

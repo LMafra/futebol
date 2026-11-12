@@ -4,18 +4,28 @@ module Core
       goalkeeper: :cartola_goalkeeper_limit, defender: :cartola_defender_limit,
       midfielder: :cartola_midfielder_limit, forward: :cartola_forward_limit
     }.freeze
+    # Prize per final position, set by the championship's manager: { "first_place" => "R$ 500 e troféu", ... }.
+    PRIZE_PLACES = %i[first_place second_place third_place].freeze
+
+    store_accessor :prize_rules, *PRIZE_PLACES
 
     has_many :matches, class_name: 'Core::Match', dependent: :restrict_with_error
+    belongs_to :manager, class_name: 'Core::User', optional: true, inverse_of: :managed_championships
 
     validates :name, presence: true
     validates :season, numericality: { only_integer: true, in: 1900..2100 }
     validates :external_id, presence: true, uniqueness: true
     validates(*CARTOLA_LIMITS.values, numericality: { only_integer: true, greater_than_or_equal_to: 0 })
     validates :cartola_initial_budget, :cartola_base_player_value, numericality: { greater_than_or_equal_to: 0 }
+    validates :prize_description, length: { maximum: 2000 }
+    validates(*PRIZE_PLACES, length: { maximum: 120 })
     validate :cartola_line_limits_positive
 
     scope :publicly_visible, -> { where(private: false) }
     scope :private_only, -> { where(private: true) }
+    scope :managed_by, ->(user) { where(manager_id: user.id) }
+    # Run by another manager or by no manager (the admin).
+    scope :not_managed_by, ->(user) { where.not(manager_id: user.id).or(where(manager_id: nil)) }
 
     def self.ransackable_attributes(_auth_object = nil) = %w[name season external_id private]
 
@@ -30,6 +40,8 @@ module Core
     end
 
     def to_s = "#{name} #{season}"
+
+    def prize? = prize_description.present? || PRIZE_PLACES.any? { |place| public_send(place).present? }
 
     private
 

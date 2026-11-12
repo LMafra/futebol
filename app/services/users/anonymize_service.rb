@@ -2,6 +2,8 @@ module Users
   # LGPD: strips PII but keeps the row (and its id) so predictions and scores stay in the historical ranking.
   class AnonymizeService
     ANONYMIZED_NAME = 'Usuário anonimizado'.freeze
+    REVOKED_ACCESS = { admin: false, role: :user, manager_status: :none, active: false,
+                       public_profile_consented_at: nil }.freeze
 
     def self.call(user:, actor:, ip_address:) = new(user:, actor:, ip_address:).call
 
@@ -25,16 +27,13 @@ module Users
     private
 
     def anonymized_attributes
-      {
+      REVOKED_ACCESS.merge(
         name: ANONYMIZED_NAME,
         email_address: "anon-#{SecureRandom.uuid}#{Core::User::ANONYMIZED_EMAIL_DOMAIN}",
         cpf: nil,
         password: SecureRandom.hex(32),
-        admin: false,
-        active: false,
-        public_profile_consented_at: nil,
         anonymized_at: Time.current
-      }
+      )
     end
   end
 end

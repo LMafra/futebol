@@ -45,6 +45,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
         row('Valor base do jogador') { |championship| format('C$ %.2f', championship.cartola_base_player_value) }
       end
     end
+    active_admin_comments_for resource
   end
 
   form do |f|

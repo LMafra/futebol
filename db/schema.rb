@@ -10,9 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000042) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000048) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "active_admin_comments", force: :cascade do |t|
+    t.string "namespace"
+    t.text "body"
+    t.string "resource_type"
+    t.bigint "resource_id"
+    t.string "author_type"
+    t.bigint "author_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["author_type", "author_id"], name: "index_active_admin_comments_on_author"
+    t.index ["namespace"], name: "index_active_admin_comments_on_namespace"
+    t.index ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource"
+  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -119,7 +133,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000042) do
     t.index ["lineup_id"], name: "index_cartola_lineup_players_on_lineup_id"
     t.index ["lineup_id"], name: "index_cartola_lineup_players_one_captain", unique: true, where: "captain"
     t.index ["player_id"], name: "index_cartola_lineup_players_on_player_id"
-    t.check_constraint "\"position\"::text = ANY (ARRAY['goalkeeper'::character varying, 'defender'::character varying, 'midfielder'::character varying, 'forward'::character varying]::text[])", name: "cartola_lineup_players_position_valid"
+    t.check_constraint "\"position\"::text = ANY (ARRAY['goalkeeper'::character varying, 'defender'::character varying, 'midfielder'::character varying, 'forward'::character varying]::text[]::text[])", name: "cartola_lineup_players_position_valid"
   end
 
   create_table "cartola_lineups", force: :cascade do |t|
@@ -132,7 +146,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000042) do
     t.index ["championship_id"], name: "index_cartola_lineups_on_championship_id"
     t.index ["squad_id", "championship_id", "round"], name: "idx_on_squad_id_championship_id_round_ae0b2668d6", unique: true
     t.index ["squad_id"], name: "index_cartola_lineups_on_squad_id"
-    t.check_constraint "formation::text = ANY (ARRAY['3-4-3'::character varying, '3-5-2'::character varying, '4-3-3'::character varying, '4-4-2'::character varying, '4-5-1'::character varying, '5-3-2'::character varying, '5-4-1'::character varying]::text[])", name: "cartola_lineups_formation_valid"
+    t.check_constraint "formation::text = ANY (ARRAY['3-4-3'::character varying, '3-5-2'::character varying, '4-3-3'::character varying, '4-4-2'::character varying, '4-5-1'::character varying, '5-3-2'::character varying, '5-4-1'::character varying]::text[]::text[])", name: "cartola_lineups_formation_valid"
     t.check_constraint "round >= 1 AND round <= 38", name: "cartola_lineups_round_range"
   end
 
@@ -277,7 +291,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000042) do
     t.decimal "cartola_initial_budget", precision: 10, scale: 2, default: "100.0", null: false
     t.decimal "cartola_base_player_value", precision: 6, scale: 2, default: "5.0", null: false
     t.boolean "private", default: false, null: false
+    t.bigint "manager_id"
+    t.text "prize_description"
+    t.jsonb "prize_rules", default: {}, null: false
     t.index ["external_id"], name: "index_core_championships_on_external_id", unique: true
+    t.index ["manager_id"], name: "index_core_championships_on_manager_id"
     t.index ["private"], name: "index_core_championships_on_private"
     t.check_constraint "(cartola_defender_limit + cartola_midfielder_limit + cartola_forward_limit) > 0", name: "core_championships_cartola_line_limits_positive"
     t.check_constraint "cartola_goalkeeper_limit >= 0 AND cartola_defender_limit >= 0 AND cartola_midfielder_limit >= 0 AND cartola_forward_limit >= 0", name: "core_championships_cartola_limits_non_negative"
@@ -294,7 +312,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000042) do
     t.text "error_log"
     t.check_constraint "rows_processed >= 0", name: "csv_imports_rows_non_negative"
     t.check_constraint "status::text <> 'failed'::text OR error_message IS NOT NULL AND error_log IS NOT NULL", name: "csv_imports_failed_has_error"
-    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying::text, 'processing'::character varying::text, 'completed'::character varying::text, 'failed'::character varying::text])", name: "csv_imports_status_valid"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'processing'::character varying, 'completed'::character varying, 'failed'::character varying]::text[]::text[])", name: "csv_imports_status_valid"
   end
 
   create_table "core_matches", force: :cascade do |t|
@@ -321,9 +339,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000042) do
     t.check_constraint "home_score >= 0 AND away_score >= 0", name: "matches_scores_non_negative"
     t.check_constraint "home_team_id <> away_team_id", name: "matches_distinct_teams"
     t.check_constraint "round IS NULL OR round >= 1 AND round <= 38", name: "matches_round_range"
-    t.check_constraint "scores_calculated_at IS NULL OR (status::text = ANY (ARRAY['finished'::character varying::text, 'scored'::character varying::text]))", name: "matches_timestamp_after_finish"
+    t.check_constraint "scores_calculated_at IS NULL OR (status::text = ANY (ARRAY['finished'::character varying, 'scored'::character varying]::text[]))", name: "matches_timestamp_after_finish"
     t.check_constraint "status::text <> 'scored'::text OR scores_calculated_at IS NOT NULL", name: "matches_scored_has_timestamp"
-    t.check_constraint "status::text = ANY (ARRAY['scheduled'::character varying::text, 'live'::character varying::text, 'finished'::character varying::text, 'scored'::character varying::text, 'reverted'::character varying::text])", name: "matches_status_valid"
+    t.check_constraint "status::text = ANY (ARRAY['scheduled'::character varying, 'live'::character varying, 'finished'::character varying, 'scored'::character varying, 'reverted'::character varying]::text[]::text[])", name: "matches_status_valid"
   end
 
   create_table "core_players", force: :cascade do |t|
@@ -338,7 +356,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000042) do
     t.index ["external_id"], name: "index_core_players_on_external_id", unique: true
     t.index ["team_id", "shirt_number"], name: "index_core_players_on_team_id_and_shirt_number", unique: true, where: "(shirt_number IS NOT NULL)"
     t.index ["team_id"], name: "index_core_players_on_team_id"
-    t.check_constraint "\"position\"::text = ANY (ARRAY['GOL'::character varying::text, 'LAT'::character varying::text, 'ZAG'::character varying::text, 'MEI'::character varying::text, 'ATA'::character varying::text])", name: "players_position_valid"
+    t.check_constraint "\"position\"::text = ANY (ARRAY['GOL'::character varying, 'LAT'::character varying, 'ZAG'::character varying, 'MEI'::character varying, 'ATA'::character varying]::text[]::text[])", name: "players_position_valid"
     t.check_constraint "base_value IS NULL OR base_value >= 0::numeric", name: "players_base_value_non_negative"
     t.check_constraint "shirt_number >= 1 AND shirt_number <= 99", name: "players_shirt_number_range"
   end
@@ -375,8 +393,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000042) do
     t.boolean "active", default: true, null: false
     t.datetime "anonymized_at"
     t.datetime "public_profile_consented_at"
+    t.integer "role", default: 0, null: false
+    t.integer "manager_status", default: 0, null: false
     t.index ["cpf"], name: "index_core_users_on_cpf", unique: true, where: "(cpf IS NOT NULL)"
     t.index ["email_address"], name: "index_core_users_on_email_address", unique: true
+    t.index ["manager_status"], name: "index_core_users_on_manager_status"
+    t.index ["role"], name: "index_core_users_on_role"
     t.check_constraint "anonymized_at IS NULL OR NOT active AND cpf IS NULL", name: "core_users_anonymized_inactive"
     t.check_constraint "cpf IS NULL OR cpf::text ~ '^[0-9]{11}$'::text", name: "core_users_cpf_digits"
   end
@@ -409,6 +431,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000042) do
   add_foreign_key "cartola_wallets", "core_championships", column: "championship_id"
   add_foreign_key "cartola_wallets", "core_users", column: "user_id"
   add_foreign_key "core_audit_logs", "core_users", column: "user_id"
+  add_foreign_key "core_championships", "core_users", column: "manager_id"
   add_foreign_key "core_matches", "core_championships", column: "championship_id"
   add_foreign_key "core_matches", "core_teams", column: "away_team_id"
   add_foreign_key "core_matches", "core_teams", column: "home_team_id"

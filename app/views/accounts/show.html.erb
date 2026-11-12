@@ -15,6 +15,32 @@
     <dd data-role="public-name"><%= @user.public_display_name %></dd>
   </dl>
 
+  <div class="mt-8 border-t border-rule pt-6" data-role="manager-request">
+    <h2 class="font-display text-xl font-bold">Acesso de gestor</h2>
+    <% if @user.admin? || @user.manager? %>
+      <p class="mt-2 text-sm text-graphite">Você já tem acesso de gestor.</p>
+    <% elsif @user.manager_pending? %>
+      <p class="mt-2 text-sm text-graphite">
+        Pedido em análise (<%= Core::User.human_enum_name(:manager_status, @user.manager_status) %>).
+        Você recebe um e-mail quando um administrador decidir.
+      </p>
+    <% elsif @user.manager_rejected? %>
+      <p class="mt-2 text-sm text-graphite">
+        Seu último pedido não foi aprovado (<%= Core::User.human_enum_name(:manager_status, @user.manager_status) %>).
+      </p>
+      <p class="mt-2">
+        <%= link_to "Solicitar novamente", new_manager_request_path,
+                    class: "text-sm font-semibold underline underline-offset-2 hover:no-underline" %>
+      </p>
+    <% else %>
+      <p class="mt-2 text-sm text-graphite">Você ainda não solicitou acesso de gestor.</p>
+      <p class="mt-2">
+        <%= link_to "Solicitar acesso de gestor", new_manager_request_path,
+                    class: "text-sm font-semibold underline underline-offset-2 hover:no-underline" %>
+      </p>
+    <% end %>
+  </div>
+
   <%= form_with url: account_path, method: :patch, class: "mt-8 flex flex-col gap-4 border-t border-rule pt-6" do %>
     <div class="flex items-start gap-2">
       <%= hidden_field_tag :public_profile_consent, "0", id: nil %>

@@ -1,0 +1,86 @@
+ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor do
+  menu parent: 'Cadastros', label: 'Campeonatos', priority: 1
+
+  permit_params :name, :season, :private, :cartola_goalkeeper_limit, :cartola_defender_limit,
+                :cartola_midfielder_limit, :cartola_forward_limit, :cartola_initial_budget, :cartola_base_player_value,
+                :prize_description, *Core::Championship::PRIZE_PLACES
+
+  actions :index, :show, :new, :create, :edit, :update
+
+  controller do
+    include GestorResource
+
+    before_build do |championship|
+      championship.manager = current_user if current_user.manager?
+      assign_external_id(championship)
+    end
+  end
+
+  filter :name
+  filter :season
+
+  index do
+    id_column
+    column :name
+    column :season
+    column('Privado') { |championship| status_tag(championship.private? ? 'sim' : 'não') }
+    actions defaults: false do |championship|
+      item 'Ver', gestor_championship_path(championship)
+      item 'Editar', edit_gestor_championship_path(championship) if authorized?(:update, championship)
+    end
+  end
+
+  show title: :to_s do
+    attributes_table do
+      row :name
+      row :season
+      row :external_id
+      row('Campeonato privado?') { |championship| championship.private? ? 'Sim' : 'Não' }
+    end
+    panel 'Premiação' do
+      attributes_table_for resource do
+        row :prize_description
+        Core::Championship::PRIZE_PLACES.each do |place|
+          row(place) { |championship| championship.public_send(place) }
+        end
+      end
+    end
+    panel 'Esquadrão' do
+      attributes_table_for resource do
+        row('Limite de goleiros', &:cartola_goalkeeper_limit)
+        row('Limite de defensores', &:cartola_defender_limit)
+        row('Limite de meio-campistas', &:cartola_midfielder_limit)
+        row('Limite de atacantes', &:cartola_forward_limit)
+        row('Orçamento inicial') { |championship| format('C$ %.2f', championship.cartola_initial_budget) }
+        row('Valor base do jogador') { |championship| format('C$ %.2f', championship.cartola_base_player_value) }
+      end
+    end
+  end
+
+  form do |f|
+    f.semantic_errors
+    f.inputs do
+      f.input :name
+      f.input :season
+      f.input :private, label: 'Campeonato privado?',
+                        hint: 'Campeonatos privados não aparecem na home, na página pública nem no Simulador.'
+    end
+    f.inputs 'Premiação' do
+      f.input :prize_description, label: 'Descrição geral', input_html: { rows: 3 }
+      Core::Championship::PRIZE_PLACES.each do |place|
+        f.input place, label: place.to_s.humanize
+      end
+    end
+    f.inputs 'Esquadrão' do
+      f.input :cartola_goalkeeper_limit, label: 'Limite de goleiros', input_html: { min: 0 }
+      f.input :cartola_defender_limit, label: 'Limite de defensores', input_html: { min: 0 }
+      f.input :cartola_midfielder_limit, label: 'Limite de meio-campistas', input_html: { min: 0 }
+      f.input :cartola_forward_limit, label: 'Limite de atacantes', input_html: { min: 0 }
+      f.input :cartola_initial_budget, label: 'Orçamento inicial (C$)', input_html: { min: 0, step: '0.01' }
+      f.input :cartola_base_player_value, label: 'Valor base do jogador (C$)',
+                                          hint: 'Usado para jogadores sem valor base próprio.',
+                                          input_html: { min: 0, step: '0.01' }
+    end
+    f.actions
+  end
+end
