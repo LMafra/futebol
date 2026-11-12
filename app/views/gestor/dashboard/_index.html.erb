@@ -1,10 +1,14 @@
 <section class="mb-6" aria-labelledby="championships-title">
   <h3 class="mb-3 font-display text-xl text-ink" id="championships-title">Seus campeonatos (<%= overview.size %>)</h3>
   <% if overview.empty? %>
-    <div class="rounded-md border border-rule bg-paper px-4 py-6 font-body text-graphite">
-      Você ainda não tem campeonatos. <%= link_to "Crie o primeiro", new_gestor_championship_path, class: "font-semibold text-ink underline underline-offset-2 hover:text-cartola" %>
-      e depois cadastre os times e agende as partidas.
-    </div>
+    <%= render Ui::EmptyStateComponent.new(
+          title: "Você ainda não tem campeonatos",
+          description: "Crie o primeiro e depois cadastre os times e agende as partidas."
+        ) do |empty| %>
+      <% empty.with_action do %>
+        <%= link_to "Crie o primeiro", new_gestor_championship_path, class: AdminHelper::ADMIN_BUTTON_CLASSES %>
+      <% end %>
+    <% end %>
   <% else %>
     <div class="grid gap-4 sm:grid-cols-2" data-role="gestor-championships">
       <% overview.each do |row| %>
@@ -49,7 +53,7 @@
 </section>
 
 <div class="mb-6 grid gap-4 lg:grid-cols-12" data-role="gestor-kpis">
-  <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:col-span-8">
+  <div class="grid grid-cols-1 gap-3 md:grid-cols-3 lg:col-span-8">
     <% [
          { label: "Times cadastrados", value: kpis[:teams] },
          { label: "Jogadores", value: kpis[:players] },

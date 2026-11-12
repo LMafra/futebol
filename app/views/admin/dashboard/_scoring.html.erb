@@ -12,7 +12,7 @@
    ] %>
 
 <div class="mb-6 grid gap-4 lg:grid-cols-12" data-role="admin-metrics">
-  <div class="grid grid-cols-2 gap-3 lg:col-span-8 sm:grid-cols-4">
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:col-span-8 lg:grid-cols-4">
     <% metrics.each do |metric| %>
       <%= link_to metric[:href], class: "block rounded-md border border-rule border-l-[3px] #{metric[:accent]} bg-paper px-4 py-3 no-underline text-ink hover:border-cartola", data: { role: "admin-kpi", label: metric[:label] } do %>
         <p class="text-xs font-body font-bold uppercase tracking-widest text-graphite"><%= metric[:label] %></p>

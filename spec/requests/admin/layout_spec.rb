@@ -30,7 +30,8 @@ RSpec.describe 'ActiveAdmin Placar layout chrome', type: :request do
     get '/admin/championships'
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include('data-role="craquefy-admin-blank-slate"', 'border-rule', 'bg-paper')
+    expect(response.body).to include('data-role="empty-state"', 'border-rule', 'bg-paper')
+    expect(response.body).to include('<svg')
     expect(response.body).not_to include('border-gray-300')
   end
 

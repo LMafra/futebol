@@ -38,7 +38,7 @@ RSpec.describe 'Gestor dashboard', type: :request do
     get '/gestor/dashboard'
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include('Você ainda não tem campeonatos')
+    expect(response.body).to include('Você ainda não tem campeonatos', 'data-role="empty-state"')
     expect(page_html.at_css('[data-role="gestor-championships"]')).to be_nil
   end
 
