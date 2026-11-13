@@ -72,6 +72,9 @@ pt-BR:
         name: Nome
         short_name: Sigla
         crest_url: URL do escudo
+        manager: Gestor
+        captain_name: Capitão
+        captain_phone: Telefone do capitão
         external_id: Externo
         created_at: Criado em
         updated_at: Atualizado em

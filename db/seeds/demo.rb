@@ -34,12 +34,15 @@ module Seeds
 
   def self.demo_names = ['Ana Souza', 'Bruno Lima', 'Carla Mendes', 'Diego Rocha', 'Elisa Prado']
 
-  # Approved championship manager for /gestor; takes the championship only while nobody runs it.
+  # Approved championship manager for /gestor; takes the championship, and its teams, only while nobody runs it.
   def self.demo_manager(championship)
     manager = Core::User.find_or_create_by!(email_address: 'gestor@demo.local') do |user|
       user.assign_attributes(name: 'Gestor Demo', password: demo_password, role: :manager, manager_status: :approved)
     end
-    championship.update!(manager:) if championship.manager_id.nil?
+    if championship.manager_id.nil?
+      championship.update!(manager:)
+      championship.teams.where(manager_id: nil).update_all(manager_id: manager.id)
+    end
     manager
   end
 

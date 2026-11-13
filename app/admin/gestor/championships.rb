@@ -8,6 +8,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
   actions :index, :show, :new, :create, :edit, :update
 
   AdminNameSearch.register(self)
+  AdminChampionshipEnrollment.register(self)
   filter :season, as: :select, collection: -> { admin_season_options }
 
   index do
@@ -25,6 +26,11 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
     end
   end
 
+  action_item :new_match, only: :show, if: -> { authorized?(:enroll, resource) && resource.teams.many? } do
+    link_to 'Nova partida', new_gestor_match_path(match: { championship_id: resource.id }),
+            class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
+  end
+
   show title: :to_s do
     attributes_table do
       row :name
@@ -32,6 +38,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
       row :external_id
       row('Campeonato privado?') { |championship| championship.private? ? 'Sim' : 'Não' }
     end
+    AdminChampionshipEnrollment.panel(self, resource, :gestor)
     panel 'Premiação' do
       attributes_table_for resource do
         row :prize_description

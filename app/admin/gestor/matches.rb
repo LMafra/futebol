@@ -70,8 +70,9 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
     f.semantic_errors
     f.inputs do
       f.input :championship, collection: gestor_championships, include_blank: false if f.object.new_record?
-      f.input :home_team, collection: gestor_teams
-      f.input :away_team, collection: gestor_teams
+      f.input :home_team, collection: gestor_match_team_options(f.object, :home_team),
+                          hint: ('Só times inscritos no campeonato.' if f.object.new_record?)
+      f.input :away_team, collection: gestor_match_team_options(f.object, :away_team)
       f.input :match_date, as: :datetime_picker,
                            hint: 'Depois de agendar, use Scouts e Finalizar para lançar o placar e a pontuação.'
       f.input :round, label: 'Rodada', input_html: { min: 1 }

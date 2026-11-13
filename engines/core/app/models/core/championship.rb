@@ -10,6 +10,9 @@ module Core
     store_accessor :prize_rules, *PRIZE_PLACES
 
     has_many :matches, class_name: 'Core::Match', dependent: :restrict_with_error
+    has_many :championship_teams, class_name: 'Core::ChampionshipTeam', inverse_of: :championship,
+                                  dependent: :destroy
+    has_many :teams, through: :championship_teams
     belongs_to :manager, class_name: 'Core::User', optional: true, inverse_of: :managed_championships
 
     validates :name, presence: true
@@ -33,11 +36,6 @@ module Core
 
     # Maximum players per position in a Cartola lineup: { goalkeeper: 1, defender: 2, midfielder: 3, forward: 3 }.
     def cartola_limits = CARTOLA_LIMITS.transform_values { |column| public_send(column) }
-
-    # Teams with at least one match in the championship, home or away.
-    def teams
-      Core::Team.where(id: matches.select(:home_team_id)).or(Core::Team.where(id: matches.select(:away_team_id)))
-    end
 
     def to_s = "#{name} #{season}"
 

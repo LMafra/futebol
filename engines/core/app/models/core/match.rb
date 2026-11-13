@@ -40,6 +40,7 @@ module Core
     validates :scores_calculated_at, presence: true, if: -> { status == 'scored' }
     validates :scores_calculated_at, absence: true, unless: -> { status.in?(%w[finished scored]) }
     validate :teams_must_differ
+    validate :teams_enrolled, if: :teams_or_championship_changed?
 
     def self.ransackable_attributes(_auth_object = nil) = %w[status external_id match_date championship_id round]
     def self.ransackable_associations(_auth_object = nil) = %w[championship]
@@ -71,6 +72,23 @@ module Core
       return if home_team_id.blank? || home_team_id != away_team_id
 
       errors.add(:away_team, :must_differ_from_home_team, message: 'deve ser diferente do mandante')
+    end
+
+    # Status changes on matches created before enrollments existed must not trip the check.
+    def teams_or_championship_changed?
+      new_record? || will_save_change_to_home_team_id? || will_save_change_to_away_team_id? ||
+        will_save_change_to_championship_id?
+    end
+
+    def teams_enrolled
+      return if championship.nil?
+
+      enrolled = championship.championship_teams.where(team_id: [home_team_id, away_team_id]).pluck(:team_id)
+      { home_team: home_team_id, away_team: away_team_id }.each do |attribute, team_id|
+        next if team_id.nil? || enrolled.include?(team_id)
+
+        errors.add(attribute, :not_enrolled, message: 'não está inscrito neste campeonato')
+      end
     end
   end
 end

@@ -24,9 +24,7 @@ ActiveAdmin.register Core::Player, as: 'Player', namespace: :gestor do
     column :shirt_number, class: 'text-right tabular-nums'
     actions defaults: false do |player|
       text_node admin_icon_action_link('Abrir', gestor_player_path(player), :view, subject: player.name)
-      if gestor_team_editable?(player.team)
-        text_node admin_icon_action_link('Editar', edit_gestor_player_path(player), :edit, subject: player.name)
-      end
+      text_node admin_icon_action_link('Editar', edit_gestor_player_path(player), :edit, subject: player.name)
     end
   end
 
@@ -41,6 +39,6 @@ ActiveAdmin.register Core::Player, as: 'Player', namespace: :gestor do
                            input_html: { min: 0, step: '0.01' }
       f.input :external_id if current_user.admin?
     end
-    f.actions if f.object.team.nil? || gestor_team_editable?(f.object.team)
+    f.actions
   end
 end

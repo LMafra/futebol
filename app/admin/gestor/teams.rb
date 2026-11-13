@@ -1,14 +1,17 @@
 ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
   menu parent: 'Participantes', label: 'Times', priority: 1
 
-  permit_params :name, :short_name, :crest_url
+  permit_params :name, :short_name, :crest_url, :captain_name, :captain_phone
 
   actions :index, :show, :new, :create, :edit, :update
 
   controller do
     include GestorResource
 
-    before_build { |record| assign_external_id(record) }
+    before_build do |team|
+      team.manager = current_user if current_user.manager?
+      assign_external_id(team)
+    end
   end
 
   AdminNameSearch.register(self)
@@ -17,11 +20,10 @@ ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
     id_column
     column :name
     column :short_name
+    column :captain_name
     actions defaults: false do |team|
       text_node admin_icon_action_link('Abrir', gestor_team_path(team), :view, subject: team.name)
-      if gestor_team_editable?(team)
-        text_node admin_icon_action_link('Editar', edit_gestor_team_path(team), :edit, subject: team.name)
-      end
+      text_node admin_icon_action_link('Editar', edit_gestor_team_path(team), :edit, subject: team.name)
     end
   end
 
@@ -29,8 +31,16 @@ ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
     attributes_table do
       row :name
       row :short_name
+      row :captain_name
+      row(:captain_phone) { |team| formatted_phone(team.captain_phone) }
       row :crest_url
       row :external_id
+      row('Campeonatos') do |team|
+        links = team.championships.order(:name).map do |championship|
+          link_to championship, gestor_championship_path(championship), class: inline_link_classes('font-body')
+        end
+        safe_join(links, ', ')
+      end
     end
   end
 
@@ -42,6 +52,11 @@ ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
       f.input :crest_url
       f.input :external_id if current_user.admin?
     end
-    f.actions if f.object.new_record? || gestor_team_editable?(f.object)
+    f.inputs 'Capitão' do
+      f.input :captain_name, hint: 'Contato do time; não precisa ter conta no Craquefy.'
+      f.input :captain_phone, as: :phone, hint: 'Com DDD, ex. (11) 98765-4321.',
+                              input_html: { autocomplete: 'tel-national', inputmode: 'tel' }
+    end
+    f.actions
   end
 end

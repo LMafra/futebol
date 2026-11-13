@@ -1,5 +1,6 @@
 module Seeds
   def self.matches(championship, teams)
+    enroll(championship, teams)
     double_round_robin(teams).each.with_index(1) do |pairings, round|
       pairings.each_with_index do |(home, away), index|
         Core::Match.find_or_create_by!(external_id: match_external_id(round, home, away)) do |match|
@@ -8,6 +9,11 @@ module Seeds
         end
       end
     end
+  end
+
+  # Matches only take teams enrolled in their championship (ADR 0006).
+  def self.enroll(championship, teams)
+    teams.each { |team| championship.championship_teams.find_or_create_by!(team:) }
   end
 
   # Circle method: one team stays put while the others rotate; the return leg mirrors the first.

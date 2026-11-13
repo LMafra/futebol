@@ -6,6 +6,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
                 :prize_description, *Core::Championship::PRIZE_PLACES
 
   AdminNameSearch.register(self)
+  AdminChampionshipEnrollment.register(self)
   filter :season, as: :select, collection: -> { admin_season_options }
   filter :external_id_eq, label: 'ID externo', as: :string
   filter :private, label: 'Privado'
@@ -37,6 +38,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
       row :external_id
       row('Campeonato privado?') { |championship| championship.private? ? 'Sim' : 'Não' }
     end
+    AdminChampionshipEnrollment.panel(self, resource, :admin)
     panel 'Esquadrão' do
       attributes_table_for resource do
         row('Limite de goleiros', &:cartola_goalkeeper_limit)

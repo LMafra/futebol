@@ -1,7 +1,7 @@
 module Core
   class PlayerPolicy < ApplicationPolicy
     def index? = admin? || manager?
-    def create? = admin? || manager?
+    def create? = admin? || (manager? && (!record_instance? || record.team.nil? || team_policy.update?))
 
     def show? = record_instance? && team_policy.show?
     def update? = record_instance? && team_policy.update?

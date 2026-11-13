@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000048) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000052) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -278,6 +278,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000048) do
     t.index ["user_id"], name: "index_core_audit_logs_on_user_id"
   end
 
+  create_table "core_championship_teams", force: :cascade do |t|
+    t.bigint "championship_id", null: false
+    t.bigint "team_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["championship_id", "team_id"], name: "index_core_championship_teams_on_championship_id_and_team_id", unique: true
+    t.index ["team_id"], name: "index_core_championship_teams_on_team_id"
+  end
+
   create_table "core_championships", force: :cascade do |t|
     t.string "name", null: false
     t.integer "season", null: false
@@ -377,8 +386,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000048) do
     t.string "external_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "manager_id"
+    t.string "captain_name"
+    t.string "captain_phone"
     t.index ["external_id"], name: "index_core_teams_on_external_id", unique: true
-    t.index ["short_name"], name: "index_core_teams_on_short_name", unique: true
+    t.index ["manager_id", "short_name"], name: "index_core_teams_on_manager_id_and_short_name", unique: true, nulls_not_distinct: true
+    t.index ["manager_id"], name: "index_core_teams_on_manager_id"
     t.check_constraint "char_length(short_name::text) = 3", name: "core_teams_short_name_length"
   end
 
@@ -431,10 +444,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000048) do
   add_foreign_key "cartola_wallets", "core_championships", column: "championship_id"
   add_foreign_key "cartola_wallets", "core_users", column: "user_id"
   add_foreign_key "core_audit_logs", "core_users", column: "user_id"
+  add_foreign_key "core_championship_teams", "core_championships", column: "championship_id"
+  add_foreign_key "core_championship_teams", "core_teams", column: "team_id"
   add_foreign_key "core_championships", "core_users", column: "manager_id"
   add_foreign_key "core_matches", "core_championships", column: "championship_id"
   add_foreign_key "core_matches", "core_teams", column: "away_team_id"
   add_foreign_key "core_matches", "core_teams", column: "home_team_id"
   add_foreign_key "core_players", "core_teams", column: "team_id"
   add_foreign_key "core_sessions", "core_users", column: "user_id"
+  add_foreign_key "core_teams", "core_users", column: "manager_id"
 end
