@@ -52,7 +52,7 @@ module Cartola
 
     def championship
       @championship ||= if params[:championship_id]
-                          Core::Championship.find(params[:championship_id])
+                          Core::Championship.published.find(params[:championship_id])
                         else
                           Core::Championship.latest || raise(ActiveRecord::RecordNotFound, 'Nenhum campeonato')
                         end

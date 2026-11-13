@@ -26,7 +26,7 @@ RSpec.describe 'Admin/Gestor consistency (TICKET-0084)', type: :request do
     end
 
     it 'labels prize places in the championship form' do
-      get '/admin/championships/new'
+      get "/admin/championships/#{create(:championship).id}/edit"
 
       expect(page_html.css('label').map { _1.text.squish }).to include('1º lugar', '2º lugar', '3º lugar')
       expect(response.body).not_to include('First place')

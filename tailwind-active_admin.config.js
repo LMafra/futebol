@@ -19,6 +19,8 @@ export default {
     './app/helpers/admin_helper.rb',
     './app/helpers/admin_icons_helper.rb',
     './app/helpers/championship_wizard_helper.rb',
+    './lib/admin_championship_form.rb',
+    './lib/championship_summary.rb',
     './app/helpers/scout_legend_helper.rb',
     './app/helpers/link_classes_helper.rb',
     './app/helpers/images_helper.rb',

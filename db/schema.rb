@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000054) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000056) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -303,13 +303,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000054) do
     t.bigint "manager_id"
     t.text "prize_description"
     t.jsonb "prize_rules", default: {}, null: false
+    t.string "kind", default: "campo", null: false
+    t.string "gender", default: "masculino", null: false
+    t.string "category", default: "adulto", null: false
+    t.string "level", default: "amador", null: false
+    t.string "status", default: "published", null: false
     t.index ["external_id"], name: "index_core_championships_on_external_id", unique: true
     t.index ["manager_id"], name: "index_core_championships_on_manager_id"
     t.index ["private"], name: "index_core_championships_on_private"
+    t.index ["status"], name: "index_core_championships_on_status"
     t.check_constraint "(cartola_defender_limit + cartola_midfielder_limit + cartola_forward_limit) > 0", name: "core_championships_cartola_line_limits_positive"
     t.check_constraint "cartola_goalkeeper_limit >= 0 AND cartola_defender_limit >= 0 AND cartola_midfielder_limit >= 0 AND cartola_forward_limit >= 0", name: "core_championships_cartola_limits_non_negative"
     t.check_constraint "cartola_initial_budget >= 0::numeric AND cartola_base_player_value >= 0::numeric", name: "core_championships_cartola_money_non_negative"
+    t.check_constraint "category::text = ANY (ARRAY['infantil'::character varying, 'base'::character varying, 'adulto'::character varying, 'master'::character varying]::text[])", name: "core_championships_category_valid"
+    t.check_constraint "gender::text = ANY (ARRAY['masculino'::character varying, 'feminino'::character varying, 'misto'::character varying]::text[])", name: "core_championships_gender_valid"
+    t.check_constraint "kind::text = ANY (ARRAY['campo'::character varying, 'society'::character varying, 'futsal'::character varying, 'futevolei'::character varying]::text[])", name: "core_championships_kind_valid"
+    t.check_constraint "level::text = ANY (ARRAY['amador'::character varying, 'profissional'::character varying]::text[])", name: "core_championships_level_valid"
     t.check_constraint "season >= 1900 AND season <= 2100", name: "core_championships_season_range"
+    t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'published'::character varying]::text[])", name: "core_championships_status_valid"
   end
 
   create_table "core_csv_imports", force: :cascade do |t|

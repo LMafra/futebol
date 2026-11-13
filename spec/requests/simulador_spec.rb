@@ -115,6 +115,14 @@ RSpec.describe 'Simulador', type: :request do
       get simulador_championship_path(championship)
       expect(response).to have_http_status(:ok)
     end
+
+    it 'esconde rascunho de todos, mesmo com login (404)' do
+      championship.update!(status: 'draft')
+      sign_in(create(:user))
+
+      get simulador_championship_path(championship)
+      expect(response).to have_http_status(:not_found)
+    end
   end
 
   describe 'GET /simulador' do

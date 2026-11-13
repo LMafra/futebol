@@ -74,7 +74,7 @@ module Bolao
     end
 
     def render_new(status: :ok)
-      @championships = Core::Championship.order(season: :desc, name: :asc)
+      @championships = Core::Championship.published.order(season: :desc, name: :asc)
       render :new, status:
     end
   end

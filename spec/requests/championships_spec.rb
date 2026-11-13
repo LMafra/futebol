@@ -77,4 +77,14 @@ RSpec.describe 'Public championship page', type: :request do
     get public_championship_path(private_championship)
     expect(response).to have_http_status(:not_found)
   end
+
+  it 'dá 404 para rascunho e não o conta na home (TICKET-0092)' do
+    draft = create(:championship, name: 'Copa em Rascunho', status: 'draft')
+
+    get public_championship_path(draft)
+    expect(response).to have_http_status(:not_found)
+
+    get root_path
+    expect(response.body).not_to include('Copa em Rascunho')
+  end
 end

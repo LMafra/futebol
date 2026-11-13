@@ -2,7 +2,6 @@
 import { Application } from "@hotwired/stimulus"
 import AutocompleteController from "controllers/autocomplete_controller"
 import DismissController from "controllers/dismiss_controller"
-import FormWizardController from "controllers/form_wizard_controller"
 import ImagePreviewController from "controllers/image_preview_controller"
 import ScoutsController from "controllers/scouts_controller"
 
@@ -36,6 +35,5 @@ desktop.addEventListener("change", syncFilters)
 const application = Application.start()
 application.register("autocomplete", AutocompleteController)
 application.register("dismiss", DismissController)
-application.register("form-wizard", FormWizardController)
 application.register("image-preview", ImagePreviewController)
 application.register("scouts", ScoutsController)

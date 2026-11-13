@@ -300,7 +300,6 @@ ActiveAdmin.importmap.draw do
   pin 'controllers/autocomplete_controller', to: 'controllers/autocomplete_controller.js'
   pin 'controllers/dismiss_controller', to: 'controllers/dismiss_controller.js'
   pin 'controllers/scouts_controller', to: 'controllers/scouts_controller.js'
-  pin 'controllers/form_wizard_controller', to: 'controllers/form_wizard_controller.js'
   pin 'controllers/image_preview_controller', to: 'controllers/image_preview_controller.js'
 end
 
