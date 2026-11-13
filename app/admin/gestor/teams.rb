@@ -1,7 +1,7 @@
 ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
   menu parent: 'Participantes', label: 'Times', priority: 1
 
-  permit_params :name, :short_name, :crest_url, :captain_name, :captain_phone
+  permit_params :name, :short_name, :crest, :remove_crest, :captain_name, :captain_phone
 
   actions :index, :show, :new, :create, :edit, :update
 
@@ -33,7 +33,7 @@ ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
       row :short_name
       row :captain_name
       row(:captain_phone) { |team| formatted_phone(team.captain_phone) }
-      row :crest_url
+      row('Escudo') { |team| team_crest(team, variant: :medium, size: 'size-24') }
       row :external_id
       row('Campeonatos') do |team|
         links = team.championships.order(:name).map do |championship|
@@ -44,12 +44,12 @@ ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
     end
   end
 
-  form do |f|
+  form html: { multipart: true } do |f|
     f.semantic_errors
     f.inputs do
       f.input :name
       f.input :short_name
-      f.input :crest_url
+      AdminImageInput.render(f, :crest, label: 'Escudo')
       f.input :external_id if current_user.admin?
     end
     f.inputs 'Capitão' do

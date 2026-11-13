@@ -2,9 +2,12 @@
 
 <div class="flex max-w-4xl flex-col gap-6">
   <header class="flex flex-wrap items-end justify-between gap-4 border-b-4 border-ink pb-2">
-    <div>
-      <p class="text-xs font-bold uppercase tracking-widest text-graphite">Campeonato · Temporada <span class="tabular-nums"><%= @championship.season %></span></p>
-      <h1 class="mt-1 font-display text-4xl font-extrabold tracking-tight"><%= @championship.name %></h1>
+    <div class="flex items-end gap-4">
+      <%= championship_logo(@championship, variant: :medium, size: "size-16") %>
+      <div>
+        <p class="text-xs font-bold uppercase tracking-widest text-graphite">Campeonato · Temporada <span class="tabular-nums"><%= @championship.season %></span></p>
+        <h1 class="mt-1 font-display text-4xl font-extrabold tracking-tight"><%= @championship.name %></h1>
+      </div>
     </div>
     <%= link_to "Simular", main_app.simulador_championship_path(@championship), data: { role: "simulate-championship" },
                 class: secondary_button_classes %>

@@ -1,9 +1,12 @@
 module Core
   # Belongs to a manager (nil = the admin) and plays in the championships it is enrolled in (Inscrição).
   class Team < ApplicationRecord
+    include Core::ImageAttachment
+
     # DDD + mobile (9 and eight digits) or landline (eight digits starting with 2-5), digits only.
     CAPTAIN_PHONE_FORMAT = /\A[1-9]{2}(?:9\d{8}|[2-5]\d{7})\z/
 
+    image_attachment :crest
     belongs_to :manager, class_name: 'Core::User', optional: true, inverse_of: :managed_teams
     has_many :players, class_name: 'Core::Player', dependent: :restrict_with_error
     has_many :championship_teams, class_name: 'Core::ChampionshipTeam', inverse_of: :team, dependent: :destroy

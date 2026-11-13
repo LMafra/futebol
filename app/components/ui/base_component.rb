@@ -6,6 +6,7 @@ module Ui
     include PasswordRevealHelper
     include ScoutLegendHelper
     include LinkClassesHelper
+    include ImagesHelper
 
     STATES = %i[default loading empty error].freeze
 

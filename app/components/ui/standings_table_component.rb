@@ -1,9 +1,10 @@
 module Ui
   class StandingsTableComponent < BaseComponent
     # change: places gained (+) or lost (-) against another table; nil hides the column.
+    # team: the Core::Team, for its crest; without it the short name stands in.
     Row = Data.define(:position, :team_name, :short_name, :played, :wins, :draws, :losses, :goal_difference,
-                      :points, :form, :change) do
-      def initialize(form: [], change: nil, **) = super
+                      :points, :form, :change, :team) do
+      def initialize(form: [], change: nil, team: nil, **) = super
     end
 
     FORM_GLYPHS = {

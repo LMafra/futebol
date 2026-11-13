@@ -1,7 +1,7 @@
 ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor do
   menu parent: 'Meus campeonatos', label: 'Campeonatos', priority: 1
 
-  permit_params :name, :season, :private, :cartola_goalkeeper_limit, :cartola_defender_limit,
+  permit_params :name, :season, :logo, :remove_logo, :private, :cartola_goalkeeper_limit, :cartola_defender_limit,
                 :cartola_midfielder_limit, :cartola_forward_limit, :cartola_initial_budget, :cartola_base_player_value,
                 :prize_description, *Core::Championship::PRIZE_PLACES
 
@@ -37,6 +37,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
       row :season
       row :external_id
       row('Campeonato privado?') { |championship| championship.private? ? 'Sim' : 'Não' }
+      row('Logo') { |championship| championship_logo(championship, variant: :medium, size: 'size-24') }
     end
     AdminChampionshipEnrollment.panel(self, resource, :gestor)
     panel 'Premiação' do
@@ -59,12 +60,14 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
     end
   end
 
-  form html: { data: { controller: 'form-wizard', action: 'keydown->form-wizard#submitOrAdvance' } } do |f|
+  form html: { multipart: true,
+               data: { controller: 'form-wizard', action: 'keydown->form-wizard#submitOrAdvance' } } do |f|
     f.semantic_errors
     text_node championship_wizard_nav if f.object.new_record?
     f.inputs 'Dados', data: { form_wizard_target: 'step' } do
       f.input :name
       f.input :season
+      AdminImageInput.render(f, :logo, label: 'Logo')
       f.input :private, label: 'Campeonato privado?',
                         hint: 'Campeonatos privados não aparecem na home, na página pública nem no Simulador.'
     end

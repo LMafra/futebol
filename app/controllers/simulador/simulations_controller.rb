@@ -45,7 +45,7 @@ module Simulador
     end
 
     def load_matches
-      @matches = @championship.matches.includes(:home_team, :away_team).order(:round, :match_date, :id).to_a
+      @matches = @championship.matches.with_team_crests.order(:round, :match_date, :id).to_a
       @teams = teams_of(@matches)
       @open_matches = @matches.select { |match| match.status.in?(EDITABLE_STATUSES) }
       @fixtures = @matches.map { |match| fixture(match) }

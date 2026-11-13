@@ -61,6 +61,8 @@ pt-BR:
         external_id: Externo
         private: Privado
         manager: Gestor
+        logo: Logo
+        remove_logo: Remover logo
         prize_description: Descrição da premiação
         first_place: 1º lugar
         second_place: 2º lugar
@@ -71,7 +73,8 @@ pt-BR:
       team: &team_attributes
         name: Nome
         short_name: Sigla
-        crest_url: URL do escudo
+        crest: Escudo
+        remove_crest: Remover escudo
         manager: Gestor
         captain_name: Capitão
         captain_phone: Telefone do capitão

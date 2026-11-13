@@ -42,6 +42,10 @@ module Core
     validate :teams_must_differ
     validate :teams_enrolled, if: :teams_or_championship_changed?
 
+    scope :with_team_crests, lambda {
+      includes(home_team: { crest_attachment: :blob }, away_team: { crest_attachment: :blob })
+    }
+
     def self.ransackable_attributes(_auth_object = nil) = %w[status external_id match_date championship_id round]
     def self.ransackable_associations(_auth_object = nil) = %w[championship]
 

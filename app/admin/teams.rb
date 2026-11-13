@@ -1,7 +1,7 @@
 ActiveAdmin.register Core::Team, as: 'Team' do
   menu parent: 'Participantes', label: 'Times'
 
-  permit_params :name, :short_name, :crest_url, :external_id, :manager_id, :captain_name, :captain_phone
+  permit_params :name, :short_name, :crest, :remove_crest, :external_id, :manager_id, :captain_name, :captain_phone
   includes :manager
 
   AdminNameSearch.register(self)
@@ -25,7 +25,7 @@ ActiveAdmin.register Core::Team, as: 'Team' do
       row(:manager) { |team| team.manager&.name || 'Admin' }
       row :captain_name
       row(:captain_phone) { |team| formatted_phone(team.captain_phone) }
-      row :crest_url
+      row('Escudo') { |team| team_crest(team, variant: :medium, size: 'size-24') }
       row :external_id
       row('Campeonatos') do |team|
         links = team.championships.order(:name).map do |championship|
@@ -37,14 +37,14 @@ ActiveAdmin.register Core::Team, as: 'Team' do
     active_admin_comments_for resource
   end
 
-  form do |f|
+  form html: { multipart: true } do |f|
     f.semantic_errors
     f.inputs do
       f.input :name
       f.input :short_name
       f.input :manager, collection: Core::User.managers.order(:name), include_blank: 'Admin',
                         hint: 'Para trocar o gestor, remova antes as inscrições do time.'
-      f.input :crest_url
+      AdminImageInput.render(f, :crest, label: 'Escudo')
       f.input :external_id
     end
     f.inputs 'Capitão' do

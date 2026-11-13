@@ -31,7 +31,7 @@ class ChampionshipsController < ApplicationController
   end
 
   def load_standings
-    matches = @championship.matches.includes(:home_team, :away_team).to_a
+    matches = @championship.matches.with_team_crests.to_a
     @teams = matches.flat_map { |match| [match.home_team, match.away_team] }.uniq.sort_by(&:name)
     @standings = Simulador::StandingsCalculator.call(
       matches: matches.select { |match| match.status.in?(FINAL_STATUSES) },

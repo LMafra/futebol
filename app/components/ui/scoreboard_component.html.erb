@@ -4,8 +4,8 @@
     <% when :default %>
       <div class="grid grid-cols-12 items-center gap-4 rounded-md bg-night px-6 text-white">
         <div class="col-span-2 flex h-16 items-center gap-2">
-          <%= crest(match.home_team) %>
-          <%= crest(match.away_team) %>
+          <%= team_crest(match.home_team) %>
+          <%= team_crest(match.away_team) %>
         </div>
 
         <div class="col-span-8 grid grid-cols-[1fr_auto_1fr] items-center gap-4 py-3">

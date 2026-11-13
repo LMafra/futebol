@@ -8,9 +8,12 @@
         <% fact = facts.fetch(championship.id) %>
         <article class="flex flex-col gap-4 rounded-md border border-rule bg-white p-6" data-role="championship-card" data-championship-id="<%= championship.id %>">
           <header class="flex flex-wrap items-start justify-between gap-2 border-b border-rule pb-3">
-            <div>
-              <h3 class="font-display text-2xl font-extrabold"><%= link_to championship.name, public_championship_path(championship), class: title_link_classes %></h3>
-              <p class="text-sm text-graphite">Temporada <span class="tabular-nums"><%= championship.season %></span> · <span class="tabular-nums"><%= fact[:teams] %></span> times</p>
+            <div class="flex items-center gap-3">
+              <%= championship_logo(championship) %>
+              <div>
+                <h3 class="font-display text-2xl font-extrabold"><%= link_to championship.name, public_championship_path(championship), class: title_link_classes %></h3>
+                <p class="text-sm text-graphite">Temporada <span class="tabular-nums"><%= championship.season %></span> · <span class="tabular-nums"><%= fact[:teams] %></span> times</p>
+              </div>
             </div>
             <span class="rounded-sm border border-ink px-2 py-1 text-xs font-bold uppercase tracking-widest" data-role="championship-status"><%= fact[:status] %></span>
           </header>

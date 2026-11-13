@@ -29,7 +29,11 @@
               <td class="px-2 py-2"><%= change_glyph(row.change) unless row.change.nil? %></td>
             <% end %>
             <th scope="row" class="px-2 py-2 text-left font-semibold">
-              <span class="mr-2 text-xs font-bold tracking-wide text-graphite"><%= row.short_name %></span><%= row.team_name %>
+              <% if row.team&.crest&.attached? %>
+                <span class="inline-flex items-center gap-2"><%= team_crest(row.team, size: "size-6") %><%= row.team_name %></span>
+              <% else %>
+                <span class="mr-2 text-xs font-bold tracking-wide text-graphite"><%= row.short_name %></span><%= row.team_name %>
+              <% end %>
             </th>
             <td class="px-2 py-2 text-right font-bold"><%= row.points %></td>
             <td class="px-2 py-2 text-right"><%= row.played %></td>

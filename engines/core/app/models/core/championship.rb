@@ -1,5 +1,7 @@
 module Core
   class Championship < ApplicationRecord
+    include Core::ImageAttachment
+
     CARTOLA_LIMITS = {
       goalkeeper: :cartola_goalkeeper_limit, defender: :cartola_defender_limit,
       midfielder: :cartola_midfielder_limit, forward: :cartola_forward_limit
@@ -8,6 +10,7 @@ module Core
     PRIZE_PLACES = %i[first_place second_place third_place].freeze
 
     store_accessor :prize_rules, *PRIZE_PLACES
+    image_attachment :logo
 
     has_many :matches, class_name: 'Core::Match', dependent: :restrict_with_error
     has_many :championship_teams, class_name: 'Core::ChampionshipTeam', inverse_of: :championship,
