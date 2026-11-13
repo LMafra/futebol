@@ -15,7 +15,6 @@ module Bolao
     accepts_nested_attributes_for :scoring_rule, allow_destroy: true, reject_if: :all_blank
 
     before_validation :assign_code, on: :create
-    after_create :add_owner_as_member
 
     validates :name, presence: true
     validates :code, presence: true, length: { is: CODE_LENGTH }, uniqueness: true
@@ -41,10 +40,6 @@ module Bolao
 
       candidates = Array.new(MAX_CODE_ATTEMPTS) { self.class.generate_code }.uniq
       self.code = (candidates - self.class.where(code: candidates).pluck(:code)).first
-    end
-
-    def add_owner_as_member
-      memberships.create!(user: owner)
     end
   end
 end

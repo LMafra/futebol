@@ -3,8 +3,6 @@ module Gestor
     class PoolPolicy < ::Bolao::PoolPolicy
       def index? = admin? || manager?
       def show? = admin? || manager?
-      def create? = false
-      def new? = false
       def update? = false
       def edit? = false
       def destroy? = false

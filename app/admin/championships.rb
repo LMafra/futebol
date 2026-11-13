@@ -39,6 +39,11 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
             class: AdminHelper::ADMIN_BUTTON_CLASSES
   end
 
+  action_item :new_pool, only: :show, if: -> { authorized?(:create, Bolao::Pool.new(championship: resource)) } do
+    link_to 'Criar bolão', new_admin_pool_path(pool: { championship_id: resource.id }),
+            class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
+  end
+
   show title: :to_s do
     attributes_table do
       row :name

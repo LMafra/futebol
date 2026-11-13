@@ -87,7 +87,7 @@ module Seeds
 
   def self.small_pool(championship, users)
     pool = Bolao::Pool.find_or_create_by!(championship:, name: "Bolão #{championship.name}") do |new_pool|
-      new_pool.owner = users.first
+      new_pool.owner = pool_organizer(championship)
     end
     users.each { |user| pool.memberships.find_or_create_by!(user:) }
     pool

@@ -16,23 +16,6 @@ module Bolao
       @memberships = @pool.memberships.includes(:user).order(:joined_at)
     end
 
-    def new
-      @pool = Bolao::Pool.new
-      authorize @pool
-      render_new
-    end
-
-    def create
-      @pool = Bolao::Pool.new(pool_params.merge(owner: current_user))
-      authorize @pool
-
-      if @pool.save
-        redirect_to pool_path(@pool), notice: "Bolão criado. Compartilhe o código #{@pool.code}."
-      else
-        render_new(status: :unprocessable_content)
-      end
-    end
-
     def join
       authorize Bolao::Pool, :join?
       pool = Bolao::Pool.find_by(code: Bolao::Pool.normalize_code(params[:code]))
@@ -63,19 +46,10 @@ module Bolao
       @pool = Bolao::Pool.find(params[:id])
     end
 
-    def pool_params
-      params.expect(pool: %i[name championship_id])
-    end
-
     def render_index(error: nil)
       @pools = policy_scope(Bolao::Pool).includes(:championship).order(:name)
       @error = error
       render :index, status: error ? :unprocessable_content : :ok
-    end
-
-    def render_new(status: :ok)
-      @championships = Core::Championship.published.order(season: :desc, name: :asc)
-      render :new, status:
     end
   end
 end

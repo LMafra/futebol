@@ -21,7 +21,7 @@ Rails.application.routes.draw do
   get 'campeonatos/:id', to: 'championships#show', as: :public_championship, constraints: { id: /\d+/ }
 
   scope module: :bolao do
-    resources :pools, only: %i[index new create show destroy] do
+    resources :pools, only: %i[index show destroy] do
       post :join, on: :collection
       resources :bets, only: %i[index create update]
     end

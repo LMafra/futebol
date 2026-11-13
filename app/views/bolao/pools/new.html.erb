@@ -1,5 +1,0 @@
-<% content_for(:title, brand_title("Criar bolão")) %>
-
-<%= render "shared/flash" %>
-<%= render Pools::NewComponent.new(pool: @pool, championships: @championships,
-                                   state: @championships.empty? ? :empty : (@pool.errors.any? ? :error : :default)) %>

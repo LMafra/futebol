@@ -48,11 +48,14 @@ module Seeds
 
   def self.demo_pool(championship, users)
     pool = Bolao::Pool.find_or_create_by!(code: 'DEMO01') do |new_pool|
-      new_pool.assign_attributes(name: 'Bolão Demo', championship:, owner: users.first)
+      new_pool.assign_attributes(name: 'Bolão Demo', championship:, owner: pool_organizer(championship))
     end
     users.each { |user| pool.memberships.find_or_create_by!(user:) }
     pool
   end
+
+  # Bolões are organized by the championship's gestor, or an admin when it has none (ADR 0006).
+  def self.pool_organizer(championship) = championship.manager || Core::User.where(role: :admin).order(:id).first!
 
   def self.demo_predictions(pool, championship, users)
     (1..10).each do |round|

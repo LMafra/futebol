@@ -4,7 +4,6 @@
       <p class="text-xs font-bold uppercase tracking-widest text-graphite">Bolão</p>
       <h1 class="mt-1 font-display text-4xl font-extrabold tracking-tight">Meus bolões</h1>
     </div>
-    <%= link_to "Criar bolão", new_pool_path, class: primary_button_classes %>
   </header>
 
   <% if error? %>
@@ -29,6 +28,7 @@
                               aria: { invalid: join_error? || nil, describedby: ("pools-error" if join_error?) } %>
       </div>
       <%= form.submit "Entrar", class: secondary_button_classes %>
+      <p class="basis-full text-sm text-graphite" data-role="join-hint">Os bolões são criados pelo gestor de cada campeonato. Peça o código a ele para entrar.</p>
     <% end %>
 
     <% if empty? %>

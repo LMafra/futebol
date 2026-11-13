@@ -10,11 +10,13 @@ RSpec.describe Pools::ShowComponent do
     expect { described_class.new }.to raise_error(ArgumentError, /pool is required/)
   end
 
-  it 'shows the code, the members and marks the owner' do
+  it 'shows the code, the organizer and the members' do
+    pool.memberships.create!(user: create(:user, name: 'Bruno Lima'))
     page = render_inline(described_class.new(pool:, memberships: pool.memberships.includes(:user)))
 
     expect(page.at_css('[data-role="code"]').text).to eq(pool.code)
-    expect(page.at_css('[data-role="members"]').text).to include('Ana Souza', 'Dono')
+    expect(page.at_css('[data-role="organizer"]').text).to eq('Organizado por Ana Souza')
+    expect(page.at_css('[data-role="members"]').text).to include('Bruno Lima')
   end
 
   it 'shows the delete button only when allowed' do
