@@ -10,7 +10,7 @@ pt-BR:
         edit: "Mudanças aqui valem na hora para o site, os bolões e o Esquadrão."
       matches:
         index: "Partidas de todos os campeonatos. Filtre por campeonato ou situação para achar a rodada que você procura."
-        show: "A partida e os próximos passos: registrar os scouts, finalizar e, se preciso, reverter a pontuação."
+        show: "Toque no + do jogador para registrar um lance, com tempo e minuto. O placar vem dos lances; finalize no rodapé."
         new: "Escolha o campeonato primeiro: só os times inscritos nele aparecem como mandante e visitante."
         edit: "Só os times inscritos no campeonato podem jogar a partida."
       teams:
@@ -24,10 +24,6 @@ pt-BR:
         index: "Bolões dos seus campeonatos. Os participantes entram com o código, que você compartilha."
         show: "O bolão e o código para compartilhar com os participantes."
         new: "Crie o bolão num campeonato seu. Quem organiza não entra como participante."
-      matchscouts:
-        default: "Registre o que cada jogador fez na partida. Os pontos do Esquadrão saem destes números."
-      matchfinalizer:
-        default: "Confira o placar e finalize: a partida é pontuada no Bolão e no Esquadrão."
       matchreversal:
         default: "Desfaz a pontuação de uma partida já pontuada, com motivo registrado na auditoria."
       bolao_scoring_rules:

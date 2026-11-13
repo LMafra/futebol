@@ -15,34 +15,32 @@ RSpec.describe 'Admin finalizes a match', type: :system do
     create(:cartola_scoring_rule, name: Cartola::ScoringRule::DEFAULT_NAME, goal_points: 8, played_points: 1)
   end
 
-  def step_up(player, scout, times)
-    within("tr[data-player-id='#{player.id}']") do
-      counter = find("input[name='scouts[#{player.id}][#{scout}]']").find(:xpath, '..')
-      times.times { counter.click_on('mais') }
+  def record_goal(player, minute)
+    within("[data-role='player-line'][data-player-id='#{player.id}']") { click_link '+ Gol' }
+    within('dialog#modal-lance') do
+      fill_in 'Minuto', with: minute
+      click_button 'Registrar lance'
     end
+    expect(page).to have_text("Lance registrado: Gol · #{player.name} · #{minute}'")
   end
 
-  it 'records the scouts with the counters, confirms the derived score and scores the bets' do
+  it 'records the lances on the match page, confirms the derived score and scores the bets' do
     sign_in_through_form(admin)
 
-    visit "/admin/matchscouts?match_id=#{match.id}"
-    step_up(home_striker, :goals, 2)
-    check "#{home_striker.name} jogou"
-    expect(page).to have_css("tr[data-player-id='#{home_striker.id}'] [data-role='points']", text: '17.00')
-
+    visit "/admin/matches/#{match.id}"
+    record_goal(home_striker, 10)
+    record_goal(home_striker, 30)
     click_on "Visitante · #{match.away_team.name}"
-    step_up(away_striker, :goals, 1)
-    click_on 'Salvar scouts'
-    expect(page).to have_text('Scouts salvos · placar 2 × 1.')
+    record_goal(away_striker, 80)
+    expect(page).to have_css('[data-role="scoreboard"] [data-role="score"]', text: '2 × 1')
+    expect(page).to have_css('[data-role="timeline-event"]', count: 3)
 
-    visit "/admin/matchfinalizer?match_id=#{match.id}"
-    expect(page).to have_css('[data-role="derived-score"]', text: '2 × 1')
-    fill_in 'finalization[score_confirmation]', with: '2x1'
-
-    perform_enqueued_jobs do
-      click_button 'Finalizar partida'
-      expect(page).to have_text('Partida finalizada em 2 × 1; pontuação enfileirada.')
+    click_link 'Finalizar partida'
+    within('dialog#modal-finalize') do
+      fill_in 'finalize[score_confirmation]', with: '2x1'
+      perform_enqueued_jobs { click_button 'Finalizar partida' }
     end
+    expect(page).to have_text('Partida finalizada em 2 × 1; pontuação enfileirada.')
 
     expect(match.reload).to have_attributes(status: 'scored', home_score: 2, away_score: 1)
     expect(Bolao::PredictionScore.kept.where(prediction: [exact_bet, wrong_bet]).pluck(:prediction_id, :points))

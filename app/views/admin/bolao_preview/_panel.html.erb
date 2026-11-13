@@ -59,9 +59,9 @@
 
         <div class="mt-4 flex flex-wrap items-center gap-3">
           <% if match.live? || match.may_start_match? %>
-            <%= link_to "Ir para a finalização", admin_matchfinalizer_path(match_id: match.id),
+            <%= link_to "Ir para a finalização", admin_match_path(match, modal: "finalize"),
                         class: AdminHelper::ADMIN_BUTTON_CLASSES, data: { role: "confirm-score" } %>
-            <span class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Na finalização vale o placar dos scouts, não o placar simulado.</span>
+            <span class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Na finalização vale o placar dos lances, não o placar simulado.</span>
           <% else %>
             <span class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">A partida está <%= admin_match_status_label(match.status).downcase %>; só partidas ao vivo podem ser finalizadas.</span>
           <% end %>

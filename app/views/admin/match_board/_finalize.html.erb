@@ -1,0 +1,30 @@
+<%# Rodapé fixo com "Finalizar partida": o placar vem dos lances e é confirmado no diálogo. %>
+<% match = board.match %>
+<% form = MatchFinalizationForm.new(match:) %>
+<div class="sticky bottom-0 z-10 flex flex-wrap items-center justify-between gap-3 border-t border-rule bg-white px-4 py-3" data-role="finalize-bar">
+  <% if form.scouts? %>
+    <p class="font-body text-ink" data-role="derived-score">
+      Placar dos lances: <strong class="tabular-nums"><%= form.home_score %> × <%= form.away_score %></strong>
+    </p>
+    <%= modal_trigger "Finalizar partida", :finalize, "?modal=finalize" %>
+  <% else %>
+    <p class="text-sm font-body text-ink" data-role="no-scouts" role="status"><strong><%= MatchFinalizationForm::NO_SCOUTS %>.</strong></p>
+  <% end %>
+</div>
+
+<% if form.scouts? %>
+  <%= modal_form :finalize, title: "Finalizar partida", submit: "Finalizar partida", record: form,
+                 url: public_send(:"finalize_#{active_admin_namespace.name}_match_path", match) do |f| %>
+    <p class="text-2xl font-bold tabular-nums text-ink">
+      <%= match.home_team.name %> <%= form.home_score %> × <%= form.away_score %> <%= match.away_team.name %>
+    </p>
+    <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">
+      Encerra a partida e enfileira o cálculo dos pontos.
+      <% if active_admin_namespace.name == :admin %>
+        <%= link_to "Simular no Preview do Bolão", admin_bolaopreview_path(match_id: match.id, candidate_home: form.home_score, candidate_away: form.away_score), class: inline_link_classes(tone: :ink) %>
+      <% end %>
+    </p>
+    <%= modal_field f, :score_confirmation, label: admin_required_label("Confirme o placar, ex.: 2x1"), required: true,
+                    autocomplete: "off" %>
+  <% end %>
+<% end %>

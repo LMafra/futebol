@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Admin accessibility (TICKET-0081)', type: :request do
   before { sign_in(create(:user, :admin)) }
 
-  def page_html = Nokogiri::HTML(response.body)
+  def page_html = Nokogiri::HTML5(response.body)
 
   describe 'scouts tabs' do
     let(:match) { create(:match, status: 'live', match_date: 1.hour.ago) }
@@ -12,24 +12,29 @@ RSpec.describe 'Admin accessibility (TICKET-0081)', type: :request do
     before { create(:cartola_scoring_rule, name: Cartola::ScoringRule::DEFAULT_NAME) }
 
     it 'wires each tab to its panel with roving tabindex and keyboard navigation' do
-      get '/admin/matchscouts', params: { match_id: match.id }
+      get "/admin/matches/#{match.id}"
 
       tabs = page_html.css('[role="tab"]')
       expect(tabs.map { |tab| [tab['aria-controls'], tab['aria-selected'], tab['tabindex']] })
-        .to eq([%w[scouts-panel-home true 0], %w[scouts-panel-away false -1]])
-      expect(page_html.at_css('[role="tablist"]')['data-action']).to eq('keydown->scouts#navigate')
-      panel = page_html.at_css('#scouts-panel-home')
-      expect([panel['role'], panel['aria-labelledby']]).to eq(%w[tabpanel scouts-tab-home])
+        .to eq([%w[side-panel-home true 0], %w[side-panel-away false -1]])
+      expect(page_html.at_css('[role="tablist"]')['data-action']).to eq('keydown->tabs#navigate')
+      panel = page_html.at_css('#side-panel-home')
+      expect([panel['role'], panel['aria-labelledby']]).to eq(%w[tabpanel side-tab-home])
       expect(tabs.first['class']).to include('aria-[selected=true]:bg-cartola', 'aria-[selected=false]:bg-white')
     end
 
-    it 'labels the 40px steppers with the stat and the player' do
-      get '/admin/matchscouts', params: { match_id: match.id }
+    it 'labels the lance buttons and the undo with the stat and the player' do
+      Scouts::RecordEvent.call(event: Cartola::ScoutEvent.new(match:, player: striker, stat: 'goals'),
+                               actor: create(:user, :admin), ip_address: '127.0.0.1')
 
-      steppers = page_html.css("[data-player-id='#{striker.id}'] button[data-action='scouts#step']")
-      expect(steppers.map { _1['aria-label'] })
-        .to include('Diminuir Gol de Atacante Casa', 'Aumentar Gol de Atacante Casa')
-      expect(steppers.first['class']).to include('h-10', 'w-10', 'disabled:cursor-not-allowed')
+      get "/admin/matches/#{match.id}"
+
+      line = page_html.at_css("[data-player-id='#{striker.id}']")
+      expect(line.css('a[data-modal-open="modal-lance"]').map { _1['aria-label'] })
+        .to include('Lançar gol de Atacante Casa')
+      undo = line.at_css('form[action$="/undo_event"] button')
+      expect(undo['aria-label']).to eq('Desfazer o último lance de gol de Atacante Casa')
+      expect(undo['class']).to include('h-10', 'w-10')
     end
   end
 

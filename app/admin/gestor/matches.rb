@@ -36,36 +36,12 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
     end
   end
 
-  action_item :scouts, only: :show,
-                       if: lambda {
-                         authorized?(:record_scouts, resource) && (!resource.scheduled? || resource.may_start_match?)
-                       } do
-    link_to 'Scouts', scoring_path('matchscouts', match_id: resource.id),
-            class: admin_match_step_classes(resource, :scouts)
-  end
-
-  action_item :finalize, only: :show,
-                         if: -> { authorized?(:finalize, resource) && (resource.live? || resource.may_start_match?) } do
-    link_to 'Finalizar', scoring_path('matchfinalizer', match_id: resource.id),
-            class: admin_match_step_classes(resource, :finalize)
-  end
-
   action_item :revert, only: :show, if: -> { authorized?(:revert, resource) && resource.may_revert_match? } do
     link_to 'Reverter pontuação', scoring_path('matchreversal', match_id: resource.id),
             class: AdminHelper::ADMIN_DANGER_BUTTON_CLASSES
   end
 
-  show title: :to_s do
-    attributes_table do
-      row :championship
-      row :home_team
-      row :away_team
-      row :match_date
-      row('Rodada', &:round)
-      row('Placar') { |match| admin_score(match) }
-      row(:status) { |match| admin_match_status_badge(match) }
-    end
-  end
+  AdminMatchBoard.register(self)
 
   form do |f|
     f.semantic_errors
@@ -75,7 +51,7 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
                           hint: ('Só times inscritos no campeonato.' if f.object.new_record?)
       f.input :away_team, collection: gestor_match_team_options(f.object, :away_team)
       f.input :match_date, as: :datetime_picker,
-                           hint: 'Depois de agendar, use Scouts e Finalizar para lançar o placar e a pontuação.'
+                           hint: 'Depois de agendar, registre os lances e finalize na página da partida.'
       f.input :round, label: 'Rodada', input_html: { min: 1 }
     end
     f.actions if f.object.new_record? || f.object.scheduled?

@@ -1,0 +1,16 @@
+<%# Diálogo do lance: tempo e minuto (opcional) para o jogador e o scout do botão que o abriu. %>
+<% lance = params.fetch(:lance, {}) %>
+<% player_id = modal_value(:lance, :player_id) || lance[:player_id] %>
+<% stat = modal_value(:lance, :stat) || lance[:stat] %>
+<% player = player_id.presence && Core::Player.find_by(id: player_id) %>
+<% title = player && Cartola::ScoutEvent::STATS.include?(stat) ? "#{scout_label(stat.to_sym)} · #{player.name}" : "Lance" %>
+<% record = Cartola::ScoutEvent.new(match: board.match, player_id:, stat:, period: board.default_period) %>
+<%= modal_form :lance, title:, submit: "Registrar lance", record:,
+               url: public_send(:"record_event_#{active_admin_namespace.name}_match_path", board.match) do |f| %>
+  <%= f.hidden_field :player_id %>
+  <%= f.hidden_field :stat %>
+  <%= modal_field f, :period, label: "Tempo",
+                  choices: options_for_select(Cartola::ScoutEvent::PERIODS.invert, f.object.period) %>
+  <%= modal_field f, :minute, label: "Minuto", as: :number_field, min: Cartola::ScoutEvent::MINUTES.min,
+                  max: Cartola::ScoutEvent::MINUTES.max, inputmode: "numeric", hint: "Opcional.", autofocus: true %>
+<% end %>

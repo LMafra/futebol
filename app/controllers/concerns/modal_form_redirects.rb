@@ -9,7 +9,10 @@ module ModalFormRedirects
     path if params[:modal].present? && path.start_with?("/#{active_admin_config.namespace.name}/")
   end
 
-  def redirect_back_to_modal(errors, values: {})
+  # Without a valid return_to (a form posted from elsewhere) the errors go to `fallback` as an alert.
+  def redirect_back_to_modal(errors, values: {}, fallback: nil)
+    return redirect_to(fallback, alert: errors.full_messages.to_sentence, status: :see_other) unless modal_return_path
+
     flash[:modal] = { 'id' => params[:modal].to_s, 'values' => values, 'errors' => errors.to_hash,
                       'messages' => errors.full_messages }
     redirect_to "#{modal_return_path}?#{{ modal: params[:modal] }.to_query}", status: :see_other

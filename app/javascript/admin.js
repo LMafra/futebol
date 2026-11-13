@@ -6,7 +6,7 @@ import DismissController from "controllers/dismiss_controller"
 import DismissibleController from "controllers/dismissible_controller"
 import ModalController from "controllers/modal_controller"
 import ImagePreviewController from "controllers/image_preview_controller"
-import ScoutsController from "controllers/scouts_controller"
+import TabsController from "controllers/tabs_controller"
 
 // The admin is light-only (docs/design/0001-critique.md Q5). AA's dark_mode_toggle adds `.dark` on
 // DOMContentLoaded from the OS preference unless a theme is stored; module scripts run before that event.
@@ -42,4 +42,4 @@ application.register("dismiss", DismissController)
 application.register("dismissible", DismissibleController)
 application.register("modal", ModalController)
 application.register("image-preview", ImagePreviewController)
-application.register("scouts", ScoutsController)
+application.register("tabs", TabsController)

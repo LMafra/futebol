@@ -1,0 +1,25 @@
+<%# Placar grande da tela única da partida. %>
+<% home_score, away_score = match.home_score || 0, match.away_score || 0 %>
+<section class="rounded-md border border-rule bg-white p-4" aria-labelledby="scoreboard-title" data-role="scoreboard">
+  <h3 id="scoreboard-title" class="sr-only">Placar</h3>
+  <p class="flex flex-wrap items-center justify-center gap-2 text-center text-sm font-body text-graphite">
+    <span><%= match.championship %></span>
+    <% if match.round %><span>· Rodada <%= match.round %></span><% end %>
+    <span>· <%= match.match_date&.strftime("%d/%m %H:%M") %></span>
+    <%= admin_match_status_badge(match) %>
+  </p>
+  <div class="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+    <% [match.home_team, match.away_team].each_with_index do |team, index| %>
+      <% if index == 1 %>
+        <p class="font-numeric text-5xl font-bold tabular-nums text-ink" data-role="score"
+           aria-label="<%= "#{match.home_team.name} #{home_score}, #{match.away_team.name} #{away_score}" %>">
+          <%= home_score %> × <%= away_score %>
+        </p>
+      <% end %>
+      <div class="flex min-w-0 flex-col items-center gap-2 text-center">
+        <%= team_crest(team, size: "size-12") %>
+        <span class="font-display text-xl font-semibold text-ink"><%= team.name %></span>
+      </div>
+    <% end %>
+  </div>
+</section>

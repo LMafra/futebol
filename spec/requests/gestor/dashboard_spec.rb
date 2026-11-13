@@ -34,7 +34,7 @@ RSpec.describe 'Gestor dashboard', type: :request do
     get '/gestor'
 
     expect(queue_row(future).css('[data-role="queue-cta"]').map(&:text)).to eq(['Editar partida'])
-    expect(queue_row(live).css('[data-role="queue-cta"]').map(&:text)).to eq(['Lançar scouts'])
+    expect(queue_row(live).css('[data-role="queue-cta"]').map(&:text)).to eq(['Registrar lances'])
     expect(queue_row(scored).css('[data-role="queue-cta"]')).to be_empty
     expect(queue_row(scored).at_css('[data-role="status-badge"]').text.squish).to eq('Pontuada')
   end

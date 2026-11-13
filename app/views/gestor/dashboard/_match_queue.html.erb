@@ -1,7 +1,7 @@
 <% step_ctas = {
      edit: ["Editar partida", ->(match) { edit_gestor_match_path(match) }],
-     scouts: ["Lançar scouts", ->(match) { scoring_path("matchscouts", match_id: match.id) }],
-     finalize: ["Finalizar partida", ->(match) { scoring_path("matchfinalizer", match_id: match.id) }]
+     scouts: ["Registrar lances", ->(match) { gestor_match_path(match) }],
+     finalize: ["Finalizar partida", ->(match) { gestor_match_path(match, modal: "finalize") }]
    }
    step_notes = { scoring: "Aguardando a pontuação", scored: "Concluída", reverted: "Aguardando nova pontuação" } %>
 <section class="rounded-md border border-rule bg-white" aria-labelledby="match-queue-title" data-role="gestor-match-queue">

@@ -10,6 +10,9 @@ module Core
     def finalize? = admin?
     def revert? = admin?
     def record_scouts? = admin?
+    def record_event? = record_scouts?
+    def undo_event? = record_scouts?
+    def participation? = record_scouts?
 
     class Scope < ApplicationPolicy::Scope
       private

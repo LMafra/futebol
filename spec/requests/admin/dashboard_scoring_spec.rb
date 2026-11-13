@@ -9,6 +9,6 @@ RSpec.describe 'Admin scoring dashboard', type: :request do
     get '/admin'
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include(live.to_s, pending.to_s, "/admin/matchfinalizer?match_id=#{live.id}")
+    expect(response.body).to include(live.to_s, pending.to_s, "/admin/matches/#{live.id}?modal=finalize")
   end
 end

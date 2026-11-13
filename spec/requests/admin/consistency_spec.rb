@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Admin/Gestor consistency (TICKET-0084)', type: :request do
-  def page_html = Nokogiri::HTML(response.body)
+  def page_html = Nokogiri::HTML5(response.body)
 
   def option_texts(name) = page_html.css("select[name='#{name}'] option[value]:not([value=''])").map(&:text)
 
@@ -48,15 +48,15 @@ RSpec.describe 'Admin/Gestor consistency (TICKET-0084)', type: :request do
       expect(response).to have_http_status(:ok)
     end
 
-    it 'sends the preview CTA to the finalizer without the simulated score' do
+    it 'sends the preview CTA to the finalize dialog without the simulated score' do
       match = create(:match, status: 'live', match_date: 1.hour.ago)
 
       get '/admin/bolaopreview', params: { match_id: match.id, candidate_home: 2, candidate_away: 1 }
 
       cta = page_html.at_css('[data-role="confirm-score"]')
       expect([cta.text.strip, cta['href']])
-        .to eq(['Ir para a finalização', "/admin/matchfinalizer?match_id=#{match.id}"])
-      expect(response.body).to include('vale o placar dos scouts')
+        .to eq(['Ir para a finalização', "/admin/matches/#{match.id}?modal=finalize"])
+      expect(response.body).to include('vale o placar dos lances')
       expect(page_html.at_css('[data-role="preview"] [data-role="empty-state"]')).to be_present
     end
 
@@ -74,21 +74,20 @@ RSpec.describe 'Admin/Gestor consistency (TICKET-0084)', type: :request do
 
       def header_link(text) = page_html.css('[data-test-page-header] a').find { _1.text.strip == text }
 
-      it 'makes Scouts the only primary before scouts exist' do
+      it 'keeps only secondary header actions: lances and Finalizar live on the page' do
         get "/admin/matches/#{match.id}"
 
-        expect(header_link('Scouts')['class']).to include('bg-cartola')
-        %w[Finalizar Histórico].each { expect(header_link(_1)['class']).to include('bg-white') }
+        expect([header_link('Scouts'), header_link('Finalizar')]).to all(be_nil)
         expect(header_link('Preview do Bolão')['class']).to include('bg-white')
       end
 
-      it 'moves the primary to Finalizar once scouts exist' do
+      it 'makes Finalizar the primary in the fixed footer once lances exist' do
         create(:cartola_player_score, match:, player: create(:player, team: match.home_team))
 
         get "/admin/matches/#{match.id}"
 
-        expect(header_link('Finalizar')['class']).to include('bg-cartola')
-        expect(header_link('Scouts')['class']).to include('bg-white')
+        expect(page_html.at_css('[data-role="finalize-bar"] a[data-modal-open="modal-finalize"]')['class'])
+          .to include('bg-cartola')
       end
 
       it 'shows Reverter pontuação as danger' do
@@ -113,7 +112,7 @@ RSpec.describe 'Admin/Gestor consistency (TICKET-0084)', type: :request do
       expect(page_html.at_css('legend').text.strip).to eq('Arquivo CSV')
     end
 
-    it 'flags the finalizer confirmation inline with ARIA' do
+    it 'flags the finalize confirmation inline with ARIA' do
       match = create(:match, status: 'live', match_date: 2.hours.ago)
       create(:cartola_scoring_rule, name: Cartola::ScoringRule::DEFAULT_NAME)
       Cartola::RecordScoutsService.call(
@@ -122,12 +121,15 @@ RSpec.describe 'Admin/Gestor consistency (TICKET-0084)', type: :request do
                  played: true, goals: 1 }]
       )
 
-      post '/admin/matchfinalizer/finalize', params: { finalization: { match_id: match.id, score_confirmation: '0x0' } }
+      post "/admin/matches/#{match.id}/finalize",
+           params: { modal: 'finalize', return_to: "/admin/matches/#{match.id}",
+                     finalize: { score_confirmation: '0x0' } }
+      follow_redirect!
 
-      field = page_html.at_css('input[name="finalization[score_confirmation]"]')
-      expect([field['aria-invalid'], field['aria-describedby']]).to eq(%w[true score-confirmation-error])
-      expect(page_html.at_css('#score-confirmation-error').text).to include('não confere')
-      expect(page_html.at_css('label[for="finalization_score_confirmation"]').text.squish)
+      field = page_html.at_css('input[name="finalize[score_confirmation]"]')
+      expect([field['aria-invalid'], field['aria-describedby']]).to eq(%w[true finalize_score_confirmation_error])
+      expect(page_html.at_css('#finalize_score_confirmation_error').text).to include('não confere')
+      expect(page_html.at_css('label[for="finalize_score_confirmation"]').text.squish)
         .to eq('Confirme o placar, ex.: 2x1 (obrigatório)')
     end
 

@@ -36,7 +36,7 @@
                   safe_join([
                     link_to("Preview do Bolão", admin_bolaopreview_path(match_id: match.id), class: inline_link_classes(tone: :ink)),
                     " · ".html_safe,
-                    link_to("Finalizar", admin_matchfinalizer_path(match_id: match.id), class: inline_link_classes(tone: :ink))
+                    link_to("Finalizar", admin_match_path(match, modal: "finalize"), class: inline_link_classes(tone: :ink))
                   ])
                 ]
               },

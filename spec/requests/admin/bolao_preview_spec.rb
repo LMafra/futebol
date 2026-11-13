@@ -30,7 +30,7 @@ RSpec.describe 'Admin BolaoPreview page', type: :request do
     expect(page.css('[data-role="points"]').map(&:text)).to eq(%w[10 0])
     expect(page.at_css('[data-role="total"]').text).to eq('10')
     expect(page.text).to include('Bolão da Firma')
-    expect(page.at_css('[data-role="confirm-score"]')['href']).to eq("/admin/matchfinalizer?match_id=#{match.id}")
+    expect(page.at_css('[data-role="confirm-score"]')['href']).to eq("/admin/matches/#{match.id}?modal=finalize")
   end
 
   it 'candidato inválido → mensagem de erro, sem preview' do

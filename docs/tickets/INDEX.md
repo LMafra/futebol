@@ -1,4 +1,4 @@
-# Tickets — INDEX (98 tickets)
+# Tickets — INDEX (99 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -100,6 +100,7 @@
 | [0094](TICKET-0094.md) | G3 | Árvore de navegação, breadcrumbs, páginas de campeonato e time, "Sobre esta tela" | 0089, 0090, 0093, 0102 | — |
 | [0095](TICKET-0095.md) | G3 | Cadastros em diálogo: time, jogador, partida, inscrição e bolão | 0094 | — |
 | [0096](TICKET-0096.md) | G4 | Lances com minuto e tempo, registrar e desfazer | 0089 | — |
+| [0097](TICKET-0097.md) | G4 | Tela única da partida no Admin e no Gestor | 0095, 0096 | playwright |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -116,4 +117,4 @@
 - UI/UX Admin/Gestor (status-first): 0068 → 0069 → 0070 → 0071 → 0072 → 0073
 - UI/UX Admin/Gestor (work queue): 0074 → {0075, 0076} → 0077 → 0078
 - Auditoria UI/UX completa (ordem dos commits): 0079 → 0080 → 0081 → 0075 → 0076 → 0074 → 0077 → 0084 → 0082 → 0083 → 0078
-- Gestor, campeonato, partida ao vivo e participantes (ordem dos commits): 0085 → 0086 → 0087 → 0088 → 0106 → 0089 → 0090 → 0091 → 0092 → 0093 → 0102 → 0094 → 0095 → 0096
+- Gestor, campeonato, partida ao vivo e participantes (ordem dos commits): 0085 → 0086 → 0087 → 0088 → 0106 → 0089 → 0090 → 0091 → 0092 → 0093 → 0102 → 0094 → 0095 → 0096 → 0097
