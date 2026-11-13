@@ -4,10 +4,10 @@ ActiveAdmin.register Core::Player, as: 'Player' do
   permit_params :team_id, :name, :position, :shirt_number, :base_value, :external_id
   includes :team
 
+  AdminNameSearch.register(self)
   filter :team
-  filter :name
   filter :position, as: :select, collection: -> { Core::Player::POSITIONS }
-  filter :external_id
+  filter :external_id_eq, label: 'ID externo', as: :string
 
   index do
     selectable_column

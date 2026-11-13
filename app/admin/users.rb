@@ -3,6 +3,7 @@ ActiveAdmin.register Core::User, as: 'User' do
 
   actions :index, :show
 
+  AdminNameSearch.register(self)
   filter :role, as: :select, collection: -> { admin_user_enum_options(:role) }
   filter :manager_status, as: :select, collection: -> { admin_user_enum_options(:manager_status) }
 

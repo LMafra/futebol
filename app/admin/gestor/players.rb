@@ -12,8 +12,8 @@ ActiveAdmin.register Core::Player, as: 'Player', namespace: :gestor do
     before_build { |record| assign_external_id(record) }
   end
 
+  AdminNameSearch.register(self)
   filter :team, collection: -> { gestor_teams }
-  filter :name
   filter :position, as: :select, collection: -> { Core::Player::POSITIONS }
 
   index do

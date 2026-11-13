@@ -4,7 +4,7 @@ ActiveAdmin.register Bolao::Pool, as: 'Pool', namespace: :gestor do
   actions :index, :show
   includes :championship, :owner
 
-  filter :name
+  AdminNameSearch.register(self)
   filter :championship, collection: -> { gestor_championships }
 
   index do

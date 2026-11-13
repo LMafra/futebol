@@ -1,5 +1,6 @@
 // Stimulus for ActiveAdmin pages, loaded through ActiveAdmin.importmap (config/initializers/active_admin.rb).
 import { Application } from "@hotwired/stimulus"
+import AutocompleteController from "controllers/autocomplete_controller"
 import DismissController from "controllers/dismiss_controller"
 import FormWizardController from "controllers/form_wizard_controller"
 import ScoutsController from "controllers/scouts_controller"
@@ -32,6 +33,7 @@ document.addEventListener("DOMContentLoaded", syncFilters)
 desktop.addEventListener("change", syncFilters)
 
 const application = Application.start()
+application.register("autocomplete", AutocompleteController)
 application.register("dismiss", DismissController)
 application.register("form-wizard", FormWizardController)
 application.register("scouts", ScoutsController)

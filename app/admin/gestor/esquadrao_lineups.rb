@@ -5,7 +5,7 @@ ActiveAdmin.register Cartola::Lineup, as: 'EsquadraoLineup', namespace: :gestor 
   includes :squad, :championship
 
   filter :championship, collection: -> { gestor_championships }
-  filter :round, label: 'Rodada'
+  filter :round, label: 'Rodada', as: :select, collection: -> { admin_round_options }
 
   index do
     id_column

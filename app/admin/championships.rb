@@ -5,9 +5,9 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
                 :cartola_midfielder_limit, :cartola_forward_limit, :cartola_initial_budget, :cartola_base_player_value,
                 :prize_description, *Core::Championship::PRIZE_PLACES
 
-  filter :name
-  filter :season
-  filter :external_id
+  AdminNameSearch.register(self)
+  filter :season, as: :select, collection: -> { admin_season_options }
+  filter :external_id_eq, label: 'ID externo', as: :string
   filter :private, label: 'Privado'
 
   index do

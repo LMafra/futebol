@@ -16,4 +16,10 @@ module AdminLabelsHelper
   def admin_user_enum_options(enum)
     Core::User.public_send(enum.to_s.pluralize).keys.map { [admin_user_enum_label(enum, _1), _1] }
   end
+
+  def admin_round_options = (1..38).to_a
+
+  def admin_season_options = Core::Championship.distinct.order(season: :desc).pluck(:season)
+
+  def admin_audit_log_options(attribute) = Core::AuditLog.distinct.order(attribute).pluck(attribute)
 end

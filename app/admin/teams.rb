@@ -3,9 +3,8 @@ ActiveAdmin.register Core::Team, as: 'Team' do
 
   permit_params :name, :short_name, :crest_url, :external_id
 
-  filter :name
-  filter :short_name
-  filter :external_id
+  AdminNameSearch.register(self)
+  filter :external_id_eq, label: 'ID externo', as: :string
 
   index do
     selectable_column

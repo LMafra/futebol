@@ -11,8 +11,7 @@ ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
     before_build { |record| assign_external_id(record) }
   end
 
-  filter :name
-  filter :short_name
+  AdminNameSearch.register(self)
 
   index do
     id_column

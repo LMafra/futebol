@@ -5,9 +5,9 @@ ActiveAdmin.register Core::AuditLog, as: 'AuditLog' do
   includes :user
   config.sort_order = 'created_at_desc'
 
-  filter :action
+  filter :action, as: :select, collection: -> { admin_audit_log_options(:action) }
   filter :user
-  filter :auditable_type
+  filter :auditable_type, as: :select, collection: -> { admin_audit_log_options(:auditable_type) }
   filter :created_at
 
   index do

@@ -4,7 +4,7 @@ ActiveAdmin.register Cartola::Squad, as: 'EsquadraoSquad' do
   permit_params :name, :user_id
   includes :user
 
-  filter :name
+  AdminNameSearch.register(self)
 
   index do
     selectable_column

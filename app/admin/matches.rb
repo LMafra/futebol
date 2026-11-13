@@ -6,9 +6,9 @@ ActiveAdmin.register Core::Match, as: 'Match' do
   config.sort_order = 'match_date_desc'
 
   filter :championship
-  filter :round, label: 'Rodada'
+  filter :round, label: 'Rodada', as: :select, collection: -> { admin_round_options }
   filter :status, as: :select, collection: -> { admin_match_status_options }
-  filter :external_id
+  filter :external_id_eq, label: 'ID externo', as: :string
   filter :match_date
 
   scope :all, default: true

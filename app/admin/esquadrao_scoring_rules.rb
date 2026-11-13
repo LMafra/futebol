@@ -3,7 +3,7 @@ ActiveAdmin.register Cartola::ScoringRule, as: 'EsquadraoScoringRule' do
 
   permit_params :name, *Cartola::ScoringRule::POINT_COLUMNS
 
-  filter :name
+  AdminNameSearch.register(self)
 
   index do
     selectable_column

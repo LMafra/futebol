@@ -10,7 +10,7 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
   config.sort_order = 'match_date_desc'
 
   filter :championship, collection: -> { gestor_championships }
-  filter :round, label: 'Rodada'
+  filter :round, label: 'Rodada', as: :select, collection: -> { admin_round_options }
   filter :status, as: :select, collection: -> { admin_match_status_options }
   filter :match_date
 

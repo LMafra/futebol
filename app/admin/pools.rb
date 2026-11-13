@@ -5,7 +5,7 @@ ActiveAdmin.register Bolao::Pool, as: 'Pool' do
                 scoring_rule_attributes: %i[id exact_score_points winner_points _destroy]
   includes :championship, :owner
 
-  filter :name
+  AdminNameSearch.register(self)
   filter :championship
 
   index do

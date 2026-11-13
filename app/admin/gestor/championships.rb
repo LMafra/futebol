@@ -7,8 +7,8 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
 
   actions :index, :show, :new, :create, :edit, :update
 
-  filter :name
-  filter :season
+  AdminNameSearch.register(self)
+  filter :season, as: :select, collection: -> { admin_season_options }
 
   index do
     id_column

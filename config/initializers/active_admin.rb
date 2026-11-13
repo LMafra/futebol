@@ -297,6 +297,7 @@ end
 ActiveAdmin.importmap.draw do
   pin '@hotwired/stimulus', to: 'stimulus.min.js'
   pin 'admin', to: 'admin.js'
+  pin 'controllers/autocomplete_controller', to: 'controllers/autocomplete_controller.js'
   pin 'controllers/dismiss_controller', to: 'controllers/dismiss_controller.js'
   pin 'controllers/scouts_controller', to: 'controllers/scouts_controller.js'
   pin 'controllers/form_wizard_controller', to: 'controllers/form_wizard_controller.js'
