@@ -28,8 +28,15 @@ RSpec.describe 'Admin MatchScouts page', type: :request do
       .to eq(["Mandante · #{match.home_team.name}", "Visitante · #{match.away_team.name}"])
     expect([page.at_css('[data-role="team-home"]'), page.at_css('[data-role="team-away"]')].map { _1.key?('hidden') })
       .to eq([false, true])
-    expect(page.css('[data-role="team-home"] thead th').map(&:text)).to eq(%w[Nome G A DP DE CA CV GC SG Jogou Destaque
-                                                                              Pts])
+    headers = page.css('[data-role="team-home"] thead th')
+    expect(headers.map { |th| th.at_css('abbr')&.text || th.text }).to eq(%w[Nome G A DP DE CA CV GC SG Jogou Destaque
+                                                                             Pts])
+    expect(headers[1].at_css('abbr')['title']).to eq('Gol')
+    expect(headers[1].at_css('span.sm\:hidden').text).to eq('Gol')
+    legend = page.at_css('dl[data-role="scout-legend"]')
+    expect(legend['aria-label']).to eq('Legenda dos scouts')
+    expect(legend.css('dt').map(&:text)).to eq(%w[G A SG DP DE CA CV GC])
+    expect(legend.css('dd').map(&:text)).to include('Jogo sem sofrer gols', 'Gol contra')
     expect(page.css('[data-role="team-home"] tbody tr').map { |tr| tr.at_css('td').text.squish })
       .to eq(['Goleiro Casa GOL', 'Atacante Casa ATA'])
     expect(page.at_css("input[name='scouts[#{keeper.id}][saves]']")['disabled']).to be_nil

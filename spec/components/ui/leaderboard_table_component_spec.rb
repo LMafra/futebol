@@ -25,7 +25,8 @@ RSpec.describe Ui::LeaderboardTableComponent do
     page = render_inline(described_class.new(rows: [player], texts: { name_header: 'Atleta' },
                                              columns: { games: %w[J Jogos] }))
 
-    expect(page.css('thead th').map { |cell| cell.text.squish }).to eq(%w[# Atleta J Pts])
+    expect(page.css('thead th').map { |cell| (cell.at_css('abbr') || cell).text.squish }).to eq(%w[# Atleta J Pts])
+    expect(page.at_css('thead abbr[title="Jogos"] + span.sm\:hidden').text).to eq('Jogos')
     expect(page.at_css('[data-role="leaderboard-row"]').text.squish).to eq('1 Pedro FLA 10 30')
   end
 

@@ -2,7 +2,7 @@
 
 <% if match %>
   <% sides = { "home" => ["Mandante", match.home_team], "away" => ["Visitante", match.away_team] } %>
-  <% scouts = { goals: "G", assists: "A", penalty_saves: "DP", saves: "DE", yellow_cards: "CA", red_cards: "CV", own_goals: "GC" } %>
+  <% scouts = %i[goals assists penalty_saves saves yellow_cards red_cards own_goals] %>
   <section class="panel" aria-labelledby="scouts-title" data-controller="scouts"
            data-scouts-weights-value="<%= sheet.preview_weights.to_json %>">
     <h3 class="panel-title" id="scouts-title">Scouts · <%= match %> · <%= admin_score(match) %></h3>
@@ -23,6 +23,8 @@
       <% elsif sheet.rule.nil? %>
         <p class="mb-4 text-sm font-semibold" role="status">Cadastre a regra "<%= Cartola::ScoringRule::DEFAULT_NAME %>" do Esquadrão para calcular os pontos.</p>
       <% end %>
+
+      <%= scout_legend %>
 
       <div class="mb-4 flex flex-wrap gap-2" role="tablist" aria-label="Times" data-action="keydown->scouts#navigate">
         <% sides.each_with_index do |(side, (label, team)), index| %>
@@ -49,8 +51,8 @@
                 <thead>
                   <tr>
                     <th>Nome</th>
-                    <% scouts.each_value do |abbr| %><th class="text-center"><%= abbr %></th><% end %>
-                    <th class="text-center">SG</th><th class="text-center">Jogou</th><th class="text-center">Destaque</th><th class="text-right">Pts</th>
+                    <% scouts.each do |scout| %><th class="text-center"><%= scout_header(scout) %></th><% end %>
+                    <th class="text-center"><%= scout_header(:clean_sheet) %></th><th class="text-center">Jogou</th><th class="text-center">Destaque</th><th class="text-right">Pts</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -64,12 +66,12 @@
                         <%= line.player.name %> <span class="text-xs font-body text-graphite"><%= line.player.position %></span>
                         <%= hidden_field_tag "#{name}[team_id]", line.team_id, id: nil %>
                       </td>
-                      <% scouts.each_key do |scout| %>
+                      <% scouts.each do |scout| %>
                         <% range = Cartola::PlayerScore::SCOUT_LIMITS.fetch(scout) %>
                         <% disabled = sheet.readonly? || (scout == :saves && !line.goalkeeper?) %>
                         <td>
                           <div class="flex items-center gap-1">
-                            <% stat = "#{scouts[scout]} de #{line.player.name}" %>
+                            <% stat = "#{scout_label(scout)} de #{line.player.name}" %>
                             <button type="button" class="<%= AdminHelper::ADMIN_STEPPER_CLASSES %>" aria-label="Diminuir <%= stat %>" data-action="scouts#step" data-scouts-delta-param="-1" <%= "disabled" if disabled %>>−</button>
                             <%= number_field_tag "#{name}[#{scout}]", line.values[scout], id: nil, min: range.min, max: range.max, step: 1,
                                                  disabled:, class: AdminHelper::ADMIN_COMPACT_INPUT_CLASSES,

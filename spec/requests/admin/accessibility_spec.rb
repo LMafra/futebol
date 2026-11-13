@@ -27,7 +27,8 @@ RSpec.describe 'Admin accessibility (TICKET-0081)', type: :request do
       get '/admin/matchscouts', params: { match_id: match.id }
 
       steppers = page_html.css("[data-player-id='#{striker.id}'] button[data-action='scouts#step']")
-      expect(steppers.map { _1['aria-label'] }).to include('Diminuir G de Atacante Casa', 'Aumentar G de Atacante Casa')
+      expect(steppers.map { _1['aria-label'] })
+        .to include('Diminuir Gol de Atacante Casa', 'Aumentar Gol de Atacante Casa')
       expect(steppers.first['class']).to include('h-10', 'w-10', 'disabled:cursor-not-allowed')
     end
   end

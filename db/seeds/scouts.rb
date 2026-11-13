@@ -35,10 +35,14 @@ module Seeds
   end
 
   def self.demo_scout_stats(match, player, scored)
-    goals, assists = demo_goal_shares(match.id, player.shirt_number, scored)
-    { goals:, assists:, saves: player.position == 'GOL' ? (match.id % 4) + 1 : 0,
-      yellow_cards: player.shirt_number == (match.id % 6) + 2 ? 1 : 0 }
+    key = demo_match_key(match)
+    goals, assists = demo_goal_shares(key, player.shirt_number, scored)
+    { goals:, assists:, saves: player.position == 'GOL' ? (key % 4) + 1 : 0,
+      yellow_cards: player.shirt_number == (key % 6) + 2 ? 1 : 0 }
   end
+
+  # The same scouts on every run: database ids depend on the sequences, the external id does not.
+  def self.demo_match_key(match) = match.external_id.sum
 
   # Goal i goes to the attacking shirt at (match id + i); even goals are assisted by the next shirt in the list.
   def self.demo_goal_shares(match_id, shirt_number, scored)

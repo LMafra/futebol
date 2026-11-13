@@ -8,7 +8,7 @@
           <th scope="col" class="<%= cell_classes %> text-left">#</th>
           <th scope="col" class="<%= cell_classes %> text-left"><%= text(:name_header) %></th>
           <% columns.each_value do |abbreviation, title| %>
-            <th scope="col" class="<%= cell_classes %> text-right"><abbr title="<%= title %>"><%= abbreviation %></abbr></th>
+            <th scope="col" class="<%= cell_classes %> text-right"><%= abbreviated_header(abbreviation, title) %></th>
           <% end %>
           <th scope="col" class="<%= cell_classes %> text-right"><abbr title="Pontos">Pts</abbr></th>
         </tr>

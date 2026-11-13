@@ -4,6 +4,7 @@ module Ui
     include FormControlHelper
     include StateNoticeHelper
     include PasswordRevealHelper
+    include ScoutLegendHelper
 
     STATES = %i[default loading empty error].freeze
 
