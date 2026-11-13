@@ -536,3 +536,11 @@ Tickets **0079–0084**, executados junto com a work queue na ordem 0079 → 008
 
 Ambiente local (WSL): Postgres do projeto na porta 5440 (`~/.local/share/futebol-pg`); rodar `bin/dev` (ou `bin/rails tailwindcss:build`) antes de abrir o Admin, porque `rails s` sozinho serve um `app/assets/builds/active_admin.css` velho.
 
+
+## Gestor, campeonato, partida ao vivo e participantes
+
+Tickets **0085+**, na branch canônica `cursor/admin-ui-docs-e3a0` (PR #87), um commit assinado por ticket.
+
+| Bloco | Ticket | Status | Artefatos | Observações |
+|---|---|---|---|---|
+| G0 — bug escalações | [0085](../tickets/TICKET-0085.md) | ok | `Cartola::Lineup` ransackable | `/gestor/esquadrao_lineups` voltou a abrir com filtros |

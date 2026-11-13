@@ -86,6 +86,7 @@
 | [0082](TICKET-0082.md) | P1 | Base visual pública: bundles CSS, escala, campos, foco | 0080 | — |
 | [0083](TICKET-0083.md) | P2 | Consistência pública: botões, tabelas, ARIA | 0082 | — |
 | [0084](TICKET-0084.md) | A4 | Consistência Admin/Gestor: i18n, papéis de botão, CSV | 0081, 0077 | — |
+| [0085](TICKET-0085.md) | G0 | Bug: Escalações do Gestor dão 500 (Ransack) | 0084 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -102,3 +103,4 @@
 - UI/UX Admin/Gestor (status-first): 0068 → 0069 → 0070 → 0071 → 0072 → 0073
 - UI/UX Admin/Gestor (work queue): 0074 → {0075, 0076} → 0077 → 0078
 - Auditoria UI/UX completa (ordem dos commits): 0079 → 0080 → 0081 → 0075 → 0076 → 0074 → 0077 → 0084 → 0082 → 0083 → 0078
+- Gestor, campeonato, partida ao vivo e participantes (ordem dos commits): 0085
