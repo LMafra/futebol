@@ -29,8 +29,9 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
   end
 
   action_item :new_match, only: :show, if: -> { authorized?(:enroll, resource) && resource.teams.many? } do
-    link_to 'Agendar partida', new_gestor_match_path(match: { championship_id: resource.id }),
-            class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
+    safe_join([modal_trigger('Agendar partida', :match, new_gestor_match_path(match: { championship_id: resource.id }),
+                             classes: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES),
+               render('admin/modals/match', championship: resource)])
   end
 
   action_item :continue_draft, only: :show, if: -> { resource.draft? && authorized?(:update, resource) } do
@@ -39,8 +40,9 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
   end
 
   action_item :new_pool, only: :show, if: -> { authorized?(:create, Bolao::Pool.new(championship: resource)) } do
-    link_to 'Criar bolão', new_gestor_pool_path(pool: { championship_id: resource.id }),
-            class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
+    safe_join([modal_trigger('Criar bolão', :pool, new_gestor_pool_path(pool: { championship_id: resource.id }),
+                             classes: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES),
+               render('admin/modals/pool', championship: resource, namespace: :gestor)])
   end
 
   show title: :to_s do

@@ -13,7 +13,7 @@
     <%= render Ui::EmptyStateComponent.new(title: "Nenhuma partida ainda", description: "Inscreva os times e agende a primeira partida.") do |empty| %>
       <% if namespace == :gestor && championship.teams.many? %>
         <% empty.with_action do %>
-          <%= link_to "Agendar partida", new_gestor_match_path(match: { championship_id: championship.id }), class: AdminHelper::ADMIN_BUTTON_CLASSES %>
+          <%= modal_trigger "Agendar partida", :match, new_gestor_match_path(match: { championship_id: championship.id }) %>
         <% end %>
       <% end %>
     <% end %>

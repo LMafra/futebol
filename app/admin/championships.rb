@@ -40,8 +40,9 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
   end
 
   action_item :new_pool, only: :show, if: -> { authorized?(:create, Bolao::Pool.new(championship: resource)) } do
-    link_to 'Criar bolão', new_admin_pool_path(pool: { championship_id: resource.id }),
-            class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
+    safe_join([modal_trigger('Criar bolão', :pool, new_admin_pool_path(pool: { championship_id: resource.id }),
+                             classes: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES),
+               render('admin/modals/pool', championship: resource, namespace: :admin)])
   end
 
   show title: :to_s do

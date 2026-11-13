@@ -83,6 +83,7 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
 
   controller do
     include GestorResource
+    include ModalFormResponses
 
     private
 

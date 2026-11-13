@@ -42,12 +42,8 @@ ActiveAdmin.register Bolao::Pool, as: 'Pool', namespace: :gestor do
   end
 
   controller do
-    before_build { |pool| pool.owner = current_user }
+    include ModalFormResponses
 
-    def create
-      create! do |success, _failure|
-        success.html { redirect_to resource_path, notice: "Bolão criado. Compartilhe o código #{resource.code}." }
-      end
-    end
+    before_build { |pool| pool.owner = current_user }
   end
 end

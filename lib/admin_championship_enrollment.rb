@@ -2,10 +2,14 @@
 # enrolled teams and member actions to enroll and unenroll them, authorized as enroll?/unenroll?.
 module AdminChampionshipEnrollment
   ENROLL = proc do
+    controller { include ModalFormRedirects }
+
     member_action :enroll, method: :post do
       enrollment = resource.championship_teams.build(team: Core::Team.find_by(id: params[:team_id]))
       if enrollment.save
         redirect_to resource_path, notice: "#{enrollment.team} inscrito no campeonato"
+      elsif modal_return_path
+        redirect_back_to_modal(enrollment.errors, values: { 'team_id' => params[:team_id].to_s })
       else
         redirect_to resource_path, alert: "Não foi possível inscrever: #{enrollment.errors.full_messages.to_sentence}"
       end

@@ -7,6 +7,7 @@ ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
 
   controller do
     include GestorResource
+    include ModalFormResponses
 
     before_build do |team|
       team.manager = current_user if current_user.manager?
@@ -15,8 +16,15 @@ ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
   end
 
   action_item :new_player, only: :show, if: -> { authorized?(:create, Core::Player.new(team: resource)) } do
-    link_to 'Cadastrar jogador', new_gestor_player_path(player: { team_id: resource.id }),
-            class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
+    safe_join([modal_trigger('Cadastrar jogador', :player, new_gestor_player_path(player: { team_id: resource.id }),
+                             classes: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES),
+               render('admin/modals/player', team: resource, namespace: :gestor)])
+  end
+
+  config.remove_action_item(:new)
+  action_item :new, only: :index, if: -> { new_action_authorized?(Core::Team) } do
+    safe_join([modal_trigger('Novo time', :team, new_gestor_team_path),
+               render('admin/modals/team', namespace: :gestor)])
   end
 
   AdminNameSearch.register(self)

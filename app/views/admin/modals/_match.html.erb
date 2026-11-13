@@ -1,0 +1,13 @@
+<%# Agendar partida em diálogo, na página do campeonato do Gestor: só times inscritos. %>
+<% teams = championship.teams.order(:name) %>
+<%= modal_form :match, title: "Agendar partida", submit: "Agendar partida",
+               record: Core::Match.new(championship:), url: gestor_matches_path do |f| %>
+  <%= f.hidden_field :championship_id, id: nil %>
+  <%= modal_field f, :home_team_id, label: "Mandante", include_blank: true, required: true,
+                  choices: options_from_collection_for_select(teams, :id, :name, f.object.home_team_id),
+                  hint: "Só times inscritos no campeonato." %>
+  <%= modal_field f, :away_team_id, label: "Visitante", include_blank: true, required: true,
+                  choices: options_from_collection_for_select(teams, :id, :name, f.object.away_team_id) %>
+  <%= modal_field f, :match_date, as: :datetime_local_field, required: true %>
+  <%= modal_field f, :round, label: "Rodada", as: :number_field, min: 1, inputmode: "numeric" %>
+<% end %>

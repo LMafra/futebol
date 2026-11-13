@@ -35,15 +35,10 @@
   <% if can_enroll %>
     <% candidates = enrollable_teams(championship) %>
     <% if candidates.any? %>
-      <%= form_with url: public_send(:"enroll_#{namespace}_championship_path", championship), method: :post,
-                    class: "flex flex-wrap items-end gap-3", data: { role: "enroll-form" } do %>
-        <div class="min-w-0 flex-1">
-          <label for="enroll-team" class="<%= AdminHelper::ADMIN_LABEL_CLASSES %>">Time</label>
-          <%= select_tag :team_id, options_from_collection_for_select(candidates, :id, :name),
-                         id: "enroll-team", class: AdminHelper::ADMIN_INPUT_CLASSES %>
-        </div>
-        <%= button_tag "Inscrever time", type: :submit, class: AdminHelper::ADMIN_BUTTON_CLASSES %>
-      <% end %>
+      <div data-role="enroll-form">
+        <%= modal_trigger "Inscrever time", :enroll, public_send(:"#{namespace}_championship_path", championship, modal: :enroll) %>
+        <%= render "admin/modals/enroll", championship:, candidates:, namespace: %>
+      </div>
     <% else %>
       <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">
         Todos os seus times já estão inscritos.

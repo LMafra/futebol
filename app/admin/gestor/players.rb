@@ -9,6 +9,7 @@ ActiveAdmin.register Core::Player, as: 'Player', namespace: :gestor do
 
   controller do
     include GestorResource
+    include ModalFormResponses
 
     before_build { |record| assign_external_id(record) }
   end

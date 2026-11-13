@@ -136,7 +136,8 @@ ActiveAdmin.setup do |config|
   # == Flash keys
   #
   # manager_reject_error carries a user id back to the reject form (field-level error), not a message.
-  config.flash_keys_to_except = %w[timedout manager_reject_error]
+  config.flash_keys_to_except = %w[timedout manager_reject_error modal]
+  config.permitted_params = %i[utf8 _method authenticity_token commit id modal return_to]
 
   # == Admin Comments
   #
@@ -315,6 +316,7 @@ ActiveAdmin.importmap.draw do
   pin 'controllers/image_preview_controller', to: 'controllers/image_preview_controller.js'
   pin 'controllers/collection_controller', to: 'controllers/collection_controller.js'
   pin 'controllers/dismissible_controller', to: 'controllers/dismissible_controller.js'
+  pin 'controllers/modal_controller', to: 'controllers/modal_controller.js'
 end
 
 # ActiveAdmin's engine sweeps its map only for the gem's own JavaScript (and runs after this file), so the admin map

@@ -3,10 +3,18 @@ ActiveAdmin.register Core::Team, as: 'Team' do
 
   permit_params :name, :short_name, :crest, :remove_crest, :external_id, :manager_id, :captain_name, :captain_phone
   includes :manager
+  controller { include ModalFormResponses }
 
   action_item :new_player, only: :show, if: -> { authorized?(:create, Core::Player.new(team: resource)) } do
-    link_to 'Cadastrar jogador', new_admin_player_path(player: { team_id: resource.id }),
-            class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
+    safe_join([modal_trigger('Cadastrar jogador', :player, new_admin_player_path(player: { team_id: resource.id }),
+                             classes: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES),
+               render('admin/modals/player', team: resource, namespace: :admin)])
+  end
+
+  config.remove_action_item(:new)
+  action_item :new, only: :index, if: -> { new_action_authorized?(Core::Team) } do
+    safe_join([modal_trigger('Novo time', :team, new_admin_team_path),
+               render('admin/modals/team', namespace: :admin)])
   end
 
   AdminNameSearch.register(self)

@@ -4,6 +4,7 @@ ActiveAdmin.register Core::Player, as: 'Player' do
 
   permit_params :team_id, :name, :position, :shirt_number, :base_value, :external_id
   includes :team
+  controller { include ModalFormResponses }
 
   AdminNameSearch.register(self)
   filter :team

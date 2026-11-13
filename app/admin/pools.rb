@@ -18,6 +18,8 @@ ActiveAdmin.register Bolao::Pool, as: 'Pool' do
   end
 
   controller do
+    include ModalFormResponses
+
     before_build { |pool| pool.owner ||= pool.championship&.manager || current_user }
   end
 

@@ -7,7 +7,7 @@
   <% c.empty do %>
     <%= render Ui::EmptyStateComponent.new(title: "Nenhum jogador ainda", description: "Cadastre os jogadores para escalar no Esquadrão e registrar os lances.") do |empty| %>
       <% empty.with_action do %>
-        <%= link_to "Cadastrar jogador", public_send(:"new_#{namespace}_player_path", player: { team_id: team.id }), class: AdminHelper::ADMIN_BUTTON_CLASSES %>
+        <%= modal_trigger "Cadastrar jogador", :player, public_send(:"new_#{namespace}_player_path", player: { team_id: team.id }) %>
       <% end %>
     <% end %>
   <% end %>

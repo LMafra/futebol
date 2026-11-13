@@ -4,6 +4,7 @@ import AutocompleteController from "controllers/autocomplete_controller"
 import CollectionController from "controllers/collection_controller"
 import DismissController from "controllers/dismiss_controller"
 import DismissibleController from "controllers/dismissible_controller"
+import ModalController from "controllers/modal_controller"
 import ImagePreviewController from "controllers/image_preview_controller"
 import ScoutsController from "controllers/scouts_controller"
 
@@ -39,5 +40,6 @@ application.register("autocomplete", AutocompleteController)
 application.register("collection", CollectionController)
 application.register("dismiss", DismissController)
 application.register("dismissible", DismissibleController)
+application.register("modal", ModalController)
 application.register("image-preview", ImagePreviewController)
 application.register("scouts", ScoutsController)

@@ -1,0 +1,13 @@
+<%# Novo jogador em diálogo, na página do time do Admin e do Gestor. %>
+<%= modal_form :player, title: "Cadastrar jogador em #{team.name}", submit: "Cadastrar jogador",
+               record: Core::Player.new(team:), url: public_send(:"#{namespace}_players_path") do |f| %>
+  <%= f.hidden_field :team_id, id: nil %>
+  <%= modal_field f, :name, required: true %>
+  <%= modal_field f, :position, choices: Core::Player::POSITIONS, include_blank: true, required: true %>
+  <%= modal_field f, :shirt_number, as: :number_field, min: 0, inputmode: "numeric" %>
+  <%= modal_field f, :base_value, label: "Valor base (C$)", as: :number_field, min: 0, step: "0.01",
+                  hint: "Em branco: o valor base do campeonato no Esquadrão." %>
+  <% if namespace == :admin %>
+    <%= modal_field f, :external_id, required: true %>
+  <% end %>
+<% end %>
