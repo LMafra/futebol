@@ -3,6 +3,7 @@ module Ui
     include ButtonClassesHelper
     include FormControlHelper
     include StateNoticeHelper
+    include PasswordRevealHelper
 
     STATES = %i[default loading empty error].freeze
 

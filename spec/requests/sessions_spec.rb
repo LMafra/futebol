@@ -13,6 +13,9 @@ RSpec.describe 'Sessions', type: :request do
     get new_session_path
 
     expect(response).to have_http_status(:ok)
+    page = Nokogiri::HTML(response.body)
+    expect(page.at_css('[data-controller="password-reveal"] input#password[type="password"]')).to be_present
+    expect(page.at_css('[data-controller="password-reveal"] button[aria-pressed="false"]')).to be_present
   end
 
   it 'serves the login page at /entrar too' do

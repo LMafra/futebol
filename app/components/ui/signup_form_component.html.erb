@@ -10,7 +10,13 @@
       <% FIELDS.each do |field| %>
         <div>
           <%= form.label field.attribute, field.label, class: "text-sm font-semibold" %>
-          <%= form.public_send(field.input, field.attribute, **field_options(field)) %>
+          <% if password?(field) %>
+            <%= password_reveal do %>
+              <%= form.password_field field.attribute, **field_options(field) %>
+            <% end %>
+          <% else %>
+            <%= form.public_send(field.input, field.attribute, **field_options(field)) %>
+          <% end %>
           <% if (message = field_error(field.attribute)) %>
             <p id="<%= error_id(field.attribute) %>" class="mt-1 text-sm font-semibold text-ink" data-role="field-error"><%= field.label %> <%= message %></p>
           <% end %>

@@ -24,9 +24,11 @@ module Ui
 
     def field_error(attribute) = user.errors[attribute].first
 
+    def password?(field) = field.input == :password_field
+
     def field_options(field)
-      options = { required: true, autocomplete: field.autocomplete, class: input_classes(field.attribute) }
-      options.merge!(minlength: 8, maxlength: 72) if field.input == :password_field
+      options = { required: true, autocomplete: field.autocomplete, class: input_classes(field) }
+      options.merge!(minlength: 8, maxlength: 72) if password?(field)
       return options unless field_error(field.attribute)
 
       options.merge(aria: { invalid: true, describedby: error_id(field.attribute) })
@@ -34,7 +36,10 @@ module Ui
 
     def error_id(attribute) = "signup-#{attribute}-error"
 
-    def input_classes(attribute) = form_control_classes('mt-1 block w-full', invalid: field_error(attribute).present?)
+    def input_classes(field)
+      layout = password?(field) ? "block w-full #{PasswordRevealHelper::PASSWORD_INPUT_PADDING}" : 'mt-1 block w-full'
+      form_control_classes(layout, invalid: field_error(field.attribute).present?)
+    end
 
     def button_classes = primary_button_classes('w-fit')
   end

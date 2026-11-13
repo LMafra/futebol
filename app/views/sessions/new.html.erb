@@ -14,7 +14,9 @@
 
     <div>
       <%= form.label :password, "Senha", class: "text-sm font-semibold" %>
-      <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72, class: form_control_classes("mt-1 block w-full") %>
+      <%= password_reveal do %>
+        <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72, class: form_control_classes("block w-full", PasswordRevealHelper::PASSWORD_INPUT_PADDING) %>
+      <% end %>
     </div>
 
     <div class="flex flex-wrap items-center gap-4">

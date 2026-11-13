@@ -544,3 +544,4 @@ Tickets **0085+**, na branch canônica `cursor/admin-ui-docs-e3a0` (PR #87), um 
 | Bloco | Ticket | Status | Artefatos | Observações |
 |---|---|---|---|---|
 | G0 — bug escalações | [0085](../tickets/TICKET-0085.md) | ok | `Cartola::Lineup` ransackable | `/gestor/esquadrao_lineups` voltou a abrir com filtros |
+| G1 — mostrar senha | [0086](../tickets/TICKET-0086.md) | ok | `PasswordRevealHelper`, `password_reveal_controller.js` | login, cadastro e redefinição; botão 48px com `aria-pressed`, oculto sem JS |
