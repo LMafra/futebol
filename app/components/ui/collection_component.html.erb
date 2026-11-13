@@ -1,0 +1,192 @@
+<section id="<%= id %>" class="flex w-full flex-col gap-4" data-controller="collection" data-collection-key-value="<%= id %>" data-collection-view-value="<%= mode %>" data-collection-views-value="<%= views.keys.to_json %>" data-mode="<%= mode %>" <%= tag.attributes(root_attributes(label: text(:label))) %>>
+  <% if views.size > 1 || mobile_sort? %>
+    <div class="flex flex-wrap items-center justify-between gap-3" data-role="collection-toolbar">
+      <% if views.size > 1 %>
+        <nav aria-label="Visualização" class="inline-flex rounded-md border border-graphite/70 bg-white p-1" data-role="view-toggle">
+          <% views.each do |view, label| %>
+            <%= link_to label, view_url(view),
+                        class: "inline-flex min-h-12 items-center rounded-sm px-3 text-sm font-semibold no-underline #{view == mode ? 'bg-ink text-paper' : 'text-ink'}",
+                        aria: { current: (view == mode ? "true" : nil) },
+                        data: { action: "collection#choose", collection_view_param: view } %>
+          <% end %>
+        </nav>
+      <% end %>
+      <% if mobile_sort? %>
+        <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm md:hidden" data-role="mobile-sort">
+          <span class="text-graphite"><%= text(:sort) %></span>
+          <% columns.select(&:sortable).each do |column| %>
+            <%= link_to "#{column.label}#{sort_arrow(column)}", sort_url(column), class: inline_link_classes(tone: :ink), aria: { current: (current_sort?(column) ? "true" : nil) } %>
+          <% end %>
+        </p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% case rendered_state %>
+  <% when :default %>
+    <% case mode %>
+    <% when :table %>
+      <table class="w-full border-collapse text-sm max-md:block" data-role="collection-table">
+        <thead class="bg-pitch text-paper max-md:sr-only">
+          <tr class="text-sm font-semibold uppercase tracking-wide">
+            <% if selectable? %>
+              <th scope="col" class="w-12 px-3 py-3">
+                <input type="checkbox" class="size-6 cursor-pointer" aria-label="<%= text(:select_all) %>" data-collection-target="all" data-action="collection#toggleAll">
+              </th>
+            <% end %>
+            <% columns.each do |column| %>
+              <th scope="col" class="px-3 py-3 <%= column.numeric ? 'text-right tabular-nums' : 'text-start' %>" <%= tag.attributes(aria: { sort: aria_sort(column) }) %>>
+                <% if column.sortable %>
+                  <%= link_to "#{column.label}#{sort_arrow(column)}", sort_url(column), class: "inline-flex min-h-12 items-center text-paper underline underline-offset-2" %>
+                <% else %>
+                  <%= column.label %>
+                <% end %>
+              </th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody class="max-md:grid max-md:gap-3">
+          <% items.each_with_index do |item, index| %>
+            <tr id="<%= item_dom_id(item) %>" class="border-b border-rule last:border-b-0 <%= row_classes(index) %> max-md:flex max-md:flex-col max-md:rounded-md max-md:border max-md:bg-white max-md:p-4" data-role="collection-item">
+              <% if selectable? %>
+                <td class="px-3 py-4 max-md:order-last max-md:px-0 max-md:pt-3">
+                  <label class="inline-flex min-h-12 cursor-pointer items-center gap-2 md:min-h-0">
+                    <input type="checkbox" name="ids[]" value="<%= item_id(item) %>" form="<%= id %>-bulk" class="size-6" data-collection-target="item" data-action="collection#count">
+                    <span class="md:sr-only"><%= text(:select_item) %></span>
+                  </label>
+                </td>
+              <% end %>
+              <% columns.each do |column| %>
+                <% if column == primary_column %>
+                  <th scope="row" class="px-3 py-4 text-start font-semibold text-ink max-md:order-first max-md:px-0 max-md:pt-0 max-md:pb-2 max-md:text-lg" data-role="collection-primary"><%= cell(column, item) %></th>
+                <% else %>
+                  <td class="px-3 py-4 <%= 'md:text-right tabular-nums' if column.numeric %> max-md:flex max-md:items-baseline max-md:justify-between max-md:gap-3 max-md:border-t max-md:border-rule max-md:px-0 max-md:py-2 max-md:before:text-xs max-md:before:font-semibold max-md:before:uppercase max-md:before:tracking-wide max-md:before:text-graphite max-md:before:content-[attr(data-label)]" data-label="<%= column.mobile_label %>"><%= cell(column, item) %></td>
+                <% end %>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% when :cards, :grid %>
+      <ul class="grid gap-3 <%= mode == :grid ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' : 'sm:grid-cols-2 lg:grid-cols-3' %>" data-role="collection-<%= mode %>">
+        <% items.each do |item| %>
+          <li id="<%= item_dom_id(item) %>" class="relative flex flex-col gap-2 rounded-md border border-rule bg-white p-4 <%= 'items-center text-center' if mode == :grid %>" data-role="collection-item">
+            <% if custom_card? %>
+              <%= card_body(item) %>
+            <% else %>
+              <% if media_column %><div class="<%= mode == :grid ? 'size-16' : 'size-12' %> flex items-center justify-center"><%= cell(media_column, item) %></div><% end %>
+              <p class="font-display text-xl text-ink" data-role="collection-primary"><%= cell(primary_column, item) %></p>
+              <dl class="grid gap-1 text-sm <%= 'w-full' if mode == :grid %>">
+                <% (mode == :grid ? detail_columns.first(1) : detail_columns).each do |column| %>
+                  <div class="flex items-baseline justify-between gap-3 <%= 'justify-center' if mode == :grid %>">
+                    <dt class="<%= mode == :grid ? 'sr-only' : 'text-xs font-semibold uppercase tracking-wide text-graphite' %>"><%= column.mobile_label %></dt>
+                    <dd class="text-ink <%= 'tabular-nums' if column.numeric %>"><%= cell(column, item) %></dd>
+                  </div>
+                <% end %>
+              </dl>
+            <% end %>
+            <% if selectable? %>
+              <label class="inline-flex min-h-12 cursor-pointer items-center gap-2 text-sm">
+                <input type="checkbox" name="ids[]" value="<%= item_id(item) %>" form="<%= id %>-bulk" class="size-6" data-collection-target="item" data-action="collection#count">
+                <%= text(:select_item) %>
+              </label>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% when :grouped, :agenda, :timeline %>
+      <div class="flex flex-col gap-4 <%= 'relative border-s-2 border-rule ps-6' if mode == :timeline %>" data-role="collection-<%= mode %>">
+        <% groups.each do |key, group_items| %>
+          <% list = capture do %>
+            <ul class="divide-y divide-rule rounded-md border border-rule bg-white">
+              <% group_items.each do |item| %>
+                <li id="<%= item_dom_id(item) %>" class="relative flex min-h-12 flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3" data-role="collection-item">
+                  <% if mode == :timeline %><span class="absolute -start-[1.95rem] top-6 size-3 rounded-full border-2 border-paper bg-pitch" aria-hidden="true"></span><% end %>
+                  <% if selectable? %>
+                    <input type="checkbox" name="ids[]" value="<%= item_id(item) %>" form="<%= id %>-bulk" class="size-6" aria-label="<%= text(:select_item) %>" data-collection-target="item" data-action="collection#count">
+                  <% end %>
+                  <% if custom_card? %>
+                    <%= card_body(item) %>
+                  <% else %>
+                    <span class="font-semibold text-ink" data-role="collection-primary"><%= cell(primary_column, item) %></span>
+                    <% detail_columns.each do |column| %>
+                      <span class="text-sm text-graphite <%= 'tabular-nums' if column.numeric %>"><span class="sr-only"><%= column.mobile_label %>: </span><%= cell(column, item) %></span>
+                    <% end %>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          <% end %>
+          <% if mode == :grouped %>
+            <details class="group rounded-md" <%= "open" if group_open?(key) %> data-role="collection-group">
+              <summary class="flex min-h-12 cursor-pointer items-center justify-between gap-3 rounded-md border border-rule bg-white px-4 font-display text-xl text-ink">
+                <span><%= group_label(key) %></span>
+                <span class="flex items-center gap-2 text-sm text-graphite tabular-nums">
+                  <%= group_items.size %>
+                  <span class="transition-transform duration-fast group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true">▾</span>
+                </span>
+              </summary>
+              <div class="pt-2"><%= list %></div>
+            </details>
+          <% else %>
+            <section aria-label="<%= group_label(key) %>" data-role="collection-group">
+              <h3 class="mb-2 font-display text-xl text-ink"><%= group_label(key) %></h3>
+              <%= list %>
+            </section>
+          <% end %>
+        <% end %>
+      </div>
+    <% when :master_detail %>
+      <% current = selected_item %>
+      <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]" data-role="collection-master-detail">
+        <nav aria-label="<%= text(:label) %>" class="<%= 'max-md:hidden' if current %>">
+          <ul class="divide-y divide-rule rounded-md border border-rule bg-white">
+            <% items.each do |item| %>
+              <li id="<%= item_dom_id(item) %>" data-role="collection-item">
+                <%= link_to detail_url(item), class: "flex min-h-12 items-center justify-between gap-3 px-4 py-3 text-ink underline-offset-2 aria-[current=true]:bg-rule aria-[current=true]:font-semibold #{inline_link_classes(tone: :ink)}", aria: { current: (item == current ? "true" : nil) } do %>
+                  <span><%= cell(primary_column, item) %></span>
+                  <% detail_columns.first(1).each do |column| %>
+                    <span class="text-sm text-graphite tabular-nums"><%= cell(column, item) %></span>
+                  <% end %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </nav>
+        <div class="<%= 'max-md:hidden' unless current %>" data-role="collection-detail">
+          <% if current %>
+            <p class="mb-3 md:hidden"><%= link_to text(:back), list_url, class: support_link_classes %></p>
+            <%= detail_body(current) %>
+          <% else %>
+            <%= empty_notice(text(:pick_detail)) %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if bulk_bar? %>
+      <form id="<%= id %>-bulk" method="post" class="sticky bottom-0 z-10 flex flex-wrap items-center gap-3 rounded-md border border-ink bg-white p-3 shadow-lg" data-turbo="false" data-collection-target="bar" data-role="bulk-bar">
+        <input type="hidden" name="authenticity_token" value="<%= helpers.form_authenticity_token %>" autocomplete="off">
+        <p class="text-sm font-semibold text-ink" aria-live="polite"><%= text(:selected) %> <span class="tabular-nums" data-collection-target="count">0</span></p>
+        <% bulk_actions.each do |action| %>
+          <button type="submit" formaction="<%= action.url %>" name="_method" value="<%= action.http_method %>"
+                  class="<%= action.danger ? danger_button_classes : secondary_button_classes %>"
+                  <%= tag.attributes(data: { action: "collection#confirm", collection_confirm_param: action.confirm }) %>><%= action.label %></button>
+        <% end %>
+      </form>
+    <% end %>
+  <% when :loading %>
+    <span class="sr-only">Carregando…</span>
+    <div class="flex flex-col gap-2" aria-hidden="true">
+      <% 4.times do %>
+        <div class="h-12 w-full <%= skeleton_classes %>" data-role="skeleton"></div>
+      <% end %>
+    </div>
+  <% when :empty %>
+    <%= empty_content || empty_notice(text(:empty)) %>
+  <% when :error %>
+    <div class="<%= error_classes %>" role="alert">
+      <span class="font-bold">Não foi possível carregar a lista.</span>
+    </div>
+  <% end %>
+</section>

@@ -301,6 +301,7 @@ ActiveAdmin.importmap.draw do
   pin 'controllers/dismiss_controller', to: 'controllers/dismiss_controller.js'
   pin 'controllers/scouts_controller', to: 'controllers/scouts_controller.js'
   pin 'controllers/image_preview_controller', to: 'controllers/image_preview_controller.js'
+  pin 'controllers/collection_controller', to: 'controllers/collection_controller.js'
 end
 
 # ActiveAdmin's engine sweeps its map only for the gem's own JavaScript (and runs after this file), so the admin map
