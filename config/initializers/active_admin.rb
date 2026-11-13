@@ -136,7 +136,7 @@ ActiveAdmin.setup do |config|
   # == Flash keys
   #
   # manager_reject_error carries a user id back to the reject form (field-level error), not a message.
-  config.flash_keys_to_except = %w[timedout manager_reject_error modal]
+  config.flash_keys_to_except = %w[timedout manager_reject_error modal lineup_edit]
   config.permitted_params = %i[utf8 _method authenticity_token commit id modal return_to]
 
   # == Admin Comments

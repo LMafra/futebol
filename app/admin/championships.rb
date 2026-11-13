@@ -29,8 +29,8 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
             class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
   end
 
-  action_item :esquadrao_rankings, only: :show do
-    link_to 'Rankings do Esquadrão', admin_esquadraorankings_path(championship_id: resource.id),
+  action_item :esquadrao, only: :show do
+    link_to 'Esquadrão', admin_esquadrao_path(championship_id: resource.id),
             class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
   end
 

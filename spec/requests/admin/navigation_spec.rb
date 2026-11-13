@@ -17,7 +17,7 @@ RSpec.describe 'ActiveAdmin task navigation', type: :request do
         'Painel Administrativo' => [],
         'Campeonatos' => %w[Campeonatos Partidas],
         'Times' => %w[Times Jogadores],
-        'Participantes' => ['Bolões', 'Times do Esquadrão', 'Rankings do Esquadrão', 'Usuários'],
+        'Participantes' => ['Bolões', 'Esquadrão', 'Times do Esquadrão', 'Usuários'],
         'Configurações' => ['Regras do Bolão', 'Regras do Esquadrão', 'Testar regras', 'Importações CSV',
                             'Histórico de auditoria', 'Comentários']
       )
@@ -36,7 +36,7 @@ RSpec.describe 'ActiveAdmin task navigation', type: :request do
         'Painel' => [],
         'Campeonatos' => %w[Campeonatos Partidas],
         'Times' => %w[Times Jogadores],
-        'Participantes' => ['Bolões', 'Escalações do Esquadrão'],
+        'Participantes' => %w[Bolões Esquadrão],
         'Configurações' => ['Regras do Bolão']
       )
       expect(response.body).not_to include('Histórico de auditoria', '>Usuários<')

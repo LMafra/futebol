@@ -1,5 +1,5 @@
 ActiveAdmin.register Cartola::Squad, as: 'EsquadraoSquad' do
-  menu parent: 'Participantes', label: 'Times do Esquadrão', priority: 2
+  menu parent: 'Participantes', label: 'Times do Esquadrão', priority: 3
 
   permit_params :name, :user_id
   includes :user

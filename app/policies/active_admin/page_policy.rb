@@ -5,5 +5,6 @@ module ActiveAdmin
     def finalize? = admin?
     def revert? = admin?
     def record? = admin?
+    def update_lineup? = admin?
   end
 end

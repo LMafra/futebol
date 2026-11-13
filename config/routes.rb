@@ -46,7 +46,9 @@ Rails.application.routes.draw do
   end
 
   mount MissionControl::Jobs::Engine, at: '/admin/jobs'
-  get 'admin/cartolarankings', to: moved_to.call('/admin/esquadraorankings')
+  get 'admin/cartolarankings', to: moved_to.call('/admin/esquadrao')
+  get 'admin/esquadraorankings', to: moved_to.call('/admin/esquadrao')
+  get 'gestor/esquadrao_lineups(/*rest)', to: redirect('/gestor/esquadrao'), format: false
   get 'admin/cartola_scoring_rules(/*rest)', to: moved_to.call('/admin/esquadrao_scoring_rules'), format: false
   get 'admin/squads(/*rest)', to: moved_to.call('/admin/esquadrao_squads'), format: false
   # ActiveAdmin registers comments in every namespace even with comments disabled for :gestor.

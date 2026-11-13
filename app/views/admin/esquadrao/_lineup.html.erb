@@ -1,0 +1,46 @@
+<%# Escalação de um participante na rodada: jogadores por posição com os pontos (capitão em dobro) e Editar. %>
+<% lineup = entry.lineup %>
+<article class="flex flex-col gap-4 rounded-md border border-rule bg-white p-4" data-role="lineup-detail" data-lineup-id="<%= lineup.id %>">
+  <header class="flex flex-wrap items-start justify-between gap-3">
+    <div>
+      <h4 class="font-display text-xl font-semibold text-ink"><%= entry.name %></h4>
+      <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>"><%= lineup.squad.name %> · <%= lineup.formation %></p>
+    </div>
+    <p class="font-numeric text-2xl font-bold tabular-nums text-ink" data-role="lineup-points"><%= format("%.2f", entry.points) %> <span class="text-sm font-body font-normal text-graphite">pts</span></p>
+  </header>
+
+  <% if editing %>
+    <%= render "admin/esquadrao/lineup_form", board:, lineup: %>
+  <% else %>
+    <% by_slot = lineup.players_by_slot %>
+    <dl class="flex flex-col gap-3">
+      <% Core::Player::SLOTS.each do |slot| %>
+        <% next if by_slot[slot.to_sym].blank? %>
+        <div>
+          <dt class="text-sm font-semibold uppercase tracking-wide text-graphite"><%= Cartola::Lineup::SLOT_LABELS.fetch(slot.to_sym).capitalize %></dt>
+          <% by_slot[slot.to_sym].each do |player| %>
+            <% captain = player.id == lineup.captain_id %>
+            <dd class="flex items-center justify-between gap-3 border-b border-rule py-2" data-role="lineup-player">
+              <span class="min-w-0">
+                <span class="font-semibold text-ink"><%= player.name %></span>
+                <span class="text-sm text-graphite"><%= player.team&.short_name %></span>
+                <% if captain %>
+                  <span class="ms-1 rounded-sm bg-ink px-1.5 text-xs font-bold text-white" title="Capitão: pontos em dobro">C</span>
+                <% end %>
+              </span>
+              <span class="tabular-nums text-ink"><%= format("%.2f", board.points_of(player) * (captain ? 2 : 1)) %></span>
+            </dd>
+          <% end %>
+        </div>
+      <% end %>
+    </dl>
+
+    <% if can_fix %>
+      <div class="border-t border-rule pt-3">
+        <%= link_to "Editar escalação", "?#{request.query_parameters.merge('escalacao' => lineup.id, 'editar' => 1).to_query}#lineups",
+                    class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES,
+                    aria: { label: "Editar a escalação de #{entry.name}" } %>
+      </div>
+    <% end %>
+  <% end %>
+</article>

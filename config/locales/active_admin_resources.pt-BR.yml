@@ -36,9 +36,6 @@ pt-BR:
       esquadrao_scoring_rule:
         one: Regra do Esquadrão
         other: Regras do Esquadrão
-      esquadrao_lineup:
-        one: Escalação
-        other: Escalações
       core/championship:
         one: Campeonato
         other: Campeonatos
