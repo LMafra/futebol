@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000057) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000059) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -245,6 +245,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000057) do
     t.check_constraint "yellow_card_penalty >= 0::numeric", name: "cartola_scoring_rules_yellow_card_penalty_non_negative"
   end
 
+  create_table "cartola_scout_events", force: :cascade do |t|
+    t.bigint "match_id", null: false
+    t.bigint "player_id", null: false
+    t.bigint "team_id", null: false
+    t.bigint "recorded_by_id"
+    t.string "stat", null: false
+    t.string "period"
+    t.integer "minute"
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["match_id", "player_id", "stat"], name: "index_cartola_scout_events_kept", where: "(discarded_at IS NULL)"
+    t.index ["match_id"], name: "index_cartola_scout_events_on_match_id"
+    t.index ["player_id"], name: "index_cartola_scout_events_on_player_id"
+    t.index ["recorded_by_id"], name: "index_cartola_scout_events_on_recorded_by_id"
+    t.index ["team_id"], name: "index_cartola_scout_events_on_team_id"
+    t.check_constraint "minute IS NULL OR minute >= 0 AND minute <= 130", name: "cartola_scout_events_minute"
+    t.check_constraint "period IS NULL OR (period::text = ANY (ARRAY['first_half'::character varying, 'second_half'::character varying, 'extra_time'::character varying, 'penalties'::character varying]::text[]))", name: "cartola_scout_events_period"
+    t.check_constraint "stat::text = ANY (ARRAY['goals'::character varying, 'assists'::character varying, 'penalty_saves'::character varying, 'saves'::character varying, 'yellow_cards'::character varying, 'red_cards'::character varying, 'own_goals'::character varying]::text[])", name: "cartola_scout_events_stat"
+  end
+
   create_table "cartola_squads", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "name", null: false
@@ -450,6 +471,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000057) do
   add_foreign_key "cartola_player_value_histories", "core_players", column: "player_id"
   add_foreign_key "cartola_player_values", "core_championships", column: "championship_id"
   add_foreign_key "cartola_player_values", "core_players", column: "player_id"
+  add_foreign_key "cartola_scout_events", "core_matches", column: "match_id"
+  add_foreign_key "cartola_scout_events", "core_players", column: "player_id"
+  add_foreign_key "cartola_scout_events", "core_teams", column: "team_id"
+  add_foreign_key "cartola_scout_events", "core_users", column: "recorded_by_id"
   add_foreign_key "cartola_squads", "core_users", column: "user_id"
   add_foreign_key "cartola_wallets", "core_championships", column: "championship_id"
   add_foreign_key "cartola_wallets", "core_users", column: "user_id"
