@@ -6,6 +6,7 @@ ActiveAdmin.register Bolao::Pool, as: 'Pool' do
   includes :championship, :owner
 
   AdminNameSearch.register(self)
+  AdminPoolParticipants.register(self)
   filter :championship
 
   index do

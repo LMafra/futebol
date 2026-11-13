@@ -19,14 +19,7 @@ ActiveAdmin.register Bolao::Pool, as: 'Pool', namespace: :gestor do
     end
   end
 
-  show do
-    attributes_table do
-      row :name
-      row :championship
-      row('Código') { |pool| tag.span(pool.code, class: 'font-numeric text-xl tracking-widest') }
-      row('Participantes') { |pool| pool.memberships.size }
-    end
-  end
+  AdminPoolParticipants.register(self)
 
   form do |f|
     f.semantic_errors

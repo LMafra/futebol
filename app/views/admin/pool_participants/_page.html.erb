@@ -1,0 +1,47 @@
+<%# Participantes › Bolão: ranking, participantes com os palpites (?membro=ID) e as correções do organizador. %>
+<% pool = participants.pool %>
+<% can_fix = authorized?(:correct_prediction, pool) %>
+<div class="flex flex-col gap-6" data-role="pool-participants">
+  <section class="rounded-md border border-rule bg-white p-4" aria-labelledby="pool-ranking-title" data-role="pool-ranking">
+    <h3 id="pool-ranking-title" class="mb-3 font-display text-xl font-semibold text-ink">Ranking</h3>
+    <% if participants.members.empty? %>
+      <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Ninguém entrou ainda. Compartilhe o código <strong><%= pool.code %></strong>.</p>
+    <% else %>
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr><th scope="col" class="text-right">#</th><th scope="col">Participante</th><th scope="col" class="text-right">Palpites</th><th scope="col" class="text-right">Pontos</th></tr>
+          </thead>
+          <tbody>
+            <% participants.ranking.each do |standing| %>
+              <tr data-role="ranking-row">
+                <td class="text-right tabular-nums"><%= standing.position %></td>
+                <td><%= link_to standing.member.name, "?membro=#{standing.member.id}#members", class: inline_link_classes(tone: :ink) %></td>
+                <td class="text-right tabular-nums"><%= standing.member.predictions_count %></td>
+                <td class="text-right font-semibold tabular-nums"><%= standing.member.points %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </section>
+
+  <section id="members" aria-labelledby="pool-members-title">
+    <h3 id="pool-members-title" class="mb-3 font-display text-xl font-semibold text-ink">Participantes (<%= participants.members.size %>)</h3>
+    <%= render Ui::CollectionComponent.new(items: participants.members, id: "members", mode: :master_detail,
+                                           detail_param: "membro", selected: params[:membro],
+                                           texts: { label: "Participantes", pick_detail: "Escolha um participante para ver os palpites.",
+                                                    empty: "Ninguém entrou ainda." }) do |c| %>
+      <% c.column(:name, label: "Participante", primary: true) { |member| member.name } %>
+      <% c.column(:points, label: "Pontos", numeric: true) { |member| "#{member.points} pts" } %>
+      <% c.detail do |member| %>
+        <%= render "admin/pool_participants/member", member:, rows: participants.predictions_for(member), can_fix: %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <% if can_fix %>
+    <%= render "admin/pool_participants/modals", participants: %>
+  <% end %>
+</div>

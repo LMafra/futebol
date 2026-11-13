@@ -1,0 +1,30 @@
+<%# Diálogos de Participantes › Bolão: corrigir palpite e remover participante, os dois com motivo. %>
+<% pool = participants.pool %>
+<% namespace = active_admin_namespace.name %>
+<% correction = PredictionCorrectionForm.new(pool:, prediction_id: modal_value(:correction, :prediction_id) || params.dig(:correction, :prediction_id)) %>
+<% if (prediction = correction.prediction) %>
+  <% correction.home_guess, correction.away_guess = prediction.home_guess, prediction.away_guess %>
+<% end %>
+<%= modal_form :correction, title: (prediction ? "Corrigir palpite · #{prediction.match}" : "Corrigir palpite"),
+               submit: "Salvar correção", record: correction,
+               url: public_send(:"correct_prediction_#{namespace}_pool_path", pool) do |f| %>
+  <%= f.hidden_field :prediction_id %>
+  <div class="grid grid-cols-2 gap-3">
+    <%= modal_field f, :home_guess, label: "Mandante", as: :number_field, min: 0, inputmode: "numeric", required: true %>
+    <%= modal_field f, :away_guess, label: "Visitante", as: :number_field, min: 0, inputmode: "numeric", required: true %>
+  </div>
+  <%= modal_field f, :reason, label: admin_required_label("Motivo"), as: :text_area, rows: 3, required: true,
+                  hint: "Fica na auditoria. Se a partida já foi pontuada, os pontos do palpite são recalculados.",
+                  autofocus: true %>
+<% end %>
+
+<% removal = MemberRemovalForm.new(pool:, user_id: modal_value(:removal, :user_id) || params.dig(:removal, :user_id)) %>
+<% member = removal.membership&.user %>
+<%= modal_form :removal, title: (member ? "Remover #{member.name.presence || member} do bolão" : "Remover do bolão"),
+               submit: "Remover do bolão", record: removal,
+               url: public_send(:"remove_member_#{namespace}_pool_path", pool) do |f| %>
+  <%= f.hidden_field :user_id %>
+  <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Os palpites e os pontos dele neste bolão saem do ranking; ficam guardados no histórico.</p>
+  <%= modal_field f, :reason, label: admin_required_label("Motivo"), as: :text_area, rows: 3, required: true,
+                  hint: "Fica na auditoria.", autofocus: true %>
+<% end %>

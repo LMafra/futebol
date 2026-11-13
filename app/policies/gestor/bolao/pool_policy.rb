@@ -8,6 +8,8 @@ module Gestor
       def destroy? = false
       def destroy_all? = false
       def manage? = false
+      def correct_prediction? = admin? || (pool_record? && manages?(record.championship))
+      def remove_member? = correct_prediction?
 
       class Scope < ApplicationPolicy::Scope
         private

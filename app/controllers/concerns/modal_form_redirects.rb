@@ -15,6 +15,11 @@ module ModalFormRedirects
 
     flash[:modal] = { 'id' => params[:modal].to_s, 'values' => values, 'errors' => errors.to_hash,
                       'messages' => errors.full_messages }
-    redirect_to "#{modal_return_path}?#{{ modal: params[:modal] }.to_query}", status: :see_other
+    redirect_to with_modal_param(modal_return_path), status: :see_other
+  end
+
+  def with_modal_param(return_path)
+    path, query = return_path.split('?', 2)
+    "#{path}?#{Rack::Utils.parse_nested_query(query).merge('modal' => params[:modal].to_s).to_query}"
   end
 end

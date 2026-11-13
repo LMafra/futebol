@@ -48,9 +48,16 @@ module ModalFormHelper
   def modal_form_body(modal, record, url:, submit:, &fields)
     multipart = record.class.respond_to?(:attachment_reflections) && record.class.attachment_reflections.any?
     form_with(model: record || false, scope: record && modal, url:, multipart:, class: 'flex flex-col gap-4') do |form|
-      safe_join([hidden_field_tag(:modal, modal, id: nil), hidden_field_tag(:return_to, request.path, id: nil),
+      return_to = hidden_field_tag(:return_to, modal_return_to(modal), id: nil)
+      safe_join([hidden_field_tag(:modal, modal, id: nil), return_to,
                  modal_error_summary(modal), capture(form, &fields), modal_actions(submit)])
     end
+  end
+
+  # The page state (?membro=, ?view=) survives the round trip; the dialog's own params do not.
+  def modal_return_to(modal)
+    query = request.query_parameters.except('modal', modal.to_s)
+    query.empty? ? request.path : "#{request.path}?#{query.to_query}"
   end
 
   def modal_input(form, attribute, options)

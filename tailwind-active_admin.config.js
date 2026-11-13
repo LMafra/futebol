@@ -24,6 +24,7 @@ export default {
     './lib/admin_championship_form.rb',
     './lib/championship_summary.rb',
     './lib/admin_record_panels.rb',
+    './lib/admin_pool_participants.rb',
     './app/helpers/modal_form_helper.rb',
     './app/helpers/scout_legend_helper.rb',
     './app/helpers/link_classes_helper.rb',
