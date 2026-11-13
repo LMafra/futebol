@@ -20,6 +20,7 @@ export default {
     './app/helpers/admin_icons_helper.rb',
     './app/helpers/championship_wizard_helper.rb',
     './app/helpers/scout_legend_helper.rb',
+    './app/helpers/link_classes_helper.rb',
     './app/views/layouts/active_admin*.{erb,html}',
     './app/javascript/**/*.js'
   ],

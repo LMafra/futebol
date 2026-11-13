@@ -58,7 +58,7 @@
     <div class="<%= error_classes %>" role="alert">
       <span class="font-bold">Não foi possível montar a classificação.</span>
       <% if log_path %>
-        <%= link_to "Ver log", log_path, class: "font-semibold underline underline-offset-2 hover:no-underline", data: { role: "log-link" } %>
+        <%= link_to "Abrir o registro do erro", log_path, class: inline_link_classes(tone: :ink), data: { role: "log-link" } %>
       <% end %>
     </div>
   <% end %>

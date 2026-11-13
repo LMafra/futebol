@@ -105,7 +105,7 @@
               <%= radio_button_tag :highlight, "", sheet.highlight_player_id.nil?, id: nil %> Sem destaque
             </label>
             <%= submit_tag "Salvar scouts", name: nil, class: AdminHelper::ADMIN_BUTTON_CLASSES %>
-            <%= link_to "Ir para a finalização", scoring_path("matchfinalizer", match_id: match.id), class: "text-sm font-semibold underline underline-offset-2" if match.live? || match.may_start_match? %>
+            <%= link_to "Ir para a finalização", scoring_path("matchfinalizer", match_id: match.id), class: inline_link_classes("text-sm", tone: :ink) if match.live? || match.may_start_match? %>
           </div>
         <% end %>
       <% end %>

@@ -51,7 +51,7 @@
     <% if pool&.persisted? %>
       <%= link_to "Palpites", pool_bets_path(pool), class: primary_button_classes %>
     <% end %>
-    <%= link_to "Voltar para meus bolões", pools_path, class: "font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
+    <%= link_to "Voltar para meus bolões", pools_path, class: inline_link_classes %>
     <% if can_destroy? %>
       <%= button_to "Excluir bolão", pool_path(pool), method: :delete, form: { data: { turbo_confirm: "Excluir o bolão #{pool.name}?" } },
                     class: danger_button_classes %>

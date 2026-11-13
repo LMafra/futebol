@@ -13,7 +13,7 @@
       <% if @lineup.round < 38 %>
         <%= round_nav_link(@lineup.round + 1, main_app.lineup_path(lineup_location(round: @lineup.round + 1)), direction: :next) %>
       <% end %>
-      <%= link_to "Rankings", main_app.esquadrao_rankings_path(championship_id: @lineup.championship_id), class: "ml-2 text-pitch underline underline-offset-2 hover:no-underline" %>
+      <%= link_to "Rankings do campeonato", main_app.esquadrao_rankings_path(championship_id: @lineup.championship_id), class: inline_link_classes("ml-2") %>
     </nav>
   </header>
 

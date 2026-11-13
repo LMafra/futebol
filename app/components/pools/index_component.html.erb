@@ -38,7 +38,7 @@
         <% listed_pools.each do |pool| %>
           <li class="flex items-center justify-between gap-4 px-4 py-3">
             <div>
-              <%= link_to pool.name, pool_path(pool), class: "font-semibold text-pitch underline-offset-2 hover:underline" %>
+              <%= link_to pool.name, pool_path(pool), class: inline_link_classes %>
               <p class="text-sm text-graphite"><%= pool.championship %></p>
             </div>
             <span class="font-semibold tabular-nums tracking-widest text-graphite"><%= pool.code %></span>

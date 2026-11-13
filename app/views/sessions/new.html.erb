@@ -21,13 +21,13 @@
 
     <div class="flex flex-wrap items-center gap-4">
       <%= form.submit "Entrar", class: primary_button_classes %>
-      <%= link_to "Esqueceu a senha?", new_password_path, class: "text-sm text-graphite underline underline-offset-2 hover:no-underline" %>
+      <%= link_to "Esqueceu a senha?", new_password_path, class: support_link_classes("text-sm") %>
     </div>
   <% end %>
 
   <% unless @area %>
     <p class="mt-6 text-sm text-graphite">
-      Ainda não tem conta? <%= link_to "Criar conta", signup_path, class: "font-semibold text-ink underline underline-offset-2 hover:no-underline" %>
+      Ainda não tem conta? <%= link_to "Criar conta", signup_path, class: inline_link_classes(tone: :ink) %>
     </p>
   <% end %>
 </div>

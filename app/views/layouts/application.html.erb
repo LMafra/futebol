@@ -31,7 +31,7 @@
         <nav class="flex items-center gap-4 text-sm font-semibold" aria-label="Principal">
           <% if user_signed_in? %>
             <details class="group relative" data-role="account-menu">
-              <summary class="flex min-h-12 cursor-pointer list-none items-center gap-1 underline-offset-2 hover:underline [&::-webkit-details-marker]:hidden">Minha conta<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-fast group-open:rotate-180" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+              <summary class="flex min-h-12 cursor-pointer list-none items-center gap-1 rounded-sm px-2 hover:bg-white/10 [&::-webkit-details-marker]:hidden">Minha conta<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-fast group-open:rotate-180" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
               <ul class="absolute right-0 z-10 mt-2 flex w-max min-w-[12rem] flex-col rounded-sm border border-rule bg-white py-1 text-ink">
                 <li><%= link_to "Minha conta", main_app.account_path, class: "flex min-h-12 items-center px-3 py-2 hover:bg-rule" %></li>
                 <li><%= link_to "Meus bolões", main_app.pools_path, class: "flex min-h-12 items-center px-3 py-2 hover:bg-rule" %></li>
@@ -39,7 +39,7 @@
                 <li><%= link_to "Rankings", main_app.esquadrao_rankings_path, class: "flex min-h-12 items-center px-3 py-2 hover:bg-rule" %></li>
               </ul>
             </details>
-            <%= button_to "Sair", main_app.session_path, method: :delete, class: "min-h-12 cursor-pointer px-2 underline-offset-2 hover:underline" %>
+            <%= button_to "Sair", main_app.session_path, method: :delete, class: "inline-flex min-h-12 cursor-pointer items-center rounded-sm border border-white px-4 py-2 font-bold transition-colors duration-fast ease-editorial hover:bg-white hover:text-pitch" %>
           <% else %>
             <%= link_to "Entrar", main_app.login_path, class: "inline-flex min-h-12 items-center rounded-sm border border-white px-4 py-2 font-bold transition-colors duration-fast ease-editorial hover:bg-white hover:text-pitch" %>
           <% end %>
@@ -52,7 +52,7 @@
     </main>
 
     <footer class="snap-end border-t border-rule">
-      <% footer_link = "font-semibold text-ink underline underline-offset-2 hover:no-underline" %>
+      <% footer_link = inline_link_classes(tone: :ink) %>
       <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-6 text-sm text-graphite">
         <p>
           © <span class="tabular-nums"><%= Date.current.year %></span> <%= brand(:name) %> ·

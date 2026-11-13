@@ -30,7 +30,9 @@ module AdminIconsHelper
     revert: 'M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3'
   }.freeze
 
-  def admin_icon_action_link(label, href, icon, **html_options)
+  # The accessible label names the verb and the row ("Abrir Real Paraisópolis"): every row has the same icons.
+  def admin_icon_action_link(verb, href, icon, subject: nil, **html_options)
+    label = [verb, subject.presence].compact.join(' ')
     path = ADMIN_ACTION_ICON_PATHS.fetch(icon.to_sym)
     hover = icon.to_sym == :delete ? 'hover:border-ink hover:bg-loss' : 'hover:border-ink hover:bg-paper'
     classes = 'inline-flex h-10 w-10 items-center justify-center rounded-md border border-graphite/70 bg-white ' \

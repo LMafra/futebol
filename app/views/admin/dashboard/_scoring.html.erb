@@ -30,13 +30,13 @@
               headers: ["Partida", { label: "Início", numeric: true }, { label: "Placar", numeric: true }, ""],
               rows: live.map { |match|
                 [
-                  link_to(match, admin_match_path(match), class: "font-semibold text-ink no-underline hover:underline"),
+                  link_to(match, admin_match_path(match), class: inline_link_classes(tone: :ink)),
                   l(match.match_date, format: "%d/%m %H:%M"),
                   admin_score(match),
                   safe_join([
-                    link_to("Preview", admin_bolaopreview_path(match_id: match.id), class: "font-semibold underline underline-offset-2"),
+                    link_to("Preview do Bolão", admin_bolaopreview_path(match_id: match.id), class: inline_link_classes(tone: :ink)),
                     " · ".html_safe,
-                    link_to("Finalizar", admin_matchfinalizer_path(match_id: match.id), class: "font-semibold underline underline-offset-2")
+                    link_to("Finalizar", admin_matchfinalizer_path(match_id: match.id), class: inline_link_classes(tone: :ink))
                   ])
                 ]
               },
@@ -52,7 +52,7 @@
               headers: ["Partida", { label: "Início", numeric: true }, "Status", { label: "Placar", numeric: true }],
               rows: recent_matches.map { |match|
                 [
-                  link_to(match, admin_match_path(match), class: "font-semibold text-ink no-underline hover:underline"),
+                  link_to(match, admin_match_path(match), class: inline_link_classes(tone: :ink)),
                   l(match.match_date, format: "%d/%m %H:%M"),
                   admin_match_status_badge(match),
                   admin_score(match)
@@ -70,7 +70,7 @@
               headers: ["Partida", { label: "Placar", numeric: true }],
               rows: pending.map { |match|
                 [
-                  link_to(match, admin_match_path(match), class: "font-semibold text-ink no-underline hover:underline"),
+                  link_to(match, admin_match_path(match), class: inline_link_classes(tone: :ink)),
                   admin_score(match)
                 ]
               },
@@ -95,7 +95,7 @@
             texts: { label: "Últimas ações", empty: "Nenhum registro ainda." },
             table_role: "recent-audit-logs"
           ) %>
-      <%= link_to "Ver histórico completo", admin_audithistory_path, class: "mt-4 inline-block font-body font-semibold text-ink underline underline-offset-2 hover:no-underline" %>
+      <%= link_to "Ver histórico completo", admin_audithistory_path, class: inline_link_classes("mt-4 inline-block font-body", tone: :ink) %>
     </div>
   </section>
 </div>

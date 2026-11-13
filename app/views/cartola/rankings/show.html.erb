@@ -12,7 +12,7 @@
         <%= label_tag :championship_id, "Campeonato" %>
         <%= select_tag :championship_id, options_from_collection_for_select(@championships, :id, :to_s, @championship&.id),
                        class: form_control_classes %>
-        <button type="submit" class="<%= secondary_button_classes %>">Ver</button>
+        <button type="submit" class="<%= secondary_button_classes %>">Mostrar ranking</button>
       <% end %>
     <% end %>
   </header>

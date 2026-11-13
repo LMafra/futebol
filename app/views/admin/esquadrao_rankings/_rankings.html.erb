@@ -7,7 +7,7 @@
       <%= label_tag :championship_id, "Campeonato", class: AdminHelper::ADMIN_LABEL_CLASSES %>
       <%= select_tag :championship_id, options_from_collection_for_select(championships, :id, :to_s, championship.id), class: AdminHelper::ADMIN_INPUT_CLASSES %>
     </div>
-    <%= submit_tag "Ver", name: nil, class: AdminHelper::ADMIN_BUTTON_CLASSES %>
+    <%= submit_tag "Mostrar ranking", name: nil, class: AdminHelper::ADMIN_BUTTON_CLASSES %>
   <% end %>
 
   <% { "Pontos" => [points, "points"], "Moedas" => [coins, "coins"] }.each do |title, (rows, kind)| %>

@@ -7,10 +7,10 @@
       <% if form.scouts? %>
         <p class="mb-4 <%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">
           O placar vem dos scouts da partida. Encerra a partida e enfileira o cálculo dos pontos. Para confirmar, digite o placar no formato <strong>2x1</strong>.
-          <%= link_to "Revisar os scouts", scoring_path("matchscouts", match_id: match.id), class: "font-semibold underline underline-offset-2" %>
+          <%= link_to "Revisar os scouts", scoring_path("matchscouts", match_id: match.id), class: inline_link_classes(tone: :ink) %>
           <% if scoring_admin_namespace? %>
             ·
-            <%= link_to "Simular no Preview do Bolão", admin_bolaopreview_path(match_id: match.id, candidate_home: form.home_score, candidate_away: form.away_score), class: "font-semibold underline underline-offset-2" %>
+            <%= link_to "Simular no Preview do Bolão", admin_bolaopreview_path(match_id: match.id, candidate_home: form.home_score, candidate_away: form.away_score), class: inline_link_classes(tone: :ink) %>
           <% end %>
         </p>
 
@@ -37,7 +37,7 @@
       <% else %>
         <p class="text-sm" data-role="no-scouts" role="status">
           <strong><%= MatchFinalizationForm::NO_SCOUTS %>.</strong>
-          <%= link_to "Abrir os scouts da partida", scoring_path("matchscouts", match_id: match.id), class: "font-semibold underline underline-offset-2" %>
+          <%= link_to "Abrir os scouts da partida", scoring_path("matchscouts", match_id: match.id), class: inline_link_classes(tone: :ink) %>
         </p>
       <% end %>
     </div>

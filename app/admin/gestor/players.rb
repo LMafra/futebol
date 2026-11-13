@@ -23,9 +23,9 @@ ActiveAdmin.register Core::Player, as: 'Player', namespace: :gestor do
     column :position
     column :shirt_number, class: 'text-right tabular-nums'
     actions defaults: false do |player|
-      text_node admin_icon_action_link('Ver', gestor_player_path(player), :view)
+      text_node admin_icon_action_link('Abrir', gestor_player_path(player), :view, subject: player.name)
       if gestor_team_editable?(player.team)
-        text_node admin_icon_action_link('Editar', edit_gestor_player_path(player), :edit)
+        text_node admin_icon_action_link('Editar', edit_gestor_player_path(player), :edit, subject: player.name)
       end
     end
   end

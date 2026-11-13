@@ -18,8 +18,10 @@ ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
     column :name
     column :short_name
     actions defaults: false do |team|
-      text_node admin_icon_action_link('Ver', gestor_team_path(team), :view)
-      text_node admin_icon_action_link('Editar', edit_gestor_team_path(team), :edit) if gestor_team_editable?(team)
+      text_node admin_icon_action_link('Abrir', gestor_team_path(team), :view, subject: team.name)
+      if gestor_team_editable?(team)
+        text_node admin_icon_action_link('Editar', edit_gestor_team_path(team), :edit, subject: team.name)
+      end
     end
   end
 

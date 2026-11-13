@@ -9,9 +9,9 @@
     </div>
     <nav class="flex flex-wrap items-center gap-4 text-sm font-semibold" aria-label="Navegação do simulador" data-role="simulator-nav">
       <% unless @championship.private? %>
-        <%= link_to "Ver campeonato", main_app.public_championship_path(@championship), class: "text-pitch underline underline-offset-2 hover:no-underline" %>
+        <%= link_to "Tabela do campeonato", main_app.public_championship_path(@championship), class: inline_link_classes %>
       <% end %>
-      <%= link_to "Outros campeonatos", main_app.simulador_path, class: "text-pitch underline underline-offset-2 hover:no-underline" %>
+      <%= link_to "Outros campeonatos", main_app.simulador_path, class: support_link_classes %>
     </nav>
   </header>
 

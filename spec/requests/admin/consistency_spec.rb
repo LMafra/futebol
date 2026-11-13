@@ -156,7 +156,8 @@ RSpec.describe 'Admin/Gestor consistency (TICKET-0084)', type: :request do
 
         actions = page_html.css('[data-role="admin-table-action"]')
         expect(actions).to be_present
-        expect(actions.first['aria-label']).to eq('Ver')
+        expect(actions.first['aria-label']).to start_with('Abrir ')
+        expect(actions.first['title']).to eq(actions.first['aria-label'])
       end
     end
 

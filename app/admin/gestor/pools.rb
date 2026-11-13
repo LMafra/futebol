@@ -13,7 +13,7 @@ ActiveAdmin.register Bolao::Pool, as: 'Pool', namespace: :gestor do
     column :championship
     column :owner
     actions defaults: false do |pool|
-      text_node admin_icon_action_link('Ver', gestor_pool_path(pool), :view)
+      text_node admin_icon_action_link('Abrir', gestor_pool_path(pool), :view, subject: pool.name)
     end
   end
 

@@ -22,9 +22,10 @@ ActiveAdmin.register Bolao::ScoringRule, as: 'BolaoScoringRule', namespace: :ges
     column 'Pontos por placar exato', :exact_score_points, class: 'text-right tabular-nums'
     column 'Pontos por vencedor', :winner_points, class: 'text-right tabular-nums'
     actions defaults: false do |rule|
-      text_node admin_icon_action_link('Ver', gestor_bolao_scoring_rule_path(rule), :view)
+      subject = "regra do Bolão de #{rule.championship}"
+      text_node admin_icon_action_link('Abrir', gestor_bolao_scoring_rule_path(rule), :view, subject:)
       if authorized?(:update, rule)
-        text_node admin_icon_action_link('Editar', edit_gestor_bolao_scoring_rule_path(rule), :edit)
+        text_node admin_icon_action_link('Editar', edit_gestor_bolao_scoring_rule_path(rule), :edit, subject:)
       end
     end
   end

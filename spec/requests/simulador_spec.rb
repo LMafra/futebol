@@ -85,7 +85,7 @@ RSpec.describe 'Simulador', type: :request do
       get simulador_championship_path(championship)
 
       links = page.at_css('[data-role="simulator-nav"]').css('a').to_h { |link| [link.text, link['href']] }
-      expect(links).to eq('Ver campeonato' => public_championship_path(championship),
+      expect(links).to eq('Tabela do campeonato' => public_championship_path(championship),
                           'Outros campeonatos' => simulador_path)
       expect(page.at_css('select#championship_id')).to be_nil
     end

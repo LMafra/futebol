@@ -38,7 +38,7 @@
       <div class="<%= error_classes %>" role="alert">
         <span class="font-bold">Não foi possível carregar o placar.</span>
         <% if retry_path %>
-          <%= link_to "Tentar novamente", retry_path, class: "font-semibold underline underline-offset-2 hover:no-underline", data: { role: "retry" } %>
+          <%= link_to "Tentar novamente", retry_path, class: inline_link_classes(tone: :ink), data: { role: "retry" } %>
         <% end %>
       </div>
     <% end %>

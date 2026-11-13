@@ -26,7 +26,8 @@ ActiveAdmin.register Core::Match, as: 'Match' do
     actions do |match|
       next unless authorized?(:preview, match)
 
-      text_node admin_icon_action_link('Preview', admin_bolaopreview_path(match_id: match.id), :preview)
+      text_node admin_icon_action_link('Preview do Bolão de', admin_bolaopreview_path(match_id: match.id), :preview,
+                                       subject: match.to_s)
     end
   end
 

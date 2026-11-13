@@ -14,7 +14,8 @@ ActiveAdmin.register Cartola::Lineup, as: 'EsquadraoLineup', namespace: :gestor 
     column :round, class: 'text-right tabular-nums'
     column :formation
     actions defaults: false do |lineup|
-      text_node admin_icon_action_link('Ver', gestor_esquadrao_lineup_path(lineup), :view)
+      text_node admin_icon_action_link('Abrir escalação de', gestor_esquadrao_lineup_path(lineup), :view,
+                                       subject: "#{lineup.squad} na rodada #{lineup.round}")
     end
   end
 
