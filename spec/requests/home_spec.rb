@@ -127,12 +127,12 @@ RSpec.describe 'Public home', type: :request do
   end
 
   it 'faz do card de jogo de hoje um link inteiro e destaca o jogo ao vivo com o chip (TICKET-0083)' do
-    create(:match, championship: public_championship, status: 'live', match_date: Time.current.change(hour: 21))
+    live = create(:match, championship: public_championship, status: 'live', match_date: Time.current.change(hour: 21))
 
     get root_path
 
     card = page.at_css('[data-role="today-match"] > a')
-    expect(card['href']).to eq(public_championship_path(public_championship))
+    expect(card['href']).to eq(public_match_path(live))
     expect(card['class'].split).to include('border-cartola', 'hover:border-ink')
     expect(card.at_css('[data-role="live-chip"]')['class'].split).to include('bg-cartola', 'text-ink')
     expect(card.css('a')).to be_empty
@@ -151,7 +151,7 @@ RSpec.describe 'Public home', type: :request do
 
   it 'põe os jogos de hoje numa faixa horizontal única e sem fim, por horário, com o campeonato em cada card' do
     varzea = create(:championship, name: 'Copa da Várzea')
-    create(:match, championship: varzea, match_date: Time.current.change(hour: 10))
+    first = create(:match, championship: varzea, match_date: Time.current.change(hour: 10))
     create(:match, championship: public_championship, match_date: Time.current.change(hour: 15))
     create(:match, championship: varzea, match_date: Time.current.change(hour: 21))
 
@@ -167,7 +167,7 @@ RSpec.describe 'Public home', type: :request do
     expect(cards.map { |card| card.at_css('[data-role="today-match-championship"]').text })
       .to eq(['Copa da Várzea', public_championship.name, 'Copa da Várzea'])
     expect(cards.map { |card| card.text[/\d{2}:\d{2}/] }).to eq(%w[10:00 15:00 21:00])
-    expect(cards.first.at_css('a')['href']).to eq(public_championship_path(varzea))
+    expect(cards.first.at_css('a')['href']).to eq(public_match_path(first))
     expect(today.at_css('[data-role="today-count"]').text).to eq('3 jogos')
     expect(today.at_css('ul')['data-action']).to eq('scroll->scroller#scrolled')
     expect(today.css('button[data-action^="scroller#"]').map { |button| [button['aria-label'], button['disabled']] })

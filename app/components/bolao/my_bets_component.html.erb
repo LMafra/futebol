@@ -21,7 +21,7 @@
           <% results.each do |result| %>
             <% match = result.prediction.match %>
             <tr data-role="my-bet" data-result="<%= result.result %>">
-              <td class="px-4 py-2"><%= match.home_team.name %> <span class="text-graphite">×</span> <%= match.away_team.name %></td>
+              <td class="px-4 py-2"><%= match_title(match) %></td>
               <td class="px-4 py-2 text-center font-semibold tabular-nums"><%= guess(result) %></td>
               <td class="px-4 py-2 text-center tabular-nums"><%= final_score(match) %></td>
               <td class="px-4 py-2">

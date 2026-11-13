@@ -23,7 +23,7 @@
     <ul class="scrollbar-none -mr-3 flex snap-x snap-mandatory overflow-x-auto" aria-label="Jogos de hoje, em ordem de horário" data-scroller-target="list" data-action="scroll->scroller#scrolled">
       <% matches.each do |match| %>
         <li class="flex w-full shrink-0 snap-start pr-3 sm:w-1/2 md:w-1/3 lg:w-1/4" data-role="today-match">
-          <%= link_to public_championship_path(match.championship), data: { live: match.live? },
+          <%= link_to public_match_path(match), data: { live: match.live? },
                       class: "group flex w-full flex-col gap-2 rounded-md border bg-white px-4 py-3 transition-colors duration-fast ease-editorial hover:border-ink hover:bg-rule #{match.live? ? 'border-cartola' : 'border-rule'}" do %>
             <span class="truncate text-xs font-bold uppercase tracking-widest text-pitch group-hover:underline" data-role="today-match-championship"><%= match.championship.name %></span>
             <span class="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-graphite">

@@ -7,6 +7,7 @@ module Ui
     include ScoutLegendHelper
     include LinkClassesHelper
     include ImagesHelper
+    include MatchLinksHelper
 
     STATES = %i[default loading empty error].freeze
 

@@ -11,7 +11,7 @@
           <% bet = bet_for(match) %>
           <li class="grid grid-cols-12 items-center gap-4 px-4 py-3" data-role="match" id="<%= dom_id(match, :bet) %>">
             <div class="col-span-12 sm:col-span-5">
-              <p class="font-semibold"><%= match.home_team.name %> <span class="text-graphite">×</span> <%= match.away_team.name %></p>
+              <p class="font-semibold"><%= match_title(match) %></p>
               <p class="text-sm tabular-nums text-graphite">
                 <%= kickoff(match) %> ·
                 <span data-controller="countdown" data-countdown-deadline-value="<%= match.match_date.iso8601 %>"

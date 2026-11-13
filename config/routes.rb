@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   get 'gestor/solicitar', to: 'manager_requests#new', as: :new_manager_request
   post 'gestor/solicitar', to: 'manager_requests#create', as: :manager_request
   get 'campeonatos/:id', to: 'championships#show', as: :public_championship, constraints: { id: /\d+/ }
+  get 'partidas/:id', to: 'matches#show', as: :public_match, constraints: { id: /\d+/ }
 
   scope module: :bolao do
     resources :pools, only: %i[index show destroy] do

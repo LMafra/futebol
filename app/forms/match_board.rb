@@ -32,7 +32,7 @@ class MatchBoard
   end
 
   def events
-    @events ||= Cartola::ScoutEvent.kept.where(match:).includes(:player).chronological.reverse
+    @events ||= Cartola::ScoutEvent.timeline(match)
   end
 
   def default_period = events.find(&:period)&.period || 'first_half'

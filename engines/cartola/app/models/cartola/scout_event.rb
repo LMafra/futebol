@@ -24,6 +24,9 @@ module Cartola
                      'NULLS FIRST'), Arel.sql('minute NULLS FIRST'), :id)
     }
 
+    # The kept lances of a match, newest first (the timeline of the match pages).
+    def self.timeline(match) = kept.where(match:).includes(:player).chronological.to_a.reverse
+
     def period_label = PERIODS[period]
   end
 end
