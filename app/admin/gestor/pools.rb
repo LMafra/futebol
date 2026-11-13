@@ -1,5 +1,5 @@
 ActiveAdmin.register Bolao::Pool, as: 'Pool', namespace: :gestor do
-  menu parent: 'Configurações', label: 'Bolões', priority: 1
+  menu parent: 'Participantes', label: 'Bolões', priority: 1
 
   permit_params :name, :championship_id
 

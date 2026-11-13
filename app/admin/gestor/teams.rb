@@ -1,5 +1,5 @@
 ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
-  menu parent: 'Participantes', label: 'Times', priority: 1
+  menu parent: 'Times', label: 'Times', priority: 1
 
   permit_params :name, :short_name, :crest, :remove_crest, :captain_name, :captain_phone
 
@@ -12,6 +12,11 @@ ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
       team.manager = current_user if current_user.manager?
       assign_external_id(team)
     end
+  end
+
+  action_item :new_player, only: :show, if: -> { authorized?(:create, Core::Player.new(team: resource)) } do
+    link_to 'Cadastrar jogador', new_gestor_player_path(player: { team_id: resource.id }),
+            class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
   end
 
   AdminNameSearch.register(self)
@@ -42,6 +47,7 @@ ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
         safe_join(links, ', ')
       end
     end
+    AdminRecordPanels.team(self, resource, :gestor)
   end
 
   form html: { multipart: true } do |f|

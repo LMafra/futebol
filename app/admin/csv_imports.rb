@@ -1,5 +1,5 @@
 ActiveAdmin.register Core::CsvImport, as: 'CsvImport' do
-  menu parent: 'Configurações', label: 'Importações CSV'
+  menu parent: 'Configurações', label: 'Importações CSV', priority: 4
 
   actions :index, :show, :new, :create
   permit_params :csv_file

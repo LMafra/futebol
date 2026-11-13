@@ -1,5 +1,5 @@
 ActiveAdmin.register Bolao::Pool, as: 'Pool' do
-  menu parent: 'Configurações', label: 'Bolões'
+  menu parent: 'Participantes', label: 'Bolões', priority: 1
 
   permit_params :name, :championship_id, :owner_id,
                 scoring_rule_attributes: %i[id exact_score_points winner_points _destroy]

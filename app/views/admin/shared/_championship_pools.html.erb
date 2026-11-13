@@ -1,0 +1,14 @@
+<%# Bolões da página do campeonato (/admin e /gestor), com o código que o gestor compartilha. %>
+<%= render Ui::CollectionComponent.new(items: pools, id: "championship-#{championship.id}-pools", mode: :cards,
+                                       texts: { label: "Bolões do campeonato" }) do |c| %>
+  <% c.column(:name, label: "Bolão", primary: true) { |pool| link_to pool, public_send(:"#{namespace}_pool_path", pool), class: inline_link_classes(tone: :ink) } %>
+  <% c.column(:code, label: "Código") { |pool| tag.span(pool.code, class: "font-numeric tracking-widest") } %>
+  <% c.column(:members_count, label: "Participantes", numeric: true) %>
+  <% c.empty do %>
+    <%= render Ui::EmptyStateComponent.new(title: "Nenhum bolão ainda", description: "Crie um bolão e compartilhe o código com os participantes.") do |empty| %>
+      <% empty.with_action do %>
+        <%= link_to "Criar bolão", public_send(:"new_#{namespace}_pool_path", pool: { championship_id: championship.id }), class: AdminHelper::ADMIN_BUTTON_CLASSES %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

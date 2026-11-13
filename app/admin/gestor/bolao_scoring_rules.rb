@@ -1,5 +1,5 @@
 ActiveAdmin.register Bolao::ScoringRule, as: 'BolaoScoringRule', namespace: :gestor do
-  menu parent: 'Configurações', label: 'Regras do Bolão', priority: 2
+  menu parent: 'Configurações', label: 'Regras do Bolão', priority: 1
 
   permit_params :championship_id, :exact_score_points, :winner_points
   includes :championship

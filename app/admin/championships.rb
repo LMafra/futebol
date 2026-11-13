@@ -1,5 +1,5 @@
 ActiveAdmin.register Core::Championship, as: 'Championship' do
-  menu label: 'Campeonatos', priority: 2
+  menu parent: 'Campeonatos', label: 'Campeonatos', priority: 1
 
   permit_params :name, :season, :logo, :remove_logo, :external_id, :private, :cartola_goalkeeper_limit,
                 :cartola_defender_limit, :cartola_midfielder_limit, :cartola_forward_limit, :cartola_initial_budget,
@@ -54,7 +54,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
       row('Campeonato privado?') { |championship| championship.private? ? 'Sim' : 'Não' }
       row('Logo') { |championship| championship_logo(championship, variant: :medium, size: 'size-24') }
     end
-    AdminChampionshipEnrollment.panel(self, resource, :admin)
+    AdminRecordPanels.championship(self, resource, :admin)
     panel 'Esquadrão' do
       attributes_table_for resource do
         row('Limite de goleiros', &:cartola_goalkeeper_limit)

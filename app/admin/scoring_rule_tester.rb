@@ -1,5 +1,5 @@
 ActiveAdmin.register_page 'ScoringRuleTester' do
-  menu parent: 'Configurações', label: 'Testar regras', priority: 9
+  menu parent: 'Configurações', label: 'Testar regras', priority: 3
 
   content title: 'Testar regras de pontuação' do
     render partial: 'admin/scoring_rule_tester/panels', locals: {

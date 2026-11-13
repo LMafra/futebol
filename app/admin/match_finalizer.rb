@@ -1,6 +1,7 @@
 %i[admin gestor].each do |ns|
   ActiveAdmin.register_page 'MatchFinalizer', namespace: ns do
-    menu parent: 'Partidas', label: 'Finalizar partida', priority: 2
+    menu false
+    breadcrumb { match_crumbs(@match) }
 
     content title: 'Finalizar partida' do
       render partial: 'admin/match_finalizer/form',

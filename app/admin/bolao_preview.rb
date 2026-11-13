@@ -1,5 +1,6 @@
 ActiveAdmin.register_page 'BolaoPreview' do
-  menu parent: 'Partidas', label: 'Preview do Bolão', priority: 4
+  menu false
+  breadcrumb { match_crumbs(@match) }
 
   content title: 'Preview do Bolão' do
     render partial: 'admin/bolao_preview/panel', locals: {

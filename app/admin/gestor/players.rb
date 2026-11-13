@@ -1,5 +1,6 @@
 ActiveAdmin.register Core::Player, as: 'Player', namespace: :gestor do
-  menu parent: 'Participantes', label: 'Jogadores', priority: 2
+  menu parent: 'Times', label: 'Jogadores', priority: 2
+  breadcrumb { player_resource_crumbs }
 
   permit_params :team_id, :name, :position, :shirt_number, :base_value
   includes :team

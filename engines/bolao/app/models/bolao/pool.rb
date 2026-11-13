@@ -22,6 +22,10 @@ module Bolao
     def self.ransackable_attributes(_auth_object = nil) = %w[name championship_id code]
     def self.ransackable_associations(_auth_object = nil) = %w[championship]
 
+    def self.with_members_count
+      left_joins(:memberships).group(:id).select('bolao_pools.*, COUNT(bolao_pool_memberships.id) AS members_count')
+    end
+
     def self.generate_code = Array.new(CODE_LENGTH) { CODE_ALPHABET.sample(random: SecureRandom) }.join
 
     def self.normalize_code(code) = code.to_s.strip.upcase

@@ -1,5 +1,6 @@
 ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
-  menu parent: 'Partidas', label: 'Partidas', priority: 1
+  menu parent: 'Campeonatos', label: 'Partidas', priority: 2
+  breadcrumb { match_resource_crumbs }
 
   actions :index, :show, :new, :create, :edit, :update
   permit_params do

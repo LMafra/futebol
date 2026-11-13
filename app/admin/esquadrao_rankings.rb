@@ -1,5 +1,5 @@
 ActiveAdmin.register_page 'EsquadraoRankings' do
-  menu parent: 'Configurações', label: 'Rankings do Esquadrão'
+  menu parent: 'Participantes', label: 'Rankings do Esquadrão', priority: 3
 
   content title: 'Rankings do Esquadrão' do
     render partial: 'admin/esquadrao_rankings/rankings',

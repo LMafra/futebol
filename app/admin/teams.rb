@@ -1,8 +1,13 @@
 ActiveAdmin.register Core::Team, as: 'Team' do
-  menu parent: 'Participantes', label: 'Times'
+  menu parent: 'Times', label: 'Times', priority: 1
 
   permit_params :name, :short_name, :crest, :remove_crest, :external_id, :manager_id, :captain_name, :captain_phone
   includes :manager
+
+  action_item :new_player, only: :show, if: -> { authorized?(:create, Core::Player.new(team: resource)) } do
+    link_to 'Cadastrar jogador', new_admin_player_path(player: { team_id: resource.id }),
+            class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
+  end
 
   AdminNameSearch.register(self)
   filter :manager, collection: -> { Core::User.managers.order(:name) }
@@ -34,6 +39,7 @@ ActiveAdmin.register Core::Team, as: 'Team' do
         safe_join(links, ', ')
       end
     end
+    AdminRecordPanels.team(self, resource, :admin)
     active_admin_comments_for resource
   end
 

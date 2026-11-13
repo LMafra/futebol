@@ -1,6 +1,7 @@
 %i[admin gestor].each do |ns|
   ActiveAdmin.register_page 'MatchScouts', namespace: ns do
-    menu parent: 'Partidas', label: 'Scouts da partida', priority: 2
+    menu false
+    breadcrumb { match_crumbs(@match) }
 
     content title: 'Scouts da partida' do
       render partial: 'admin/match_scouts/form',

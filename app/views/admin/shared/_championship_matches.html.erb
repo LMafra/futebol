@@ -1,0 +1,21 @@
+<%# Partidas da página do campeonato (/admin e /gestor): por rodada, com a rodada em andamento aberta. %>
+<% open_round = matches.find { _1.status.in?(%w[scheduled live]) }&.round || matches.last&.round %>
+<%= render Ui::CollectionComponent.new(
+      items: matches, id: "championship-#{championship.id}-matches", mode: :grouped, group_by: :round,
+      group_label: ->(round) { round ? "Rodada #{round}" : "Sem rodada" }, open_group: open_round,
+      texts: { label: "Partidas do campeonato" }
+    ) do |c| %>
+  <% c.column(:teams, label: "Partida", primary: true) { |match| link_to match, public_send(:"#{namespace}_match_path", match), class: inline_link_classes(tone: :ink) } %>
+  <% c.column(:score, label: "Placar", numeric: true) { |match| admin_score(match) } %>
+  <% c.column(:match_date, label: "Data") { |match| match.match_date&.strftime("%d/%m %H:%M") } %>
+  <% c.column(:status, label: "Situação") { |match| admin_match_status_label(match.status) } %>
+  <% c.empty do %>
+    <%= render Ui::EmptyStateComponent.new(title: "Nenhuma partida ainda", description: "Inscreva os times e agende a primeira partida.") do |empty| %>
+      <% if namespace == :gestor && championship.teams.many? %>
+        <% empty.with_action do %>
+          <%= link_to "Agendar partida", new_gestor_match_path(match: { championship_id: championship.id }), class: AdminHelper::ADMIN_BUTTON_CLASSES %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

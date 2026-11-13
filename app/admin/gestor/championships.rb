@@ -1,5 +1,5 @@
 ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor do
-  menu parent: 'Meus campeonatos', label: 'Campeonatos', priority: 1
+  menu parent: 'Campeonatos', label: 'Campeonatos', priority: 1
 
   permit_params :name, :season, :logo, :remove_logo, :private, :cartola_goalkeeper_limit, :cartola_defender_limit,
                 :cartola_midfielder_limit, :cartola_forward_limit, :cartola_initial_budget, :cartola_base_player_value,
@@ -29,7 +29,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
   end
 
   action_item :new_match, only: :show, if: -> { authorized?(:enroll, resource) && resource.teams.many? } do
-    link_to 'Nova partida', new_gestor_match_path(match: { championship_id: resource.id }),
+    link_to 'Agendar partida', new_gestor_match_path(match: { championship_id: resource.id }),
             class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
   end
 
@@ -53,7 +53,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
       row('Campeonato privado?') { |championship| championship.private? ? 'Sim' : 'Não' }
       row('Logo') { |championship| championship_logo(championship, variant: :medium, size: 'size-24') }
     end
-    AdminChampionshipEnrollment.panel(self, resource, :gestor)
+    AdminRecordPanels.championship(self, resource, :gestor)
     panel 'Premiação' do
       attributes_table_for resource do
         row :prize_description

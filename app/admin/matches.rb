@@ -1,5 +1,6 @@
 ActiveAdmin.register Core::Match, as: 'Match' do
-  menu parent: 'Partidas', label: 'Partidas', priority: 1
+  menu parent: 'Campeonatos', label: 'Partidas', priority: 2
+  breadcrumb { match_resource_crumbs }
 
   actions :index, :show
   includes :home_team, :away_team, :championship

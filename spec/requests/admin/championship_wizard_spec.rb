@@ -28,7 +28,7 @@ RSpec.describe 'Championship wizard (TICKET-0092)', type: :request do
       expect(current_step).to eq('3. Esquadrão')
       expect(page_html.at_css('[data-role="squad-suggestion"]').text)
         .to eq('Sugestão para Society: 1 goleiro, 2 defensores, 2 meio-campistas e 2 atacantes.')
-      expect(page_html.at_css('details summary').text).to include('Opções avançadas')
+      expect(page_html.at_css('form details summary').text).to include('Opções avançadas')
 
       get "#{collection_path}/#{championship.id}/edit?step=revisao"
       review = page_html.at_css('[data-role="wizard-review"]').text

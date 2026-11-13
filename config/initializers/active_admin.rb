@@ -1,3 +1,11 @@
+# Same navigation tree in /admin and /gestor (ADR 0006); the Admin just sees more items in each section.
+ADMIN_NAVIGATION_TREE = proc do |menu|
+  menu.add label: 'Campeonatos', priority: 2
+  menu.add label: 'Times', priority: 3
+  menu.add label: 'Participantes', priority: 4
+  menu.add label: 'Configurações', priority: 5
+end
+
 ActiveAdmin.setup do |config|
   # == Site Title
   #
@@ -149,6 +157,7 @@ ActiveAdmin.setup do |config|
   #
   # You can customize the comment menu:
   # config.comments_menu = { parent: 'Admin', priority: 1 }
+  config.comments_menu = { parent: 'Configurações', priority: 6 }
 
   # == Batch Actions
   #
@@ -281,7 +290,10 @@ ActiveAdmin.setup do |config|
   #
   # config.order_clause = MyOrderClause
 
+  config.namespace(:admin) { |admin| admin.build_menu(&ADMIN_NAVIGATION_TREE) }
+
   config.namespace :gestor do |gestor|
+    gestor.build_menu(&ADMIN_NAVIGATION_TREE)
     gestor.site_title = proc { "#{I18n.t('brand.name')} · Gestor" }
     gestor.authentication_method = :authenticate_manager!
     gestor.current_user_method = :current_user
@@ -302,6 +314,7 @@ ActiveAdmin.importmap.draw do
   pin 'controllers/scouts_controller', to: 'controllers/scouts_controller.js'
   pin 'controllers/image_preview_controller', to: 'controllers/image_preview_controller.js'
   pin 'controllers/collection_controller', to: 'controllers/collection_controller.js'
+  pin 'controllers/dismissible_controller', to: 'controllers/dismissible_controller.js'
 end
 
 # ActiveAdmin's engine sweeps its map only for the gem's own JavaScript (and runs after this file), so the admin map

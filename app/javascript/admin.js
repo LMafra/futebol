@@ -3,6 +3,7 @@ import { Application } from "@hotwired/stimulus"
 import AutocompleteController from "controllers/autocomplete_controller"
 import CollectionController from "controllers/collection_controller"
 import DismissController from "controllers/dismiss_controller"
+import DismissibleController from "controllers/dismissible_controller"
 import ImagePreviewController from "controllers/image_preview_controller"
 import ScoutsController from "controllers/scouts_controller"
 
@@ -37,5 +38,6 @@ const application = Application.start()
 application.register("autocomplete", AutocompleteController)
 application.register("collection", CollectionController)
 application.register("dismiss", DismissController)
+application.register("dismissible", DismissibleController)
 application.register("image-preview", ImagePreviewController)
 application.register("scouts", ScoutsController)
