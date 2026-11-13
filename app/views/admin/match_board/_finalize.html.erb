@@ -1,7 +1,7 @@
 <%# Rodapé fixo com "Finalizar partida": o placar vem dos lances e é confirmado no diálogo. %>
 <% match = board.match %>
 <% form = MatchFinalizationForm.new(match:) %>
-<div class="sticky bottom-0 z-10 flex flex-wrap items-center justify-between gap-3 border-t border-rule bg-white px-4 py-3" data-role="finalize-bar">
+<div class="sticky bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-10 sm:bottom-0 flex flex-wrap items-center justify-between gap-3 border-t border-rule bg-white px-4 py-3" data-role="finalize-bar">
   <% if form.scouts? %>
     <p class="font-body text-ink" data-role="derived-score">
       Placar dos lances: <strong class="tabular-nums"><%= form.home_score %> × <%= form.away_score %></strong>

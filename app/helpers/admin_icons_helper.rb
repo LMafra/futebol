@@ -3,6 +3,7 @@ module AdminIconsHelper
   ADMIN_NAV_ICON_PATHS = {
     'Visão geral' => 'M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z',
     'Painel' => 'M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z',
+    'Painel Administrativo' => 'M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z',
     'Dashboard' => 'M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z',
     'Campeonatos' => 'M4.5 5.25h15v13.5h-15zM8.25 9h7.5M8.25 12.75h7.5',
     'Partidas' => 'M12 6v6h4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z',

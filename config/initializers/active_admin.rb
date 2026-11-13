@@ -310,6 +310,7 @@ end
 ActiveAdmin.importmap.draw do
   pin '@hotwired/stimulus', to: 'stimulus.min.js'
   pin 'admin', to: 'admin.js'
+  pin 'pwa', to: 'pwa.js'
   pin 'controllers/autocomplete_controller', to: 'controllers/autocomplete_controller.js'
   pin 'controllers/dismiss_controller', to: 'controllers/dismiss_controller.js'
   pin 'controllers/image_preview_controller', to: 'controllers/image_preview_controller.js'
