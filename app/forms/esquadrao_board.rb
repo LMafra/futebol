@@ -51,6 +51,13 @@ class EsquadraoBoard
   def find(lineup_id) = entries.find { _1.id.to_s == lineup_id.to_s }
   def points_of(player) = round_points.fetch(player.id, 0)
 
+  # { player_id => points } as the ranking counts them: the captain's twice.
+  def counted_points(lineup)
+    lineup.lineup_players.to_h do |lineup_player|
+      [lineup_player.player_id, (lineup_player.captain ? 2 : 1) * points_of(lineup_player.player)]
+    end
+  end
+
   # What the organizer may pick: the championship's players plus those already in the lineup.
   def candidates(lineup)
     Core::Player.where(team: championship.teams).or(Core::Player.where(id: lineup.lineup_players.map(&:player_id)))
@@ -68,9 +75,7 @@ class EsquadraoBoard
                                           .group(:player_id).sum(:points)
   end
 
-  def lineup_points(lineup)
-    lineup.lineup_players.sum { |lineup_player| (lineup_player.captain ? 2 : 1) * points_of(lineup_player.player) }
-  end
+  def lineup_points(lineup) = counted_points(lineup).values.sum
 
   def scorers_by_slot
     @scorers_by_slot ||= answer_key.select { _1.points.positive? }.group_by { _1.player.slot.to_sym }

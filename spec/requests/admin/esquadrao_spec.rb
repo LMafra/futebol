@@ -53,6 +53,9 @@ RSpec.describe 'Participantes › Esquadrão', type: :request do
       detail = page.at_css('[data-role="lineup-detail"]')
       expect(detail['data-lineup-id']).to eq(bia_lineup.id.to_s)
       expect(detail.at_css('[data-role="lineup-points"]').text.squish).to eq('6.00 pts')
+      reserve = detail.css('[data-role="pitch-player"]').find { _1.text.include?('Reserva') }
+      expect(reserve.at_css('[data-role="captain"]')).to be_present
+      expect(reserve.at_css('[data-role="pitch-points"]').text).to eq('6.00 pts')
       expect(detail.at_css('a[href*="editar=1"]').text).to eq('Editar escalação')
     end
 

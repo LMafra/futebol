@@ -12,28 +12,8 @@
   <% if editing %>
     <%= render "admin/esquadrao/lineup_form", board:, lineup: %>
   <% else %>
-    <% by_slot = lineup.players_by_slot %>
-    <dl class="flex flex-col gap-3">
-      <% Core::Player::SLOTS.each do |slot| %>
-        <% next if by_slot[slot.to_sym].blank? %>
-        <div>
-          <dt class="text-sm font-semibold uppercase tracking-wide text-graphite"><%= Cartola::Lineup::SLOT_LABELS.fetch(slot.to_sym).capitalize %></dt>
-          <% by_slot[slot.to_sym].each do |player| %>
-            <% captain = player.id == lineup.captain_id %>
-            <dd class="flex items-center justify-between gap-3 border-b border-rule py-2" data-role="lineup-player">
-              <span class="min-w-0">
-                <span class="font-semibold text-ink"><%= player.name %></span>
-                <span class="text-sm text-graphite"><%= player.team&.short_name %></span>
-                <% if captain %>
-                  <span class="ms-1 rounded-sm bg-ink px-1.5 text-xs font-bold text-white" title="Capitão: pontos em dobro">C</span>
-                <% end %>
-              </span>
-              <span class="tabular-nums text-ink"><%= format("%.2f", board.points_of(player) * (captain ? 2 : 1)) %></span>
-            </dd>
-          <% end %>
-        </div>
-      <% end %>
-    </dl>
+    <%= render Cartola::PitchComponent.new(lineup:, points: board.counted_points(lineup)) %>
+    <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Os pontos do capitão (C) já aparecem em dobro.</p>
 
     <% if can_fix %>
       <div class="border-t border-rule pt-3">

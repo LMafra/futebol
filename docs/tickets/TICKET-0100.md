@@ -40,7 +40,7 @@ Uma lista de escalações sem pontos e, só no Admin, o ranking numa tela separa
   - **Gabarito da rodada:**
     - pontos por jogador real, numa lista recolhível;
     - seleção ideal: os melhores jogadores com pontos positivos por posição, em cada formação limitada pelo campeonato. O capitão é o melhor deles e o total conta o capitão em dobro.
-  - **Escalações da rodada:** lista com detalhe (`Ui::CollectionComponent`, `master_detail`, `?escalacao=ID`). O detalhe mostra os jogadores por posição com os pontos (capitão em dobro) e o total.
+  - **Escalações da rodada:** lista com detalhe (`Ui::CollectionComponent`, `master_detail`, `?escalacao=ID`). O detalhe mostra a escalação no campinho (`Cartola::PitchComponent` com `points:`), com os pontos de cada jogador (capitão em dobro) e o total.
 - **Editar escalação** (`?editar=1`, `Cartola::LineupCorrection`, `LineupCorrectionForm`):
   - formação, jogadores por posição, capitão e motivo obrigatório;
   - passa por `Cartola::WalletService`, como a troca feita pelo próprio participante: a carteira paga ou recebe a diferença de preço e continua batendo com os jogadores escalados;

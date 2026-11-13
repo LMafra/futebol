@@ -19,6 +19,9 @@
                 <% if price(player) %>
                   <span class="text-xs tabular-nums text-rule"><%= price(player) %></span>
                 <% end %>
+                <% if points_label(player) %>
+                  <span class="text-sm font-semibold tabular-nums text-white" data-role="pitch-points"><%= points_label(player) %></span>
+                <% end %>
               </li>
             <% end %>
             <% open_slots(slot).times do %>
