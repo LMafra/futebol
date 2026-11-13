@@ -1,4 +1,4 @@
-# Tickets — INDEX (84 tickets)
+# Tickets — INDEX (90 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -91,6 +91,7 @@
 | [0087](TICKET-0087.md) | G1 | Legenda das siglas dos scouts | 0084 | — |
 | [0088](TICKET-0088.md) | G1 | Busca só por nome com autocomplete; selects simples | 0084 | — |
 | [0106](TICKET-0106.md) | G1 | Links x botões: guia, helper e rótulos com destino | 0083, 0084 | — |
+| [0089](TICKET-0089.md) | G2 | ADR 0006 e glossário: times do gestor, inscrição, modalidade, rascunho, lances | 0085 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -107,4 +108,4 @@
 - UI/UX Admin/Gestor (status-first): 0068 → 0069 → 0070 → 0071 → 0072 → 0073
 - UI/UX Admin/Gestor (work queue): 0074 → {0075, 0076} → 0077 → 0078
 - Auditoria UI/UX completa (ordem dos commits): 0079 → 0080 → 0081 → 0075 → 0076 → 0074 → 0077 → 0084 → 0082 → 0083 → 0078
-- Gestor, campeonato, partida ao vivo e participantes (ordem dos commits): 0085 → 0086 → 0087 → 0088 → 0106
+- Gestor, campeonato, partida ao vivo e participantes (ordem dos commits): 0085 → 0086 → 0087 → 0088 → 0106 → 0089
