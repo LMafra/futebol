@@ -58,7 +58,7 @@ module AdminIconsHelper
     'Pontuação pendente' => 'M4.5 12.75l6 6 9-13.5',
     'Gestores pendentes' => 'M15 19.5a3 3 0 00-6 0M15 8.25a3 3 0 11-6 0 3 3 0 016 0z',
     'Partidas hoje' => 'M6.75 3v2.25M17.25 3v2.25M3.75 7.5h16.5v12H3.75z',
-    'Aguardando scouts' => 'M16.5 6.75h-9v10.5h9zM9.75 9.75h4.5M9.75 12.75h4.5M9.75 15.75h3',
+    'Aguardando lances' => 'M16.5 6.75h-9v10.5h9zM9.75 9.75h4.5M9.75 12.75h4.5M9.75 15.75h3',
     'Aguardando finalização' => 'M4.5 12.75l6 6 9-13.5'
   }.freeze
 

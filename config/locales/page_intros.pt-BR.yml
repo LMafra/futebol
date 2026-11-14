@@ -4,7 +4,7 @@ pt-BR:
   page_intro:
     shared:
       esquadrao:
-        default: "Ranking, gabarito da rodada e as escalações. Escolha uma escalação para ver os pontos ou corrigi-la, sempre com motivo."
+        default: "Classificação, gabarito da rodada e as escalações. Escolha uma escalação para ver os pontos ou corrigi-la, sempre com motivo."
       championships:
         index: "Todos os campeonatos que você organiza. Os rascunhos só aparecem no site depois de publicados na etapa Revisão."
         show: "Tudo do campeonato num lugar: times inscritos, partidas por rodada e bolões. Inscreva os times antes de agendar as partidas."
@@ -38,7 +38,7 @@ pt-BR:
       csv_imports:
         default: "Importe partidas por planilha CSV. Cada importação mostra quantas linhas entraram e, se falhar, o motivo."
       esquadrao_scoring_rules:
-        default: "Quantos pontos vale cada scout no Esquadrão. Teste uma mudança em Testar regras antes de salvar."
+        default: "Quantos pontos vale cada estatística no Esquadrão. Teste uma mudança em Testar regras antes de salvar."
       scoringruletester:
         default: "Simule a pontuação de um jogador com outras regras, sem mudar nenhum ponto de verdade."
       audithistory:

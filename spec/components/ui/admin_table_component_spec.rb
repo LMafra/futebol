@@ -9,9 +9,9 @@ RSpec.describe Ui::AdminTableComponent do
   it_behaves_like 'a ui component with four states', preview: Ui::AdminTableComponentPreview
 
   it 'renders a pitch thead, zebra rows and right-aligned numeric cells' do
-    page = render_inline(described_class.new(headers:, rows:, texts: { label: 'Ranking' }))
+    page = render_inline(described_class.new(headers:, rows:, texts: { label: 'Classificação' }))
 
-    expect(page.at_css('section')['aria-label']).to eq('Ranking')
+    expect(page.at_css('section')['aria-label']).to eq('Classificação')
     expect(page.at_css('thead')['class']).to include('bg-pitch', 'text-paper')
     expect(page.at_css('thead tr')['class']).to include('text-sm', 'uppercase', 'tracking-wide')
     expect(page.css('[data-role="admin-table-row"]').map { |row| row['class'] })

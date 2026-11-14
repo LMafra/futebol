@@ -31,7 +31,7 @@
           <% c.column(:match_date, label: "Início", numeric: true) { |match| l(match.match_date, format: "%d/%m %H:%M") } %>
           <% c.column(:score, label: "Placar", numeric: true) { |match| admin_score(match) } %>
           <% c.column(:actions, label: "Ações") do |match| %>
-            <%= link_to "Preview do Bolão", admin_bolaopreview_path(match_id: match.id), class: inline_link_classes(tone: :ink) %> ·
+            <%= link_to "Prévia do Bolão", admin_bolaopreview_path(match_id: match.id), class: inline_link_classes(tone: :ink) %> ·
             <%= link_to "Finalizar", admin_match_path(match, modal: "finalize"), class: inline_link_classes(tone: :ink) %>
           <% end %>
         <% end %>
@@ -44,7 +44,7 @@
         <%= render Ui::CollectionComponent.new(items: recent_matches, id: "recent-matches", mode: :table, texts: { label: "Últimas partidas", empty: "Nenhuma partida cadastrada." }) do |c| %>
           <% c.column(:match, label: "Partida", primary: true) { |match| link_to match, admin_match_path(match), class: inline_link_classes(tone: :ink) } %>
           <% c.column(:match_date, label: "Início", numeric: true) { |match| l(match.match_date, format: "%d/%m %H:%M") } %>
-          <% c.column(:status, label: "Status") { |match| admin_match_status_badge(match) } %>
+          <% c.column(:status, label: "Situação") { |match| admin_match_status_badge(match) } %>
           <% c.column(:score, label: "Placar", numeric: true) { |match| admin_score(match) } %>
         <% end %>
       </div>

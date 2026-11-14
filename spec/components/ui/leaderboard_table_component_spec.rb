@@ -9,9 +9,9 @@ RSpec.describe Ui::LeaderboardTableComponent do
   it_behaves_like 'a ui component with four states', preview: Ui::LeaderboardTableComponentPreview
 
   it 'lists position, name and points, integers as they are and decimals with two places' do
-    page = render_inline(described_class.new(rows:, texts: { label: 'Ranking do Bolão' }))
+    page = render_inline(described_class.new(rows:, texts: { label: 'Classificação do Bolão' }))
 
-    expect(page.at_css('section')['aria-label']).to eq('Ranking do Bolão')
+    expect(page.at_css('section')['aria-label']).to eq('Classificação do Bolão')
     expect(page.css('[data-role="leaderboard-row"]').map { |row| row.text.squish })
       .to eq(['1 Ana S. 12', '2 Participante 7.50'])
     expect(page.at_css('tr td')['class']).to include('border-cartola')

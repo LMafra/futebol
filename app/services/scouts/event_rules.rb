@@ -4,7 +4,7 @@ module Scouts
     LABELS = Cartola::ScoutSheetValidator::SCOUT_LABELS
 
     def self.match_errors(match)
-      return ['A partida já foi pontuada: reverta a pontuação antes de alterar os scouts.'] if match.scored?
+      return ['A partida já foi pontuada: reverta a pontuação antes de alterar os lances.'] if match.scored?
       return ['A partida ainda não começou.'] if match.scheduled? && !match.may_start_match?
 
       []

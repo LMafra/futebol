@@ -37,7 +37,7 @@
   <% if namespace == :admin %>
     <% c.column(:actions, label: "Ações") do |match| %>
       <% if authorized?(:preview, match) %>
-        <%= admin_icon_action_link("Preview do Bolão de", admin_bolaopreview_path(match_id: match.id), :preview, subject: match.to_s) %>
+        <%= admin_icon_action_link("Prévia do Bolão de", admin_bolaopreview_path(match_id: match.id), :preview, subject: match.to_s) %>
       <% end %>
     <% end %>
   <% end %>

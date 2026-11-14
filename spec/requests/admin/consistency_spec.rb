@@ -78,7 +78,7 @@ RSpec.describe 'Admin/Gestor consistency (TICKET-0084)', type: :request do
         get "/admin/matches/#{match.id}"
 
         expect([header_link('Scouts'), header_link('Finalizar')]).to all(be_nil)
-        expect(header_link('Preview do Bolão')['class']).to include('bg-white')
+        expect(header_link('Prévia do Bolão')['class']).to include('bg-white')
       end
 
       it 'makes Finalizar the primary in the fixed footer once lances exist' do

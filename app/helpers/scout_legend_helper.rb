@@ -25,6 +25,6 @@ module ScoutLegendHelper
       end
     end
     tag.dl(safe_join(items), class: 'mb-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink',
-                             aria: { label: 'Legenda dos scouts' }, data: { role: 'scout-legend' })
+                             aria: { label: 'Legenda das estatísticas' }, data: { role: 'scout-legend' })
   end
 end

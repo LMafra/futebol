@@ -17,7 +17,7 @@ module Cartola
     private
 
     def status_errors
-      return ['A partida já foi pontuada: reverta a pontuação antes de alterar os scouts.'] if @match.scored?
+      return ['A partida já foi pontuada: reverta a pontuação antes de alterar as estatísticas.'] if @match.scored?
       return ['A partida ainda não começou.'] if @match.scheduled? && !@match.may_start_match?
 
       []

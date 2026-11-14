@@ -35,7 +35,7 @@
     </table>
     </div>
   <% when :loading %>
-    <span class="sr-only">Carregando ranking…</span>
+    <span class="sr-only">Carregando classificação…</span>
     <div class="flex flex-col gap-1" aria-hidden="true">
       <% skeleton_rows.times do %>
         <div class="h-8 w-full <%= skeleton_classes %>" data-role="skeleton"></div>
@@ -45,7 +45,7 @@
     <%= compact? ? tag.p(text(:empty), class: "py-2 text-sm text-graphite") : empty_notice(text(:empty)) %>
   <% when :error %>
     <div class="<%= error_classes %>" role="alert">
-      <span class="font-bold">Não foi possível montar o ranking.</span>
+      <span class="font-bold">Não foi possível montar a classificação.</span>
     </div>
   <% end %>
 </section>

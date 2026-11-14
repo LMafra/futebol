@@ -25,8 +25,8 @@ pt-BR:
         one: Regra do Bolão
         other: Regras do Bolão
       audit_log:
-        one: Log de auditoria
-        other: Logs de auditoria
+        one: Registro de auditoria
+        other: Registros de auditoria
       csv_import:
         one: Importação CSV
         other: Importações CSV
@@ -95,7 +95,7 @@ pt-BR:
         away_team: Visitante
         home_score: Placar mandante
         away_score: Placar visitante
-        status: Status
+        status: Situação
         match_date: Data da partida
         round: Rodada
         scores_calculated_at: Pontuada em
@@ -104,11 +104,11 @@ pt-BR:
         external_id: Externo
       core/match: *match_attributes
       core/csv_import:
-        status: Status
+        status: Situação
         csv_file: Arquivo CSV
         rows_processed: Linhas processadas
         error_message: Mensagem de erro
-        error_log: Log de erros
+        error_log: Registro de erros
         created_at: Enviado em
       core/user:
         name: Nome

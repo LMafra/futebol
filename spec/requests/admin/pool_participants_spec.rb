@@ -78,7 +78,7 @@ RSpec.describe 'Participantes › Bolão', type: :request do
       expect(dialog.at_css('input[name="return_to"]')['value']).to eq("/admin/pools/#{pool.id}?membro=#{caio.id}")
     end
 
-    it 'remove o participante com motivo: palpites e pontos saem do ranking e ficam no histórico' do
+    it 'remove o participante com motivo: palpites e pontos saem da classificação e ficam no histórico' do
       prediction = predict(caio, 1, 0, points: 5)
       predict(ana, 2, 1, points: 10)
 

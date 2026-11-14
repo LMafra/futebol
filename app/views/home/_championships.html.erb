@@ -38,7 +38,7 @@
             </div>
           </div>
           <div class="mt-auto flex flex-wrap items-center justify-between gap-4">
-            <%= link_to "Ver ranking completo", public_championship_path(championship, tab: "bolao"), class: inline_link_classes %>
+            <%= link_to "Ver classificação do Bolão", public_championship_path(championship, tab: "bolao"), class: inline_link_classes %>
             <%= link_to "Simular", simulador_championship_path(championship), data: { role: "simulate-championship" },
                         aria: { label: "Simular #{championship.name}" },
                         class: secondary_button_classes %>

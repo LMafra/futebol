@@ -24,7 +24,7 @@ RSpec.describe 'Public home', type: :request do
     end
     expect(page.css('[data-role="module-card"] h3').map(&:text)).to eq(%w[Bolão Esquadrão Simulador])
     expect(page.css('[data-role="home-sections"] h2').map { |heading| heading.text.squish })
-      .to eq(['Três jeitos de jogar', 'Como funciona', 'Jogos de hoje', 'Campeonatos', 'Ranking de atletas'])
+      .to eq(['Três jeitos de jogar', 'Como funciona', 'Jogos de hoje', 'Campeonatos', 'Classificação de atletas'])
     expect(page.at_css('footer').text.squish).to include('© ', 'Craquefy', 'GitHub', 'Documentação', 'Licença MIT')
   end
 
@@ -63,7 +63,7 @@ RSpec.describe 'Public home', type: :request do
     expect(cards.first.css('[data-role="top-bolao"] [data-role="leaderboard-row"]').map { |row| row.text.squish })
       .to eq(['1 Davi L. 3', '2 Caio L. 2', '3 Bia L. 1'])
     expect(cards.first.at_css('[data-role="top-esquadrao"]').text).to include('Sem escalações pontuadas.')
-    expect(cards.first.at_css('a[href$="tab=bolao"]').text).to eq('Ver ranking completo')
+    expect(cards.first.at_css('a[href$="tab=bolao"]').text).to eq('Ver classificação do Bolão')
   end
 
   it 'abre o card com a classificação (líderes dos jogos encerrados) antes do Top 3 do Bolão e do Esquadrão' do

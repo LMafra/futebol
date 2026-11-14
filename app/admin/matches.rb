@@ -20,7 +20,7 @@ ActiveAdmin.register Core::Match, as: 'Match' do
   AdminBulkActions.register(self, :destroy, :reschedule)
 
   action_item :preview, only: :show, if: -> { authorized?(:preview, resource) } do
-    link_to 'Preview do Bolão', admin_bolaopreview_path(match_id: resource.id),
+    link_to 'Prévia do Bolão', admin_bolaopreview_path(match_id: resource.id),
             class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES
   end
 

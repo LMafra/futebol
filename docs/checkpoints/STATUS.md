@@ -573,3 +573,11 @@ Fechamento: `docs/checkpoints/ux-audit/after-0085/`, em 390px e 1440px:
 - PWA: página offline e menu "Mais".
 
 As 28 telas respondem 200 sem rolagem lateral. O manifesto e o service worker estão ativos. Gate: `1302 examples, 0 failures, 4 pending` (system specs sem Chrome); RuboCop, Packwerk e Zeitwerk limpos.
+
+## Revisão do PR #87
+
+Tickets **0107+**, depois do CI verde do PR #87, um commit assinado por ticket.
+
+| Bloco | Ticket | Status | Artefatos | Observações |
+|---|---|---|---|---|
+| R1 — português | [0107](../tickets/TICKET-0107.md) | ok | `spec/design/portuguese_spec.rb`, [glossário](../glossary.md) | Situação, Prévia do Bolão, Registros de auditoria, Lances (acontecimento), Estatísticas (total do jogador) e Classificação em todo texto visível; Scout vira nome interno; E-mail, CSV e PWA ficam; spec falha se Status, Preview, Scout, Ranking ou Log voltarem; varredura de 125 páginas sem ocorrência |

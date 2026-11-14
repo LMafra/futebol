@@ -24,7 +24,7 @@
                submit: "Remover do bolão", record: removal,
                url: public_send(:"remove_member_#{namespace}_pool_path", pool) do |f| %>
   <%= f.hidden_field :user_id %>
-  <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Os palpites e os pontos dele neste bolão saem do ranking; ficam guardados no histórico.</p>
+  <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Os palpites e os pontos dele neste bolão saem da classificação; ficam guardados no histórico.</p>
   <%= modal_field f, :reason, label: admin_required_label("Motivo"), as: :text_area, rows: 3, required: true,
                   hint: "Fica na auditoria.", autofocus: true %>
 <% end %>

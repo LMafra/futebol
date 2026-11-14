@@ -3,7 +3,7 @@
 <% can_fix = authorized?(:correct_prediction, pool) %>
 <div class="flex flex-col gap-6" data-role="pool-participants">
   <section class="rounded-md border border-rule bg-white p-4" aria-labelledby="pool-ranking-title" data-role="pool-ranking">
-    <h3 id="pool-ranking-title" class="mb-3 font-display text-xl font-semibold text-ink">Ranking</h3>
+    <h3 id="pool-ranking-title" class="mb-3 font-display text-xl font-semibold text-ink">Classificação</h3>
     <% if participants.members.empty? %>
       <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Ninguém entrou ainda. Compartilhe o código <strong><%= pool.code %></strong>.</p>
     <% else %>

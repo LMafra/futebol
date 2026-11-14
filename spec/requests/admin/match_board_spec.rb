@@ -43,7 +43,7 @@ RSpec.describe 'Admin match page (tela única da partida)', type: :request do
     expect(page.at_css('[data-role="timeline"]').text).to include('Nenhum lance ainda.')
     expect(page.at_css('[data-role="legend"] dl[data-role="scout-legend"]')).to be_present
     expect(page.at_css('dialog#modal-lance')).to be_present
-    expect(page.at_css('[data-role="no-scouts"]').text).to include('Lance os scouts antes de finalizar')
+    expect(page.at_css('[data-role="no-scouts"]').text).to include('Registre os lances antes de finalizar')
   end
 
   it 'abre o diálogo do lance pela URL, sem JavaScript, com o tempo sugerido' do
@@ -120,7 +120,7 @@ RSpec.describe 'Admin match page (tela única da partida)', type: :request do
       expect(response).to redirect_to("/admin/matches/#{match.id}?modal=finalize")
       follow_redirect!
       expect(page.at_css('dialog#modal-finalize [role="alert"]').text)
-        .to include('não confere com o placar dos scouts (digite 2x1)')
+        .to include('não confere com o placar dos lances (digite 2x1)')
       expect(match.reload).to be_live
     end
 

@@ -6,7 +6,7 @@ module Ui
   #   columns: { attribute => [abbreviation, title] } read from each row;
   #   compact: the home card variant, with the header hidden from sight and no extra columns.
   class LeaderboardTableComponent < BaseComponent
-    TEXTS = { label: 'Ranking', name_header: 'Participante', empty: 'Ninguém pontuou ainda.' }.freeze
+    TEXTS = { label: 'Classificação', name_header: 'Participante', empty: 'Ninguém pontuou ainda.' }.freeze
     SKELETON_ROWS = 5
 
     attr_reader :rows

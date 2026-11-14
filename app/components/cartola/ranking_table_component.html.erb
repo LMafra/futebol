@@ -1,4 +1,4 @@
-<section class="w-full" <%= tag.attributes(root_attributes(label: "Ranking")) %>>
+<section class="w-full" <%= tag.attributes(root_attributes(label: "Classificação")) %>>
   <% case rendered_state %>
   <% when :default %>
     <div class="overflow-x-auto rounded-md border border-rule bg-white" data-role="table-scroll">
@@ -22,17 +22,17 @@
     </table>
     </div>
   <% when :loading %>
-    <span class="sr-only">Carregando ranking…</span>
+    <span class="sr-only">Carregando classificação…</span>
     <div class="flex flex-col gap-2" aria-hidden="true">
       <% 5.times do %>
         <div class="h-8 w-full <%= skeleton_classes %>" data-role="skeleton"></div>
       <% end %>
     </div>
   <% when :empty %>
-    <%= empty_notice("Ninguém no ranking ainda.") %>
+    <%= empty_notice("Ninguém na classificação ainda.") %>
   <% when :error %>
     <div class="<%= error_classes %>" role="alert">
-      <span class="font-bold">Não foi possível carregar o ranking.</span>
+      <span class="font-bold">Não foi possível carregar a classificação.</span>
     </div>
   <% end %>
 </section>

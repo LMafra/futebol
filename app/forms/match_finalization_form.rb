@@ -5,7 +5,7 @@ class MatchFinalizationForm
   include ActiveModel::Model
   include ActiveModel::Attributes
 
-  NO_SCOUTS = 'Lance os scouts antes de finalizar'.freeze
+  NO_SCOUTS = 'Registre os lances antes de finalizar'.freeze
 
   attribute :score_confirmation, :string
   attr_accessor :match, :actor, :ip_address
@@ -47,7 +47,7 @@ class MatchFinalizationForm
     typed = score_confirmation.to_s.downcase.delete(' ').tr('×', 'x')
     return if typed == expected_confirmation
 
-    errors.add(:score_confirmation, "não confere com o placar dos scouts (digite #{expected_confirmation})")
+    errors.add(:score_confirmation, "não confere com o placar dos lances (digite #{expected_confirmation})")
   end
 
   def match_can_finish

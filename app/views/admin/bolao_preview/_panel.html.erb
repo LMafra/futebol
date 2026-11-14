@@ -18,7 +18,7 @@
           <%= label_tag :candidate_away, admin_required_label(match.away_team.name), class: AdminHelper::ADMIN_LABEL_CLASSES %>
           <%= number_field_tag :candidate_away, candidate_away, min: 0, step: 1, required: true, class: AdminHelper::ADMIN_INPUT_CLASSES %>
         </div>
-        <%= submit_tag "Calcular preview", name: nil, class: AdminHelper::ADMIN_BUTTON_CLASSES %>
+        <%= submit_tag "Calcular prévia", name: nil, class: AdminHelper::ADMIN_BUTTON_CLASSES %>
       <% end %>
 
       <% if preview_error %>

@@ -28,7 +28,7 @@ RSpec.describe 'Users (public signup)', type: :request do
     get signup_path
     checkbox = Nokogiri::HTML(response.body).at_css('input[type="checkbox"][name="user[public_profile_consent]"]')
     expect(checkbox['checked']).to be_nil
-    expect(response.body).to include('Autorizo exibir meu nome (primeiro nome + inicial) nos rankings públicos')
+    expect(response.body).to include('Autorizo exibir meu nome (primeiro nome + inicial) nas classificações públicas')
 
     expect { signup }.not_to change(Core::AuditLog, :count)
     expect(Core::User.find_by!(email_address: 'novo@futebol.test')).not_to be_public_profile_consented

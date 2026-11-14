@@ -21,7 +21,7 @@
     <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">
       Encerra a partida e enfileira o cálculo dos pontos.
       <% if active_admin_namespace.name == :admin %>
-        <%= link_to "Simular no Preview do Bolão", admin_bolaopreview_path(match_id: match.id, candidate_home: form.home_score, candidate_away: form.away_score), class: inline_link_classes(tone: :ink) %>
+        <%= link_to "Simular na Prévia do Bolão", admin_bolaopreview_path(match_id: match.id, candidate_home: form.home_score, candidate_away: form.away_score), class: inline_link_classes(tone: :ink) %>
       <% end %>
     </p>
     <%= modal_field f, :score_confirmation, label: admin_required_label("Confirme o placar, ex.: 2x1"), required: true,

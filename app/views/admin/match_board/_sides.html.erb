@@ -32,7 +32,7 @@
 
             <% counted = line.stats.select { line.count(_1).positive? } %>
             <% if counted.any? %>
-              <ul class="flex flex-wrap gap-2" role="list" aria-label="Scouts de <%= player.name %>">
+              <ul class="flex flex-wrap gap-2" role="list" aria-label="Lances de <%= player.name %>">
                 <% counted.each do |stat| %>
                   <li class="inline-flex items-center gap-1 rounded-md bg-paper ps-2 text-sm font-body text-ink">
                     <abbr title="<%= scout_label(stat) %>" class="no-underline font-semibold"><%= scout_abbreviation(stat) %></abbr>

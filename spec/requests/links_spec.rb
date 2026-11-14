@@ -45,7 +45,7 @@ RSpec.describe 'Links e botões com rótulo de destino (TICKET-0106)', type: :re
     get esquadrao_rankings_path
 
     form = page.at_css("main form[action='#{esquadrao_rankings_path}']")
-    expect(form.at_css('button[type="submit"]').text.strip).to eq('Mostrar ranking')
+    expect(form.at_css('button[type="submit"]').text.strip).to eq('Mostrar classificação')
   end
 
   it 'o e-mail de redefinição usa um link com destino claro' do

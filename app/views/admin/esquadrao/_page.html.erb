@@ -20,9 +20,9 @@
 
     <div class="grid gap-6 lg:grid-cols-2">
       <section class="rounded-md border border-rule bg-white p-4" aria-labelledby="esquadrao-ranking-title" data-role="esquadrao-ranking">
-        <h3 id="esquadrao-ranking-title" class="mb-3 font-display text-xl font-semibold text-ink">Ranking do campeonato</h3>
+        <h3 id="esquadrao-ranking-title" class="mb-3 font-display text-xl font-semibold text-ink">Classificação do campeonato</h3>
         <% if board.ranking.empty? %>
-          <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">O ranking aparece quando a primeira rodada for pontuada.</p>
+          <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">A classificação aparece quando a primeira rodada for pontuada.</p>
         <% else %>
           <div class="overflow-x-auto">
             <table class="data-table">
