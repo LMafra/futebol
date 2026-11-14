@@ -1,4 +1,4 @@
-<%# Tela única da partida (Admin e Gestor): placar, lances por time, linha do tempo, legenda e Finalizar. %>
+<%# Tela única da partida (Admin e Gestor): placar, lances por time, linha do tempo, legenda, histórico e Finalizar. %>
 <% match = board.match %>
 <% can_score = authorized?(:record_event, match) && (!match.scheduled? || match.may_start_match?) %>
 <% can_finalize = authorized?(:finalize, match) && FinalizeMatchService.finalizable?(match) %>
@@ -25,6 +25,8 @@
     <%= scout_legend %>
     <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %> mb-2">"Jogou" e "Destaque" valem pontos sem lance. SG é calculado pelo placar.</p>
   </details>
+
+  <%= render("admin/match_board/history", history: MatchHistory.new(match)) %>
 
   <% if can_finalize %>
     <%= render("admin/match_board/finalize", board:) %>

@@ -1,0 +1,17 @@
+<%# Histórico da partida: o que foi feito, por quem e quando, do mais recente ao mais antigo. %>
+<section class="rounded-md border border-rule bg-white p-4" aria-labelledby="match-history-title" data-role="match-history">
+  <h3 id="match-history-title" class="mb-3 font-display text-xl font-semibold text-ink">Histórico da partida</h3>
+  <% if history.logs.empty? %>
+    <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Nada feito nesta partida ainda.</p>
+  <% else %>
+    <ol class="flex flex-col divide-y divide-rule" role="list">
+      <% history.logs.each do |log| %>
+        <li class="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2 text-sm font-body text-ink" data-role="history-entry">
+          <time class="w-24 shrink-0 tabular-nums text-graphite" datetime="<%= log.created_at.iso8601 %>"><%= l(log.created_at, format: "%d/%m %H:%M") %></time>
+          <span class="min-w-0 flex-1" data-role="history-text"><%= match_history_text(log, history.players) %></span>
+          <span class="text-graphite" data-role="history-author"><%= match_history_author(log) %></span>
+        </li>
+      <% end %>
+    </ol>
+  <% end %>
+</section>
