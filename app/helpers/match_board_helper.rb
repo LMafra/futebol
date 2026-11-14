@@ -9,7 +9,11 @@ module MatchBoardHelper
       .compact.join(' · ')
   end
 
-  def lance_notice(event) = "Lance registrado: #{lance_text(event)}."
+  def lance_notice(event) = "Lance registrado: #{lance_text(event)}.#{rescore_notice(event.match)}"
+
+  def rescore_notice(match)
+    match.scored? ? " Placar e pontos refeitos: #{match.home_score} × #{match.away_score}." : ''
+  end
 
   def lance_button_label(stat) = STAT_BUTTON_LABELS.fetch(stat)
 

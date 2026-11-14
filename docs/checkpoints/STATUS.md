@@ -591,3 +591,4 @@ Tickets **0110+**: o gestor controla a pontuação da partida sem depender de fi
 | Bloco | Ticket | Status | Artefatos | Observações |
 |---|---|---|---|---|
 | F1 — pontuar na hora | [0110](../tickets/TICKET-0110.md) | ok | `MatchPoints`, `Cartola::ValueUpdate`, `FinalizeMatchService`, `spec/services/finalize_match_service_spec.rb` | "Finalizar e pontuar" em um clique com o placar dos lances; Bolão e valorização do Esquadrão calculados na mesma requisição, sem worker; reversão síncrona; "Encerrada" e "Revertida" podem ser finalizadas de novo; jobs antigos viram invólucros |
+| F2 — editar depois de pontuada | [0111](../tickets/TICKET-0111.md) | ok | `Scouts::Rescore`, `spec/services/scouts/rescore_spec.rb` | Lances, "−" e "Jogou"/"Destaque" na partida pontuada; cada alteração refaz o placar e os pontos (Bolão e Esquadrão) sob um token novo, sem reverter; aviso "Placar e pontos refeitos"; auditoria `rescore` com o placar e o token anteriores |

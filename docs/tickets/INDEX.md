@@ -1,4 +1,4 @@
-# Tickets — INDEX (110 tickets)
+# Tickets — INDEX (111 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -112,6 +112,7 @@
 | [0108](TICKET-0108.md) | R2 | Moeda E$ no lugar de C$ com formatador único (`Cartola::Money`, `esquadrao_money`) | 0107 | playwright |
 | [0109](TICKET-0109.md) | R3 | Classificação no Admin e no Gestor com dedução de pontos (motivo, autor, registro de auditoria, revogação) | 0108 | playwright |
 | [0110](TICKET-0110.md) | F1 | Finalizar a partida pontua na hora, com confirmação em um clique | 0109 | playwright |
+| [0111](TICKET-0111.md) | F2 | Lances e estatísticas editáveis depois de pontuada (placar e pontos refeitos na hora) | 0110 | playwright |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -130,4 +131,4 @@
 - Auditoria UI/UX completa (ordem dos commits): 0079 → 0080 → 0081 → 0075 → 0076 → 0074 → 0077 → 0084 → 0082 → 0083 → 0078
 - Gestor, campeonato, partida ao vivo e participantes (ordem dos commits): 0085 → 0086 → 0087 → 0088 → 0106 → 0089 → 0090 → 0091 → 0092 → 0093 → 0102 → 0094 → 0095 → 0096 → 0097 → 0098 → 0099 → 0100 → 0101 → 0103 → 0104 → 0105
 - Revisão do PR #87 (ordem dos commits): 0107 → 0108 → 0109
-- Finalização da partida (ordem dos commits): 0110
+- Finalização da partida (ordem dos commits): 0110 → 0111

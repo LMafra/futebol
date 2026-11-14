@@ -1,7 +1,7 @@
 module Scouts
   # "Jogou" and "Destaque" of the single match page (ADR 0006): marked directly on Cartola::PlayerScore, without a
   # lance. One highlight per match; a player with no lance, unmarked as played and not the highlight leaves the
-  # match. SG and points are scored again in the same transaction.
+  # match. SG and points are scored again in the same transaction, and so is a scored match (Rescore).
   class MarkParticipation
     Result = Data.define(:errors) do
       def success? = errors.empty?
@@ -20,17 +20,20 @@ module Scouts
       errors = EventRules.match_errors(@match)
       return Result.new(errors:) if errors.any?
 
-      @match.with_lock do
-        mark!(flags)
-        Cartola::RecordScoutsService.rescore!(@match)
-        Core::AuditLog.create!(action: 'cartola.participation_marked', user: actor, auditable: @match, ip_address:,
-                               metadata: { player_id: @player.id, **flags })
-      end
-      BroadcastUpdateService.call(match: @match) if @match.live?
+      @match.with_lock { record!(flags, actor, ip_address) }
+      BroadcastUpdateService.call(match: @match) if @match.live? || @match.scored?
       Result.new(errors: [])
     end
 
     private
+
+    def record!(flags, actor, ip_address)
+      mark!(flags)
+      Cartola::RecordScoutsService.rescore!(@match)
+      Core::AuditLog.create!(action: 'cartola.participation_marked', user: actor, auditable: @match, ip_address:,
+                             metadata: { player_id: @player.id, **flags })
+      Rescore.call(@match, actor:, ip_address:)
+    end
 
     def mark!(flags)
       clear_highlight! if flags[:highlight]

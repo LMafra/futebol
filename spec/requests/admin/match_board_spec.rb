@@ -128,14 +128,20 @@ RSpec.describe 'Admin match page (tela única da partida)', type: :request do
     end
   end
 
-  it 'fica só para leitura quando a partida foi pontuada' do
-    match.update_columns(status: 'scored', home_score: 0, away_score: 0, scores_calculated_at: Time.current)
-
+  it 'continua editável depois de pontuada: cada lance refaz o placar e os pontos na hora' do
+    record(striker, 'goals')
+    finalize
     get "/admin/matches/#{match.id}"
 
-    expect(page.at_css('[data-role="readonly"]')).to be_present
-    expect(page.at_css('dialog#modal-lance')).to be_nil
+    expect(page.at_css('[data-role="rescore-note"]').text).to include('refaz o placar e os pontos')
+    expect(page.at_css('dialog#modal-lance')).to be_present
     expect(page.at_css('[data-role="finalize-bar"]')).to be_nil
+
+    record(rival, 'goals')
+
+    expect(match.reload).to have_attributes(status: 'scored', home_score: 1, away_score: 1)
+    follow_redirect!
+    expect(response.body).to include('Placar e pontos refeitos: 1 × 1.')
   end
 
   it 'as páginas antigas redirecionam para a partida' do

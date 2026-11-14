@@ -21,7 +21,8 @@ module AdminMatchBoard
       result = Scouts::UndoLast.call(match: resource, player: Core::Player.find(params[:player_id]),
                                      stat: params[:stat], actor: current_user, ip_address: request.remote_ip)
       if result.success?
-        redirect_to resource_path, notice: "Desfeito: #{helpers.lance_text(result.event)}.", status: :see_other
+        notice = "Desfeito: #{helpers.lance_text(result.event)}.#{helpers.rescore_notice(resource)}"
+        redirect_to resource_path, notice:, status: :see_other
       else
         redirect_to resource_path, alert: result.errors.to_sentence, status: :see_other
       end
@@ -34,8 +35,9 @@ module AdminMatchBoard
       result = Scouts::MarkParticipation.call(match: resource, player: Core::Player.find(params[:player_id]),
                                               flags: flags.symbolize_keys, actor: current_user,
                                               ip_address: request.remote_ip)
-      flash_message = result.success? ? {} : { alert: result.errors.to_sentence }
-      redirect_to resource_path, **flash_message, status: :see_other
+      flash_message = { alert: result.errors.to_sentence.presence,
+                        notice: (helpers.rescore_notice(resource).strip.presence if result.success?) }
+      redirect_to resource_path, **flash_message.compact, status: :see_other
     end
   end
 

@@ -1,6 +1,7 @@
 module Scouts
   # Records a lance (ADR 0006): saves the Cartola::ScoutEvent and recounts the player's scouts in the same
-  # transaction, starting a scheduled match whose kickoff has passed. Broadcasts the match while it is live.
+  # transaction, starting a scheduled match whose kickoff has passed; a scored match is scored again (Rescore).
+  # Broadcasts the match while it is live or scored.
   #   Scouts::RecordEvent.call(event: Cartola::ScoutEvent.new(match:, player:, stat: 'goals', period:, minute:),
   #                            actor:, ip_address:)
   class RecordEvent
@@ -22,7 +23,7 @@ module Scouts
       return Result.new(event: @event, errors:) if errors.any?
 
       record!
-      BroadcastUpdateService.call(match: match) if match.live?
+      BroadcastUpdateService.call(match: match) if match.live? || match.scored?
       Result.new(event: @event, errors: [])
     end
 
@@ -38,6 +39,7 @@ module Scouts
         metadata = @event.slice(:id, :player_id, :stat, :period, :minute)
         Core::AuditLog.create!(action: 'cartola.scout_event_recorded', user: @actor, auditable: match,
                                ip_address: @ip_address, metadata:)
+        Rescore.call(match, actor: @actor, ip_address: @ip_address)
       end
     end
   end

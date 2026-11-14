@@ -69,12 +69,12 @@ RSpec.describe 'Lances: Scouts::RecordEvent and Scouts::UndoLast (TICKET-0096)' 
     expect(undo(striker, 'goals').errors).to eq(['Nada para desfazer.'])
   end
 
-  it 'starts a scheduled match whose kickoff has passed and refuses a scored one' do
+  it 'starts a scheduled match whose kickoff has passed and refuses one that has not' do
     scheduled = create(:match, home_team: home, away_team: away, status: 'scheduled', match_date: 5.minutes.ago)
     expect(record(striker, 'goals', on: scheduled)).to be_success
     expect(scheduled.reload).to be_live
 
-    scheduled.update_columns(status: 'scored', scores_calculated_at: Time.current)
-    expect(record(striker, 'goals', on: scheduled).errors.first).to start_with('A partida já foi pontuada')
+    upcoming = create(:match, home_team: home, away_team: away, status: 'scheduled', match_date: 1.day.from_now)
+    expect(record(striker, 'goals', on: upcoming).errors).to eq(['A partida ainda não começou.'])
   end
 end

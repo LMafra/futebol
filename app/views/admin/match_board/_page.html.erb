@@ -1,18 +1,19 @@
 <%# Tela única da partida (Admin e Gestor): placar, lances por time, linha do tempo, legenda e Finalizar. %>
 <% match = board.match %>
-<% can_score = authorized?(:record_event, match) && !match.scored? && (!match.scheduled? || match.may_start_match?) %>
+<% can_score = authorized?(:record_event, match) && (!match.scheduled? || match.may_start_match?) %>
 <% can_finalize = authorized?(:finalize, match) && FinalizeMatchService.finalizable?(match) %>
 <div class="flex flex-col gap-6 <%= 'pb-24' if can_finalize %>" data-role="match-board">
   <%= render("admin/match_board/scoreboard", match:) %>
 
   <% if can_score %>
+    <% if match.scored? %>
+      <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>" role="status" data-role="rescore-note">Partida pontuada: cada lance, "Jogou" ou "Destaque" alterado aqui refaz o placar e os pontos do Bolão e do <%= module_label(:fantasy) %> na hora.</p>
+    <% end %>
     <% if board.rule_missing? %>
       <p class="text-sm font-body font-semibold text-ink" role="status">Cadastre a regra "<%= Cartola::ScoringRule::DEFAULT_NAME %>" do Esquadrão para calcular os pontos.</p>
     <% end %>
     <%= render("admin/match_board/sides", board:) %>
     <%= render("admin/match_board/lance_modal", board:) %>
-  <% elsif match.scored? %>
-    <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>" role="status" data-role="readonly">Partida pontuada: os lances ficam só para leitura. Reverta a pontuação para alterá-los.</p>
   <% elsif match.scheduled? %>
     <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>" role="status">Os lances abrem no horário da partida, <%= match.match_date&.strftime("%d/%m às %H:%M") %>.</p>
   <% end %>
