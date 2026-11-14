@@ -4,7 +4,8 @@ RSpec.describe 'db/seeds.rb' do
   def seeded_models
     [Core::Team, Core::Player, Core::Championship, Core::Match, Core::User, Bolao::ScoringRule, Cartola::ScoringRule,
      Bolao::Pool, Bolao::PoolMembership, Bolao::Prediction, Bolao::PredictionScore, Cartola::Squad, Cartola::Lineup,
-     Cartola::LineupPlayer, Cartola::Wallet, Cartola::PlayerScore]
+     Cartola::LineupPlayer, Cartola::Wallet, Cartola::PlayerScore, Cartola::ScoutEvent, Core::PointDeduction,
+     Core::CsvImport, Core::AuditLog]
   end
 
   def counts = seeded_models.to_h { |model| [model.name, model.count] }
@@ -21,7 +22,14 @@ RSpec.describe 'db/seeds.rb' do
 
   def matches_in_rounds(rounds) = serie_a.matches.select { |match| round_of(match).to_i.in?(rounds) }
 
-  def small_championships = Core::Championship.where.not(external_id: 'brasileirao-2026').includes(matches: :home_team)
+  def small_championships
+    external_ids = YAML.load_file(Rails.root.join('db/seeds/small_championships.yml')).pluck('external_id')
+    Core::Championship.where(external_id: external_ids).includes(matches: :home_team)
+  end
+
+  def copa_testes = Core::Championship.find_by!(external_id: 'copa-testes-2026')
+
+  def baseline_predictions = Bolao::Prediction.where.not(match: copa_testes.matches)
 
   def demo_users = Core::User.where('email_address LIKE ?', 'demo%@demo.local')
 
@@ -38,8 +46,9 @@ RSpec.describe 'db/seeds.rb' do
     end
 
     after(:context) do
-      [Bolao::PredictionScore, Bolao::Prediction, Bolao::PoolMembership, Bolao::ScoringRule, Bolao::Pool,
-       Cartola::PlayerValueHistory, Cartola::PlayerValue, Cartola::PlayerScore, Cartola::Wallet,
+      [ActiveStorage::Attachment, ActiveStorage::Blob, Core::AuditLog, Core::CsvImport, Core::PointDeduction,
+       Bolao::PredictionScore, Bolao::Prediction, Bolao::PoolMembership, Bolao::ScoringRule, Bolao::Pool,
+       Cartola::PlayerValueHistory, Cartola::PlayerValue, Cartola::ScoutEvent, Cartola::PlayerScore, Cartola::Wallet,
        Cartola::LineupPlayer, Cartola::Lineup, Cartola::Squad,
        Cartola::ScoringRule, Core::ChampionshipTeam, Core::Match, Core::Player,
        Core::Team, Core::Championship, Core::Session, Core::User].each(&:delete_all)
@@ -135,7 +144,7 @@ RSpec.describe 'db/seeds.rb' do
       end
 
       it 'fills the Top 3 Bolão and Top 3 Esquadrão of every championship, with consented names only' do
-        rankings = Core::ChampionshipRankingsService.top(Core::Championship.all)
+        rankings = Core::ChampionshipRankingsService.top([serie_a, *small_championships])
 
         expect(rankings.size).to eq(small_championships.size + 1)
         rankings.each_value do |top|
@@ -192,7 +201,7 @@ RSpec.describe 'db/seeds.rb' do
       end
 
       it 'spreads at least 60 predictions over the 5 users and 10 rounds, one per (pool, user, match)' do
-        predictions = Bolao::Prediction.includes(:user, :match)
+        predictions = baseline_predictions.includes(:user, :match)
 
         expect(predictions.size).to be >= 60
         expect(predictions.map(&:user).uniq).to match_array(demo_users)
@@ -202,7 +211,8 @@ RSpec.describe 'db/seeds.rb' do
       end
 
       it 'gives every prediction on a scored match a kept score, and none to the others' do
-        scored, pending = Bolao::Prediction.includes(:match, :scores).partition { |prediction| prediction.match.scored? }
+        scored, pending = baseline_predictions.includes(:match, :scores)
+                                              .partition { |prediction| prediction.match.scored? }
 
         expect(scored).to all(satisfy { |prediction| prediction.scores.kept.one? })
         expect(pending.flat_map(&:scores)).to be_empty
@@ -239,6 +249,38 @@ RSpec.describe 'db/seeds.rb' do
           .to eq('goalkeeper' => 1, 'defender' => 2, 'midfielder' => 3, 'forward' => 3)
         expect(wallet.balance).to eq(lineup.championship.cartola_initial_budget - cost)
         expect(wallet.balance).to be_positive
+      end
+    end
+
+    describe 'cenários de teste (Copa dos Testes)' do
+      it 'gives the gestor a match in every situation, built through the services with its history' do
+        matches = copa_testes.matches.order(:round, :match_date).to_a
+
+        expect(copa_testes).to have_attributes(manager: Core::User.find_by!(email_address: 'gestor@demo.local'))
+        expect(matches.first(6).map(&:status)).to eq(%w[scored reverted finished live scheduled scheduled])
+        expect(matches.first).to have_attributes(home_score: 2, away_score: 2)
+        expect(matches.fourth.match_date).to be_past
+        expect(matches.fifth.match_date).to be_past
+        expect(Core::AuditLog.where(auditable: matches.first).pluck(:action)).to include('finalize', 'rescore')
+        expect(Core::AuditLog.find_by!(action: 'revert', auditable: matches.second).metadata['reason']).to be_present
+        expect(Cartola::ScoutEvent.discarded.where(match: matches.fourth)).to exist
+        expect(Core::AuditLog.where(auditable: matches[5]).pluck(:action)).to eq(['match.rescheduled'])
+      end
+
+      it 'covers the Bolão, Classificação, Esquadrão and platform cases' do
+        expect(Bolao::ScoringRule.find_by!(pool: Bolao::Pool.find_by!(code: 'TESTES')))
+          .to have_attributes(exact_score_points: 12, winner_points: 6)
+        expect(Core::AuditLog.distinct.pluck(:action))
+          .to include('bolao.prediction_corrected', 'bolao.member_removed', 'esquadrao.lineup_corrected',
+                      'championship.points_deducted', 'championship.points_deduction_revoked', 'anonymize')
+        expect(Core::PointDeduction.where(championship: copa_testes).pluck(:revoked_at).map(&:nil?))
+          .to contain_exactly(true, false)
+        expect(Core::User.where(email_address: %w[pedido@demo.local recusado@demo.local]).pluck(:manager_status))
+          .to contain_exactly('pending', 'rejected')
+        expect(Core::User.where.not(anonymized_at: nil).count).to eq(1)
+        expect(Core::Championship.find_by!(external_id: 'rascunho-copa-feminina-2026')).to be_draft
+        expect(Core::CsvImport.order(:id).pluck(:status, :rows_processed)).to eq([['completed', 2], ['failed', 0]])
+        expect(copa_testes.teams).to all(satisfy { |team| team.crest.attached? })
       end
     end
   end
