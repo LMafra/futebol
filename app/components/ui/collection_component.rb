@@ -80,8 +80,9 @@ module Ui
     def custom_card? = @card.present?
     def empty_content = @empty && helpers.capture(&@empty)
 
+    # capture drops a block's non-String value (a count), so it goes through to_s.
     def cell(column, item)
-      return helpers.capture(item, &column.block) if column.block
+      return helpers.capture(item) { |record| column.block.call(record).to_s } if column.block
 
       item.public_send(column.key)
     end

@@ -1,0 +1,16 @@
+<%# Jogadores (/admin e /gestor): tabela ordenável; no celular, um cartão por jogador. %>
+<%= render Ui::CollectionComponent.new(items: records, id: "players", mode: :table, **listing_sort_options,
+                                       texts: { label: "Jogadores" }) do |c| %>
+  <% c.column(:name, label: "Jogador", primary: true, sortable: true) { |player| link_to player.name, public_send(:"#{namespace}_player_path", player), class: inline_link_classes(tone: :ink) } %>
+  <% c.column(:team, label: "Time") { |player| player.team.name } %>
+  <% c.column(:position, label: "Posição", sortable: true) %>
+  <% c.column(:shirt_number, label: "Número", numeric: true, sortable: true) %>
+  <% c.column(:base_value, label: "Valor base", numeric: true, sortable: true) do |player| %>
+    <%= player.base_value ? format("C$ %.2f", player.base_value) : "padrão do campeonato" %>
+  <% end %>
+  <% c.column(:actions, label: "Ações") do |player| %>
+    <% if authorized?(:update, player) %>
+      <%= admin_icon_action_link("Editar", public_send(:"edit_#{namespace}_player_path", player), :edit, subject: player.name) %>
+    <% end %>
+  <% end %>
+<% end %>

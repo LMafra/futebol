@@ -1,0 +1,19 @@
+<%# Times (/admin e /gestor): grade de escudos ou tabela. %>
+<% players = listing_counts(Core::Player, :team_id, records)
+   views = { grid: "Grade", table: "Tabela" } %>
+<%= render Ui::CollectionComponent.new(items: records, id: "teams", views:, view: listing_view(views), **listing_sort_options,
+                                       texts: { label: "Times" }) do |c| %>
+  <% c.column(:crest, label: "Escudo", media: true) { |team| team_crest(team, size: "size-12") } %>
+  <% c.column(:name, label: "Time", primary: true, sortable: true) { |team| link_to team.name, public_send(:"#{namespace}_team_path", team), class: inline_link_classes(tone: :ink) } %>
+  <% c.column(:players, label: "Jogadores", numeric: true) { |team| pluralize(players.fetch(team.id, 0), "jogador", plural: "jogadores") } %>
+  <% c.column(:short_name, label: "Sigla", sortable: true) %>
+  <% c.column(:captain_name, label: "Capitão") %>
+  <% if namespace == :admin %>
+    <% c.column(:manager, label: "Gestor") { |team| team.manager&.name || "Admin" } %>
+  <% end %>
+  <% c.column(:actions, label: "Ações") do |team| %>
+    <% if authorized?(:update, team) %>
+      <%= admin_icon_action_link("Editar", public_send(:"edit_#{namespace}_team_path", team), :edit, subject: team.name) %>
+    <% end %>
+  <% end %>
+<% end %>

@@ -10,15 +10,7 @@ ActiveAdmin.register Core::User, as: 'User' do
   scope :all, default: true
   scope('Pedidos pendentes', :pending) { |users| users.where(manager_status: :pending) }
 
-  index do
-    selectable_column
-    id_column
-    column :name
-    column :email_address
-    column(:role) { |user| admin_user_enum_label(:role, user.role) }
-    column(:manager_status) { |user| admin_user_enum_label(:manager_status, user.manager_status) }
-    actions
-  end
+  AdminCollectionIndex.register(self, 'admin/listings/users')
 
   show do
     attributes_table do

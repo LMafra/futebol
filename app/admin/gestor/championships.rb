@@ -12,21 +12,8 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
   filter :season, as: :select, collection: -> { admin_season_options }
   filter :status, label: 'Situação', as: :select, collection: [%w[Rascunho draft], %w[Publicado published]]
 
-  index do
-    id_column
-    column :name
-    column :season
-    column('Privado') { |championship| status_tag(championship.private? ? 'sim' : 'não') }
-    column('Situação') { |championship| status_tag(championship.draft? ? 'rascunho' : 'publicado') }
-    actions defaults: false do |championship|
-      text_node admin_icon_action_link('Abrir', gestor_championship_path(championship), :view,
-                                       subject: championship.name)
-      if authorized?(:update, championship)
-        text_node admin_icon_action_link('Editar', edit_gestor_championship_path(championship), :edit,
-                                         subject: championship.name)
-      end
-    end
-  end
+  includes logo_attachment: :blob
+  AdminCollectionIndex.register(self, 'admin/listings/championships')
 
   action_item :new_match, only: :show, if: -> { authorized?(:enroll, resource) && resource.teams.many? } do
     safe_join([modal_trigger('Agendar partida', :match, new_gestor_match_path(match: { championship_id: resource.id }),

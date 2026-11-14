@@ -9,14 +9,7 @@ ActiveAdmin.register Bolao::Pool, as: 'Pool' do
   AdminPoolParticipants.register(self)
   filter :championship
 
-  index do
-    selectable_column
-    id_column
-    column :name
-    column :championship
-    column :owner
-    actions
-  end
+  AdminCollectionIndex.register(self, 'admin/listings/pools')
 
   controller do
     include ModalFormResponses

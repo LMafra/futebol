@@ -74,7 +74,8 @@
             <% if custom_card? %>
               <%= card_body(item) %>
             <% else %>
-              <% if media_column %><div class="<%= mode == :grid ? 'size-16' : 'size-12' %> flex items-center justify-center"><%= cell(media_column, item) %></div><% end %>
+              <% media = media_column && cell(media_column, item) %>
+              <% if media.present? %><div class="<%= mode == :grid ? 'size-16' : 'size-12' %> flex items-center justify-center"><%= media %></div><% end %>
               <p class="font-display text-xl text-ink" data-role="collection-primary"><%= cell(primary_column, item) %></p>
               <dl class="grid gap-1 text-sm <%= 'w-full' if mode == :grid %>">
                 <% (mode == :grid ? detail_columns.first(1) : detail_columns).each do |column| %>

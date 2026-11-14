@@ -29,16 +29,8 @@ ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
 
   AdminNameSearch.register(self)
 
-  index do
-    id_column
-    column :name
-    column :short_name
-    column :captain_name
-    actions defaults: false do |team|
-      text_node admin_icon_action_link('Abrir', gestor_team_path(team), :view, subject: team.name)
-      text_node admin_icon_action_link('Editar', edit_gestor_team_path(team), :edit, subject: team.name)
-    end
-  end
+  includes crest_attachment: :blob
+  AdminCollectionIndex.register(self, 'admin/listings/teams')
 
   show do
     attributes_table do

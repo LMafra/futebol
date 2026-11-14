@@ -86,9 +86,9 @@ RSpec.describe 'Admin accessibility (TICKET-0081)', type: :request do
 
   describe 'row actions' do
     it 'renders 40px icon actions' do
-      create(:championship)
+      create(:player)
 
-      get '/admin/championships'
+      get '/admin/players'
 
       expect(page_html.css('[data-role="admin-table-action"]').map { _1['class'] }).to all(include('h-10', 'w-10'))
     end

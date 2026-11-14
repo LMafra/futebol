@@ -13,28 +13,7 @@
 <section class="panel" aria-labelledby="audit-title">
   <h3 class="panel-title" id="audit-title">Registros (<%= logs.total_count %>)</h3>
   <div class="panel-body">
-    <%= render Ui::AdminTableComponent.new(
-          headers: [
-            { label: "Quando", numeric: true },
-            "Ação",
-            "Quem",
-            "Registro",
-            { label: "IP", numeric: true },
-            "Motivo / detalhes"
-          ],
-          rows: logs.map { |log|
-            [
-              l(log.created_at, format: "%d/%m/%Y %H:%M"),
-              tag.span(log.action, class: "status-tag"),
-              log.user || "sistema",
-              admin_auditable_link(log),
-              log.ip_address,
-              log.metadata["reason"] || log.metadata.except("reason").map { |k, v| "#{k}: #{v}" }.join(" · ")
-            ]
-          },
-          texts: { label: "Registros de auditoria", empty: "Nenhum registro de auditoria." },
-          table_role: "audit-logs"
-        ) %>
+    <%= render "admin/listings/audit_logs", records: logs, namespace: :admin %>
     <% if logs.any? %>
       <nav class="mt-4 flex gap-4 text-sm font-body" aria-label="Paginação">
         <%= link_to_prev_page logs, "← Mais recentes", params: request.query_parameters %>

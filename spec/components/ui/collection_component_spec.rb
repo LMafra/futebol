@@ -33,6 +33,12 @@ RSpec.describe Ui::CollectionComponent do
       expect(page.at_css('thead')['class']).to include('max-md:sr-only')
     end
 
+    it 'prints a number returned by a column block' do
+      page = render_collection { |c| c.column(:double, label: 'Dobro', numeric: true) { |item| item.points * 2 } }
+
+      expect(page.at_css('[data-label="Dobro"]').text).to eq('84')
+    end
+
     it 'links sortable headers, flags the current sort and flips its direction' do
       with_request_url('/pools?sort=points&dir=asc') { @page = render_collection(sort: 'points', direction: 'asc') }
 

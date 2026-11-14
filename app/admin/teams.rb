@@ -2,7 +2,7 @@ ActiveAdmin.register Core::Team, as: 'Team' do
   menu parent: 'Times', label: 'Times', priority: 1
 
   permit_params :name, :short_name, :crest, :remove_crest, :external_id, :manager_id, :captain_name, :captain_phone
-  includes :manager
+  includes :manager, crest_attachment: :blob
   controller { include ModalFormResponses }
 
   action_item :new_player, only: :show, if: -> { authorized?(:create, Core::Player.new(team: resource)) } do
@@ -21,15 +21,7 @@ ActiveAdmin.register Core::Team, as: 'Team' do
   filter :manager, collection: -> { Core::User.managers.order(:name) }
   filter :external_id_eq, label: 'ID externo', as: :string
 
-  index do
-    selectable_column
-    id_column
-    column :name
-    column :short_name
-    column(:manager) { |team| team.manager&.name || 'Admin' }
-    column :external_id
-    actions
-  end
+  AdminCollectionIndex.register(self, 'admin/listings/teams')
 
   show do
     attributes_table do

@@ -18,17 +18,7 @@ ActiveAdmin.register Core::Player, as: 'Player', namespace: :gestor do
   filter :team, collection: -> { gestor_teams }
   filter :position, as: :select, collection: -> { Core::Player::POSITIONS }
 
-  index do
-    id_column
-    column :name
-    column(:team) { |player| player.team.name }
-    column :position
-    column :shirt_number, class: 'text-right tabular-nums'
-    actions defaults: false do |player|
-      text_node admin_icon_action_link('Abrir', gestor_player_path(player), :view, subject: player.name)
-      text_node admin_icon_action_link('Editar', edit_gestor_player_path(player), :edit, subject: player.name)
-    end
-  end
+  AdminCollectionIndex.register(self, 'admin/listings/players')
 
   form do |f|
     f.semantic_errors

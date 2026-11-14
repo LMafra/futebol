@@ -38,3 +38,18 @@ Como mostrar uma lista no Craquefy: Admin, Gestor e site público usam o mesmo c
   <% c.empty { render Ui::EmptyStateComponent.new(title: "Nenhum time ainda") } %>
 <% end %>
 ```
+
+### No Admin e no Gestor
+
+Os índices do ActiveAdmin usam o renderizador `AdminCollectionIndex`. Filtros, escopos, paginação e downloads continuam do ActiveAdmin; a lista vem de um parcial em `app/views/admin/listings/`, que recebe `records` (a página atual) e `namespace` (`:admin` ou `:gestor`).
+
+```ruby
+ActiveAdmin.register Core::Team, namespace: :gestor do
+  AdminCollectionIndex.register(self, 'admin/listings/teams')
+end
+```
+
+- `?sort=&dir=` vira o `order` do ActiveAdmin (`CollectionSortParams`), só para colunas da tabela.
+- Contagens por linha vêm de `listing_counts(Modelo, :chave, records)`: uma consulta por contagem.
+- A seleção em lote do ActiveAdmin fica desligada nessas telas; ações em lote usam `c.bulk_action`.
+- Auditoria da migração: `docs/checkpoints/UX-LISTAGENS.md`.

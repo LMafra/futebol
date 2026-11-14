@@ -8,14 +8,7 @@ ActiveAdmin.register Core::CsvImport, as: 'CsvImport' do
   filter :status, as: :select, collection: -> { admin_csv_import_status_options }
   filter :created_at
 
-  index do
-    id_column
-    column(:status) { |csv_import| admin_csv_import_status_label(csv_import.status) }
-    column :rows_processed, class: 'text-right tabular-nums'
-    column :error_message
-    column :created_at
-    actions
-  end
+  AdminCollectionIndex.register(self, 'admin/listings/csv_imports')
 
   show do
     div class: 'mb-6' do

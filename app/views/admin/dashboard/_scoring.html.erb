@@ -22,66 +22,46 @@
 <%= render "admin/dashboard/pending_managers", manager_queue: manager_queue %>
 
 <div class="grid gap-6 lg:grid-cols-12">
-  <div class="flex flex-col gap-6 lg:col-span-8">
+  <div class="flex min-w-0 flex-col gap-6 lg:col-span-8">
     <section class="rounded-md border border-rule bg-white" aria-labelledby="live-title">
       <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="live-title">Ao vivo: aguardando placar final (<%= live.size %>)</h3>
       <div class="px-4 py-3">
-        <%= render Ui::AdminTableComponent.new(
-              headers: ["Partida", { label: "Início", numeric: true }, { label: "Placar", numeric: true }, ""],
-              rows: live.map { |match|
-                [
-                  link_to(match, admin_match_path(match), class: inline_link_classes(tone: :ink)),
-                  l(match.match_date, format: "%d/%m %H:%M"),
-                  admin_score(match),
-                  safe_join([
-                    link_to("Preview do Bolão", admin_bolaopreview_path(match_id: match.id), class: inline_link_classes(tone: :ink)),
-                    " · ".html_safe,
-                    link_to("Finalizar", admin_match_path(match, modal: "finalize"), class: inline_link_classes(tone: :ink))
-                  ])
-                ]
-              },
-              texts: { label: "Partidas ao vivo", empty: "Nenhuma partida ao vivo." }
-            ) %>
+        <%= render Ui::CollectionComponent.new(items: live, id: "live-matches", mode: :table, texts: { label: "Partidas ao vivo", empty: "Nenhuma partida ao vivo." }) do |c| %>
+          <% c.column(:match, label: "Partida", primary: true) { |match| link_to match, admin_match_path(match), class: inline_link_classes(tone: :ink) } %>
+          <% c.column(:match_date, label: "Início", numeric: true) { |match| l(match.match_date, format: "%d/%m %H:%M") } %>
+          <% c.column(:score, label: "Placar", numeric: true) { |match| admin_score(match) } %>
+          <% c.column(:actions, label: "Ações") do |match| %>
+            <%= link_to "Preview do Bolão", admin_bolaopreview_path(match_id: match.id), class: inline_link_classes(tone: :ink) %> ·
+            <%= link_to "Finalizar", admin_match_path(match, modal: "finalize"), class: inline_link_classes(tone: :ink) %>
+          <% end %>
+        <% end %>
       </div>
     </section>
 
     <section class="rounded-md border border-rule bg-white" aria-labelledby="recent-matches-title" data-role="admin-recent-matches">
       <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="recent-matches-title">Últimas partidas</h3>
       <div class="px-4 py-3">
-        <%= render Ui::AdminTableComponent.new(
-              headers: ["Partida", { label: "Início", numeric: true }, "Status", { label: "Placar", numeric: true }],
-              rows: recent_matches.map { |match|
-                [
-                  link_to(match, admin_match_path(match), class: inline_link_classes(tone: :ink)),
-                  l(match.match_date, format: "%d/%m %H:%M"),
-                  admin_match_status_badge(match),
-                  admin_score(match)
-                ]
-              },
-              texts: { label: "Últimas partidas", empty: "Nenhuma partida cadastrada." }
-            ) %>
+        <%= render Ui::CollectionComponent.new(items: recent_matches, id: "recent-matches", mode: :table, texts: { label: "Últimas partidas", empty: "Nenhuma partida cadastrada." }) do |c| %>
+          <% c.column(:match, label: "Partida", primary: true) { |match| link_to match, admin_match_path(match), class: inline_link_classes(tone: :ink) } %>
+          <% c.column(:match_date, label: "Início", numeric: true) { |match| l(match.match_date, format: "%d/%m %H:%M") } %>
+          <% c.column(:status, label: "Status") { |match| admin_match_status_badge(match) } %>
+          <% c.column(:score, label: "Placar", numeric: true) { |match| admin_score(match) } %>
+        <% end %>
       </div>
     </section>
 
     <section class="rounded-md border border-rule bg-white" aria-labelledby="pending-title">
       <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="pending-title">Encerradas com pontuação pendente (<%= pending.size %>)</h3>
       <div class="px-4 py-3">
-        <%= render Ui::AdminTableComponent.new(
-              headers: ["Partida", { label: "Placar", numeric: true }],
-              rows: pending.map { |match|
-                [
-                  link_to(match, admin_match_path(match), class: inline_link_classes(tone: :ink)),
-                  admin_score(match)
-                ]
-              },
-              texts: { label: "Encerradas com pontuação pendente", empty: "Nada pendente: toda partida encerrada já foi pontuada." },
-              table_role: "pending-scoring"
-            ) %>
+        <%= render Ui::CollectionComponent.new(items: pending, id: "pending-scoring", mode: :table, texts: { label: "Encerradas com pontuação pendente", empty: "Nada pendente: toda partida encerrada já foi pontuada." }) do |c| %>
+          <% c.column(:match, label: "Partida", primary: true) { |match| link_to match, admin_match_path(match), class: inline_link_classes(tone: :ink) } %>
+          <% c.column(:score, label: "Placar", numeric: true) { |match| admin_score(match) } %>
+        <% end %>
       </div>
     </section>
   </div>
 
-  <section class="rounded-md border border-rule bg-white lg:col-span-4" aria-labelledby="log-title">
+  <section class="min-w-0 rounded-md border border-rule bg-white lg:col-span-4" aria-labelledby="log-title">
     <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="log-title">Últimas ações</h3>
     <div class="px-4 py-3">
       <%= render Ui::AdminTableComponent.new(

@@ -11,11 +11,11 @@ RSpec.describe 'Admin/Gestor consistency (TICKET-0084)', type: :request do
     before { sign_in(admin) }
 
     it 'translates status filters and attribute headers' do
-      create(:match)
+      create(:match, round: 3)
 
       get '/admin/matches'
       expect(option_texts('q[status_eq]')).to eq(['Agendada', 'Ao vivo', 'Encerrada', 'Pontuada', 'Revertida'])
-      expect(page_html.css('th').map { _1.text.squish }).to include('Data da partida', 'Pontuada em')
+      expect(page_html.css('#matches [data-role="collection-group"] summary span').first.text).to end_with('Rodada 3')
 
       get '/admin/csv_imports'
       expect(option_texts('q[status_eq]')).to eq(['Na fila', 'Processando', 'Concluída', 'Falhou'])
@@ -153,12 +153,12 @@ RSpec.describe 'Admin/Gestor consistency (TICKET-0084)', type: :request do
     end
 
     it 'uses icon row actions on gestor tables' do
-      %w[players teams].each do |resource|
+      %w[players teams?view=table].each do |resource|
         get "/gestor/#{resource}"
 
         actions = page_html.css('[data-role="admin-table-action"]')
         expect(actions).to be_present
-        expect(actions.first['aria-label']).to start_with('Abrir ')
+        expect(actions.first['aria-label']).to start_with('Editar ')
         expect(actions.first['title']).to eq(actions.first['aria-label'])
       end
     end

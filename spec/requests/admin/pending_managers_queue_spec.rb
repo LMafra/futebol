@@ -17,10 +17,10 @@ RSpec.describe 'Admin pending managers queue (TICKET-0075)', type: :request do
     metrics_at = response.body.index('data-role="admin-metrics"')
     expect(metrics_at).to be < response.body.index('data-role="admin-pending-managers"')
     expect(page_html.at_css('[data-role="pending-managers-count"]').text.squish).to eq('1 pendente · 1 há mais de 24h')
-    expect(page_html.css('[data-role="pending-managers-table"] th').map(&:text)).to eq(['Nome', 'E-mail', 'Pedido em',
-                                                                                        'Ações'])
-    row = page_html.at_css("[data-role='pending-manager'][data-user-id='#{candidate.id}']")
-    expect(row['data-overdue']).to eq('true')
+    headers = page_html.css('#pending-managers thead th').map { _1.text.squish }
+    expect(headers).to eq(['Nome', 'E-mail', 'Pedido em', 'Ações'])
+    row = page_html.at_css("#pending-managers-item-#{candidate.id}")
+    expect(row.at_css('[data-role="overdue"]')).to be_present
     expect(row.text).to include('Rita Gestora', 'rita@example.com', '+24h')
     approve = row.at_css('form[data-role="approve-manager-form"]')
     expect(approve['action']).to eq(approve_manager_admin_user_path(candidate))
@@ -43,7 +43,7 @@ RSpec.describe 'Admin pending managers queue (TICKET-0075)', type: :request do
     expect(response).to redirect_to(admin_root_path)
     expect(candidate.reload.manager_status).to eq('pending')
     follow_redirect!
-    row = page_html.at_css("[data-role='pending-manager'][data-user-id='#{candidate.id}']")
+    row = page_html.at_css("#pending-managers-item-#{candidate.id}")
     expect(row.at_css('details')['open']).not_to be_nil
     textarea = row.at_css('textarea[name="reason"]')
     expect(textarea['aria-invalid']).to eq('true')

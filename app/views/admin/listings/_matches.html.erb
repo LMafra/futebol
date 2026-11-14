@@ -1,0 +1,25 @@
+<%# Partidas (/admin e /gestor): por rodada de cada campeonato (a primeira com jogo por fazer aberta) ou agenda por dia. %>
+<% views = { grouped: "Por rodada", agenda: "Agenda" }
+   view = listing_view(views)
+   open_key = records.find { _1.status.in?(%w[scheduled live]) } || records.first
+   grouping = if view == :agenda
+                { group_by: ->(match) { match.match_date&.to_date },
+                  group_label: ->(date) { date ? l(date, format: "%A, %d/%m/%Y").capitalize : "Sem data" } }
+              else
+                { group_by: ->(match) { [match.championship, match.round] }, open_group: open_key && [open_key.championship, open_key.round],
+                  group_label: ->((championship, round)) { "#{championship.name} · #{round ? "Rodada #{round}" : 'Sem rodada'}" } }
+              end %>
+<%= render Ui::CollectionComponent.new(items: records, id: "matches", views:, view:, texts: { label: "Partidas" }, **grouping) do |c| %>
+  <% c.column(:teams, label: "Partida", primary: true) { |match| link_to match, public_send(:"#{namespace}_match_path", match), class: inline_link_classes(tone: :ink) } %>
+  <% c.column(:score, label: "Placar", numeric: true) { |match| admin_score(match) } %>
+  <% c.column(:match_date, label: "Início", numeric: true) { |match| match.match_date && l(match.match_date, format: view == :agenda ? "%H:%M" : "%d/%m %H:%M") } %>
+  <% c.column(:status, label: "Situação") { |match| admin_match_status_badge(match) } %>
+  <% c.column(:actions, label: "Ações") do |match| %>
+    <% if match.scheduled? && authorized?(:update, match) && namespace == :gestor %>
+      <%= admin_icon_action_link("Editar", edit_gestor_match_path(match), :edit, subject: match.to_s) %>
+    <% end %>
+    <% if namespace == :admin && authorized?(:preview, match) %>
+      <%= admin_icon_action_link("Preview do Bolão de", admin_bolaopreview_path(match_id: match.id), :preview, subject: match.to_s) %>
+    <% end %>
+  <% end %>
+<% end %>

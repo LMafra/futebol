@@ -8,7 +8,7 @@ RSpec.describe 'Gestor dashboard', type: :request do
 
   def page_html = Nokogiri::HTML(response.body)
 
-  def queue_row(match) = page_html.at_css("[data-role='queue-match'][data-match-id='#{match.id}']")
+  def queue_row(match) = page_html.at_css("#match-queue-item-#{match.id}")
 
   it 'shows championship cards, the queue KPIs and the match queue' do
     championship

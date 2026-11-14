@@ -9,15 +9,7 @@ ActiveAdmin.register Bolao::Pool, as: 'Pool', namespace: :gestor do
   AdminNameSearch.register(self)
   filter :championship, collection: -> { gestor_championships }
 
-  index do
-    id_column
-    column :name
-    column :championship
-    column('Código', &:code)
-    actions defaults: false do |pool|
-      text_node admin_icon_action_link('Abrir', gestor_pool_path(pool), :view, subject: pool.name)
-    end
-  end
+  AdminCollectionIndex.register(self, 'admin/listings/pools')
 
   AdminPoolParticipants.register(self)
 

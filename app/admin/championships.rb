@@ -13,16 +13,8 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
   filter :external_id_eq, label: 'ID externo', as: :string
   filter :private, label: 'Privado'
 
-  index do
-    selectable_column
-    id_column
-    column :name
-    column :season
-    column :external_id
-    column('Privado') { |championship| status_tag(championship.private? ? 'sim' : 'não') }
-    column('Situação') { |championship| status_tag(championship.draft? ? 'rascunho' : 'publicado') }
-    actions
-  end
+  includes logo_attachment: :blob
+  AdminCollectionIndex.register(self, 'admin/listings/championships')
 
   action_item :simulador, only: :show do
     link_to 'Simulador', main_app.simulador_championship_path(resource),

@@ -20,21 +20,7 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
     load_teams(match)
   end
 
-  index do
-    id_column
-    column('Partida') { |match| link_to match.to_s, gestor_match_path(match) }
-    column :championship
-    column('Rodada', class: 'text-right tabular-nums', &:round)
-    column :match_date
-    column('Placar', class: 'tabular-nums') { |match| admin_score(match) }
-    column(:status) { |match| admin_match_status_badge(match) }
-    actions defaults: false do |match|
-      text_node admin_icon_action_link('Abrir', gestor_match_path(match), :view, subject: match.to_s)
-      if match.scheduled?
-        text_node admin_icon_action_link('Editar', edit_gestor_match_path(match), :edit, subject: match.to_s)
-      end
-    end
-  end
+  AdminCollectionIndex.register(self, 'admin/listings/matches')
 
   action_item :revert, only: :show, if: -> { authorized?(:revert, resource) && resource.may_revert_match? } do
     link_to 'Reverter pontuação', scoring_path('matchreversal', match_id: resource.id),

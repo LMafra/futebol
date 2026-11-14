@@ -1,0 +1,20 @@
+<%# Registros de auditoria (/admin/audit_logs e Histórico de auditoria): linha do tempo por dia, do mais recente. %>
+<%= render Ui::CollectionComponent.new(
+      items: records, id: "audit-logs", mode: :timeline, group_by: ->(log) { log.created_at.to_date },
+      group_label: ->(date) { l(date, format: "%A, %d/%m/%Y").capitalize },
+      texts: { label: "Registros de auditoria", empty: "Nenhum registro de auditoria." }
+    ) do |c| %>
+  <% c.card do |log| %>
+    <div class="flex min-w-0 flex-1 flex-col gap-1">
+      <p class="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <time datetime="<%= log.created_at.iso8601 %>" class="text-sm text-graphite tabular-nums"><%= l(log.created_at, format: "%H:%M") %></time>
+        <%= link_to_if namespace == :admin && authorized?(:read, log), tag.span(log.action, class: "status-tag"), admin_audit_log_path(log), aria: { label: "Registro #{log.id}: #{log.action}" } %>
+        <span class="font-semibold text-ink" data-role="collection-primary"><%= log.user || "sistema" %></span>
+        <span class="text-sm"><%= admin_auditable_link(log) || "#{log.auditable_type} ##{log.auditable_id}" %></span>
+      </p>
+      <% details = log.metadata["reason"] || log.metadata.except("reason").map { |key, value| "#{key}: #{value}" }.join(" · ") %>
+      <% if details.present? %><p class="text-sm text-graphite"><%= details %></p><% end %>
+      <% if log.ip_address.present? %><p class="text-xs text-graphite tabular-nums">IP <%= log.ip_address %></p><% end %>
+    </div>
+  <% end %>
+<% end %>
