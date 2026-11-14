@@ -54,6 +54,20 @@ RSpec.describe Simulador::StandingsCalculator do
     expect(table(names).map { |row| row[1] }).to eq(%w[Atlético Cruzeiro Botafogo Fortaleza])
   end
 
+  it 'takes the deductions from the points (wins × 3 + draws − deduction) before ranking' do
+    deduction = Data.define(:team_id, :points, :reason)
+    matches = [game(1, 1, 2, 2, 0), game(2, 3, 4, 1, 1)]
+    deductions = [deduction.new(1, 2, 'W.O. na 2ª rodada'), deduction.new(1, 2, 'Atleta irregular')]
+
+    standings = described_class.call(matches:, teams:, deductions:)
+    atletico = standings.find { |row| row.team_name == 'Atlético' }
+
+    expect(standings.map(&:team_name)).to eq(%w[Cruzeiro Fortaleza Botafogo Atlético])
+    expect([atletico.deduction, atletico.points, atletico.deduction_reasons])
+      .to eq([4, -1, ['W.O. na 2ª rodada', 'Atleta irregular']])
+    expect(standings.first.deduction).to eq(0)
+  end
+
   it 'runs without the database' do
     matches = [game(1, 1, 2, 1, 0)]
     queries = []

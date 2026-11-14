@@ -8,6 +8,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
 
   AdminNameSearch.register(self)
   AdminChampionshipEnrollment.register(self)
+  AdminChampionshipStandings.register(self)
   filter :season, as: :select, collection: -> { admin_season_options }
   filter :status, label: 'Situação', as: :select, collection: [%w[Rascunho draft], %w[Publicado published]]
   filter :external_id_eq, label: 'ID externo', as: :string
@@ -38,6 +39,9 @@ ActiveAdmin.register Core::Championship, as: 'Championship' do
   end
 
   show title: :to_s do
+    AdminChampionshipStandings.tabs(self, resource, :admin)
+    next AdminChampionshipStandings.panel(self, resource, :admin) if AdminChampionshipStandings.standings?(params)
+
     attributes_table do
       row :name
       row :season

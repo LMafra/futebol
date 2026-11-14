@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000059) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000060) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -402,6 +402,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000059) do
     t.check_constraint "shirt_number >= 1 AND shirt_number <= 99", name: "players_shirt_number_range"
   end
 
+  create_table "core_point_deductions", force: :cascade do |t|
+    t.bigint "championship_id", null: false
+    t.bigint "team_id", null: false
+    t.bigint "created_by_id", null: false
+    t.bigint "revoked_by_id"
+    t.integer "points", null: false
+    t.text "reason", null: false
+    t.datetime "revoked_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["championship_id", "team_id"], name: "index_core_point_deductions_active", where: "(revoked_at IS NULL)"
+    t.index ["championship_id"], name: "index_core_point_deductions_on_championship_id"
+    t.index ["created_by_id"], name: "index_core_point_deductions_on_created_by_id"
+    t.index ["revoked_by_id"], name: "index_core_point_deductions_on_revoked_by_id"
+    t.index ["team_id"], name: "index_core_point_deductions_on_team_id"
+    t.check_constraint "(revoked_at IS NULL) = (revoked_by_id IS NULL)", name: "core_point_deductions_revoked"
+    t.check_constraint "btrim(reason) <> ''::text", name: "core_point_deductions_reason"
+    t.check_constraint "points > 0", name: "core_point_deductions_points"
+  end
+
   create_table "core_sessions", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "ip_address"
@@ -485,6 +505,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000059) do
   add_foreign_key "core_matches", "core_teams", column: "away_team_id"
   add_foreign_key "core_matches", "core_teams", column: "home_team_id"
   add_foreign_key "core_players", "core_teams", column: "team_id"
+  add_foreign_key "core_point_deductions", "core_championships", column: "championship_id"
+  add_foreign_key "core_point_deductions", "core_teams", column: "team_id"
+  add_foreign_key "core_point_deductions", "core_users", column: "created_by_id"
+  add_foreign_key "core_point_deductions", "core_users", column: "revoked_by_id"
   add_foreign_key "core_sessions", "core_users", column: "user_id"
   add_foreign_key "core_teams", "core_users", column: "manager_id"
 end

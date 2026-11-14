@@ -7,7 +7,8 @@ module SimuladorHelper
       Ui::StandingsTableComponent::Row.new(
         position: standing.position, team_name: standing.team_name, short_name: team&.short_name, team:,
         played: standing.played, wins: standing.wins, draws: standing.draws, losses: standing.losses,
-        goal_difference: standing.goal_difference, points: standing.points, change:
+        goal_difference: standing.goal_difference, points: standing.points, change:,
+        deduction: standing.deduction, deduction_reasons: standing.deduction_reasons
       )
     end
   end

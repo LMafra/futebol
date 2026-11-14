@@ -33,6 +33,8 @@ module Core
     has_many :championship_teams, class_name: 'Core::ChampionshipTeam', inverse_of: :championship,
                                   dependent: :destroy
     has_many :teams, through: :championship_teams
+    has_many :point_deductions, class_name: 'Core::PointDeduction', inverse_of: :championship,
+                                dependent: :restrict_with_error
     belongs_to :manager, class_name: 'Core::User', optional: true, inverse_of: :managed_championships
 
     validates :name, presence: true

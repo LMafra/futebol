@@ -4,6 +4,8 @@ module Simulador
   #   matches:   objects with id, home_team_id, away_team_id, home_score, away_score (e.g. Core::Match or Data)
   #   teams:     { team_id => name }; teams without matches still get a row
   #   overrides: { match_id => { home:, away: } }; replaces the score of that match
+  #   deductions: objects with team_id, points and reason (e.g. the active Core::PointDeduction); each one takes
+  #               its points from the team (points = wins × 3 + draws − deduction)
   #
   # Matches still without a score are left out (never counted as a draw). Ordered by points, wins, goal
   # difference, goals for and team name.
@@ -11,27 +13,37 @@ module Simulador
     Fixture = Data.define(:id, :home_team_id, :away_team_id, :home_score, :away_score)
 
     Standing = Data.define(:position, :team_id, :team_name, :played, :wins, :draws, :losses, :goals_for,
-                           :goals_against) do
-      def points = (wins * 3) + draws
+                           :goals_against, :deduction, :deduction_reasons) do
+      def initialize(deduction: 0, deduction_reasons: [], **) = super
+
+      def points = (wins * 3) + draws - deduction
       def goal_difference = goals_for - goals_against
     end
 
-    def self.call(matches:, teams:, overrides: {}) = new(matches:, teams:, overrides:).call
+    def self.call(matches:, teams:, overrides: {}, deductions: []) = new(matches:, teams:, overrides:, deductions:).call
 
-    def initialize(matches:, teams:, overrides: {})
+    def initialize(matches:, teams:, overrides: {}, deductions: [])
       @matches = matches
       @teams = teams
       @overrides = overrides
+      @deductions = deductions.group_by(&:team_id)
     end
 
     def call
       tally = @teams.keys.index_with { { played: 0, wins: 0, draws: 0, losses: 0, goals_for: 0, goals_against: 0 } }
       @matches.each { |match| record(tally, match) }
 
-      rank(tally.map { |team_id, stats| Standing.new(position: nil, team_id:, team_name: @teams[team_id], **stats) })
+      rank(tally.map do |team_id, stats|
+        Standing.new(position: nil, team_id:, team_name: @teams[team_id], **stats, **deduction_of(team_id))
+      end)
     end
 
     private
+
+    def deduction_of(team_id)
+      deductions = @deductions.fetch(team_id, [])
+      { deduction: deductions.sum(&:points), deduction_reasons: deductions.map(&:reason) }
+    end
 
     def rank(standings)
       standings.sort_by { |row| [-row.points, -row.wins, -row.goal_difference, -row.goals_for, row.team_name] }

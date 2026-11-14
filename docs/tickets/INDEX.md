@@ -1,4 +1,4 @@
-# Tickets — INDEX (108 tickets)
+# Tickets — INDEX (109 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -110,6 +110,7 @@
 | [0105](TICKET-0105.md) | G7 | Público: partidas por rodada e carrossel "Jogos de hoje" com avanço automático | 0103 | playwright |
 | [0107](TICKET-0107.md) | R1 | Interface só em português: Situação, Prévia, Registros, Lances, Estatísticas, Classificação | 0106 | playwright |
 | [0108](TICKET-0108.md) | R2 | Moeda E$ no lugar de C$ com formatador único (`Cartola::Money`, `esquadrao_money`) | 0107 | playwright |
+| [0109](TICKET-0109.md) | R3 | Classificação no Admin e no Gestor com dedução de pontos (motivo, autor, registro de auditoria, revogação) | 0108 | playwright |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -127,4 +128,4 @@
 - UI/UX Admin/Gestor (work queue): 0074 → {0075, 0076} → 0077 → 0078
 - Auditoria UI/UX completa (ordem dos commits): 0079 → 0080 → 0081 → 0075 → 0076 → 0074 → 0077 → 0084 → 0082 → 0083 → 0078
 - Gestor, campeonato, partida ao vivo e participantes (ordem dos commits): 0085 → 0086 → 0087 → 0088 → 0106 → 0089 → 0090 → 0091 → 0092 → 0093 → 0102 → 0094 → 0095 → 0096 → 0097 → 0098 → 0099 → 0100 → 0101 → 0103 → 0104 → 0105
-- Revisão do PR #87 (ordem dos commits): 0107 → 0108
+- Revisão do PR #87 (ordem dos commits): 0107 → 0108 → 0109

@@ -116,6 +116,16 @@ Core::Match:
   index_core_matches_on_scoring_token:
     UniqueIndexChecker:
       enabled: false
+Core::PointDeduction:
+  created_by:
+    MissingDependentDestroyChecker:
+      enabled: false
+  revoked_by:
+    MissingDependentDestroyChecker:
+      enabled: false
+  team:
+    MissingDependentDestroyChecker:
+      enabled: false
 Core::User:
   password_digest:
     NullConstraintChecker:

@@ -2,9 +2,10 @@ module Ui
   class StandingsTableComponent < BaseComponent
     # change: places gained (+) or lost (-) against another table; nil hides the column.
     # team: the Core::Team, for its crest; without it the short name stands in.
+    # deduction: points taken from the team (already out of points); deduction_reasons show under the table.
     Row = Data.define(:position, :team_name, :short_name, :played, :wins, :draws, :losses, :goal_difference,
-                      :points, :form, :change, :team) do
-      def initialize(form: [], change: nil, team: nil, **) = super
+                      :points, :form, :change, :team, :deduction, :deduction_reasons) do
+      def initialize(form: [], change: nil, team: nil, deduction: 0, deduction_reasons: [], **) = super
     end
 
     FORM_GLYPHS = {
@@ -40,6 +41,8 @@ module Ui
     def leader?(row) = row.position == 1
 
     def changes? = rows.any? { |row| !row.change.nil? }
+
+    def deduction(value) = value.positive? ? "−#{value}" : '0'
 
     def zone(row)
       return unless @zones

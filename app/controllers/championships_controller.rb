@@ -1,5 +1,5 @@
 # Public page of a championship (/campeonatos/:id), open to visitors; a private championship is a 404.
-#   ?tab=times (default): standings from the finished matches;
+#   ?tab=times (default): standings from the finished matches and the active point deductions;
 #   ?tab=partidas: every match grouped by round, with one round open (?rodada=, default the first round still open,
 #                  else the last);
 #   ?tab=bolao, ?tab=esquadrao: the full public rankings (Core::ChampionshipRankingsService).
@@ -7,7 +7,6 @@ class ChampionshipsController < ApplicationController
   TABS = { 'times' => 'Times', 'partidas' => 'Partidas', 'bolao' => 'Bolão', 'esquadrao' => 'Esquadrão' }.freeze
   # Fixed partial per tab, so the rendered path never comes from the request.
   PARTIALS = TABS.keys.index_with { |tab| "championships/#{tab}" }.freeze
-  FINAL_STATUSES = %w[finished scored].freeze
   OPEN_STATUSES = %w[scheduled live].freeze
 
   allow_unauthenticated_access
@@ -31,12 +30,7 @@ class ChampionshipsController < ApplicationController
   end
 
   def load_standings
-    matches = @championship.matches.with_team_crests.to_a
-    @teams = matches.flat_map { |match| [match.home_team, match.away_team] }.uniq.sort_by(&:name)
-    @standings = Simulador::StandingsCalculator.call(
-      matches: matches.select { |match| match.status.in?(FINAL_STATUSES) },
-      teams: @teams.to_h { |team| [team.id, team.name] }
-    )
+    @table = Core::ChampionshipStandingsService.table(@championship)
   end
 
   def load_round

@@ -51,7 +51,17 @@ pt-BR:
       core/user:
         one: Usuário
         other: Usuários
+      core/point_deduction:
+        one: Dedução de pontos
+        other: Deduções de pontos
     attributes:
+      core/point_deduction:
+        team: Time
+        team_id: Time
+        points: Pontos a deduzir
+        reason: Motivo
+        created_by: Autor
+        revoked_at: Revogada em
       championship: &championship_attributes
         name: Nome
         season: Temporada

@@ -9,6 +9,7 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
 
   AdminNameSearch.register(self)
   AdminChampionshipEnrollment.register(self)
+  AdminChampionshipStandings.register(self)
   filter :season, as: :select, collection: -> { admin_season_options }
   filter :status, label: 'Situação', as: :select, collection: [%w[Rascunho draft], %w[Publicado published]]
 
@@ -33,6 +34,9 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
   end
 
   show title: :to_s do
+    AdminChampionshipStandings.tabs(self, resource, :gestor)
+    next AdminChampionshipStandings.panel(self, resource, :gestor) if AdminChampionshipStandings.standings?(params)
+
     attributes_table do
       row :name
       row :season
