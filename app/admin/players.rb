@@ -12,6 +12,7 @@ ActiveAdmin.register Core::Player, as: 'Player' do
   filter :external_id_eq, label: 'ID externo', as: :string
 
   AdminCollectionIndex.register(self, 'admin/listings/players')
+  AdminBulkActions.register(self, :destroy, :move)
 
   form do |f|
     f.semantic_errors

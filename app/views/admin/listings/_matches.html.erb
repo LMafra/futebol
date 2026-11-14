@@ -11,7 +11,24 @@
               end
    steps = Gestor::MatchQueue.new(Core::Match.where(id: records.map(&:id))) %>
 <%= render "admin/listings/agenda_weeks" if view == :agenda %>
-<%= render Ui::CollectionComponent.new(items: records, id: "matches", views:, view:, texts: { label: "Partidas" }, **grouping) do |c| %>
+<%= render Ui::CollectionComponent.new(items: records, id: "matches", views:, view:, selectable: true, texts: { label: "Partidas" }, **grouping) do |c| %>
+  <% c.bulk_fields do %>
+    <fieldset class="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+      <legend class="sr-only">Reagendar</legend>
+      <label class="flex items-center gap-2 text-sm font-semibold text-ink">Deslocar
+        <%= number_field_tag :shift_amount, nil, min: -AdminBulkActions::MAX_SHIFT, max: AdminBulkActions::MAX_SHIFT, class: "min-h-12 w-20 #{AdminHelper::ADMIN_INPUT_CLASSES}" %>
+      </label>
+      <label class="text-sm font-semibold text-ink"><span class="sr-only">Unidade</span>
+        <%= select_tag :shift_unit, options_for_select([%w[dias days], %w[horas hours]]), class: "min-h-12 w-auto #{AdminHelper::ADMIN_INPUT_CLASSES}" %>
+      </label>
+      <label class="flex w-full items-center gap-2 text-sm font-semibold text-ink sm:w-64">Motivo
+        <%= text_field_tag :reason, nil, maxlength: 200, class: "min-h-12 w-full min-w-0 #{AdminHelper::ADMIN_INPUT_CLASSES}" %>
+      </label>
+    </fieldset>
+  <% end %>
+  <% c.bulk_action "Reagendar", url: public_send(:"bulk_reschedule_#{namespace}_matches_path") %>
+  <% c.bulk_action "Excluir", url: public_send(:"bulk_destroy_#{namespace}_matches_path"), danger: true,
+                   confirm: "Excluir as partidas selecionadas? Só as agendadas sem palpites nem lances são excluídas." %>
   <% c.column(:teams, label: "Partida", primary: true) { |match| link_to match, public_send(:"#{namespace}_match_path", match), class: inline_link_classes(tone: :ink) } %>
   <% c.column(:score, label: "Placar", numeric: true) { |match| admin_score(match) } %>
   <% c.column(:match_date, label: "Início", numeric: true) { |match| match.match_date && l(match.match_date, format: view == :agenda ? "%H:%M" : "%d/%m %H:%M") } %>

@@ -166,9 +166,10 @@
     <% end %>
 
     <% if bulk_bar? %>
-      <form id="<%= id %>-bulk" method="post" class="sticky bottom-0 z-10 flex flex-wrap items-center gap-3 rounded-md border border-ink bg-white p-3 shadow-lg" data-turbo="false" data-collection-target="bar" data-role="bulk-bar">
+      <form id="<%= id %>-bulk" method="post" class="sticky bottom-[var(--sticky-bottom,0px)] z-10 flex flex-wrap items-center gap-3 rounded-md border border-ink bg-white p-3 shadow-lg" data-turbo="false" data-collection-target="bar" data-role="bulk-bar">
         <input type="hidden" name="authenticity_token" value="<%= helpers.form_authenticity_token %>" autocomplete="off">
         <p class="text-sm font-semibold text-ink" aria-live="polite"><%= text(:selected) %> <span class="tabular-nums" data-collection-target="count">0</span></p>
+        <%= bulk_fields_content %>
         <% bulk_actions.each do |action| %>
           <button type="submit" formaction="<%= action.url %>" name="_method" value="<%= action.http_method %>"
                   class="<%= action.danger ? danger_button_classes : secondary_button_classes %>"

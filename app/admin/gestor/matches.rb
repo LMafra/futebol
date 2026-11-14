@@ -21,6 +21,7 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
   end
 
   AdminCollectionIndex.register(self, 'admin/listings/matches')
+  AdminBulkActions.register(self, :destroy, :reschedule)
 
   action_item :revert, only: :show, if: -> { authorized?(:revert, resource) && resource.may_revert_match? } do
     link_to 'Reverter pontuação', scoring_path('matchreversal', match_id: resource.id),

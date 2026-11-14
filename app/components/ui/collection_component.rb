@@ -51,6 +51,8 @@ module Ui
     def card(&block) = (@card = block) && nil
     def detail(&block) = (@detail = block) && nil
     def empty(&block) = (@empty = block) && nil
+    # Fields the bulk actions share (a target team, a reason), inside the selection bar's form.
+    def bulk_fields(&block) = (@bulk_fields = block) && nil
 
     def bulk_action(label, url:, method: :post, confirm: nil, danger: false)
       @bulk_actions << BulkAction.new(label:, url:, http_method: method, confirm:, danger:)
@@ -79,6 +81,7 @@ module Ui
     def mobile_sort? = mode == :table && columns.any?(&:sortable)
     def custom_card? = @card.present?
     def empty_content = @empty && helpers.capture(&@empty)
+    def bulk_fields_content = @bulk_fields && helpers.capture(&@bulk_fields)
 
     # capture drops a block's non-String value (a count), so it goes through to_s.
     def cell(column, item)

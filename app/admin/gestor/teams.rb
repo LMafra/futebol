@@ -31,6 +31,7 @@ ActiveAdmin.register Core::Team, as: 'Team', namespace: :gestor do
 
   includes crest_attachment: :blob
   AdminCollectionIndex.register(self, 'admin/listings/teams')
+  AdminBulkActions.register(self, :destroy, :enroll)
 
   show do
     attributes_table do

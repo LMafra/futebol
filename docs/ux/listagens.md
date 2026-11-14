@@ -53,4 +53,17 @@ end
 - A agenda de partidas anda por semana com `agenda_week_path`, que preenche o filtro de data do ActiveAdmin (`q[match_date_gteq]` e `q[match_date_lt]`). A navegação aparece também na tela de "nenhum resultado".
 - Contagens por linha vêm de `listing_counts(Modelo, :chave, records)`: uma consulta por contagem.
 - A seleção em lote do ActiveAdmin fica desligada nessas telas; ações em lote usam `c.bulk_action`.
+- **Ações em lote:** `AdminBulkActions.register(self, :destroy, :enroll)` cria as `collection_action` no recurso.
+  - A política precisa de `bulk_<ação>?`.
+  - Cada ação chama um serviço de `app/services/bulk/`. O serviço devolve um `Bulk::Report`, que vira o aviso: o que foi feito e o que foi mantido, com o motivo e os nomes.
+  - Campos da ação (campeonato, time de destino, motivo) entram na barra com `c.bulk_fields { ... }`.
+
+```erb
+<% c.bulk_fields do %>
+  <label>Time de destino <%= select_tag :team_id, options_for_select(bulk_team_options) %></label>
+<% end %>
+<% c.bulk_action "Mover para o time", url: public_send(:"bulk_move_#{namespace}_players_path") %>
+<% c.bulk_action "Excluir", url: public_send(:"bulk_destroy_#{namespace}_players_path"), danger: true, confirm: "Excluir os jogadores selecionados?" %>
+```
+
 - Auditoria da migração: `docs/checkpoints/UX-LISTAGENS.md`.

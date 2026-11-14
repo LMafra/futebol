@@ -56,7 +56,7 @@ RSpec.describe 'Admin and Gestor listings on Ui::CollectionComponent (TICKET-010
     it 'shows the counts and the audit trail' do
       get '/admin/teams'
       card = page_html.at_css("#teams-item-#{team.id}").text.squish
-      expect(card).to eq("#{team.short_name} Azul FC Jogadores 2 jogadores")
+      expect(card).to eq("#{team.short_name} Azul FC Jogadores 2 jogadores Selecionar")
 
       get '/admin/audit_logs'
       expect(page_html.at_css('#audit-logs [data-role="collection-item"]').text).to include('revert', 'súmula')

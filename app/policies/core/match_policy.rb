@@ -13,6 +13,9 @@ module Core
     def record_event? = record_scouts?
     def undo_event? = record_scouts?
     def participation? = record_scouts?
+    # Bulk actions of the list (AdminBulkActions): the policy scope picks the matches; only scheduled ones change.
+    def bulk_reschedule? = index?
+    def bulk_destroy? = index?
 
     # The public page (/partidas/:id): matches of published championships; of a private one, only to the members
     # of its bolões, its manager and the admins.

@@ -9,6 +9,15 @@ module ListingsHelper
 
   def listing_sort_options = { sort: params[:sort], direction: params[:dir] }
 
+  # Targets of the bulk actions (AdminBulkActions): the championships and teams the user manages.
+  def bulk_championship_options
+    championships = Core::Championship.order(season: :desc, name: :asc)
+    Core::ChampionshipPolicy::Scope.new(current_user, championships).resolve.pluck(:name, :season, :id)
+                                   .map { |name, season, id| ["#{name} #{season}", id] }
+  end
+
+  def bulk_team_options = Core::TeamPolicy::Scope.new(current_user, Core::Team.order(:name)).resolve.pluck(:name, :id)
+
   # Week shown by the matches agenda: the ActiveAdmin date filter (?q[match_date_gteq]), Monday to Sunday.
   def agenda_week
     Date.iso8601(params.dig(:q, :match_date_gteq).to_s).beginning_of_week

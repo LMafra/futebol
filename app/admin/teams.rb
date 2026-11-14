@@ -22,6 +22,7 @@ ActiveAdmin.register Core::Team, as: 'Team' do
   filter :external_id_eq, label: 'ID externo', as: :string
 
   AdminCollectionIndex.register(self, 'admin/listings/teams')
+  AdminBulkActions.register(self, :destroy, :enroll)
 
   show do
     attributes_table do

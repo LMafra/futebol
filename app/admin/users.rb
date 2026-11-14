@@ -11,6 +11,7 @@ ActiveAdmin.register Core::User, as: 'User' do
   scope('Pedidos pendentes', :pending) { |users| users.where(manager_status: :pending) }
 
   AdminCollectionIndex.register(self, 'admin/listings/users')
+  AdminBulkActions.register(self, :approve_manager)
 
   show do
     attributes_table do

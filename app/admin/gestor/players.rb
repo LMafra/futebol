@@ -19,6 +19,7 @@ ActiveAdmin.register Core::Player, as: 'Player', namespace: :gestor do
   filter :position, as: :select, collection: -> { Core::Player::POSITIONS }
 
   AdminCollectionIndex.register(self, 'admin/listings/players')
+  AdminBulkActions.register(self, :destroy, :move)
 
   form do |f|
     f.semantic_errors

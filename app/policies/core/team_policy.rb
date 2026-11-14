@@ -7,6 +7,10 @@ module Core
     def update? = show?
     def destroy? = show?
     def manage? = manager? && record_instance? && record.manager_id == user.id
+    # Bulk actions of the list: the policy scope picks the teams (AdminBulkActions).
+    def bulk_destroy? = index?
+    def bulk_enroll? = index?
+    def bulk_unenroll? = index?
 
     class Scope < ApplicationPolicy::Scope
       private

@@ -17,6 +17,7 @@ ActiveAdmin.register Core::Match, as: 'Match' do
   scope('Pontuadas') { |matches| matches.where(status: 'scored') }
 
   AdminCollectionIndex.register(self, 'admin/listings/matches')
+  AdminBulkActions.register(self, :destroy, :reschedule)
 
   action_item :preview, only: :show, if: -> { authorized?(:preview, resource) } do
     link_to 'Preview do Bolão', admin_bolaopreview_path(match_id: resource.id),

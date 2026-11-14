@@ -267,6 +267,12 @@
   @apply overflow-hidden rounded-md border border-rule shadow-none;
 }
 
+/* Ui::CollectionComponent never scrolls sideways; a clipping ancestor would pin its sticky selection bar. */
+.paginated-collection:has(.index-as-collection),
+.paginated-collection:has(.index-as-collection) .paginated-collection-contents {
+  @apply overflow-visible;
+}
+
 .paginated-collection-pagination,
 .paginated-collection-footer {
   @apply border-t border-rule;
