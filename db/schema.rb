@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_000048) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_000059) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -245,6 +245,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000048) do
     t.check_constraint "yellow_card_penalty >= 0::numeric", name: "cartola_scoring_rules_yellow_card_penalty_non_negative"
   end
 
+  create_table "cartola_scout_events", force: :cascade do |t|
+    t.bigint "match_id", null: false
+    t.bigint "player_id", null: false
+    t.bigint "team_id", null: false
+    t.bigint "recorded_by_id"
+    t.string "stat", null: false
+    t.string "period"
+    t.integer "minute"
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["match_id", "player_id", "stat"], name: "index_cartola_scout_events_kept", where: "(discarded_at IS NULL)"
+    t.index ["match_id"], name: "index_cartola_scout_events_on_match_id"
+    t.index ["player_id"], name: "index_cartola_scout_events_on_player_id"
+    t.index ["recorded_by_id"], name: "index_cartola_scout_events_on_recorded_by_id"
+    t.index ["team_id"], name: "index_cartola_scout_events_on_team_id"
+    t.check_constraint "minute IS NULL OR minute >= 0 AND minute <= 130", name: "cartola_scout_events_minute"
+    t.check_constraint "period IS NULL OR (period::text = ANY (ARRAY['first_half'::character varying, 'second_half'::character varying, 'extra_time'::character varying, 'penalties'::character varying]::text[]))", name: "cartola_scout_events_period"
+    t.check_constraint "stat::text = ANY (ARRAY['goals'::character varying, 'assists'::character varying, 'penalty_saves'::character varying, 'saves'::character varying, 'yellow_cards'::character varying, 'red_cards'::character varying, 'own_goals'::character varying]::text[])", name: "cartola_scout_events_stat"
+  end
+
   create_table "cartola_squads", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "name", null: false
@@ -278,6 +299,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000048) do
     t.index ["user_id"], name: "index_core_audit_logs_on_user_id"
   end
 
+  create_table "core_championship_teams", force: :cascade do |t|
+    t.bigint "championship_id", null: false
+    t.bigint "team_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["championship_id", "team_id"], name: "index_core_championship_teams_on_championship_id_and_team_id", unique: true
+    t.index ["team_id"], name: "index_core_championship_teams_on_team_id"
+  end
+
   create_table "core_championships", force: :cascade do |t|
     t.string "name", null: false
     t.integer "season", null: false
@@ -294,13 +324,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000048) do
     t.bigint "manager_id"
     t.text "prize_description"
     t.jsonb "prize_rules", default: {}, null: false
+    t.string "kind", default: "campo", null: false
+    t.string "gender", default: "masculino", null: false
+    t.string "category", default: "adulto", null: false
+    t.string "level", default: "amador", null: false
+    t.string "status", default: "published", null: false
     t.index ["external_id"], name: "index_core_championships_on_external_id", unique: true
     t.index ["manager_id"], name: "index_core_championships_on_manager_id"
     t.index ["private"], name: "index_core_championships_on_private"
+    t.index ["status"], name: "index_core_championships_on_status"
     t.check_constraint "(cartola_defender_limit + cartola_midfielder_limit + cartola_forward_limit) > 0", name: "core_championships_cartola_line_limits_positive"
     t.check_constraint "cartola_goalkeeper_limit >= 0 AND cartola_defender_limit >= 0 AND cartola_midfielder_limit >= 0 AND cartola_forward_limit >= 0", name: "core_championships_cartola_limits_non_negative"
     t.check_constraint "cartola_initial_budget >= 0::numeric AND cartola_base_player_value >= 0::numeric", name: "core_championships_cartola_money_non_negative"
+    t.check_constraint "category::text = ANY (ARRAY['infantil'::character varying, 'base'::character varying, 'adulto'::character varying, 'master'::character varying]::text[])", name: "core_championships_category_valid"
+    t.check_constraint "gender::text = ANY (ARRAY['masculino'::character varying, 'feminino'::character varying, 'misto'::character varying]::text[])", name: "core_championships_gender_valid"
+    t.check_constraint "kind::text = ANY (ARRAY['campo'::character varying, 'society'::character varying, 'futsal'::character varying, 'futevolei'::character varying]::text[])", name: "core_championships_kind_valid"
+    t.check_constraint "level::text = ANY (ARRAY['amador'::character varying, 'profissional'::character varying]::text[])", name: "core_championships_level_valid"
     t.check_constraint "season >= 1900 AND season <= 2100", name: "core_championships_season_range"
+    t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'published'::character varying]::text[])", name: "core_championships_status_valid"
   end
 
   create_table "core_csv_imports", force: :cascade do |t|
@@ -373,12 +414,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000048) do
   create_table "core_teams", force: :cascade do |t|
     t.string "name", null: false
     t.string "short_name", null: false
-    t.string "crest_url"
     t.string "external_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "manager_id"
+    t.string "captain_name"
+    t.string "captain_phone"
     t.index ["external_id"], name: "index_core_teams_on_external_id", unique: true
-    t.index ["short_name"], name: "index_core_teams_on_short_name", unique: true
+    t.index ["manager_id", "short_name"], name: "index_core_teams_on_manager_id_and_short_name", unique: true, nulls_not_distinct: true
+    t.index ["manager_id"], name: "index_core_teams_on_manager_id"
     t.check_constraint "char_length(short_name::text) = 3", name: "core_teams_short_name_length"
   end
 
@@ -427,14 +471,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000048) do
   add_foreign_key "cartola_player_value_histories", "core_players", column: "player_id"
   add_foreign_key "cartola_player_values", "core_championships", column: "championship_id"
   add_foreign_key "cartola_player_values", "core_players", column: "player_id"
+  add_foreign_key "cartola_scout_events", "core_matches", column: "match_id"
+  add_foreign_key "cartola_scout_events", "core_players", column: "player_id"
+  add_foreign_key "cartola_scout_events", "core_teams", column: "team_id"
+  add_foreign_key "cartola_scout_events", "core_users", column: "recorded_by_id"
   add_foreign_key "cartola_squads", "core_users", column: "user_id"
   add_foreign_key "cartola_wallets", "core_championships", column: "championship_id"
   add_foreign_key "cartola_wallets", "core_users", column: "user_id"
   add_foreign_key "core_audit_logs", "core_users", column: "user_id"
+  add_foreign_key "core_championship_teams", "core_championships", column: "championship_id"
+  add_foreign_key "core_championship_teams", "core_teams", column: "team_id"
   add_foreign_key "core_championships", "core_users", column: "manager_id"
   add_foreign_key "core_matches", "core_championships", column: "championship_id"
   add_foreign_key "core_matches", "core_teams", column: "away_team_id"
   add_foreign_key "core_matches", "core_teams", column: "home_team_id"
   add_foreign_key "core_players", "core_teams", column: "team_id"
   add_foreign_key "core_sessions", "core_users", column: "user_id"
+  add_foreign_key "core_teams", "core_users", column: "manager_id"
 end

@@ -1,0 +1,66 @@
+<%# Participantes › Esquadrão: ranking, gabarito da rodada e as escalações dos participantes (?escalacao=ID). %>
+<% if board.nil? %>
+  <%= render Ui::EmptyStateComponent.new(title: "Nenhum campeonato por aqui",
+                                         description: "O Esquadrão aparece depois que um campeonato é criado.") %>
+<% else %>
+  <% can_fix = authorized?(:update_lineup, active_admin_config) %>
+  <div class="flex flex-col gap-6" data-role="esquadrao">
+    <%= form_with url: request.path, method: :get, class: "flex flex-wrap items-end gap-3", data: { turbo: false } do %>
+      <div class="w-full sm:w-72">
+        <%= label_tag :championship_id, "Campeonato", class: AdminHelper::ADMIN_LABEL_CLASSES %>
+        <%= select_tag :championship_id, options_from_collection_for_select(championships, :id, :to_s, board.championship.id),
+                       class: AdminHelper::ADMIN_INPUT_CLASSES %>
+      </div>
+      <div class="w-32">
+        <%= label_tag :rodada, "Rodada", class: AdminHelper::ADMIN_LABEL_CLASSES %>
+        <%= select_tag :rodada, options_for_select((board.rounds | [board.round]).sort, board.round), class: AdminHelper::ADMIN_INPUT_CLASSES %>
+      </div>
+      <%= submit_tag "Mostrar", name: nil, class: AdminHelper::ADMIN_BUTTON_CLASSES %>
+    <% end %>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <section class="rounded-md border border-rule bg-white p-4" aria-labelledby="esquadrao-ranking-title" data-role="esquadrao-ranking">
+        <h3 id="esquadrao-ranking-title" class="mb-3 font-display text-xl font-semibold text-ink">Ranking do campeonato</h3>
+        <% if board.ranking.empty? %>
+          <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">O ranking aparece quando a primeira rodada for pontuada.</p>
+        <% else %>
+          <div class="overflow-x-auto">
+            <table class="data-table">
+              <thead>
+                <tr><th scope="col" class="text-right">#</th><th scope="col">Participante</th><th scope="col" class="text-right">Pontos</th><th scope="col" class="text-right">Moedas</th></tr>
+              </thead>
+              <tbody>
+                <% coins = board.coins.to_h { [_1.user.id, _1.value] } %>
+                <% board.ranking.each do |row| %>
+                  <tr data-role="ranking-row">
+                    <td class="text-right tabular-nums"><%= row.position %></td>
+                    <td><%= row.user.name.presence || row.user.email_address %></td>
+                    <td class="text-right font-semibold tabular-nums"><%= format("%.2f", row.value) %></td>
+                    <td class="text-right tabular-nums"><%= coins[row.user.id] ? format("C$ %.2f", coins[row.user.id]) : "–" %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% end %>
+      </section>
+
+      <%= render "admin/esquadrao/answer_key", board: %>
+    </div>
+
+    <section id="lineups" aria-labelledby="esquadrao-lineups-title">
+      <h3 id="esquadrao-lineups-title" class="mb-3 font-display text-xl font-semibold text-ink">Escalações da rodada <%= board.round %></h3>
+      <%= render Ui::CollectionComponent.new(items: board.entries, id: "lineups", mode: :master_detail,
+                                             detail_param: "escalacao", selected: params[:escalacao],
+                                             texts: { label: "Escalações", pick_detail: "Escolha uma escalação para ver os jogadores e os pontos.",
+                                                      empty: "Ninguém escalou nesta rodada." }) do |c| %>
+        <% c.column(:name, label: "Participante", primary: true) { |entry| entry.name } %>
+        <% c.column(:points, label: "Pontos", numeric: true) { |entry| format("%.2f pts", entry.points) } %>
+        <% c.detail do |entry| %>
+          <%= render "admin/esquadrao/lineup", board:, entry:, can_fix:,
+                                               editing: can_fix && params[:editar].present? %>
+        <% end %>
+      <% end %>
+    </section>
+  </div>
+<% end %>

@@ -1,27 +1,34 @@
 ActiveAdmin.register Bolao::Pool, as: 'Pool', namespace: :gestor do
-  menu parent: 'Bolão', label: 'Bolões', priority: 1
+  menu parent: 'Participantes', label: 'Bolões', priority: 1
 
-  actions :index, :show
+  permit_params :name, :championship_id
+
+  actions :index, :show, :new, :create
   includes :championship, :owner
 
-  filter :name
+  AdminNameSearch.register(self)
   filter :championship, collection: -> { gestor_championships }
 
-  index do
-    id_column
-    column :name
-    column :championship
-    column :owner
-    actions defaults: false do |pool|
-      item 'Ver', gestor_pool_path(pool)
+  AdminCollectionIndex.register(self, 'admin/listings/pools')
+
+  AdminPoolParticipants.register(self)
+
+  form do |f|
+    f.semantic_errors
+    f.inputs 'Bolão' do
+      f.input :name, hint: 'É o nome que os participantes veem.'
+      f.input :championship, collection: gestor_championships, include_blank: false
+      li class: 'input optional' do
+        para 'Depois de criar, compartilhe o código do bolão: é com ele que os participantes entram.',
+             class: 'inline-hints'
+      end
     end
+    f.actions
   end
 
-  show do
-    attributes_table do
-      row :name
-      row :championship
-      row :owner
-    end
+  controller do
+    include ModalFormResponses
+
+    before_build { |pool| pool.owner = current_user }
   end
 end

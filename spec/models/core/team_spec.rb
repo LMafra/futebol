@@ -33,4 +33,33 @@ RSpec.describe Core::Team do
     expect(team.destroy).to be(false)
     expect(team.errors[:base]).to be_present
   end
+
+  it 'repeats a short_name across managers but not within one' do
+    manager = create(:user, :manager)
+    create(:team, short_name: 'FLA', manager:)
+
+    expect(build(:team, short_name: 'FLA', manager:)).not_to be_valid
+    expect(build(:team, short_name: 'FLA')).to be_valid
+    expect(build(:team, short_name: 'FLA', manager: create(:user, :manager))).to be_valid
+  end
+
+  it "normalizes the captain's phone to DDD and number" do
+    expect(build(:team, captain_phone: '+55 (11) 98765-4321').captain_phone).to eq('11987654321')
+    expect(build(:team, captain_phone: '(55) 9 9123-4567').captain_phone).to eq('55991234567')
+    expect(build(:team, captain_phone: '  ').captain_phone).to be_nil
+  end
+
+  it "accepts Brazilian mobile and landline numbers for the captain's phone" do
+    expect(build(:team, captain_phone: '11987654321')).to be_valid
+    expect(build(:team, captain_phone: '1133334444')).to be_valid
+    expect(build(:team, captain_phone: '987654321')).not_to be_valid
+    expect(build(:team, captain_phone: '11187654321')).not_to be_valid
+  end
+
+  it 'keeps its manager while enrolled in a championship' do
+    team = create(:match).home_team
+
+    expect(team.update(manager: create(:user, :manager))).to be(false)
+    expect(team.errors[:manager]).to be_present
+  end
 end

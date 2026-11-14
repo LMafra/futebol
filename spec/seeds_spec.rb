@@ -40,7 +40,7 @@ RSpec.describe 'db/seeds.rb' do
     after(:context) do
       [Bolao::PredictionScore, Bolao::Prediction, Bolao::PoolMembership, Bolao::ScoringRule, Bolao::Pool,
        Cartola::PlayerScore, Cartola::Wallet, Cartola::LineupPlayer, Cartola::Lineup, Cartola::Squad,
-       Cartola::ScoringRule, Core::Match, Core::Player,
+       Cartola::ScoringRule, Core::ChampionshipTeam, Core::Match, Core::Player,
        Core::Team, Core::Championship, Core::Session, Core::User].each(&:delete_all)
     end
 
@@ -168,10 +168,10 @@ RSpec.describe 'db/seeds.rb' do
         expect(gestor.managed_championships).not_to be_empty
       end
 
-      it 'puts the 5 demo users in pool DEMO01, owned by demo1' do
+      it 'puts the 5 demo users in pool DEMO01, organized by the gestor or an admin' do
         pool = Bolao::Pool.find_by!(code: 'DEMO01')
 
-        expect(pool.owner.email_address).to eq('demo1@demo.local')
+        expect(pool.owner).to eq(pool.championship.manager || Core::User.where(role: :admin).order(:id).first)
         expect(pool.members).to match_array(demo_users)
       end
 

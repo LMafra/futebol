@@ -1,3 +1,11 @@
+# Same navigation tree in /admin and /gestor (ADR 0006); the Admin just sees more items in each section.
+ADMIN_NAVIGATION_TREE = proc do |menu|
+  menu.add label: 'Campeonatos', priority: 2
+  menu.add label: 'Times', priority: 3
+  menu.add label: 'Participantes', priority: 4
+  menu.add label: 'Configurações', priority: 5
+end
+
 ActiveAdmin.setup do |config|
   # == Site Title
   #
@@ -6,7 +14,7 @@ ActiveAdmin.setup do |config|
   # by extracting the _site_header partial into your project
   # to use your own logo, styles, etc.
   #
-  config.site_title = proc { I18n.t('brand.name') }
+  config.site_title = 'Craquefy Admin'
 
   # == Load Paths
   #
@@ -125,6 +133,12 @@ ActiveAdmin.setup do |config|
   # Default:
   # config.root_to = 'dashboard#index'
 
+  # == Flash keys
+  #
+  # manager_reject_error carries a user id back to the reject form (field-level error), not a message.
+  config.flash_keys_to_except = %w[timedout manager_reject_error modal lineup_edit]
+  config.permitted_params = %i[utf8 _method authenticity_token commit id modal return_to]
+
   # == Admin Comments
   #
   # This allows your users to comment on any resource registered with Active Admin.
@@ -144,6 +158,7 @@ ActiveAdmin.setup do |config|
   #
   # You can customize the comment menu:
   # config.comments_menu = { parent: 'Admin', priority: 1 }
+  config.comments_menu = { parent: 'Configurações', priority: 6 }
 
   # == Batch Actions
   #
@@ -276,7 +291,10 @@ ActiveAdmin.setup do |config|
   #
   # config.order_clause = MyOrderClause
 
+  config.namespace(:admin) { |admin| admin.build_menu(&ADMIN_NAVIGATION_TREE) }
+
   config.namespace :gestor do |gestor|
+    gestor.build_menu(&ADMIN_NAVIGATION_TREE)
     gestor.site_title = proc { "#{I18n.t('brand.name')} · Gestor" }
     gestor.authentication_method = :authenticate_manager!
     gestor.current_user_method = :current_user
@@ -292,5 +310,21 @@ end
 ActiveAdmin.importmap.draw do
   pin '@hotwired/stimulus', to: 'stimulus.min.js'
   pin 'admin', to: 'admin.js'
-  pin 'controllers/scouts_controller', to: 'controllers/scouts_controller.js'
+  pin 'pwa', to: 'pwa.js'
+  pin 'controllers/autocomplete_controller', to: 'controllers/autocomplete_controller.js'
+  pin 'controllers/dismiss_controller', to: 'controllers/dismiss_controller.js'
+  pin 'controllers/image_preview_controller', to: 'controllers/image_preview_controller.js'
+  pin 'controllers/collection_controller', to: 'controllers/collection_controller.js'
+  pin 'controllers/dismissible_controller', to: 'controllers/dismissible_controller.js'
+  pin 'controllers/modal_controller', to: 'controllers/modal_controller.js'
+  pin 'controllers/tabs_controller', to: 'controllers/tabs_controller.js'
+end
+
+# ActiveAdmin's engine sweeps its map only for the gem's own JavaScript (and runs after this file), so the admin map
+# kept the boot-time digest of admin.js after an edit (404 until a restart). Its before_action calls this sweeper.
+if Rails.application.config.importmap.sweep_cache
+  Rails.application.config.after_initialize do
+    ActiveAdmin.importmap.cache_sweeper(watches: [ActiveAdmin::Engine.root.join('app/javascript'),
+                                                  Rails.root.join('app/javascript')])
+  end
 end

@@ -13,27 +13,9 @@
 <section class="panel" aria-labelledby="audit-title">
   <h3 class="panel-title" id="audit-title">Registros (<%= logs.total_count %>)</h3>
   <div class="panel-body">
-    <% if logs.empty? %>
-      <p class="text-gray-600 dark:text-gray-400">Nenhum registro de auditoria.</p>
-    <% else %>
-      <table class="data-table" data-role="audit-logs">
-        <thead>
-          <tr><th>Quando</th><th>Ação</th><th>Quem</th><th>Registro</th><th>IP</th><th>Motivo / detalhes</th></tr>
-        </thead>
-        <tbody>
-          <% logs.each do |log| %>
-            <tr>
-              <td class="whitespace-nowrap tabular-nums"><%= l(log.created_at, format: "%d/%m/%Y %H:%M") %></td>
-              <td><span class="status-tag"><%= log.action %></span></td>
-              <td><%= log.user || "sistema" %></td>
-              <td><%= admin_auditable_link(log) %></td>
-              <td class="tabular-nums"><%= log.ip_address %></td>
-              <td><%= log.metadata["reason"] || log.metadata.except("reason").map { |k, v| "#{k}: #{v}" }.join(" · ") %></td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-      <nav class="mt-4 flex gap-4 text-sm" aria-label="Paginação">
+    <%= render "admin/listings/audit_logs", records: logs, namespace: :admin %>
+    <% if logs.any? %>
+      <nav class="mt-4 flex gap-4 text-sm font-body" aria-label="Paginação">
         <%= link_to_prev_page logs, "← Mais recentes", params: request.query_parameters %>
         <%= link_to_next_page logs, "Mais antigos →", params: request.query_parameters %>
       </nav>

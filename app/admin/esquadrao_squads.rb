@@ -1,10 +1,10 @@
 ActiveAdmin.register Cartola::Squad, as: 'EsquadraoSquad' do
-  menu parent: 'Esquadrão', label: 'Times do Esquadrão'
+  menu parent: 'Participantes', label: 'Times do Esquadrão', priority: 3
 
   permit_params :name, :user_id
   includes :user
 
-  filter :name
+  AdminNameSearch.register(self)
 
   index do
     selectable_column

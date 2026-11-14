@@ -1,26 +1,27 @@
 <section class="flex w-full flex-col gap-3" <%= tag.attributes(root_attributes(label: "Meus palpites")) %>>
-  <h2 class="font-display text-2xl font-bold">Meus palpites</h2>
+  <h2 class="font-display text-2xl font-extrabold">Meus palpites</h2>
 
   <% case state %>
   <% when :default %>
     <% if results.empty? %>
       <%= empty_notice("Você ainda não palpitou neste bolão.") %>
     <% else %>
-      <table class="w-full rounded-md border border-rule bg-white text-left">
-        <thead class="text-xs font-bold uppercase tracking-widest text-graphite">
-          <tr class="border-b border-rule">
-            <th class="px-4 py-2">Jogo</th>
-            <th class="px-4 py-2 text-center">Palpite</th>
-            <th class="px-4 py-2 text-center">Placar</th>
-            <th class="px-4 py-2">Resultado</th>
-            <th class="px-4 py-2 text-right">Pontos</th>
+      <div class="overflow-x-auto rounded-md border border-rule bg-white" data-role="table-scroll">
+      <table class="w-full border-collapse text-left">
+        <thead class="bg-pitch text-xs font-bold uppercase tracking-widest text-paper">
+          <tr>
+            <th scope="col" class="px-4 py-2">Jogo</th>
+            <th scope="col" class="px-4 py-2 text-center">Palpite</th>
+            <th scope="col" class="px-4 py-2 text-center">Placar</th>
+            <th scope="col" class="px-4 py-2">Resultado</th>
+            <th scope="col" class="px-4 py-2 text-right">Pontos</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-rule">
           <% results.each do |result| %>
             <% match = result.prediction.match %>
             <tr data-role="my-bet" data-result="<%= result.result %>">
-              <td class="px-4 py-2"><%= match.home_team.name %> <span class="text-graphite">×</span> <%= match.away_team.name %></td>
+              <td class="px-4 py-2"><%= match_title(match) %></td>
               <td class="px-4 py-2 text-center font-semibold tabular-nums"><%= guess(result) %></td>
               <td class="px-4 py-2 text-center tabular-nums"><%= final_score(match) %></td>
               <td class="px-4 py-2">
@@ -33,12 +34,13 @@
           <% end %>
         </tbody>
       </table>
+      </div>
     <% end %>
   <% when :loading %>
     <span class="sr-only">Carregando palpites…</span>
     <div class="flex flex-col gap-2" aria-hidden="true">
       <% 4.times do %>
-        <div class="h-10 w-full <%= skeleton_classes %>" data-role="skeleton"></div>
+        <div class="h-12 w-full <%= skeleton_classes %>" data-role="skeleton"></div>
       <% end %>
     </div>
   <% when :empty %>

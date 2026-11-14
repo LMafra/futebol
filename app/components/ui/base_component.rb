@@ -1,5 +1,14 @@
 module Ui
   class BaseComponent < ViewComponent::Base
+    include ButtonClassesHelper
+    include FormControlHelper
+    include StateNoticeHelper
+    include PasswordRevealHelper
+    include ScoutLegendHelper
+    include LinkClassesHelper
+    include ImagesHelper
+    include MatchLinksHelper
+
     STATES = %i[default loading empty error].freeze
 
     attr_reader :state
@@ -29,14 +38,6 @@ module Ui
 
     def skeleton_classes
       'animate-pulse rounded-sm bg-rule motion-reduce:animate-none'
-    end
-
-    def empty_notice(message)
-      tag.p(message, class: 'rounded-md border border-dashed border-rule px-4 py-8 text-center text-graphite')
-    end
-
-    def error_classes
-      'flex flex-wrap items-center gap-3 rounded-md border-l-4 border-ink bg-loss px-4 py-3 text-ink'
     end
   end
 end

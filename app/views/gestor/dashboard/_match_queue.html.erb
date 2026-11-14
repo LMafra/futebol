@@ -1,0 +1,30 @@
+<section class="rounded-md border border-rule bg-white" aria-labelledby="match-queue-title" data-role="gestor-match-queue">
+  <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="match-queue-title">Fila de partidas</h3>
+  <div class="px-4 py-3">
+    <%= render Ui::CollectionComponent.new(items: queue, id: "match-queue", mode: :table, item_id: ->(item) { item.match.id },
+                                           texts: { label: "Fila de partidas" }) do |c| %>
+      <% c.column(:match, label: "Partida", primary: true) { |item| link_to item.match, gestor_match_path(item.match), class: inline_link_classes(tone: :ink) } %>
+      <% c.column(:match_date, label: "Início", numeric: true) { |item| l(item.match.match_date, format: "%d/%m %H:%M") } %>
+      <% c.column(:status, label: "Status") { |item| admin_match_status_badge(item.match, label: (item.step == :scoring ? "Pontuando" : nil)) } %>
+      <% c.column(:step, label: "Próximo passo") { |item| match_next_step(item.match, item.step, :gestor, classes: AdminHelper::ADMIN_BUTTON_CLASSES, role: "queue-cta") } %>
+      <% c.column(:more, label: "Mais ações") do |item| %>
+        <% match = item.match %>
+        <details class="inline-block text-left" data-role="queue-overflow">
+          <summary class="<%= AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES %> list-none" aria-label="Mais ações: <%= match %>">⋯</summary>
+          <ul class="mt-2 flex flex-col gap-1 text-sm font-body">
+            <li><%= link_to "Ver partida", gestor_match_path(match), class: "inline-flex min-h-12 items-center text-ink" %></li>
+            <% if match.scheduled? && item.step != :edit %>
+              <li><%= link_to "Editar partida", edit_gestor_match_path(match), class: "inline-flex min-h-12 items-center text-ink" %></li>
+            <% end %>
+            <% if match.may_revert_match? && authorized?(:revert, match) %>
+              <li><%= link_to "Reverter pontuação", scoring_path("matchreversal", match_id: match.id), class: "inline-flex min-h-12 items-center font-semibold text-ink", data: { role: "queue-revert" } %></li>
+            <% end %>
+          </ul>
+        </details>
+      <% end %>
+      <% c.empty do %>
+        <%= render Ui::EmptyStateComponent.new(title: "Nenhuma partida na fila.", description: "Agende uma partida para ela aparecer aqui.") %>
+      <% end %>
+    <% end %>
+  </div>
+</section>

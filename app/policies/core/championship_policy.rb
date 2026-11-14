@@ -6,6 +6,8 @@ module Core
     def update? = show?
     def destroy? = show?
     def destroy_all? = admin?
+    def enroll? = update?
+    def unenroll? = update?
     def manage? = record_instance? && manages?(record)
     def public_show? = !record.private?
 

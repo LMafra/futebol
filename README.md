@@ -201,6 +201,10 @@ Três papéis, com áreas separadas no ActiveAdmin e login dedicado onde a conta
 
 Detalhes dos tickets: [0056–0062](docs/tickets/INDEX.md).
 
+### Admin e Gestor (UI Placar de Domingo)
+
+`/admin` e `/gestor` compartilham o tema **Placar de Domingo** via Tailwind CSS v4 do ActiveAdmin 4: header `pitch` com Fraunces, navegação `paper`/`rule` por tarefa com ícones SVG e item ativo `cartola`, filtros acima da tabela, tabelas com thead pitch / zebra / ações SVG, formulários em seções (Dados · Esquadrão · Bolão · Premiação) com `border-rule` e submit `bg-cartola text-ink`, dashboards status-first em grade 8/4, `EmptyState` / toast / sidebar colapsável abaixo de `md`, badges de status e medalhas SVG no ranking. Tokens em `app/assets/stylesheets/active_admin.css`; tickets [0063–0067](docs/tickets/INDEX.md) (tema), [0068–0073](docs/tickets/INDEX.md) (UX status-first) e [0074–0078](docs/tickets/INDEX.md) (work queue Admin/Gestor).
+
 ### Login
 
 O link "Entrar" leva a [`/entrar`](http://localhost:3000/entrar); páginas que exigem sessão continuam redirecionando para `/session/new`. Operação restringida usa [`/admin/login`](http://localhost:3000/admin/login) e [`/gestor/login`](http://localhost:3000/gestor/login) (campo oculto `area`, para não abrir sessão na área errada). Logado, o cabeçalho mostra o menu "Minha conta" (Minha conta, Meus bolões, Meu esquadrão, Rankings) e "Sair". O rodapé mostra "Área do gestor" para admin ou gestor e "Acesso administrativo" só para admin (visitante ainda vê o link do admin).

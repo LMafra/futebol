@@ -1,33 +1,35 @@
 ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor do
-  menu parent: 'Cadastros', label: 'Campeonatos', priority: 1
+  menu parent: 'Campeonatos', label: 'Campeonatos', priority: 1
 
-  permit_params :name, :season, :private, :cartola_goalkeeper_limit, :cartola_defender_limit,
+  permit_params :name, :season, :logo, :remove_logo, :private, :cartola_goalkeeper_limit, :cartola_defender_limit,
                 :cartola_midfielder_limit, :cartola_forward_limit, :cartola_initial_budget, :cartola_base_player_value,
-                :prize_description, *Core::Championship::PRIZE_PLACES
+                :prize_description, :kind, :gender, :category, :level, *Core::Championship::PRIZE_PLACES
 
   actions :index, :show, :new, :create, :edit, :update
 
-  controller do
-    include GestorResource
+  AdminNameSearch.register(self)
+  AdminChampionshipEnrollment.register(self)
+  filter :season, as: :select, collection: -> { admin_season_options }
+  filter :status, label: 'Situação', as: :select, collection: [%w[Rascunho draft], %w[Publicado published]]
 
-    before_build do |championship|
-      championship.manager = current_user if current_user.manager?
-      assign_external_id(championship)
-    end
+  includes logo_attachment: :blob
+  AdminCollectionIndex.register(self, 'admin/listings/championships')
+
+  action_item :new_match, only: :show, if: -> { authorized?(:enroll, resource) && resource.teams.many? } do
+    safe_join([modal_trigger('Agendar partida', :match, new_gestor_match_path(match: { championship_id: resource.id }),
+                             classes: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES),
+               render('admin/modals/match', championship: resource)])
   end
 
-  filter :name
-  filter :season
+  action_item :continue_draft, only: :show, if: -> { resource.draft? && authorized?(:update, resource) } do
+    link_to 'Continuar rascunho', edit_gestor_championship_path(resource, step: 'revisao'),
+            class: AdminHelper::ADMIN_BUTTON_CLASSES
+  end
 
-  index do
-    id_column
-    column :name
-    column :season
-    column('Privado') { |championship| status_tag(championship.private? ? 'sim' : 'não') }
-    actions defaults: false do |championship|
-      item 'Ver', gestor_championship_path(championship)
-      item 'Editar', edit_gestor_championship_path(championship) if authorized?(:update, championship)
-    end
+  action_item :new_pool, only: :show, if: -> { authorized?(:create, Bolao::Pool.new(championship: resource)) } do
+    safe_join([modal_trigger('Criar bolão', :pool, new_gestor_pool_path(pool: { championship_id: resource.id }),
+                             classes: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES),
+               render('admin/modals/pool', championship: resource, namespace: :gestor)])
   end
 
   show title: :to_s do
@@ -35,8 +37,12 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
       row :name
       row :season
       row :external_id
+      row('Modalidade', &:modality_label)
+      row('Situação') { |championship| championship.draft? ? 'Rascunho (não aparece no site)' : 'Publicado' }
       row('Campeonato privado?') { |championship| championship.private? ? 'Sim' : 'Não' }
+      row('Logo') { |championship| championship_logo(championship, variant: :medium, size: 'size-24') }
     end
+    AdminRecordPanels.championship(self, resource, :gestor)
     panel 'Premiação' do
       attributes_table_for resource do
         row :prize_description
@@ -57,30 +63,17 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
     end
   end
 
-  form do |f|
-    f.semantic_errors
-    f.inputs do
-      f.input :name
-      f.input :season
-      f.input :private, label: 'Campeonato privado?',
-                        hint: 'Campeonatos privados não aparecem na home, na página pública nem no Simulador.'
+  form html: { multipart: true } do |f|
+    AdminChampionshipForm.render(self, f, namespace: :gestor)
+  end
+
+  controller do
+    include GestorResource
+    include ChampionshipWizardActions
+
+    before_build do |championship|
+      championship.manager = current_user if current_user.manager?
+      assign_external_id(championship)
     end
-    f.inputs 'Premiação' do
-      f.input :prize_description, label: 'Descrição geral', input_html: { rows: 3 }
-      Core::Championship::PRIZE_PLACES.each do |place|
-        f.input place, label: place.to_s.humanize
-      end
-    end
-    f.inputs 'Esquadrão' do
-      f.input :cartola_goalkeeper_limit, label: 'Limite de goleiros', input_html: { min: 0 }
-      f.input :cartola_defender_limit, label: 'Limite de defensores', input_html: { min: 0 }
-      f.input :cartola_midfielder_limit, label: 'Limite de meio-campistas', input_html: { min: 0 }
-      f.input :cartola_forward_limit, label: 'Limite de atacantes', input_html: { min: 0 }
-      f.input :cartola_initial_budget, label: 'Orçamento inicial (C$)', input_html: { min: 0, step: '0.01' }
-      f.input :cartola_base_player_value, label: 'Valor base do jogador (C$)',
-                                          hint: 'Usado para jogadores sem valor base próprio.',
-                                          input_html: { min: 0, step: '0.01' }
-    end
-    f.actions
   end
 end

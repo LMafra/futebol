@@ -1,6 +1,7 @@
 %i[admin gestor].each do |ns|
   ActiveAdmin.register_page 'MatchReversal', namespace: ns do
-    menu parent: 'Pontuação', label: 'Reverter pontuação', priority: 3
+    menu false
+    breadcrumb { match_crumbs(@match) }
 
     content title: 'Reverter pontuação' do
       render partial: 'admin/match_reversal/form',

@@ -5,6 +5,17 @@ RSpec.describe Core::Match do
     expect(build(:match)).to be_valid
   end
 
+  it 'only takes teams enrolled in its championship' do
+    championship = create(:championship)
+    enrolled, outsider = create_list(:team, 2)
+    championship.championship_teams.create!(team: enrolled)
+    match = build(:match, championship:, home_team: enrolled, away_team: outsider)
+
+    expect(match).not_to be_valid
+    expect(match.errors[:away_team]).to include('não está inscrito neste campeonato')
+    expect(match.errors[:home_team]).to be_empty
+  end
+
   it 'requires a match_date' do
     expect(build(:match, match_date: nil)).not_to be_valid
   end

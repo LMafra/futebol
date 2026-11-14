@@ -10,9 +10,10 @@ class HomeController < ApplicationController
 
   def index
     public_championships = Core::Championship.publicly_visible
-    @championships = public_championships.order(season: :desc, name: :asc).to_a
+    @championships = public_championships.with_attached_logo.order(season: :desc, name: :asc).to_a
     public_matches = Core::Match.where(championship: public_championships)
-    @counters = { championships: Core::Championship.count, matches: Core::Match.count, players: Core::Player.count }
+    @counters = { championships: Core::Championship.published.count, matches: Core::Match.count,
+                  players: Core::Player.count }
     @matches_today = matches_today(public_matches)
     @standings = Core::ChampionshipStandingsService.top(@championships)
     @rankings = Core::ChampionshipRankingsService.top(@championships)

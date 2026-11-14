@@ -1,0 +1,46 @@
+<%# Placar e linha do tempo da página pública da partida; BroadcastUpdateService troca este bloco ao vivo. %>
+<% sides = { match.home_team_id => match.home_team, match.away_team_id => match.away_team } %>
+<% goals = events.select { %w[goals own_goals].include?(_1.stat) } %>
+<div id="<%= dom_id(match, :live) %>" class="flex flex-col gap-6" data-role="match-live">
+  <%= render Ui::ScoreboardComponent.new(match:) %>
+
+  <% if goals.any? %>
+    <section aria-labelledby="goals-title" class="grid grid-cols-2 gap-4" data-role="goals">
+      <h2 id="goals-title" class="sr-only">Gols</h2>
+      <% sides.each do |team_id, team| %>
+        <%# A gol contra counts for the other side. %>
+        <% scored = goals.select { (_1.stat == "goals") == (_1.team_id == team_id) }.reverse %>
+        <ul class="flex flex-col gap-1 text-sm <%= 'items-end text-right' if team_id == match.home_team_id %>" aria-label="Gols de <%= team.name %>">
+          <% scored.each do |event| %>
+            <li>
+              <%= event.player.name %><% if event.minute %> <span class="tabular-nums text-graphite"><%= event.minute %>'</span><% end %>
+              <% if event.stat == "own_goals" %><abbr title="Gol contra" class="no-underline text-graphite">(GC)</abbr><% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    </section>
+  <% end %>
+
+  <section class="flex flex-col gap-3" aria-labelledby="timeline-title" data-role="timeline">
+    <h2 id="timeline-title" class="font-display text-2xl font-extrabold">Linha do tempo</h2>
+    <% if events.empty? %>
+      <%= empty_notice(match.scheduled? ? "A partida ainda não começou." : "Nenhum lance registrado.") %>
+    <% else %>
+      <ol class="flex flex-col divide-y divide-rule rounded-md border border-rule bg-white" role="list">
+        <% events.each do |event| %>
+          <li class="grid grid-cols-[5.5rem_1fr] items-baseline gap-3 px-4 py-3" data-role="timeline-event">
+            <span class="text-sm tabular-nums text-graphite">
+              <%= [(event.minute && "#{event.minute}'"), event.period_label].compact.join(" · ").presence || "—" %>
+            </span>
+            <span>
+              <span class="font-semibold"><%= scout_label(event.stat.to_sym) %></span>
+              · <%= event.player.name %>
+              <span class="text-sm text-graphite">(<%= sides[event.team_id]&.name %>)</span>
+            </span>
+          </li>
+        <% end %>
+      </ol>
+    <% end %>
+  </section>
+</div>

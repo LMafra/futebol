@@ -1,0 +1,49 @@
+# "Sobre esta tela" (PageIntroHelper): page_intro.<namespace|shared>.<controller>.<action|default>.
+# One or two sentences: what the screen is for and what usually comes next.
+pt-BR:
+  page_intro:
+    shared:
+      esquadrao:
+        default: "Ranking, gabarito da rodada e as escalações. Escolha uma escalação para ver os pontos ou corrigi-la, sempre com motivo."
+      championships:
+        index: "Todos os campeonatos que você organiza. Os rascunhos só aparecem no site depois de publicados na etapa Revisão."
+        show: "Tudo do campeonato num lugar: times inscritos, partidas por rodada e bolões. Inscreva os times antes de agendar as partidas."
+        new: "O cadastro vai por etapas: cada uma é salva antes da próxima, e o campeonato só aparece no site quando você publica."
+        edit: "Mudanças aqui valem na hora para o site, os bolões e o Esquadrão."
+      matches:
+        index: "Partidas de todos os campeonatos. Filtre por campeonato ou situação para achar a rodada que você procura."
+        show: "Toque no + do jogador para registrar um lance, com tempo e minuto. O placar vem dos lances; finalize no rodapé."
+        new: "Escolha o campeonato primeiro: só os times inscritos nele aparecem como mandante e visitante."
+        edit: "Só os times inscritos no campeonato podem jogar a partida."
+      teams:
+        index: "Os times que você cadastrou. Um time pode se inscrever em vários campeonatos seus."
+        show: "O time, o contato do capitão, os campeonatos em que está inscrito e os jogadores."
+        new: "Cadastre o time uma vez e depois inscreva-o nos seus campeonatos. O escudo aparece no placar e na classificação."
+        edit: "O escudo e o nome mudam em todos os campeonatos em que o time está inscrito."
+      players:
+        default: "Os jogadores de cada time. A posição define o lugar no Esquadrão, e o valor base é o preço inicial."
+      pools:
+        index: "Bolões dos seus campeonatos. Os participantes entram com o código, que você compartilha."
+        show: "O bolão e o código para compartilhar com os participantes."
+        new: "Crie o bolão num campeonato seu. Quem organiza não entra como participante."
+      matchreversal:
+        default: "Desfaz a pontuação de uma partida já pontuada, com motivo registrado na auditoria."
+      bolao_scoring_rules:
+        default: "Quantos pontos vale acertar o placar exato e o vencedor. Um bolão pode ter regra própria."
+      dashboard:
+        default: "O que precisa de atenção hoje: partidas do dia, pontuações pendentes e os seus campeonatos."
+    admin:
+      users:
+        default: "Contas do Craquefy. Aprove aqui os pedidos para ser gestor."
+      csv_imports:
+        default: "Importe partidas por planilha CSV. Cada importação mostra quantas linhas entraram e, se falhar, o motivo."
+      esquadrao_scoring_rules:
+        default: "Quantos pontos vale cada scout no Esquadrão. Teste uma mudança em Testar regras antes de salvar."
+      scoringruletester:
+        default: "Simule a pontuação de um jogador com outras regras, sem mudar nenhum ponto de verdade."
+      audithistory:
+        default: "Tudo o que mudou pontos ou partidas: quem fez, quando e por quê."
+      bolaopreview:
+        default: "Como os palpites de uma partida pontuariam com cada placar possível, antes de finalizar."
+      esquadrao_squads:
+        default: "Os times que os usuários montaram no Esquadrão e o saldo de cada um."

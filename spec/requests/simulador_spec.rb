@@ -27,6 +27,14 @@ RSpec.describe 'Simulador', type: :request do
   end
 
   describe 'GET /simulador/:championship_id' do
+    it 'marca o jogo ao vivo com um chip legível e campos de 48px (TICKET-0082)' do
+      get simulador_championship_path(championship)
+
+      chip = page.at_css("[data-match-id='#{live_match.id}'] [data-role='live-chip']")
+      expect(chip['class'].split).to include('bg-cartola', 'text-ink')
+      expect(page.at_css("input[name='guesses[#{live_match.id}][home]']")['class'].split).to include('min-h-12')
+    end
+
     it 'é público: mostra a tabela atual e o formulário dos jogos em aberto (200)' do
       get simulador_championship_path(championship)
 
@@ -77,7 +85,7 @@ RSpec.describe 'Simulador', type: :request do
       get simulador_championship_path(championship)
 
       links = page.at_css('[data-role="simulator-nav"]').css('a').to_h { |link| [link.text, link['href']] }
-      expect(links).to eq('Ver campeonato' => public_championship_path(championship),
+      expect(links).to eq('Tabela do campeonato' => public_championship_path(championship),
                           'Outros campeonatos' => simulador_path)
       expect(page.at_css('select#championship_id')).to be_nil
     end
@@ -106,6 +114,14 @@ RSpec.describe 'Simulador', type: :request do
       sign_in(create(:user))
       get simulador_championship_path(championship)
       expect(response).to have_http_status(:ok)
+    end
+
+    it 'esconde rascunho de todos, mesmo com login (404)' do
+      championship.update!(status: 'draft')
+      sign_in(create(:user))
+
+      get simulador_championship_path(championship)
+      expect(response).to have_http_status(:not_found)
     end
   end
 
@@ -164,7 +180,7 @@ RSpec.describe 'Simulador', type: :request do
       projection = page.css('[data-role="projection"] [data-role="standing-row"]')
       expect(projection.map { |row| team_name(row) })
         .to eq(%w[Fortaleza Cruzeiro Atlético Botafogo])
-      expect(projection.first.at_css('[data-role="position-change"]')['aria-label']).to eq('Subiu 2')
+      expect(projection.first.at_css('[data-role="position-change"] .sr-only').text).to eq('Subiu 2')
     end
 
     it 'mostra a tabela projetada no lugar da atual, com o botão de zerar a simulação' do

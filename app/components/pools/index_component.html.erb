@@ -4,12 +4,11 @@
       <p class="text-xs font-bold uppercase tracking-widest text-graphite">Bolão</p>
       <h1 class="mt-1 font-display text-4xl font-extrabold tracking-tight">Meus bolões</h1>
     </div>
-    <%= link_to "Criar bolão", new_pool_path, class: "rounded-sm bg-pitch px-4 py-2 font-semibold text-white transition-colors duration-base ease-editorial hover:bg-night" %>
   </header>
 
   <% if error? %>
     <div class="<%= error_classes %>" role="alert">
-      <span class="font-bold" data-role="error-message"><%= error_message %></span>
+      <span id="pools-error" class="font-bold" data-role="error-message"><%= error_message %></span>
     </div>
   <% end %>
 
@@ -25,9 +24,11 @@
       <div class="flex flex-col gap-1">
         <%= form.label :code, "Entrar com código", class: "text-sm font-semibold" %>
         <%= form.text_field :code, maxlength: Bolao::Pool::CODE_LENGTH, required: true, autocomplete: "off", placeholder: "EX: K7P2QD",
-                              class: "w-40 rounded-sm border border-rule px-3 py-2 font-semibold uppercase tabular-nums tracking-widest" %>
+                              class: form_control_classes("w-[10rem] font-semibold uppercase tabular-nums tracking-widest", invalid: join_error?),
+                              aria: { invalid: join_error? || nil, describedby: ("pools-error" if join_error?) } %>
       </div>
-      <%= form.submit "Entrar", class: "cursor-pointer rounded-sm border border-ink px-4 py-2 font-semibold hover:bg-paper" %>
+      <%= form.submit "Entrar", class: secondary_button_classes %>
+      <p class="basis-full text-sm text-graphite" data-role="join-hint">Os bolões são criados pelo gestor de cada campeonato. Peça o código a ele para entrar.</p>
     <% end %>
 
     <% if empty? %>
@@ -37,7 +38,7 @@
         <% listed_pools.each do |pool| %>
           <li class="flex items-center justify-between gap-4 px-4 py-3">
             <div>
-              <%= link_to pool.name, pool_path(pool), class: "font-semibold text-pitch underline-offset-2 hover:underline" %>
+              <%= link_to pool.name, pool_path(pool), class: inline_link_classes %>
               <p class="text-sm text-graphite"><%= pool.championship %></p>
             </div>
             <span class="font-semibold tabular-nums tracking-widest text-graphite"><%= pool.code %></span>

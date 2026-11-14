@@ -1,25 +1,21 @@
 ActiveAdmin.register Core::CsvImport, as: 'CsvImport' do
-  menu parent: 'Cadastros', label: 'Importações CSV'
+  menu parent: 'Configurações', label: 'Importações CSV', priority: 4
 
   actions :index, :show, :new, :create
   permit_params :csv_file
   config.sort_order = 'created_at_desc'
 
-  filter :status, as: :select, collection: -> { Core::CsvImport::STATUSES }
+  filter :status, as: :select, collection: -> { admin_csv_import_status_options }
   filter :created_at
 
-  index do
-    id_column
-    column(:status) { |csv_import| status_tag csv_import.status }
-    column :rows_processed
-    column :error_message
-    column :created_at
-    actions
-  end
+  AdminCollectionIndex.register(self, 'admin/listings/csv_imports')
 
   show do
+    div class: 'mb-6' do
+      state = resource.status == 'failed' ? :error : :default
+      render Ui::CsvImportStatusComponent.new(csv_import: resource, state:)
+    end
     attributes_table do
-      row(:status) { |csv_import| status_tag csv_import.status }
       row(:csv_file) { |csv_import| csv_import.csv_file.filename if csv_import.csv_file.attached? }
       row :rows_processed
       row :error_message
@@ -30,8 +26,10 @@ ActiveAdmin.register Core::CsvImport, as: 'CsvImport' do
 
   form do |f|
     f.semantic_errors(*f.object.errors.attribute_names)
-    f.inputs 'Arquivo CSV (external_id, championship, home_team, away_team, match_date, home_score, away_score)' do
-      f.input :csv_file, as: :file, input_html: { accept: '.csv,text/csv' }
+    f.inputs 'Arquivo CSV' do
+      f.input :csv_file, as: :file, input_html: { accept: '.csv,text/csv' },
+                         hint: 'Colunas esperadas, nesta ordem: external_id, championship, home_team, away_team, ' \
+                               'match_date, home_score, away_score.'
     end
     f.actions
   end

@@ -1,0 +1,50 @@
+<%# Gabarito da rodada: a seleção ideal e os pontos de cada jogador real. %>
+<% ideal = board.ideal %>
+<section class="rounded-md border border-rule bg-white p-4" aria-labelledby="answer-key-title" data-role="answer-key">
+  <h3 id="answer-key-title" class="mb-3 font-display text-xl font-semibold text-ink">Gabarito da rodada <%= board.round %></h3>
+  <% if board.answer_key.empty? %>
+    <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Nenhum jogador pontuou nesta rodada ainda.</p>
+  <% else %>
+    <div class="flex flex-col gap-4">
+      <% unless ideal.empty? %>
+        <div data-role="ideal-lineup">
+          <p class="font-body font-semibold text-ink">
+            Seleção ideal · <%= ideal.formation %> · <span class="tabular-nums"><%= format("%.2f", ideal.total) %> pts</span>
+          </p>
+          <ul class="mt-2 flex flex-col divide-y divide-rule" role="list">
+            <% ideal.players.each do |row| %>
+              <li class="flex items-center justify-between gap-3 py-2" data-role="ideal-player">
+                <span class="min-w-0">
+                  <span class="font-semibold text-ink"><%= row.player.name %></span>
+                  <span class="text-sm text-graphite"><%= row.player.position %> · <%= row.player.team&.short_name %></span>
+                  <% if row == ideal.captain %>
+                    <span class="ms-1 rounded-sm bg-ink px-1.5 text-xs font-bold text-white" title="Capitão: pontos em dobro">C</span>
+                  <% end %>
+                </span>
+                <span class="tabular-nums text-ink"><%= format("%.2f", row.points) %></span>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <details data-role="player-points">
+        <summary class="min-h-11 cursor-pointer py-2 font-body font-semibold text-ink">Pontos por jogador (<%= board.answer_key.size %>)</summary>
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead><tr><th scope="col">Jogador</th><th scope="col">Time</th><th scope="col" class="text-right">Pontos</th></tr></thead>
+            <tbody>
+              <% board.answer_key.each do |row| %>
+                <tr>
+                  <td><%= row.player.name %> <span class="text-sm text-graphite"><%= row.player.position %></span></td>
+                  <td><%= row.player.team&.short_name %></td>
+                  <td class="text-right tabular-nums"><%= format("%.2f", row.points) %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+  <% end %>
+</section>

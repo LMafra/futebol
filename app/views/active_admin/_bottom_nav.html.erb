@@ -1,0 +1,26 @@
+<%# Menu inferior do Admin e do Gestor abaixo de 640px: as quatro primeiras seções do menu lateral e "Mais", que abre o menu completo. %>
+<% item_classes = "flex min-h-14 w-full flex-col items-center justify-center gap-0.5 border-t-2 px-0 text-xs font-body font-semibold tracking-tight no-underline" %>
+<nav class="fixed inset-x-0 bottom-0 z-30 border-t border-rule bg-white pb-[env(safe-area-inset-bottom)] sm:hidden" aria-label="Atalhos" data-role="admin-bottom-nav">
+  <ul role="list" class="grid grid-cols-5">
+    <% current_menu.items(self).first(4).each do |item| %>
+      <% label = item.label(self) %>
+      <% url = item.url(self) %>
+      <% url = item.items(self).first&.url(self) if url.blank? || url == "#" %>
+      <% next if url.blank? %>
+      <% active = current_menu_item?(item) %>
+      <li>
+        <%= link_to url, class: "#{item_classes} #{active ? 'border-pitch text-pitch' : 'border-transparent text-graphite'}",
+                         aria: { current: (active ? "page" : nil) }, data: { nav_section: label } do %>
+          <%= admin_nav_section_icon(label) %>
+          <span class="max-w-full truncate"><%= label.split.first %></span>
+        <% end %>
+      </li>
+    <% end %>
+    <li>
+      <button type="button" class="<%= item_classes %> cursor-pointer border-transparent text-graphite" data-drawer-target="main-menu" data-drawer-show="main-menu" aria-controls="main-menu" data-role="admin-bottom-nav-more">
+        <svg class="h-5 w-5 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/></svg>
+        <span>Mais</span>
+      </button>
+    </li>
+  </ul>
+</nav>

@@ -1,28 +1,21 @@
 module Core
+  # Teams belong to one manager (ADR 0006); the admin owns the ones without a manager and sees them all.
   class TeamPolicy < ApplicationPolicy
     def index? = admin? || manager?
     def create? = admin? || manager?
-    def show? = admin? || (manager? && record_instance? && visible_to_manager?)
-    def update? = admin? || manage?
-    def destroy? = update?
-    def manage? = manager? && record_instance? && record.championships.not_managed_by(user).none?
-
-    private
-
-    def visible_to_manager? = record.championships.none? || record.championships.exists?(manager_id: user.id)
+    def show? = admin? || manage?
+    def update? = show?
+    def destroy? = show?
+    def manage? = manager? && record_instance? && record.manager_id == user.id
+    # Bulk actions of the list: the policy scope picks the teams (AdminBulkActions).
+    def bulk_destroy? = index?
+    def bulk_enroll? = index?
+    def bulk_unenroll? = index?
 
     class Scope < ApplicationPolicy::Scope
-      def locked_ids
-        return [] if user&.admin?
-
-        Core::Team.playing_in(Core::Championship.not_managed_by(user)).pluck(:id)
-      end
-
       private
 
-      def managed_scope
-        scope.where(id: Core::Team.playing_in(managed_championships).or(Core::Team.without_matches).select(:id))
-      end
+      def managed_scope = scope.owned_by(user)
     end
   end
 end

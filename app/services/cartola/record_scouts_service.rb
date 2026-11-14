@@ -60,6 +60,7 @@ module Cartola
       @match.with_lock do
         @match.start_match! if @match.may_start_match?
         persist!(participants)
+        ScoutEventSync.call(@match, participants, actor)
         home_score, away_score = score(participants)
         @match.update!(home_score:, away_score:) if @match.live?
         audit!(actor, ip_address, home_score:, away_score:, participants: participants.size)

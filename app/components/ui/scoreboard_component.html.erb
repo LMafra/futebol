@@ -2,21 +2,22 @@
   <section class="w-full" <%= tag.attributes(root_attributes(label: "Placar")) %>>
     <% case state %>
     <% when :default %>
-      <div class="grid grid-cols-12 items-center gap-4 rounded-md bg-night px-6 text-white">
-        <div class="col-span-2 flex h-16 items-center gap-2">
-          <%= crest(match.home_team) %>
-          <%= crest(match.away_team) %>
+      <%# Phones: crests and status on the first row, the names and the score below; from sm, one row. %>
+      <div class="grid grid-cols-12 items-center gap-x-4 gap-y-2 rounded-md bg-night px-4 py-3 text-white sm:px-6 sm:py-0">
+        <div class="col-span-6 flex h-12 items-center gap-2 sm:col-span-2 sm:h-16" data-role="crests">
+          <%= team_crest(match.home_team) %>
+          <%= team_crest(match.away_team) %>
         </div>
 
-        <div class="col-span-8 grid grid-cols-[1fr_auto_1fr] items-center gap-4 py-3">
-          <span class="truncate text-right font-display text-2xl font-bold"><%= match.home_team.name %></span>
-          <span class="font-sans text-6xl font-bold tabular-nums lining-nums" data-role="score">
+        <div class="order-last col-span-12 grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:order-none sm:col-span-8 sm:gap-4 sm:py-3" data-role="teams">
+          <span class="break-words text-right font-display text-xl font-bold sm:truncate sm:text-2xl" data-role="team-name"><%= match.home_team.name %></span>
+          <span class="font-sans text-5xl font-bold tabular-nums lining-nums sm:text-6xl" data-role="score">
             <%= score(match.home_score) %><span class="px-2 text-rule" aria-hidden="true">×</span><%= score(match.away_score) %>
           </span>
-          <span class="truncate font-display text-2xl font-bold"><%= match.away_team.name %></span>
+          <span class="break-words font-display text-xl font-bold sm:truncate sm:text-2xl" data-role="team-name"><%= match.away_team.name %></span>
         </div>
 
-        <div class="col-span-2 flex flex-col items-end gap-1 text-right">
+        <div class="col-span-6 flex flex-col items-end gap-1 text-right sm:col-span-2">
           <% if live? %>
             <span class="rounded-sm bg-cartola px-2 py-1 text-xs font-bold uppercase tracking-widest text-ink" data-role="status">Ao vivo</span>
           <% else %>
@@ -38,7 +39,7 @@
       <div class="<%= error_classes %>" role="alert">
         <span class="font-bold">Não foi possível carregar o placar.</span>
         <% if retry_path %>
-          <%= link_to "Tentar novamente", retry_path, class: "font-semibold underline underline-offset-2 hover:no-underline", data: { role: "retry" } %>
+          <%= link_to "Tentar novamente", retry_path, class: inline_link_classes(tone: :ink), data: { role: "retry" } %>
         <% end %>
       </div>
     <% end %>

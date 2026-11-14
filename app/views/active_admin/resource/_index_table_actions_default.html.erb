@@ -1,0 +1,13 @@
+<% subject = display_name(resource) %>
+<div class="inline-flex items-center gap-2" data-role="admin-table-actions">
+  <% if show_action_authorized?(resource) %>
+    <%= admin_icon_action_link("Abrir", resource_path(resource), :view, subject:) %>
+  <% end %>
+  <% if edit_action_authorized?(resource) %>
+    <%= admin_icon_action_link(edit_label, edit_resource_path(resource), :edit, subject:) %>
+  <% end %>
+  <% if destroy_action_authorized?(resource) %>
+    <%= admin_icon_action_link(delete_label, resource_path(resource), :delete, subject:,
+                               method: :delete, data: { confirm: delete_confirmation_text }) %>
+  <% end %>
+</div>

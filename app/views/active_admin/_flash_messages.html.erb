@@ -1,0 +1,12 @@
+<% if flash_messages.present? %>
+  <div data-role="craquefy-admin-flashes" class="mb-8 space-y-2 px-2.5 lg:px-5">
+    <% flash_messages.each do |type, message| %>
+      <% variant = case type.to_s
+                   when 'error' then :error
+                   when 'alert' then :alert
+                   else :notice
+                   end %>
+      <%= render Ui::ToastComponent.new(message:, variant:) %>
+    <% end %>
+  </div>
+<% end %>

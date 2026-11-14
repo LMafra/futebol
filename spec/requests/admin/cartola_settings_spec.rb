@@ -49,27 +49,30 @@ RSpec.describe 'Admin Cartola settings', type: :request do
     expect(player.reload.base_value).to eq(9.5)
   end
 
-  it 'shows both Esquadrão rankings of a championship' do
-    create(:cartola_wallet, championship:, balance: 42, user: create(:user, name: 'Ana'))
+  it 'shows the Esquadrão ranking of a championship with points and coins' do
+    ana = create(:user, name: 'Ana')
+    create(:cartola_lineup, championship:, squad: create(:cartola_squad, user: ana))
+    create(:cartola_wallet, championship:, balance: 42, user: ana)
 
-    get "/admin/esquadraorankings?championship_id=#{championship.id}"
+    get "/admin/esquadrao?championship_id=#{championship.id}"
 
     expect(response).to have_http_status(:ok)
-    page = Nokogiri::HTML(response.body)
-    expect(page.at_css('[data-role="ranking-coins"]').text.squish).to include('Ana C$ 42.00')
-    expect(page.at_css('[data-role="ranking-points"]')).to be_nil
+    page = Nokogiri::HTML5(response.body)
+    expect(page.at_css('[data-role="ranking-row"]').text.squish).to eq('1 Ana 0.00 C$ 42.00')
   end
 
-  it 'links the championship page to its rankings' do
+  it 'links the championship page to its Esquadrão' do
     get "/admin/championships/#{championship.id}"
 
-    expect(response.body).to include("/admin/esquadraorankings?championship_id=#{championship.id}")
+    expect(response.body).to include("/admin/esquadrao?championship_id=#{championship.id}")
   end
 
   it 'redirects the old Cartola admin URLs (301)' do
     {
       "/admin/cartolarankings?championship_id=#{championship.id}" =>
-        "/admin/esquadraorankings?championship_id=#{championship.id}",
+        "/admin/esquadrao?championship_id=#{championship.id}",
+      "/admin/esquadraorankings?championship_id=#{championship.id}" =>
+        "/admin/esquadrao?championship_id=#{championship.id}",
       '/admin/cartola_scoring_rules' => '/admin/esquadrao_scoring_rules',
       '/admin/cartola_scoring_rules/3/edit' => '/admin/esquadrao_scoring_rules/3/edit',
       '/admin/squads/5' => '/admin/esquadrao_squads/5'
@@ -82,7 +85,7 @@ RSpec.describe 'Admin Cartola settings', type: :request do
   end
 
   it 'labels the admin menu as Esquadrão' do
-    get '/admin/esquadraorankings'
+    get '/admin/esquadrao'
 
     expect(response.body).to include('Esquadrão', 'Times do Esquadrão', 'Regras do Esquadrão')
     expect(response.body).not_to include('Cartola')

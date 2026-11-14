@@ -1,0 +1,73 @@
+<%# Lances por time, em abas: um cartão por jogador com os botões de lance, o "−" do último lance, Jogou e Destaque. %>
+<% match = board.match %>
+<section aria-labelledby="sides-title" data-controller="tabs">
+  <h3 id="sides-title" class="mb-3 font-display text-xl font-semibold text-ink">Lances</h3>
+  <div class="mb-4 flex flex-wrap gap-2" role="tablist" aria-label="Times" data-action="keydown->tabs#navigate">
+    <% board.sides.each_with_index do |side, index| %>
+      <button type="button" role="tab" id="side-tab-<%= side.key %>" aria-controls="side-panel-<%= side.key %>"
+              class="<%= AdminHelper::ADMIN_TAB_CLASSES %>" aria-selected="<%= index.zero? %>" tabindex="<%= index.zero? ? 0 : -1 %>"
+              data-tabs-target="tab" data-action="tabs#select">
+        <%= side.label %> · <%= side.team.name %>
+      </button>
+    <% end %>
+  </div>
+
+  <% board.sides.each do |side| %>
+    <div role="tabpanel" id="side-panel-<%= side.key %>" aria-labelledby="side-tab-<%= side.key %>" tabindex="0"
+         data-tabs-target="panel" data-role="side-<%= side.key %>">
+      <% if side.lines.empty? %>
+        <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Nenhum jogador cadastrado em <%= side.team.name %>.</p>
+      <% end %>
+      <ul class="grid gap-3 md:grid-cols-2" role="list">
+        <% side.lines.each do |line| %>
+          <% player = line.player %>
+          <li class="flex flex-col gap-3 rounded-md border border-rule bg-white p-3" data-role="player-line" data-player-id="<%= player.id %>">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <p class="font-body font-semibold text-ink">
+                <%= player.name %>
+                <span class="text-sm font-normal text-graphite"><%= [player.position, (player.shirt_number && "##{player.shirt_number}")].compact.join(" · ") %></span>
+              </p>
+              <p class="text-sm font-body text-graphite tabular-nums"><%= line.score ? "#{format('%.2f', line.score.points)} pts" : "Não jogou" %></p>
+            </div>
+
+            <% counted = line.stats.select { line.count(_1).positive? } %>
+            <% if counted.any? %>
+              <ul class="flex flex-wrap gap-2" role="list" aria-label="Scouts de <%= player.name %>">
+                <% counted.each do |stat| %>
+                  <li class="inline-flex items-center gap-1 rounded-md bg-paper ps-2 text-sm font-body text-ink">
+                    <abbr title="<%= scout_label(stat) %>" class="no-underline font-semibold"><%= scout_abbreviation(stat) %></abbr>
+                    <span class="tabular-nums"><%= line.count(stat) %></span>
+                    <%= button_to "−", public_send(:"undo_event_#{active_admin_namespace.name}_match_path", match),
+                                  params: { player_id: player.id, stat: }, form_class: "inline",
+                                  class: AdminHelper::ADMIN_STEPPER_CLASSES,
+                                  aria: { label: "Desfazer o último lance de #{scout_label(stat).downcase} de #{player.name}" } %>
+                  </li>
+                <% end %>
+              </ul>
+            <% end %>
+
+            <div class="flex flex-wrap gap-2">
+              <% line.stats.each do |stat| %>
+                <%= lance_trigger(line, stat) %>
+              <% end %>
+            </div>
+
+            <div class="flex flex-wrap gap-2 border-t border-rule pt-3">
+              <% participation_path = public_send(:"participation_#{active_admin_namespace.name}_match_path", match) %>
+              <%= button_to participation_path, params: { player_id: player.id, flags: { played: !line.played? } },
+                            class: "#{AdminHelper::ADMIN_TAB_CLASSES} text-sm", form_class: "inline",
+                            aria: { pressed: line.played? } do %>
+                Jogou
+              <% end %>
+              <%= button_to participation_path, params: { player_id: player.id, flags: { highlight: !line.highlight? } },
+                            class: "#{AdminHelper::ADMIN_TAB_CLASSES} text-sm", form_class: "inline",
+                            aria: { pressed: line.highlight? } do %>
+                Destaque
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+</section>

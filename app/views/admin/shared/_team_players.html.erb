@@ -1,0 +1,14 @@
+<%# Jogadores da página do time (/admin e /gestor). %>
+<%= render Ui::CollectionComponent.new(items: players, id: "team-#{team.id}-players", texts: { label: "Jogadores do time" }) do |c| %>
+  <% c.column(:name, label: "Nome", primary: true) { |player| link_to player, public_send(:"#{namespace}_player_path", player), class: inline_link_classes(tone: :ink) } %>
+  <% c.column(:position, label: "Posição") %>
+  <% c.column(:shirt_number, label: "Número", numeric: true) %>
+  <% c.column(:base_value, label: "Valor base", numeric: true) { |player| player.base_value && format("C$ %.2f", player.base_value) } %>
+  <% c.empty do %>
+    <%= render Ui::EmptyStateComponent.new(title: "Nenhum jogador ainda", description: "Cadastre os jogadores para escalar no Esquadrão e registrar os lances.") do |empty| %>
+      <% empty.with_action do %>
+        <%= modal_trigger "Cadastrar jogador", :player, public_send(:"new_#{namespace}_player_path", player: { team_id: team.id }) %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

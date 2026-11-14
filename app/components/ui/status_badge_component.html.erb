@@ -1,0 +1,16 @@
+<% attrs = root_attributes(label: label) %>
+<% attrs[:class] = badge_classes %>
+<% attrs[:data] = (attrs[:data] || {}).merge(role: 'status-badge', status: status) %>
+<span <%= tag.attributes(attrs) %>>
+  <% case rendered_state %>
+  <% when :default %>
+    <%= label %>
+  <% when :loading %>
+    <span class="sr-only">Carregando status…</span>
+    <span class="inline-block h-3 w-16 <%= skeleton_classes %>" aria-hidden="true"></span>
+  <% when :empty %>
+    —
+  <% when :error %>
+    Erro
+  <% end %>
+</span>

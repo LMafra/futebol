@@ -1,0 +1,10 @@
+<%# Usuários (/admin): tabela ordenável; no celular, um cartão por usuário. %>
+<%= render Ui::CollectionComponent.new(items: records, id: "users", mode: :table, **listing_sort_options,
+                                       selectable: true, texts: { label: "Usuários" }) do |c| %>
+  <% c.bulk_action "Aprovar como gestor", url: bulk_approve_manager_admin_users_path %>
+  <% c.column(:name, label: "Nome", primary: true, sortable: true) { |user| link_to user.name, admin_user_path(user), class: inline_link_classes(tone: :ink) } %>
+  <% c.column(:email_address, label: "E-mail", sortable: true) %>
+  <% c.column(:role, label: "Papel") { |user| admin_user_enum_label(:role, user.role) } %>
+  <% c.column(:manager_status, label: "Pedido de gestor") { |user| admin_user_enum_label(:manager_status, user.manager_status) } %>
+  <% c.column(:created_at, label: "Cadastro", numeric: true, sortable: true) { |user| l(user.created_at, format: "%d/%m/%Y") } %>
+<% end %>

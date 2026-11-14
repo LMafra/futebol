@@ -1,0 +1,18 @@
+<%# Novo time em diálogo, na lista de times do Admin e do Gestor. %>
+<%= modal_form :team, title: "Novo time", submit: "Cadastrar time", record: Core::Team.new,
+               url: public_send(:"#{namespace}_teams_path") do |f| %>
+  <%= modal_field f, :name, required: true %>
+  <%= modal_field f, :short_name, hint: "3 letras, como aparece no placar.", maxlength: 3, required: true %>
+  <%= modal_field f, :crest, label: "Escudo", as: :file_field, hint: AdminImageInput::HINT,
+                  accept: Core::ImageAttachment::CONTENT_TYPES.join(","),
+                  data: { controller: "image-preview", action: "image-preview#show",
+                          image_preview_max_bytes_value: Core::ImageAttachment::MAX_SIZE } %>
+  <%= modal_field f, :captain_name, hint: "Contato do time; não precisa ter conta no Craquefy." %>
+  <%= modal_field f, :captain_phone, as: :telephone_field, hint: "Com DDD, ex. (11) 98765-4321.",
+                  autocomplete: "tel-national", inputmode: "tel" %>
+  <% if namespace == :admin %>
+    <%= modal_field f, :manager_id, label: "Gestor", include_blank: "Admin",
+                    choices: options_from_collection_for_select(Core::User.managers.order(:name), :id, :name, f.object.manager_id) %>
+    <%= modal_field f, :external_id, required: true %>
+  <% end %>
+<% end %>

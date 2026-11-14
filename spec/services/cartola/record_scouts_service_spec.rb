@@ -154,4 +154,19 @@ RSpec.describe Cartola::RecordScoutsService do
 
     expect(kept.find_by(player: striker).points).to eq(1 + 10 + 5)
   end
+
+  describe 'lances (TICKET-0096)' do
+    def lances = Cartola::ScoutEvent.kept.where(match:)
+
+    it 'keeps the lances equal to the saved totals' do
+      record(row(striker, played: '1', goals: '2'), row(winger, played: '1', assists: '1'))
+      expect(lances.group(:player_id, :stat).count).to eq([striker.id, 'goals'] => 2, [winger.id, 'assists'] => 1)
+      expect(lances.pluck(:period, :minute, :recorded_by_id).uniq).to eq([[nil, nil, admin.id]])
+
+      latest = lances.where(player: striker).order(:id).last
+      record(row(striker, played: '1', goals: '1'))
+      expect(lances.group(:player_id, :stat).count).to eq([striker.id, 'goals'] => 1)
+      expect(latest.reload).to be_discarded
+    end
+  end
 end

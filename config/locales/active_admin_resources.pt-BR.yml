@@ -1,0 +1,128 @@
+# Labels dos recursos ActiveAdmin (register as: 'Championship' etc.).
+# Escopo activerecord.models.<i18n_key> — ver ActiveAdmin::Resource::Naming.
+pt-BR:
+  activerecord:
+    models:
+      championship:
+        one: Campeonato
+        other: Campeonatos
+      team:
+        one: Time
+        other: Times
+      player:
+        one: Jogador
+        other: Jogadores
+      match:
+        one: Partida
+        other: Partidas
+      user:
+        one: Usuário
+        other: Usuários
+      pool:
+        one: Bolão
+        other: Bolões
+      bolao_scoring_rule:
+        one: Regra do Bolão
+        other: Regras do Bolão
+      audit_log:
+        one: Log de auditoria
+        other: Logs de auditoria
+      csv_import:
+        one: Importação CSV
+        other: Importações CSV
+      esquadrao_squad:
+        one: Time do Esquadrão
+        other: Times do Esquadrão
+      esquadrao_scoring_rule:
+        one: Regra do Esquadrão
+        other: Regras do Esquadrão
+      core/championship:
+        one: Campeonato
+        other: Campeonatos
+      core/team:
+        one: Time
+        other: Times
+      core/player:
+        one: Jogador
+        other: Jogadores
+      core/match:
+        one: Partida
+        other: Partidas
+      core/user:
+        one: Usuário
+        other: Usuários
+    attributes:
+      championship: &championship_attributes
+        name: Nome
+        season: Temporada
+        external_id: Externo
+        private: Privado
+        manager: Gestor
+        logo: Logo
+        remove_logo: Remover logo
+        prize_description: Descrição da premiação
+        first_place: 1º lugar
+        second_place: 2º lugar
+        third_place: 3º lugar
+        created_at: Criado em
+        updated_at: Atualizado em
+      core/championship: *championship_attributes
+      team: &team_attributes
+        name: Nome
+        short_name: Sigla
+        crest: Escudo
+        remove_crest: Remover escudo
+        manager: Gestor
+        captain_name: Capitão
+        captain_phone: Telefone do capitão
+        external_id: Externo
+        created_at: Criado em
+        updated_at: Atualizado em
+      core/team: *team_attributes
+      player: &player_attributes
+        name: Nome
+        position: Posição
+        team: Time
+        shirt_number: Camisa
+        base_value: Valor base
+        external_id: Externo
+        created_at: Criado em
+        updated_at: Atualizado em
+      core/player: *player_attributes
+      match: &match_attributes
+        championship: Campeonato
+        home_team: Mandante
+        away_team: Visitante
+        home_score: Placar mandante
+        away_score: Placar visitante
+        status: Status
+        match_date: Data da partida
+        round: Rodada
+        scores_calculated_at: Pontuada em
+        scoring_token: Token da pontuação
+        reversal_token: Token da reversão
+        external_id: Externo
+      core/match: *match_attributes
+      core/csv_import:
+        status: Status
+        csv_file: Arquivo CSV
+        rows_processed: Linhas processadas
+        error_message: Mensagem de erro
+        error_log: Log de erros
+        created_at: Enviado em
+      core/user:
+        name: Nome
+        email_address: E-mail
+        active: Ativo
+        created_at: Criado em
+      bolao/pool:
+        name: Nome
+        code: Código
+        championship: Campeonato
+        owner: Dono
+        created_at: Criado em
+      cartola/lineup:
+        championship: Campeonato
+        squad: Time do Esquadrão
+        round: Rodada
+        formation: Formação

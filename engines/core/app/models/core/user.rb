@@ -9,6 +9,8 @@ module Core
     has_many :sessions, class_name: 'Core::Session', dependent: :destroy
     has_many :managed_championships, class_name: 'Core::Championship', foreign_key: :manager_id,
                                      inverse_of: :manager, dependent: :restrict_with_error
+    has_many :managed_teams, class_name: 'Core::Team', foreign_key: :manager_id, inverse_of: :manager,
+                             dependent: :restrict_with_error
 
     # prefix: :role — without it, role value :admin collides with the boolean column admin.
     enum :role, { user: 0, manager: 1, admin: 2 }, prefix: :role

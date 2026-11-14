@@ -9,6 +9,7 @@ class ApplicationPolicy
   end
 
   def index? = admin?
+  def autocomplete? = index?
   def show? = admin?
   def create? = admin?
   def new? = create?

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Bolão bets', type: :request do
   let(:user) { create(:user) }
-  let(:pool) { create(:bolao_pool, owner: user) }
+  let(:pool) { create(:bolao_pool).tap { |pool| pool.memberships.create!(user:) } }
   let(:scheduled_match) { create(:match, championship: pool.championship, match_date: 2.days.from_now) }
 
   before { sign_in(user) }

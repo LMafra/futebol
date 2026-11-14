@@ -1,5 +1,6 @@
 ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
-  menu priority: 5, label: 'Partidas'
+  menu parent: 'Campeonatos', label: 'Partidas', priority: 2
+  breadcrumb { match_resource_crumbs }
 
   actions :index, :show, :new, :create, :edit, :update
   permit_params do
@@ -10,8 +11,8 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
   config.sort_order = 'match_date_desc'
 
   filter :championship, collection: -> { gestor_championships }
-  filter :round, label: 'Rodada'
-  filter :status, as: :select, collection: -> { Core::Match::STATUSES }
+  filter :round, label: 'Rodada', as: :select, collection: -> { admin_round_options }
+  filter :status, as: :select, collection: -> { admin_match_status_options }
   filter :match_date
 
   before_build do |match|
@@ -19,55 +20,25 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
     load_teams(match)
   end
 
-  index do
-    id_column
-    column('Partida') { |match| link_to match.to_s, gestor_match_path(match) }
-    column :championship
-    column('Rodada', &:round)
-    column :match_date
-    column('Placar', class: 'tabular-nums') { |match| admin_score(match) }
-    column(:status) { |match| status_tag match.status }
-    actions defaults: false do |match|
-      item 'Ver', gestor_match_path(match), class: 'view_link member_link'
-      item 'Editar', edit_gestor_match_path(match), class: 'edit_link member_link' if match.scheduled?
-    end
-  end
-
-  action_item :scouts, only: :show,
-                       if: lambda {
-                         authorized?(:record_scouts, resource) && (!resource.scheduled? || resource.may_start_match?)
-                       } do
-    link_to 'Scouts', scoring_path('matchscouts', match_id: resource.id), class: 'action-item-button'
-  end
-
-  action_item :finalize, only: :show,
-                         if: -> { authorized?(:finalize, resource) && (resource.live? || resource.may_start_match?) } do
-    link_to 'Finalizar', scoring_path('matchfinalizer', match_id: resource.id), class: 'action-item-button'
-  end
+  AdminCollectionIndex.register(self, 'admin/listings/matches')
+  AdminBulkActions.register(self, :destroy, :reschedule)
 
   action_item :revert, only: :show, if: -> { authorized?(:revert, resource) && resource.may_revert_match? } do
-    link_to 'Reverter pontuação', scoring_path('matchreversal', match_id: resource.id), class: 'action-item-button'
+    link_to 'Reverter pontuação', scoring_path('matchreversal', match_id: resource.id),
+            class: AdminHelper::ADMIN_DANGER_BUTTON_CLASSES
   end
 
-  show title: :to_s do
-    attributes_table do
-      row :championship
-      row :home_team
-      row :away_team
-      row :match_date
-      row('Rodada', &:round)
-      row('Placar') { |match| admin_score(match) }
-      row(:status) { |match| status_tag match.status }
-    end
-  end
+  AdminMatchBoard.register(self)
 
   form do |f|
     f.semantic_errors
     f.inputs do
       f.input :championship, collection: gestor_championships, include_blank: false if f.object.new_record?
-      f.input :home_team, collection: gestor_teams
-      f.input :away_team, collection: gestor_teams
-      f.input :match_date, hint: 'Depois de agendar, use Scouts e Finalizar para lançar o placar e a pontuação.'
+      f.input :home_team, collection: gestor_match_team_options(f.object, :home_team),
+                          hint: ('Só times inscritos no campeonato.' if f.object.new_record?)
+      f.input :away_team, collection: gestor_match_team_options(f.object, :away_team)
+      f.input :match_date, as: :datetime_picker,
+                           hint: 'Depois de agendar, registre os lances e finalize na página da partida.'
       f.input :round, label: 'Rodada', input_html: { min: 1 }
     end
     f.actions if f.object.new_record? || f.object.scheduled?
@@ -75,6 +46,7 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
 
   controller do
     include GestorResource
+    include ModalFormResponses
 
     private
 

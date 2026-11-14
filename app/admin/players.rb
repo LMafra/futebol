@@ -1,24 +1,18 @@
 ActiveAdmin.register Core::Player, as: 'Player' do
-  menu parent: 'Cadastros', label: 'Jogadores'
+  menu parent: 'Times', label: 'Jogadores', priority: 2
+  breadcrumb { player_resource_crumbs }
 
   permit_params :team_id, :name, :position, :shirt_number, :base_value, :external_id
   includes :team
+  controller { include ModalFormResponses }
 
+  AdminNameSearch.register(self)
   filter :team
-  filter :name
   filter :position, as: :select, collection: -> { Core::Player::POSITIONS }
-  filter :external_id
+  filter :external_id_eq, label: 'ID externo', as: :string
 
-  index do
-    selectable_column
-    id_column
-    column :name
-    column :team
-    column :position
-    column :shirt_number
-    column('Valor base') { |player| player.base_value ? format('C$ %.2f', player.base_value) : 'padrão do campeonato' }
-    actions
-  end
+  AdminCollectionIndex.register(self, 'admin/listings/players')
+  AdminBulkActions.register(self, :destroy, :move)
 
   form do |f|
     f.semantic_errors

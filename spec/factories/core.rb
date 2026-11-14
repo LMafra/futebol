@@ -26,6 +26,15 @@ FactoryBot.define do
     match_date { 2.days.from_now }
     status { 'scheduled' }
     sequence(:external_id) { |n| "match-#{n}" }
+
+    # Matches only take teams enrolled in their championship, owned by its manager (ADR 0006).
+    before(:create) do |match|
+      [match.home_team, match.away_team].each do |team|
+        # update_column: saving the team would autosave this match before its teams are enrolled.
+        team.update_column(:manager_id, match.championship.manager_id) if team.championship_teams.none?
+        match.championship.championship_teams.find_or_create_by!(team:)
+      end
+    end
   end
 
   factory :audit_log, class: 'Core::AuditLog' do

@@ -1,0 +1,11 @@
+<%# Bolões (/admin e /gestor): cartões com o código que o gestor compartilha e quantos participam. %>
+<% members = listing_counts(Bolao::PoolMembership, :pool_id, records) %>
+<%= render Ui::CollectionComponent.new(items: records, id: "pools", mode: :cards, texts: { label: "Bolões" }) do |c| %>
+  <% c.column(:name, label: "Bolão", primary: true) { |pool| link_to pool.name, public_send(:"#{namespace}_pool_path", pool), class: inline_link_classes(tone: :ink) } %>
+  <% c.column(:championship, label: "Campeonato") { |pool| pool.championship.to_s } %>
+  <% c.column(:code, label: "Código") { |pool| tag.span(pool.code, class: "font-numeric tracking-widest") } %>
+  <% c.column(:members, label: "Participantes", numeric: true) { |pool| members.fetch(pool.id, 0) } %>
+  <% if namespace == :admin %>
+    <% c.column(:owner, label: "Dono") { |pool| pool.owner.name } %>
+  <% end %>
+<% end %>

@@ -1,0 +1,52 @@
+<%# Palpites de um participante do bolão, com Corrigir e Remover do bolão. %>
+<article class="flex flex-col gap-4 rounded-md border border-rule bg-white p-4" data-role="member-detail" data-user-id="<%= member.id %>">
+  <header class="flex flex-wrap items-start justify-between gap-3">
+    <div>
+      <h4 class="font-display text-xl font-semibold text-ink"><%= member.name %></h4>
+      <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>"><%= member.user.email_address %> · entrou em <%= l(member.membership.joined_at.to_date) %></p>
+    </div>
+    <p class="font-numeric text-2xl font-bold tabular-nums text-ink"><%= member.points %> <span class="text-sm font-body font-normal text-graphite">pts</span></p>
+  </header>
+
+  <% if rows.empty? %>
+    <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Nenhum palpite ainda.</p>
+  <% else %>
+    <ul class="flex flex-col divide-y divide-rule" role="list" aria-label="Palpites de <%= member.name %>">
+      <% rows.each do |row| %>
+        <% prediction, match = row.prediction, row.prediction.match %>
+        <li class="flex flex-wrap items-center justify-between gap-3 py-3" data-role="member-prediction" data-prediction-id="<%= prediction.id %>">
+          <div class="min-w-0">
+            <p class="font-body font-semibold text-ink"><%= link_to match.to_s, scoring_match_path(match), class: inline_link_classes(tone: :ink) %></p>
+            <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">
+              <%= match.match_date&.strftime("%d/%m %H:%M") %> · placar <%= admin_score(match) %>
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="font-numeric text-lg font-bold tabular-nums" aria-label="Palpite: <%= prediction.home_guess %> a <%= prediction.away_guess %>"><%= prediction.home_guess %> × <%= prediction.away_guess %></span>
+            <span class="w-14 text-right text-sm tabular-nums text-graphite" data-role="prediction-points"><%= row.points.nil? ? "–" : "#{row.points} pts" %></span>
+            <% if can_fix %>
+              <%= link_to "Corrigir", "?#{{ membro: member.id, modal: 'correction', correction: { prediction_id: prediction.id } }.to_query}",
+                          class: "#{AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES} text-sm",
+                          data: { modal_open: "modal-correction",
+                                  modal_values: { correction_prediction_id: prediction.id, correction_home_guess: prediction.home_guess,
+                                                  correction_away_guess: prediction.away_guess, correction_reason: "",
+                                                  "modal-correction-title": "Corrigir palpite · #{match}" }.to_json },
+                          aria: { haspopup: "dialog", label: "Corrigir o palpite de #{member.name} em #{match}" } %>
+            <% end %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <% if can_fix %>
+    <div class="border-t border-rule pt-3">
+      <%= link_to "Remover do bolão", "?#{{ membro: member.id, modal: 'removal', removal: { user_id: member.id } }.to_query}",
+                  class: AdminHelper::ADMIN_DANGER_BUTTON_CLASSES,
+                  data: { modal_open: "modal-removal",
+                          modal_values: { removal_user_id: member.id, removal_reason: "",
+                                          "modal-removal-title": "Remover #{member.name} do bolão" }.to_json },
+                  aria: { haspopup: "dialog" } %>
+    </div>
+  <% end %>
+</article>

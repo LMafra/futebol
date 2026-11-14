@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'Gestor MatchScouts page', type: :request do
+RSpec.describe 'Gestor match page (lances, finalizar e reverter)', type: :request do
   include ActiveJob::TestHelper
 
   let(:manager) { create(:user, :manager) }
@@ -17,7 +17,6 @@ RSpec.describe 'Gestor MatchScouts page', type: :request do
                    home_team: create(:team, name: 'Casa Alheia'),
                    away_team: create(:team, name: 'Fora Alheia'))
   end
-  let!(:keeper) { create(:player, team: own_match.home_team, position: 'GOL', name: 'Goleiro Casa') }
   let!(:striker) { create(:player, team: own_match.home_team, position: 'ATA', name: 'Atacante Casa') }
   let!(:rival) { create(:player, team: own_match.away_team, position: 'ATA', name: 'Atacante Fora') }
 
@@ -26,46 +25,49 @@ RSpec.describe 'Gestor MatchScouts page', type: :request do
     sign_in(manager)
   end
 
-  def page_html = Nokogiri::HTML(response.body)
-
-  def record(match:, highlight: nil, **rows)
-    scouts = rows.to_h { |player, values| [player.id.to_s, { team_id: player.team_id, played: '0', **values }] }
-    post '/gestor/matchscouts/record', params: { match_id: match.id, scouts:, highlight: highlight&.id.to_s }
+  def record(match, player, stat = 'goals')
+    post "/gestor/matches/#{match.id}/record_event",
+         params: { modal: 'lance', return_to: "/gestor/matches/#{match.id}",
+                   lance: { player_id: player.id, stat:, period: 'first_half', minute: '10' } }
   end
 
-  def record_scouts_for_finalizer(home_goals:, away_goals:)
-    rows = { own_match.home_team => home_goals, own_match.away_team => away_goals }.map do |team, goals|
-      { player_id: create(:player, team:, position: 'ATA').id, team_id: team.id, played: true, goals: }
-    end
-    Cartola::RecordScoutsService.call(match: own_match, rows:, actor: manager, ip_address: '127.0.0.1')
-  end
-
-  it 'gestor abre scouts da própria partida ao vivo' do
-    get '/gestor/matchscouts', params: { match_id: own_match.id }
+  it 'gestor abre a página da própria partida ao vivo com os lances' do
+    get "/gestor/matches/#{own_match.id}"
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include('Casa Gestor', 'Atacante Casa')
+    expect(response.body).to include('Casa Gestor', 'Atacante Casa', 'Registrar lance')
   end
 
-  it 'recusa match_id de campeonato de outro gestor com 403' do
-    get '/gestor/matchscouts', params: { match_id: foreign_match.id }
+  it 'recusa partida de campeonato de outro gestor' do
+    get "/gestor/matches/#{foreign_match.id}"
 
-    expect(response).to have_http_status(:forbidden)
+    expect(response).to have_http_status(:not_found).or have_http_status(:forbidden)
   end
 
-  it 'salva scouts na própria partida' do
-    record(match: own_match, striker => { played: '1', goals: '1' }, rival => { played: '1' }, highlight: striker)
+  it 'registra lance na própria partida' do
+    record(own_match, striker)
 
-    expect(response).to redirect_to("/gestor/matchscouts?match_id=#{own_match.id}")
+    expect(response).to redirect_to("/gestor/matches/#{own_match.id}")
     expect(own_match.reload).to have_attributes(home_score: 1, away_score: 0)
   end
 
-  it 'finaliza a própria partida após os scouts e enfileira a pontuação' do
-    record_scouts_for_finalizer(home_goals: 2, away_goals: 1)
+  it 'não registra lance em partida de outro gestor' do
+    foreign_player = create(:player, team: foreign_match.home_team)
+
+    record(foreign_match, foreign_player)
+
+    expect(response.status).to be_in([403, 404])
+    expect(Cartola::ScoutEvent.count).to eq(0)
+  end
+
+  it 'finaliza a própria partida após os lances e enfileira a pontuação' do
+    2.times { record(own_match, striker) }
+    record(own_match, rival)
 
     expect do
-      post '/gestor/matchfinalizer/finalize',
-           params: { finalization: { match_id: own_match.id, score_confirmation: '2x1' } }
+      post "/gestor/matches/#{own_match.id}/finalize",
+           params: { modal: 'finalize', return_to: "/gestor/matches/#{own_match.id}",
+                     finalize: { score_confirmation: '2x1' } }
     end.to have_enqueued_job(ProcessMatchPointsJob).with(own_match.id, kind_of(String))
 
     expect(response).to redirect_to("/gestor/matches/#{own_match.id}")
@@ -87,31 +89,31 @@ RSpec.describe 'Gestor MatchScouts page', type: :request do
     expect(own_match.reload).to be_reverted
   end
 
-  it 'gestor pendente recebe 403 em /gestor/matchscouts' do
+  it 'gestor pendente não registra lance' do
     sign_in(create(:user, :pending_manager))
 
-    get '/gestor/matchscouts', params: { match_id: own_match.id }
+    record(own_match, striker)
 
     expect(response).to have_http_status(:forbidden)
+    expect(Cartola::ScoutEvent.count).to eq(0)
   end
 
-  it 'admin pode usar /gestor/matchscouts' do
+  it 'admin pode registrar lance pelo /gestor' do
     sign_in(create(:user, :admin))
 
-    get '/gestor/matchscouts', params: { match_id: own_match.id }
+    record(own_match, striker)
 
-    expect(response).to have_http_status(:ok)
+    expect(response).to redirect_to("/gestor/matches/#{own_match.id}")
   end
 
-  it 'o seletor de partidas lista só campeonatos do gestor' do
-    own_match
-    foreign_match
+  it '/gestor/matchscouts e /gestor/matchfinalizer redirecionam para a partida' do
+    get '/gestor/matchscouts', params: { match_id: own_match.id }
+    expect(response).to redirect_to("/gestor/matches/#{own_match.id}")
+
+    get '/gestor/matchfinalizer', params: { match_id: own_match.id }
+    expect(response).to redirect_to("/gestor/matches/#{own_match.id}?modal=finalize")
 
     get '/gestor/matchscouts'
-
-    expect(response).to have_http_status(:ok)
-    options = page_html.css('select[name="match_id"] option').map(&:text).join(' ')
-    expect(options).to include('Casa Gestor')
-    expect(options).not_to include('Casa Alheia')
+    expect(response).to redirect_to('/gestor/matches')
   end
 end

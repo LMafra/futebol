@@ -1,23 +1,26 @@
 <section class="flex flex-col gap-6" aria-labelledby="championships-title">
   <h2 id="championships-title" class="border-b border-rule pb-2 font-display text-3xl font-extrabold">Campeonatos</h2>
   <% if championships.empty? %>
-    <p class="text-graphite">Nenhum campeonato no momento.</p>
+    <%= empty_notice("Nenhum campeonato no momento.") %>
   <% else %>
     <div class="grid gap-6 md:grid-cols-2">
       <% championships.each do |championship| %>
         <% fact = facts.fetch(championship.id) %>
         <article class="flex flex-col gap-4 rounded-md border border-rule bg-white p-6" data-role="championship-card" data-championship-id="<%= championship.id %>">
           <header class="flex flex-wrap items-start justify-between gap-2 border-b border-rule pb-3">
-            <div>
-              <h3 class="font-display text-2xl font-extrabold"><%= link_to championship.name, public_championship_path(championship), class: "hover:underline" %></h3>
-              <p class="text-sm text-graphite">Temporada <span class="tabular-nums"><%= championship.season %></span> · <span class="tabular-nums"><%= fact[:teams] %></span> times</p>
+            <div class="flex items-center gap-3">
+              <%= championship_logo(championship) %>
+              <div>
+                <h3 class="font-display text-2xl font-extrabold"><%= link_to championship.name, public_championship_path(championship), class: title_link_classes %></h3>
+                <p class="text-sm text-graphite">Temporada <span class="tabular-nums"><%= championship.season %></span> · <span class="tabular-nums"><%= fact[:teams] %></span> times</p>
+              </div>
             </div>
             <span class="rounded-sm border border-ink px-2 py-1 text-xs font-bold uppercase tracking-widest" data-role="championship-status"><%= fact[:status] %></span>
           </header>
           <div data-role="standings-leaders">
             <div class="mb-1 flex items-baseline justify-between gap-2">
               <h4 class="text-xs font-bold uppercase tracking-widest text-graphite">Classificação</h4>
-              <%= link_to "Tabela completa", public_championship_path(championship), class: "text-sm font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
+              <%= link_to "Tabela completa", public_championship_path(championship), class: inline_link_classes("text-sm") %>
             </div>
             <%= render Ui::LeaderboardTableComponent.new(rows: standings.fetch(championship.id), compact: true,
                                                          texts: { label: "Classificação · #{championship.name}", name_header: "Time", empty: "Nenhum jogo encerrado ainda." }) %>
@@ -35,10 +38,10 @@
             </div>
           </div>
           <div class="mt-auto flex flex-wrap items-center justify-between gap-4">
-            <%= link_to "Ver ranking completo", public_championship_path(championship, tab: "bolao"), class: "font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
+            <%= link_to "Ver ranking completo", public_championship_path(championship, tab: "bolao"), class: inline_link_classes %>
             <%= link_to "Simular", simulador_championship_path(championship), data: { role: "simulate-championship" },
                         aria: { label: "Simular #{championship.name}" },
-                        class: "rounded-sm border-2 border-ink px-4 py-2 font-bold transition-colors duration-fast ease-editorial hover:bg-ink hover:text-white" %>
+                        class: secondary_button_classes %>
           </div>
         </article>
       <% end %>

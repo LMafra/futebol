@@ -30,13 +30,13 @@
       </p>
       <p class="mt-2">
         <%= link_to "Solicitar novamente", new_manager_request_path,
-                    class: "text-sm font-semibold underline underline-offset-2 hover:no-underline" %>
+                    class: inline_link_classes("text-sm", tone: :ink) %>
       </p>
     <% else %>
       <p class="mt-2 text-sm text-graphite">Você ainda não solicitou acesso de gestor.</p>
       <p class="mt-2">
         <%= link_to "Solicitar acesso de gestor", new_manager_request_path,
-                    class: "text-sm font-semibold underline underline-offset-2 hover:no-underline" %>
+                    class: inline_link_classes("text-sm", tone: :ink) %>
       </p>
     <% end %>
   </div>
@@ -48,7 +48,7 @@
       <%= label_tag :public_profile_consent, t("public_profile_consent.label"), class: "text-sm" %>
     </div>
     <div>
-      <%= submit_tag "Salvar", name: nil, class: "cursor-pointer rounded-sm bg-cartola px-4 py-2 font-bold text-ink transition-colors duration-fast ease-editorial hover:bg-pitch hover:text-white" %>
+      <%= submit_tag "Salvar", name: nil, class: primary_button_classes %>
     </div>
   <% end %>
 </section>

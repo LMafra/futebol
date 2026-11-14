@@ -34,22 +34,28 @@ module Seeds
 
   def self.demo_names = ['Ana Souza', 'Bruno Lima', 'Carla Mendes', 'Diego Rocha', 'Elisa Prado']
 
-  # Approved championship manager for /gestor; takes the championship only while nobody runs it.
+  # Approved championship manager for /gestor; takes the championship, and its teams, only while nobody runs it.
   def self.demo_manager(championship)
     manager = Core::User.find_or_create_by!(email_address: 'gestor@demo.local') do |user|
       user.assign_attributes(name: 'Gestor Demo', password: demo_password, role: :manager, manager_status: :approved)
     end
-    championship.update!(manager:) if championship.manager_id.nil?
+    if championship.manager_id.nil?
+      championship.update!(manager:)
+      championship.teams.where(manager_id: nil).update_all(manager_id: manager.id)
+    end
     manager
   end
 
   def self.demo_pool(championship, users)
     pool = Bolao::Pool.find_or_create_by!(code: 'DEMO01') do |new_pool|
-      new_pool.assign_attributes(name: 'Bolão Demo', championship:, owner: users.first)
+      new_pool.assign_attributes(name: 'Bolão Demo', championship:, owner: pool_organizer(championship))
     end
     users.each { |user| pool.memberships.find_or_create_by!(user:) }
     pool
   end
+
+  # Bolões are organized by the championship's gestor, or an admin when it has none (ADR 0006).
+  def self.pool_organizer(championship) = championship.manager || Core::User.where(role: :admin).order(:id).first!
 
   def self.demo_predictions(pool, championship, users)
     (1..10).each do |round|

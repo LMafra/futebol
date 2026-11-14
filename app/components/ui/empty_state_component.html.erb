@@ -1,0 +1,26 @@
+<% attrs = root_attributes(label: title || 'Vazio') %>
+<% attrs[:class] = 'w-full rounded-md border-2 border-dashed border-rule bg-paper px-6 py-12 text-center' %>
+<% attrs[:data] = (attrs[:data] || {}).merge(role: 'empty-state') %>
+<div <%= tag.attributes(attrs) %>>
+  <% case rendered_state %>
+  <% when :default %>
+    <svg class="mx-auto mb-4 h-10 w-10 text-graphite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5v10.5H3.75zM8.25 19.5h7.5" />
+    </svg>
+    <h2 class="mb-2 font-display text-xl font-semibold text-ink"><%= title %></h2>
+    <% if description.present? %>
+      <p class="mx-auto mb-4 max-w-md font-body text-sm text-graphite"><%= description %></p>
+    <% end %>
+    <%= action %>
+  <% when :loading %>
+    <span class="sr-only">Carregando…</span>
+    <div class="mx-auto h-10 w-10 <%= skeleton_classes %>" aria-hidden="true"></div>
+    <div class="mx-auto mt-4 h-6 w-1/3 <%= skeleton_classes %>" aria-hidden="true"></div>
+  <% when :empty %>
+    <%= empty_notice('Nada por aqui.') %>
+  <% when :error %>
+    <div class="<%= error_classes %>" role="alert">
+      <span class="font-bold">Não foi possível montar o estado vazio.</span>
+    </div>
+  <% end %>
+</div>

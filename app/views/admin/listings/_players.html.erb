@@ -1,0 +1,25 @@
+<%# Jogadores (/admin e /gestor): tabela ordenável; no celular, um cartão por jogador. %>
+<%= render Ui::CollectionComponent.new(items: records, id: "players", mode: :table, **listing_sort_options,
+                                       selectable: true, texts: { label: "Jogadores" }) do |c| %>
+  <% c.bulk_fields do %>
+    <label class="flex flex-wrap items-center gap-2 text-sm font-semibold text-ink">
+      Time de destino
+      <%= select_tag :team_id, options_for_select(bulk_team_options), include_blank: "Escolha o time", class: "min-h-12 w-auto #{AdminHelper::ADMIN_INPUT_CLASSES}" %>
+    </label>
+  <% end %>
+  <% c.bulk_action "Mover para o time", url: public_send(:"bulk_move_#{namespace}_players_path") %>
+  <% c.bulk_action "Excluir", url: public_send(:"bulk_destroy_#{namespace}_players_path"), danger: true,
+                   confirm: "Excluir os jogadores selecionados? Os que têm lances ou histórico no Esquadrão são mantidos." %>
+  <% c.column(:name, label: "Jogador", primary: true, sortable: true) { |player| link_to player.name, public_send(:"#{namespace}_player_path", player), class: inline_link_classes(tone: :ink) } %>
+  <% c.column(:team, label: "Time") { |player| player.team.name } %>
+  <% c.column(:position, label: "Posição", sortable: true) %>
+  <% c.column(:shirt_number, label: "Número", numeric: true, sortable: true) %>
+  <% c.column(:base_value, label: "Valor base", numeric: true, sortable: true) do |player| %>
+    <%= player.base_value ? format("C$ %.2f", player.base_value) : "padrão do campeonato" %>
+  <% end %>
+  <% c.column(:actions, label: "Ações") do |player| %>
+    <% if authorized?(:update, player) %>
+      <%= admin_icon_action_link("Editar", public_send(:"edit_#{namespace}_player_path", player), :edit, subject: player.name) %>
+    <% end %>
+  <% end %>
+<% end %>

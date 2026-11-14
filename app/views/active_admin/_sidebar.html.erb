@@ -1,0 +1,13 @@
+<% unless skip_sidebar? || sidebar_sections_for_action.blank? %>
+  <details open class="group/filters" data-role="admin-filter-bar" data-filters-collapsible>
+    <summary class="flex min-h-10 cursor-pointer list-none items-center justify-between font-display text-xl font-bold text-ink md:hidden">
+      Filtros
+      <svg class="h-5 w-5 shrink-0 group-open/filters:rotate-90" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+      </svg>
+    </summary>
+    <div class="space-y-4 pt-3 md:pt-0">
+      <%= render "active_admin/shared/sidebar_sections" %>
+    </div>
+  </details>
+<% end %>

@@ -1,0 +1,11 @@
+# Notices after creating from a <dialog> or the full "new" page (ModalFormResponses), by controller name.
+pt-BR:
+  modal_forms:
+    teams:
+      created: "Time cadastrado: %{name}."
+    players:
+      created: "Jogador cadastrado: %{name}."
+    matches:
+      created: "Partida agendada: %{name}."
+    pools:
+      created: "Bolão criado. Compartilhe o código %{code}."

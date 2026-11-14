@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="<%= I18n.locale %>">
+<head>
+  <title><%= html_head_site_title %></title>
+  <%= render "active_admin/html_head" %>
+</head>
+<body class="bg-paper font-body text-ink antialiased">
+  <div class="mx-auto flex min-h-screen flex-col items-center justify-center px-4 py-8 sm:px-6">
+    <p class="mb-6 font-display text-2xl font-semibold text-pitch">Craquefy Admin</p>
+    <%= render "active_admin/flash_messages" %>
+    <div class="w-full max-w-md rounded-md border border-rule bg-white p-6 shadow-none">
+      <%= yield %>
+    </div>
+  </div>
+</body>
+</html>

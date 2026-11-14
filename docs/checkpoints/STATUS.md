@@ -450,3 +450,126 @@ done
 Esperado após o merge RBAC: `/up` 200; `/entrar`, `/admin/login` e `/gestor/login` 200; `/gestor` e `/admin` anônimos 302 para o login correspondente ou `/session/new`; gestor autenticado acessa `/gestor` e leva 403 em `/admin`.
 
 **Nota:** scouts, finalizar e reverter no `/gestor` **já estão disponíveis** para o gestor nos próprios campeonatos (bloco G / TICKET-0061); não ficam mais como pendência do STATUS.
+
+## UI unificada de admin e gestor (Placar de Domingo)
+
+Tickets **0063–0067** (os números 0042–0046 do plano original já estavam ocupados). `docs/design/*` não foi alterado (regra agents); a decisão de aplicar o tema ao ActiveAdmin fica aqui e nos tickets.
+
+| Bloco | Ticket | Status | Artefatos |
+|---|---|---|---|
+| A — tema Tailwind v4 | [0063](../tickets/TICKET-0063.md) | ok | `@theme` em `active_admin.css`; `site_title = Craquefy Admin`; `theme_spec` |
+| B — chrome | [0064](../tickets/TICKET-0064.md) | ok | `_site_header` / `_main_navigation` / `_site_footer`; layout paper; sem dark FOUC |
+| C — tabelas | [0065](../tickets/TICKET-0065.md) | ok | `.data-table` pitch/zebra; `Ui::AdminTableComponent` |
+| D — forms | [0065](../tickets/TICKET-0065.md) | ok | Formtastic Placar + `AdminHelper` cartola |
+| E — dashboards | [0066](../tickets/TICKET-0066.md) | ok | métricas 8/4 admin; cards 3/9 gestor |
+| F — status/ranking | [0067](../tickets/TICKET-0067.md) | ok | `StatusBadgeComponent`; medalhas SVG no leaderboard |
+| G — docs | — | ok | INDEX, STATUS, README |
+| polish | — | ok | labels pt-BR; panel/header/flash/blank slate; filters; attributes; logged-out; pagination pitch; comments |
+| publish | — | ok | tip remoto `fe0e194` em `cursor/admin-ui-docs-e3a0`; PR #87 |
+| Mobbin | — | n/a | MCP Mobbin exige plano pago; estrutura 8/4 e 3/9 já aplicada via design docs |
+
+**Branch canônica:** [`cursor/admin-ui-docs-e3a0`](https://github.com/LMafra/futebol/tree/cursor/admin-ui-docs-e3a0) — concentra tema Placar (0063–0067), UX status-first (0068–0073) e tickets work-queue (0074–0078). Branches auxiliares (`admin-theme-*`, `admin-ux-*`, `admin-work-queue-*`) são históricas e não devem receber commits novos.
+
+## UI/UX de admin e gestor (status-first)
+
+Tickets **0068–0073** (0047–0052 do plano UX já estavam ocupados). Sem alteração em engines/models/ADRs `0001–0004` nem em `docs/design/*`. Empilhados em `cursor/admin-ui-docs-e3a0`.
+
+| Bloco | Ticket | Status | Artefatos | Observações |
+|---|---|---|---|---|
+| A — layout | [0068](../tickets/TICKET-0068.md) | ok | `_site_sidebar`; `layout_spec` | paper/rule |
+| B — nav | [0069](../tickets/TICKET-0069.md) | ok | menus por tarefa + SVG | tip `0bc6668` |
+| C — dashboards | [0070](../tickets/TICKET-0070.md) | ok | KPIs 8/4 + SVG; cards gestor | tip `89b74ef` (+ KPI SVG fix) |
+| D — tabelas | [0071](../tickets/TICKET-0071.md) | ok | filter bar + ações SVG | tip `d2437c8` |
+| E — forms | [0072](../tickets/TICKET-0072.md) | ok | seções + Toast + Turbo Stream | tip `ab7d231` |
+| F — empty/mobile | [0073](../tickets/TICKET-0073.md) | ok | EmptyState; sidebar `< md` | tip `23be79d` |
+| G — docs | — | ok | INDEX, STATUS, README | neste tip |
+| publish | — | ok | tip remoto `fe0e194`; PR #87 | — |
+| Mobbin | — | n/a | MCP pago; tokens via design docs | — |
+
+Gate `.cursor/environment.json` `test`: 1076 examples, 0 failures (após Bloco F).
+
+## UI/UX work queue (pós-Gemini / IHC)
+
+Tickets **0074–0078**. Chrome unificado; 1º viewport especializado (Admin = governança/exceções; Gestor = ownership/fila de partidas). Sem alteração em engines/models/ADRs `0001–0005` nem em `docs/design/*`. Docs planejados no tip de `cursor/admin-ui-docs-e3a0`.
+
+| Bloco | Ticket | Status | Artefatos | Observações |
+|---|---|---|---|---|
+| H1 — limpar CTAs | [0074](../tickets/TICKET-0074.md) | ok | `action_item :new_championship` (Admin e Gestor) | sem Ações rápidas / Atalhos; 1º viewport = KPIs + fila |
+| H2 — fila Admin | [0075](../tickets/TICKET-0075.md) | ok | `Users::PendingManagerQueue`, `_pending_managers`, `_reject_manager_form` | Aprovar inline; recusa exige motivo (`metadata.reason`) |
+| H3 — fila Gestor | [0076](../tickets/TICKET-0076.md) | ok | `Gestor::MatchQueue`, `_match_queue`, badge `scored` | 1 CTA por estado (scout-aware); Reverter só no overflow |
+| H4 — wizard new | [0077](../tickets/TICKET-0077.md) | ok | `form_wizard_controller.js` + `ChampionshipWizardHelper` | `new` em 4 etapas (um POST, abre na etapa com erro, `aria-current="step"`); `edit` segue página única; sem JS, todas as seções visíveis |
+| H5 — Red Routes | [0078](../tickets/TICKET-0078.md) | ok | [UX-RED-ROUTES.md](UX-RED-ROUTES.md), `ux-audit/after/` | passagem interna: 3/3 sucesso, cliques = ideal (1, 6, 5), 0 erros; SEQ estimado 7/5/6; follow-up: Finalizar direto da página de scouts |
+| G — docs H | — | ok | INDEX, STATUS, README; tip `fe0e194` | em `cursor/admin-ui-docs-e3a0`; PR #87 |
+
+Diagnóstico: tip status-first ainda trata setup e operação com o mesmo peso (button soup). Alvo: work queue + progressive disclosure.
+
+Checklist anti-AI (`0001-critique`): sem gradiente roxo, glass, Inter/Roboto só, emoji decorativo, glow; badges estáticos; Fraunces ≥ `text-xl`; `loss` como tint + texto ink.
+
+Validação local (após login):
+
+```bash
+curl -sS -o /dev/null -w '%{http_code}\n' -H 'Accept: text/html' http://127.0.0.1:3000/admin
+curl -sS -o /dev/null -w '%{http_code}\n' -H 'Accept: text/html' http://127.0.0.1:3000/gestor
+```
+
+Produção (`https://futebol-web.onrender.com`):
+
+```bash
+HOST=https://futebol-web.onrender.com
+HDR='Accept: text/html'
+curl -sS -o /dev/null -w '%{http_code} %{redirect_url}\n' -H "$HDR" "$HOST/admin"
+curl -sS -o /dev/null -w '%{http_code} %{redirect_url}\n' -H "$HDR" "$HOST/gestor"
+```
+
+## Auditoria UI/UX completa (Admin, Gestor e público)
+
+Tickets **0079–0084**, executados junto com a work queue na ordem 0079 → 0080 → 0081 → 0075 → 0076 → 0074 → 0077 → 0084 → 0082 → 0083 → 0078, na branch canônica `cursor/admin-ui-docs-e3a0`. Evidência em `docs/checkpoints/ux-audit/` (`before/` e `after/`: 1440px e 390px; Admin também com `prefers-color-scheme: dark`; `probe.json` com contraste medido no navegador).
+
+| Bloco | Ticket | Status | Artefatos | Observações |
+|---|---|---|---|---|
+| A1 — bug aprovar | [0079](../tickets/TICKET-0079.md) | ok | `button_to` PUT + redirect | Admin sem Turbo; `data-turbo-*` era inerte |
+| A2 — base CSS Admin | [0080](../tickets/TICKET-0080.md) | ok | `active_admin.css` base `:root`, `darkMode` never, `AdminHelper` papéis | campos brancos/`graphite`; sem `text-cartola`; sweeper do importmap do Admin |
+| A3 — a11y Admin | [0081](../tickets/TICKET-0081.md) | ok | abas WAI-ARIA, `aria-current`/`aria-expanded`, empty results, toast com fechar | alvos de 40px; filtros recolhidos em 390px |
+| A4 — consistência Admin | [0084](../tickets/TICKET-0084.md) | ok | `AdminLabelsHelper`, `admin_match_step_classes`, locale de atributos | status/atributos em pt-BR; 1 primária no show da partida, Reverter danger; KPI Pontuação pendente; CSV com componente; obrigatório unificado |
+| P1 — base pública | [0082](../tickets/TICKET-0082.md) | ok | layout `tailwind`+`application`, `FormControlHelper`, foco global | sem CSS do Admin no público; classes na escala; campos 48px `graphite`; AO VIVO `bg-cartola text-ink` |
+| P2 — consistência pública | [0083](../tickets/TICKET-0083.md) | ok | `ButtonClassesHelper`, `StateNoticeHelper`, `RoundNavHelper`, `tab_link_classes` | 3 papéis de botão (danger `loss-solid`); tabelas `bg-pitch` + `overflow-x-auto`; abas com `aria-current`; erros ligados ao campo; orçamento com `aria-valuetext`; card de jogo clicável |
+
+Ambiente local (WSL): Postgres do projeto na porta 5440 (`~/.local/share/futebol-pg`); rodar `bin/dev` (ou `bin/rails tailwindcss:build`) antes de abrir o Admin, porque `rails s` sozinho serve um `app/assets/builds/active_admin.css` velho.
+
+
+## Gestor, campeonato, partida ao vivo e participantes
+
+Tickets **0085–0106**, na branch canônica `cursor/admin-ui-docs-e3a0` (PR #87), um commit assinado por ticket, na ordem 0085 → 0086 → 0087 → 0088 → 0106 → 0089 → 0090 → 0091 → 0092 → 0093 → 0102 → 0094 → 0095 → 0096 → 0097 → 0098 → 0099 → 0100 → 0101 → 0103 → 0104 → 0105.
+
+| Bloco | Ticket | Status | Artefatos | Observações |
+|---|---|---|---|---|
+| G0 — bug escalações | [0085](../tickets/TICKET-0085.md) | ok | `Cartola::Lineup` ransackable | `/gestor/esquadrao_lineups` voltou a abrir com filtros |
+| G1 — mostrar senha | [0086](../tickets/TICKET-0086.md) | ok | `PasswordRevealHelper`, `password_reveal_controller.js` | login, cadastro e redefinição; botão 48px com `aria-pressed`, oculto sem JS |
+| G1 — siglas dos scouts | [0087](../tickets/TICKET-0087.md) | ok | `ScoutLegendHelper` | legenda acima da planilha; `abbr` ≥640px e nome por extenso no celular; SG do scout = jogo sem sofrer gols |
+| G1 — busca por nome | [0088](../tickets/TICKET-0088.md) | ok | `AdminNameSearch`, `autocomplete_controller.js`, `autocomplete?` | sem operadores; sugestões no escopo do Pundit via `<datalist>`; rodada/temporada/auditoria em select |
+| G1 — links x botões | [0106](../tickets/TICKET-0106.md) | ok | [links-e-botoes.md](../ux/links-e-botoes.md), `LinkClassesHelper`, `spec/design/links_spec.rb` | links sublinhados em repouso; ícones com verbo + registro; sem "Ver"/"nesta página"; Sair é botão |
+| G2 — ADR e glossário | [0089](../tickets/TICKET-0089.md) | ok | [ADR 0006](../adr/0006-gestor-times-lances.md), [glossário](../glossary.md) | time do gestor + inscrição, capitão, modalidade, rascunho, lances com minuto, bolão só Gestor/Admin |
+| G2 — time do gestor e inscrição | [0090](../tickets/TICKET-0090.md) | ok | `Core::ChampionshipTeam`, `Core::TeamOwnershipBackfill`, `AdminChampionshipEnrollment` | times por `manager_id`; partida só com inscritos; capitão com telefone BR; migração com duplicação e `down` |
+| G2 — escudo e logo | [0091](../tickets/TICKET-0091.md) | ok | `Core::ImageAttachment`, `ImagesHelper`, `image_preview_controller.js`, `Core::CrestUrlImport` | upload com prévia (PNG/JPEG/WebP/SVG até 2 MB); escudo no placar e na classificação; logo no campeonato e na home; `crest_url` removido |
+| G2 — modalidade e rascunho | [0092](../tickets/TICKET-0092.md) | ok | `ChampionshipWizardActions`, `AdminChampionshipForm`, `ChampionshipSummary` | 4 campos de modalidade com limites por tipo; rascunho fora do site; assistente em 5 etapas salvas no servidor com revisão; `form_wizard_controller.js` removido |
+| G2 — bolão só Gestor/Admin | [0093](../tickets/TICKET-0093.md) | ok | `Bolao::PoolPolicy#create?`, `admin/gestor/pools.rb`, `Bolao::PoolOwnershipTransfer` | criação pública removida; "Criar bolão" na página do campeonato; bolões transferidos ao gestor com o dono antigo como membro; organizador não é participante |
+| G7 — componente de listagens | [0102](../tickets/TICKET-0102.md) | ok | `Ui::CollectionComponent`, `collection_controller.js`, [listagens](../ux/listagens.md) | 7 modos; tabela vira cartões abaixo de 768px; `?view=` lembrado por listagem; `?sort=&dir=` com `aria-sort`; seleção em lote |
+| G3 — navegação e páginas | [0094](../tickets/TICKET-0094.md) | ok | `navigation_tree`, `AdminBreadcrumbsHelper`, `AdminRecordPanels`, `PageIntroHelper`, `dismissible_controller.js` | mesma árvore no Admin e no Gestor; breadcrumbs pela árvore (partida sob o campeonato, jogador sob o time); campeonato com partidas por rodada e bolões; time com jogadores; "Sobre esta tela" lembrado por tela |
+| G3 — cadastros em diálogo | [0095](../tickets/TICKET-0095.md) | ok | `ModalFormHelper`, `modal_controller.js`, `ModalFormResponses`, `ModalFormRedirects` | time, jogador, partida, inscrição e bolão em `<dialog>`; salvo, volta à página de origem; com erro, reabre com `?modal=`, erros e valores; tela cheia sem JavaScript |
+| G4 — lances | [0096](../tickets/TICKET-0096.md) | ok | `Cartola::ScoutEvent`, `Scouts::RecordEvent`, `Scouts::UndoLast`, `Scouts::EventRules`, `Cartola::ScoutEventBackfill` | lance com minuto e tempo; contadores derivados dos lances mantidos; desfazer marca `discarded_at`; backfill sem mudar pontos; planilha mantém os lances |
+| G4 — tela da partida | [0097](../tickets/TICKET-0097.md) | ok | `AdminMatchBoard`, `MatchBoard`, `Scouts::MarkParticipation`, `tabs_controller.js` | placar grande, abas por time, "+" por jogador abre o diálogo de tempo e minuto, "−" desfaz, linha do tempo, Finalizar no rodapé fixo; `matchscouts`/`matchfinalizer` redirecionam |
+| G4 — partida pública ao vivo | [0098](../tickets/TICKET-0098.md) | ok | `MatchesController`, `matches/_live`, `BroadcastUpdateService`, `MatchBroadcastJob`, `MatchPolicy#public_show?` | `/partidas/:id` com placar grande, gols e linha do tempo; atualiza por Turbo Streams (lance, desfazer, finalizar, pontuar, reverter), com transmissão no fim da janela; visitante conecta no cable; links da home, do campeonato e dos palpites |
+| G5 — participantes do bolão | [0099](../tickets/TICKET-0099.md) | ok | `AdminPoolParticipants`, `PoolParticipants`, `Bolao::PredictionCorrection`, `Bolao::MemberRemoval` | ranking com empate dividindo a posição; participantes com os palpites (`?membro=`); corrigir palpite e remover do bolão com motivo no `AuditLog`; recalcula pontos de partida pontuada; Admin e gestor do campeonato; diálogos voltam com a query da página |
+| G5 — participantes do Esquadrão | [0100](../tickets/TICKET-0100.md) | ok | `EsquadraoBoard`, `Cartola::LineupCorrection`, `LineupCorrectionForm`, `app/admin/esquadrao.rb` | uma página no Admin e no Gestor: ranking com moedas, gabarito da rodada (pontos por jogador e seleção ideal), escalações com pontos (`?escalacao=`); editar escalação com motivo pela carteira, `AuditLog` e ranking atualizado; URLs antigas redirecionam |
+| G6 — celular | [0101](../tickets/TICKET-0101.md) | ok | `pwa/manifest.json.erb`, `pwa/service-worker.js`, `pwa.js`, `active_admin/_bottom_nav`, `public/offline.html` | instalável com ícones e cores da marca; offline mostra página própria (páginas sempre da rede); menu inferior abaixo de 640px no Admin/Gestor com "Mais"; Finalizar acima do menu; revisão em 390px sem rolagem lateral |
+| G7 — listagens | [0103](../tickets/TICKET-0103.md) | ok | `AdminCollectionIndex`, `CollectionSortParams`, `ListingsHelper`, `admin/listings/*`, `docs/checkpoints/UX-LISTAGENS.md` | auditoria heurística com screenshots antes e depois; campeonatos e bolões em cartões, times em grade ↔ tabela, jogadores, usuários e CSV em tabela ordenável, partidas por rodada ↔ agenda, auditoria em linha do tempo; filas dos painéis em cartões no celular; nada rola para o lado em 390px |
+| G7 — ações em lote | [0104](../tickets/TICKET-0104.md) | ok | `AdminBulkActions`, `app/services/bulk/*`, `Bulk::Report`, `c.bulk_fields`, políticas `bulk_*?` | times: inscrever, remover do campeonato e excluir; jogadores: mover e excluir; partidas: reagendar com motivo e excluir; usuários: aprovar gestor (Admin); relatório com o que foi mantido e por quê; `AuditLog` por registro; barra fixa acima do menu inferior em 390px |
+| G7 — público | [0105](../tickets/TICKET-0105.md) | ok | `championships/_partidas`, `ChampionshipsController#load_round`, `scroller_controller.js`, `home/_matches_today` | aba Partidas em sanfona por rodada (componente `grouped`), rodada em aberto aberta, `?rodada=` abre outra, partida ao vivo com selo e "acompanhar ao vivo"; "Jogos de hoje" avança a cada 6s, segura com mouse ou foco, para com toque ou "Pausar", desligado com "reduzir movimento" |
+
+Fechamento: `docs/checkpoints/ux-audit/after-0085/`, em 390px e 1440px:
+- público: home, partidas do campeonato e partida ao vivo;
+- Gestor: painel, campeonatos, times, partidas, tela da partida, bolão e Esquadrão;
+- Admin: painel, campeonatos, usuários e auditoria;
+- PWA: página offline e menu "Mais".
+
+As 28 telas respondem 200 sem rolagem lateral. O manifesto e o service worker estão ativos. Gate: `1302 examples, 0 failures, 4 pending` (system specs sem Chrome); RuboCop, Packwerk e Zeitwerk limpos.

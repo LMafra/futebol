@@ -26,12 +26,5 @@ module Ui
     def score(value) = value.nil? ? '–' : value
 
     def kickoff = match.match_date&.strftime('%d/%m · %H:%M')
-
-    def crest(team)
-      return image_tag(team.crest_url, alt: team.name, class: 'size-8 object-contain') if team.crest_url.present?
-
-      tag.span(team.short_name, class: 'inline-flex size-8 items-center justify-center rounded-sm border ' \
-                                       'border-rule text-xs font-bold tracking-wide')
-    end
   end
 end

@@ -21,7 +21,7 @@
       <% if bolao %>
         <div class="mt-4 text-sm" data-role="bolao-result" role="status">
           <% if bolao[:error] %>
-            <p class="text-red-800 dark:text-red-300"><%= bolao[:error] %></p>
+            <p class="<%= AdminHelper::ADMIN_ALERT_CLASSES %>"><%= bolao[:error] %></p>
           <% else %>
             <p><span class="text-2xl font-bold tabular-nums"><%= bolao[:points] %></span> pontos · faixa: <strong><%= { exact: "placar exato", winner: "vencedor", miss: "erro" }.fetch(bolao[:kind]) %></strong></p>
           <% end %>
@@ -70,7 +70,7 @@
       <% if cartola %>
         <div class="mt-4 text-sm" data-role="cartola-result" role="status">
           <% if cartola[:error] %>
-            <p class="text-red-800 dark:text-red-300"><%= cartola[:error] %></p>
+            <p class="<%= AdminHelper::ADMIN_ALERT_CLASSES %>"><%= cartola[:error] %></p>
           <% else %>
             <p><span class="text-2xl font-bold tabular-nums"><%= cartola[:points] %></span> pontos · regra: <strong><%= cartola[:rule].name %></strong></p>
           <% end %>

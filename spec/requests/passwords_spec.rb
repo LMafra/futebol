@@ -21,6 +21,14 @@ RSpec.describe 'Passwords', type: :request do
     expect(flash[:alert]).to eq('O link para redefinir a senha é inválido ou expirou.')
   end
 
+  it 'nova senha e confirmação têm o botão "Mostrar senha"' do
+    get edit_password_path(user.password_reset_token)
+
+    page = Nokogiri::HTML(response.body)
+    wrapped = page.css('[data-controller="password-reveal"] input[type="password"]').map { |input| input['name'] }
+    expect(wrapped).to eq(%w[password password_confirmation])
+  end
+
   it 'redefine a senha e avisa quando a confirmação não confere' do
     token = user.password_reset_token
 

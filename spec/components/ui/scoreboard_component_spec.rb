@@ -13,12 +13,12 @@ RSpec.describe Ui::ScoreboardComponent do
     expect { described_class.new }.to raise_error(ArgumentError, /match is required/)
   end
 
-  it 'renders the TV scoreboard (2/8/2) with display-serif names and tabular score' do
+  it 'renders the TV scoreboard (2/8/2 from sm, score on its own row on phones) with display-serif names' do
     page = render_inline(described_class.new(match:))
 
-    expect(page.css('[data-ui-state="default"] .col-span-2').size).to eq(2)
-    expect(page.css('[data-ui-state="default"] .col-span-8').size).to eq(1)
-    expect(page.css('.font-display.text-2xl').map(&:text)).to eq(%w[Flamengo Palmeiras])
+    expect(page.css('[data-ui-state="default"] .sm\:col-span-2').size).to eq(2)
+    expect(page.at_css('[data-role="teams"]')['class'].split).to include('col-span-12', 'order-last', 'sm:col-span-8')
+    expect(page.css('[data-role="team-name"].font-display').map(&:text)).to eq(%w[Flamengo Palmeiras])
     expect(page.at_css('[data-role="score"]')['class']).to include('tabular-nums')
     expect(page.at_css('[data-role="score"]').text.squish).to eq('2×1')
     expect(page.at_css('[data-role="status"]').text).to eq('Encerrado')

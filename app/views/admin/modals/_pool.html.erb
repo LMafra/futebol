@@ -1,0 +1,9 @@
+<%# Criar bolão em diálogo, na página do campeonato do Admin e do Gestor. %>
+<%= modal_form :pool, title: "Criar bolão", submit: "Criar bolão", record: Bolao::Pool.new(championship:),
+               url: public_send(:"#{namespace}_pools_path") do |f| %>
+  <%= f.hidden_field :championship_id, id: nil %>
+  <%= modal_field f, :name, hint: "É o nome que os participantes veem.", required: true %>
+  <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">
+    Depois de criar, compartilhe o código do bolão: é com ele que os participantes entram.
+  </p>
+<% end %>

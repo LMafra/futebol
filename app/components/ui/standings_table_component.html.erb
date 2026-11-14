@@ -1,8 +1,9 @@
 <section class="w-full" <%= tag.attributes(root_attributes(label: "Classificação")) %>>
   <% case rendered_state %>
   <% when :default %>
+    <div class="overflow-x-auto" data-role="table-scroll">
     <table class="w-full border-collapse text-sm tabular-nums lining-nums">
-      <thead class="bg-pitch text-white">
+      <thead class="bg-pitch text-paper">
         <tr class="text-xs font-bold uppercase tracking-widest">
           <th scope="col" class="px-2 py-2 text-left">#</th>
           <% if changes? %>
@@ -28,7 +29,11 @@
               <td class="px-2 py-2"><%= change_glyph(row.change) unless row.change.nil? %></td>
             <% end %>
             <th scope="row" class="px-2 py-2 text-left font-semibold">
-              <span class="mr-2 text-xs font-bold tracking-wide text-graphite"><%= row.short_name %></span><%= row.team_name %>
+              <% if row.team&.crest&.attached? %>
+                <span class="inline-flex items-center gap-2"><%= team_crest(row.team, size: "size-6") %><%= row.team_name %></span>
+              <% else %>
+                <span class="mr-2 text-xs font-bold tracking-wide text-graphite"><%= row.short_name %></span><%= row.team_name %>
+              <% end %>
             </th>
             <td class="px-2 py-2 text-right font-bold"><%= row.points %></td>
             <td class="px-2 py-2 text-right"><%= row.played %></td>
@@ -43,6 +48,7 @@
         <% end %>
       </tbody>
     </table>
+    </div>
   <% when :loading %>
     <span class="sr-only">Carregando classificação…</span>
     <div class="flex flex-col gap-1" aria-hidden="true">
@@ -56,7 +62,7 @@
     <div class="<%= error_classes %>" role="alert">
       <span class="font-bold">Não foi possível montar a classificação.</span>
       <% if log_path %>
-        <%= link_to "Ver log", log_path, class: "font-semibold underline underline-offset-2 hover:no-underline", data: { role: "log-link" } %>
+        <%= link_to "Abrir o registro do erro", log_path, class: inline_link_classes(tone: :ink), data: { role: "log-link" } %>
       <% end %>
     </div>
   <% end %>

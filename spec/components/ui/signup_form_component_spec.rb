@@ -16,6 +16,14 @@ RSpec.describe Ui::SignupFormComponent do
     expect(page.at_css('input[type="submit"]')['value']).to eq('Criar conta')
   end
 
+  it 'gives both password fields the "Mostrar senha" toggle' do
+    page = render_inline(described_class.new(user: Core::User.new))
+
+    wrapped = page.css('[data-controller="password-reveal"] input').map { |input| input['name'] }
+    expect(wrapped).to eq(%w[user[password] user[password_confirmation]])
+    expect(page.css('button[aria-label="Mostrar senha"]').size).to eq(2)
+  end
+
   it 'flags invalid fields with their message and keeps the form' do
     user = Core::User.new(email_address: 'x')
     user.errors.add(:email_address, 'não é um e-mail válido')

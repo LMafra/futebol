@@ -126,6 +126,18 @@ RSpec.describe 'Public home', type: :request do
     expect(page.at_css('[data-role="today-match"]').text).to include(today.home_team.name, '21:00')
   end
 
+  it 'faz do card de jogo de hoje um link inteiro e destaca o jogo ao vivo com o chip (TICKET-0083)' do
+    live = create(:match, championship: public_championship, status: 'live', match_date: Time.current.change(hour: 21))
+
+    get root_path
+
+    card = page.at_css('[data-role="today-match"] > a')
+    expect(card['href']).to eq(public_match_path(live))
+    expect(card['class'].split).to include('border-cartola', 'hover:border-ink')
+    expect(card.at_css('[data-role="live-chip"]')['class'].split).to include('bg-cartola', 'text-ink')
+    expect(card.css('a')).to be_empty
+  end
+
   it 'conta "hoje" no horário de Brasília, mesmo quando já é o dia seguinte em UTC' do
     brasilia = Time.find_zone!('America/Sao_Paulo')
     tonight = create(:match, championship: public_championship, match_date: brasilia.local(2026, 11, 1, 21))
@@ -139,7 +151,7 @@ RSpec.describe 'Public home', type: :request do
 
   it 'põe os jogos de hoje numa faixa horizontal única e sem fim, por horário, com o campeonato em cada card' do
     varzea = create(:championship, name: 'Copa da Várzea')
-    create(:match, championship: varzea, match_date: Time.current.change(hour: 10))
+    first = create(:match, championship: varzea, match_date: Time.current.change(hour: 10))
     create(:match, championship: public_championship, match_date: Time.current.change(hour: 15))
     create(:match, championship: varzea, match_date: Time.current.change(hour: 21))
 
@@ -155,11 +167,25 @@ RSpec.describe 'Public home', type: :request do
     expect(cards.map { |card| card.at_css('[data-role="today-match-championship"]').text })
       .to eq(['Copa da Várzea', public_championship.name, 'Copa da Várzea'])
     expect(cards.map { |card| card.text[/\d{2}:\d{2}/] }).to eq(%w[10:00 15:00 21:00])
-    expect(cards.first.at_css('a')['href']).to eq(public_championship_path(varzea))
+    expect(cards.first.at_css('a')['href']).to eq(public_match_path(first))
     expect(today.at_css('[data-role="today-count"]').text).to eq('3 jogos')
     expect(today.at_css('ul')['data-action']).to eq('scroll->scroller#scrolled')
-    expect(today.css('button[data-action^="scroller#"]').map { |button| [button['aria-label'], button['disabled']] })
+    expect(today.css('[data-scroller-target="nav"] button').map { |button| [button['aria-label'], button['disabled']] })
       .to eq([['Jogos anteriores', nil], ['Próximos jogos', nil]])
+  end
+
+  it 'avança os jogos de hoje sozinho a cada 6s, com pausa por mouse, foco, toque e botão' do
+    create(:match, championship: public_championship, match_date: Time.current.change(hour: 15))
+
+    get root_path
+
+    today = page.at_css('[data-role="matches-today"]')
+    expect(today['data-scroller-autoplay-value']).to eq('6000')
+    expect(today['data-action'].split).to eq(%w[mouseenter->scroller#hold mouseleave->scroller#release
+                                                focusin->scroller#hold focusout->scroller#release
+                                                touchstart->scroller#stop:passive])
+    toggle = today.at_css('button[data-scroller-target="toggle"]')
+    expect([toggle.text, toggle['data-action'], toggle.key?('hidden')]).to eq(['Pausar', 'scroller#toggle', true])
   end
 
   it 'mostra o top de atletas com J, G, A e Pts' do

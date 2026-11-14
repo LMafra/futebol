@@ -1,0 +1,6 @@
+# Textos do ActiveAdmin que o pt-BR da gem deixa em inglês.
+pt-BR:
+  active_admin:
+    search_status:
+      title: Filtros ativos
+      title_with_scope: Filtros ativos em %{name}

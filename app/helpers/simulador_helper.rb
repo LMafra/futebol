@@ -1,10 +1,11 @@
 module SimuladorHelper
   # standings: Simulador::StandingsCalculator::Standing, or [standing, change] pairs for a projection.
   def simulador_rows(standings, teams)
-    short_names = teams.to_h { |team| [team.id, team.short_name] }
+    teams_by_id = teams.index_by(&:id)
     standings.map do |standing, change|
+      team = teams_by_id[standing.team_id]
       Ui::StandingsTableComponent::Row.new(
-        position: standing.position, team_name: standing.team_name, short_name: short_names[standing.team_id],
+        position: standing.position, team_name: standing.team_name, short_name: team&.short_name, team:,
         played: standing.played, wins: standing.wins, draws: standing.draws, losses: standing.losses,
         goal_difference: standing.goal_difference, points: standing.points, change:
       )

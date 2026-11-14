@@ -20,7 +20,7 @@ module Pools
     private
 
     def sample_pool
-      Bolao::Pool.new(id: 1, name: 'Bolão da firma', code: 'K7P2QD', owner_id: 1,
+      Bolao::Pool.new(id: 1, name: 'Bolão da firma', code: 'K7P2QD', owner: Core::User.new(id: 3, name: 'Carla Lima'),
                       championship: Core::Championship.new(name: 'Brasileirão Série A', season: 2026))
     end
 

@@ -1,5 +1,6 @@
 ActiveAdmin.register Core::Player, as: 'Player', namespace: :gestor do
-  menu parent: 'Cadastros', label: 'Jogadores', priority: 3
+  menu parent: 'Times', label: 'Jogadores', priority: 2
+  breadcrumb { player_resource_crumbs }
 
   permit_params :team_id, :name, :position, :shirt_number, :base_value
   includes :team
@@ -8,25 +9,17 @@ ActiveAdmin.register Core::Player, as: 'Player', namespace: :gestor do
 
   controller do
     include GestorResource
+    include ModalFormResponses
 
     before_build { |record| assign_external_id(record) }
   end
 
+  AdminNameSearch.register(self)
   filter :team, collection: -> { gestor_teams }
-  filter :name
   filter :position, as: :select, collection: -> { Core::Player::POSITIONS }
 
-  index do
-    id_column
-    column :name
-    column(:team) { |player| player.team.name }
-    column :position
-    column :shirt_number
-    actions defaults: false do |player|
-      item 'Ver', gestor_player_path(player)
-      item 'Editar', edit_gestor_player_path(player) if gestor_team_editable?(player.team)
-    end
-  end
+  AdminCollectionIndex.register(self, 'admin/listings/players')
+  AdminBulkActions.register(self, :destroy, :move)
 
   form do |f|
     f.semantic_errors
@@ -39,6 +32,6 @@ ActiveAdmin.register Core::Player, as: 'Player', namespace: :gestor do
                            input_html: { min: 0, step: '0.01' }
       f.input :external_id if current_user.admin?
     end
-    f.actions if f.object.team.nil? || gestor_team_editable?(f.object.team)
+    f.actions
   end
 end

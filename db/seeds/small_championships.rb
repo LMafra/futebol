@@ -53,6 +53,7 @@ module Seeds
   end
 
   def self.small_fixtures(championship, teams, today_round, offset)
+    enroll(championship, teams)
     double_round_robin(teams).first(teams.size - 1).each.with_index(1) do |pairings, round|
       pairings.each_with_index do |(home, away), index|
         Core::Match.find_or_create_by!(external_id: small_match_external_id(championship, round, home, away)) do |match|
@@ -86,7 +87,7 @@ module Seeds
 
   def self.small_pool(championship, users)
     pool = Bolao::Pool.find_or_create_by!(championship:, name: "Bolão #{championship.name}") do |new_pool|
-      new_pool.owner = users.first
+      new_pool.owner = pool_organizer(championship)
     end
     users.each { |user| pool.memberships.find_or_create_by!(user:) }
     pool

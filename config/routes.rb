@@ -19,9 +19,10 @@ Rails.application.routes.draw do
   get 'gestor/solicitar', to: 'manager_requests#new', as: :new_manager_request
   post 'gestor/solicitar', to: 'manager_requests#create', as: :manager_request
   get 'campeonatos/:id', to: 'championships#show', as: :public_championship, constraints: { id: /\d+/ }
+  get 'partidas/:id', to: 'matches#show', as: :public_match, constraints: { id: /\d+/ }
 
   scope module: :bolao do
-    resources :pools, only: %i[index new create show destroy] do
+    resources :pools, only: %i[index show destroy] do
       post :join, on: :collection
       resources :bets, only: %i[index create update]
     end
@@ -45,7 +46,9 @@ Rails.application.routes.draw do
   end
 
   mount MissionControl::Jobs::Engine, at: '/admin/jobs'
-  get 'admin/cartolarankings', to: moved_to.call('/admin/esquadraorankings')
+  get 'admin/cartolarankings', to: moved_to.call('/admin/esquadrao')
+  get 'admin/esquadraorankings', to: moved_to.call('/admin/esquadrao')
+  get 'gestor/esquadrao_lineups(/*rest)', to: redirect('/gestor/esquadrao'), format: false
   get 'admin/cartola_scoring_rules(/*rest)', to: moved_to.call('/admin/esquadrao_scoring_rules'), format: false
   get 'admin/squads(/*rest)', to: moved_to.call('/admin/esquadrao_squads'), format: false
   # ActiveAdmin registers comments in every namespace even with comments disabled for :gestor.
@@ -58,9 +61,9 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get 'up' => 'rails/health#show', as: :rails_health_check
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  # Installable app (TICKET-0101): app/views/pwa/*, linked from both layouts.
+  get 'manifest' => 'rails/pwa#manifest', as: :pwa_manifest
+  get 'service-worker' => 'rails/pwa#service_worker', as: :pwa_service_worker
 
   root 'home#index'
 end
