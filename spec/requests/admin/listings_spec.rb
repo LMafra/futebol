@@ -7,6 +7,7 @@ RSpec.describe 'Admin and Gestor listings on Ui::CollectionComponent (TICKET-010
 
   def page_html = Nokogiri::HTML5(response.body)
   def collection(id) = page_html.at_css("section##{id}[data-controller='collection']")
+  def week_link(label) = page_html.at_css("[data-role='agenda-weeks'] a[aria-label='#{label}']")
 
   before do
     championship.teams << team
@@ -76,6 +77,32 @@ RSpec.describe 'Admin and Gestor listings on Ui::CollectionComponent (TICKET-010
       get '/gestor/championships'
       card = page_html.at_css("#championships-item-#{championship.id}").text.squish
       expect(card).to include('Times 2', 'Partidas 1', 'rascunho', 'Continuar rascunho')
+    end
+
+    it 'shows the next step of each match' do
+      live = create(:match, championship:, status: 'live', match_date: 1.hour.ago, home_team: team)
+
+      get '/gestor/matches'
+
+      steps = page_html.css('#matches [data-role="match-step"]').to_h { [_1.text, _1['href']] }
+      expect(steps).to include('Registrar lances' => "/gestor/matches/#{live.id}")
+      expect(steps.keys).to include('Editar partida')
+    end
+
+    it 'walks the agenda week by week, also through an empty week' do
+      monday = Date.new(2026, 11, 9)
+      create(:match, championship:, match_date: Time.zone.local(2026, 11, 15, 16), home_team: team)
+
+      get '/gestor/matches', params: { view: 'agenda', q: { match_date_gteq: '2026-11-11' } }
+      expect(page_html.at_css('[data-role="agenda-week"]').text).to eq('Semana de 09/11 a 15/11')
+      expect(page_html.css('#matches [data-role="collection-group"] h3').map(&:text)).to eq(['Domingo, 15/11/2026'])
+
+      get week_link('Próxima semana')['href']
+      next_week = "Semana de #{(monday + 7).strftime('%d/%m')} a #{(monday + 13).strftime('%d/%m')}"
+      expect(page_html.at_css('[data-role="agenda-week"]').text).to eq(next_week)
+      expect(page_html.at_css('[data-role="empty-state"]')).to be_present
+      expect(page_html.at_css('.active-filters-title').text.squish).to eq('Filtros ativos')
+      expect(week_link('Semana anterior')).to be_present
     end
 
     it 'opens the round of the next match by default' do

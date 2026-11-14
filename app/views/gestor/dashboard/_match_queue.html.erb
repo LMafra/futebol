@@ -1,9 +1,3 @@
-<% step_ctas = {
-     edit: ["Editar partida", ->(match) { edit_gestor_match_path(match) }],
-     scouts: ["Registrar lances", ->(match) { gestor_match_path(match) }],
-     finalize: ["Finalizar partida", ->(match) { gestor_match_path(match, modal: "finalize") }]
-   }
-   step_notes = { scoring: "Aguardando a pontuação", scored: "Concluída", reverted: "Aguardando nova pontuação" } %>
 <section class="rounded-md border border-rule bg-white" aria-labelledby="match-queue-title" data-role="gestor-match-queue">
   <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="match-queue-title">Fila de partidas</h3>
   <div class="px-4 py-3">
@@ -12,13 +6,7 @@
       <% c.column(:match, label: "Partida", primary: true) { |item| link_to item.match, gestor_match_path(item.match), class: inline_link_classes(tone: :ink) } %>
       <% c.column(:match_date, label: "Início", numeric: true) { |item| l(item.match.match_date, format: "%d/%m %H:%M") } %>
       <% c.column(:status, label: "Status") { |item| admin_match_status_badge(item.match, label: (item.step == :scoring ? "Pontuando" : nil)) } %>
-      <% c.column(:step, label: "Próximo passo") do |item| %>
-        <% if (cta = step_ctas[item.step]) %>
-          <%= link_to cta.first, cta.last.call(item.match), class: AdminHelper::ADMIN_BUTTON_CLASSES, data: { role: "queue-cta" } %>
-        <% else %>
-          <span class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>"><%= step_notes.fetch(item.step) %></span>
-        <% end %>
-      <% end %>
+      <% c.column(:step, label: "Próximo passo") { |item| match_next_step(item.match, item.step, :gestor, classes: AdminHelper::ADMIN_BUTTON_CLASSES, role: "queue-cta") } %>
       <% c.column(:more, label: "Mais ações") do |item| %>
         <% match = item.match %>
         <details class="inline-block text-left" data-role="queue-overflow">

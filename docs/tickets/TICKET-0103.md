@@ -54,6 +54,10 @@ Lista corrida por data, com Rodada, Data, Placar e Situação fora da vista (`do
   | Importações CSV | tabela |
   | Logs de auditoria e Histórico | linha do tempo por dia |
 
+- **Partidas:**
+  - cada partida mostra o próximo passo ("Editar partida", "Registrar lances", "Finalizar partida" ou a situação), com o mesmo `MatchStepsHelper` da fila do Gestor;
+  - a agenda anda por semana ("← Anterior", "Próxima →") pelo filtro de data do ActiveAdmin, inclusive numa semana sem partidas.
+- **"Filtros ativos":** o título da busca ativa do ActiveAdmin, que a tradução da gem deixa em inglês ("Active Search").
 - **Painéis:** as filas do painel do Admin (ao vivo, pontuação pendente, últimas partidas, pedidos de gestor) e a fila do Gestor viram tabelas do componente. No celular, são cartões com o próximo passo dentro.
 - **Painel do Admin:** deixou de rolar para o lado em 390px (`min-w-0` nas colunas do grid).
 - **`Ui::CollectionComponent`:**
@@ -67,7 +71,8 @@ Lista corrida por data, com Rodada, Data, Placar e Situação fora da vista (`do
   - modo de cada listagem no Admin e no Gestor, sem a tabela do ActiveAdmin;
   - alternância de visualização;
   - ordenação e coluna desconhecida ignorada;
-  - contagens, linha do tempo, "Continuar rascunho" e rodada aberta.
+  - contagens, linha do tempo, "Continuar rascunho" e rodada aberta;
+  - próximo passo por partida e agenda semana a semana, passando por uma semana vazia.
 - `spec/components/ui/collection_component_spec.rb`: coluna que devolve número.
 - Specs do ActiveAdmin, da fila do Gestor, dos pedidos de gestor e do histórico atualizados para o componente.
 - Playwright: `docs/checkpoints/ux-audit/before-0103/` e `after-0103/`. Em 390px, nenhuma página rola para o lado (28 telas mais os dois painéis).

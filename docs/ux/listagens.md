@@ -50,6 +50,7 @@ end
 ```
 
 - `?sort=&dir=` vira o `order` do ActiveAdmin (`CollectionSortParams`), só para colunas da tabela.
+- A agenda de partidas anda por semana com `agenda_week_path`, que preenche o filtro de data do ActiveAdmin (`q[match_date_gteq]` e `q[match_date_lt]`). A navegação aparece também na tela de "nenhum resultado".
 - Contagens por linha vêm de `listing_counts(Modelo, :chave, records)`: uma consulta por contagem.
 - A seleção em lote do ActiveAdmin fica desligada nessas telas; ações em lote usam `c.bulk_action`.
 - Auditoria da migração: `docs/checkpoints/UX-LISTAGENS.md`.

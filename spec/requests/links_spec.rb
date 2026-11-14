@@ -11,21 +11,20 @@ RSpec.describe 'Links e botões com rótulo de destino (TICKET-0106)', type: :re
     create(:match, championship: create(:championship, manager:), home_team: team)
     sign_in(manager)
 
-    get '/gestor/teams'
+    get '/gestor/teams', params: { view: 'table' }
 
-    labels = page.css("tr#core_team_#{team.id} [data-role='admin-table-action']").map { _1['aria-label'] }
-    expect(labels).to include('Abrir Real Paraisópolis', 'Editar Real Paraisópolis')
+    labels = page.css("#teams-item-#{team.id} [data-role='admin-table-action']").map { _1['aria-label'] }
+    expect(labels).to eq(['Editar Real Paraisópolis'])
   end
 
   it 'os ícones padrão do Admin dizem verbo e registro' do
     sign_in(create(:user, :admin))
     team = create(:team, name: 'Juventude do Morro')
 
-    get '/admin/teams'
+    get '/admin/teams', params: { view: 'table' }
 
-    labels = page.css("tr#core_team_#{team.id} [data-role='admin-table-action']").map { _1['aria-label'] }
-    expect(labels.first).to eq('Abrir Juventude do Morro')
-    expect(labels).to all(end_with('Juventude do Morro'))
+    labels = page.css("#teams-item-#{team.id} [data-role='admin-table-action']").map { _1['aria-label'] }
+    expect(labels).to eq(['Editar Juventude do Morro'])
   end
 
   it 'o painel vazio do Gestor oferece "Criar campeonato"' do

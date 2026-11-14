@@ -34,7 +34,7 @@ As telas passaram para o componente por um renderizador de índice do ActiveAdmi
 | Campeonatos | `cards` | Logo, temporada, modalidade, times inscritos, partidas, situação e próximo passo ("Continuar rascunho" ou "Abrir") |
 | Times | `grid` ↔ `table` | Grade de escudos com o número de jogadores; tabela com sigla, capitão e gestor (Admin) |
 | Jogadores | `table` | Nome primeiro; ordenar por nome, posição, número e valor base; cartões no celular |
-| Partidas | `grouped` ↔ `agenda` | Por rodada de cada campeonato, com a primeira rodada que tem jogo por fazer aberta; agenda por dia |
+| Partidas | `grouped` ↔ `agenda` | Por rodada de cada campeonato, com a primeira rodada que tem jogo por fazer aberta; agenda por dia com semana anterior/próxima; próximo passo em cada partida |
 | Usuários | `table` | Nome, e-mail, papel, pedido de gestor e cadastro; ordenar por nome, e-mail e cadastro |
 | Bolões | `cards` | Campeonato, código, participantes e dono (Admin) |
 | Importações CSV | `table` | "Importação #N" como título, situação, linhas, erro e data |

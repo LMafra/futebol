@@ -1,3 +1,4 @@
+<%= render "admin/listings/agenda_weeks" if params[:view] == "agenda" && active_admin_config.resource_class == Core::Match %>
 <%= render Ui::EmptyStateComponent.new(
       title: I18n.t('active_admin.pagination.empty', model: active_admin_config.plural_resource_label),
       description: 'Nenhum registro corresponde aos filtros ou à aba escolhida.'

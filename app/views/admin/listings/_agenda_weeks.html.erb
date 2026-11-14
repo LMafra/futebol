@@ -1,0 +1,12 @@
+<%# Semana anterior/próxima da agenda de partidas; aparece também quando a semana não tem partidas. %>
+<% week = agenda_week
+   base = week || Date.current.beginning_of_week %>
+<nav aria-label="Semanas da agenda" class="mb-4 grid grid-cols-[auto_1fr_auto] items-center gap-3 text-sm" data-role="agenda-weeks">
+  <%= link_to "← Anterior", agenda_week_path(base - 7), class: support_link_classes("inline-flex min-h-12 items-center"), aria: { label: "Semana anterior" } %>
+  <% if week %>
+    <p class="text-center font-semibold text-ink" data-role="agenda-week">Semana de <%= l(week, format: "%d/%m") %> a <%= l(week + 6, format: "%d/%m") %></p>
+  <% else %>
+    <%= link_to "Esta semana", agenda_week_path(base), class: inline_link_classes("inline-flex min-h-12 items-center justify-self-center", tone: :ink) %>
+  <% end %>
+  <%= link_to "Próxima →", agenda_week_path(base + 7), class: support_link_classes("inline-flex min-h-12 items-center"), aria: { label: "Próxima semana" } %>
+</nav>
