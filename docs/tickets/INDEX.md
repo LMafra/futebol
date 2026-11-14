@@ -1,4 +1,4 @@
-# Tickets — INDEX (105 tickets)
+# Tickets — INDEX (106 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -107,6 +107,7 @@
 | [0101](TICKET-0101.md) | G6 | PWA instalável, menu inferior no Admin/Gestor e revisão em 390px | 0094, 0097 | playwright |
 | [0103](TICKET-0103.md) | G7 | Auditoria das listagens e migração do Admin e do Gestor para o componente | 0102 | playwright |
 | [0104](TICKET-0104.md) | G7 | Ações em lote nas listagens, com relatório do que foi mantido | 0103 | playwright |
+| [0105](TICKET-0105.md) | G7 | Público: partidas por rodada e carrossel "Jogos de hoje" com avanço automático | 0103 | playwright |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -123,4 +124,4 @@
 - UI/UX Admin/Gestor (status-first): 0068 → 0069 → 0070 → 0071 → 0072 → 0073
 - UI/UX Admin/Gestor (work queue): 0074 → {0075, 0076} → 0077 → 0078
 - Auditoria UI/UX completa (ordem dos commits): 0079 → 0080 → 0081 → 0075 → 0076 → 0074 → 0077 → 0084 → 0082 → 0083 → 0078
-- Gestor, campeonato, partida ao vivo e participantes (ordem dos commits): 0085 → 0086 → 0087 → 0088 → 0106 → 0089 → 0090 → 0091 → 0092 → 0093 → 0102 → 0094 → 0095 → 0096 → 0097 → 0098 → 0099 → 0100 → 0101 → 0103 → 0104
+- Gestor, campeonato, partida ao vivo e participantes (ordem dos commits): 0085 → 0086 → 0087 → 0088 → 0106 → 0089 → 0090 → 0091 → 0092 → 0093 → 0102 → 0094 → 0095 → 0096 → 0097 → 0098 → 0099 → 0100 → 0101 → 0103 → 0104 → 0105

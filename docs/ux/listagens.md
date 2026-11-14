@@ -21,7 +21,7 @@ Como mostrar uma lista no Craquefy: Admin, Gestor e site público usam o mesmo c
 | `table` | Comparar valores entre itens | Jogadores, usuários, CSV, classificação |
 | `cards` | Itens com poucos dados e uma ação principal | Campeonatos, bolões |
 | `grid` | Reconhecer pela imagem | Times (escudo) |
-| `grouped` | Muitos itens com um agrupador natural; só o grupo atual aberto | Partidas por rodada |
+| `grouped` | Muitos itens com um agrupador natural; só o grupo atual aberto | Partidas por rodada (Admin, Gestor e aba Partidas do campeonato) |
 | `agenda` | Itens no tempo, para planejar | Partidas por dia |
 | `master_detail` | Escolher um item e ver os detalhes ao lado (`?item=ID`); no celular, a lista e depois o item | Participantes do Bolão e do Esquadrão |
 | `timeline` | Histórico | Auditoria, lances da partida |

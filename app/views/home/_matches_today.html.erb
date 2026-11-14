@@ -1,9 +1,11 @@
-<section class="flex flex-col gap-4" aria-labelledby="today-title" data-role="matches-today" data-controller="scroller">
+<section class="flex flex-col gap-4" aria-labelledby="today-title" data-role="matches-today" data-controller="scroller" data-scroller-autoplay-value="6000"
+         data-action="mouseenter->scroller#hold mouseleave->scroller#release focusin->scroller#hold focusout->scroller#release touchstart->scroller#stop:passive">
   <div class="flex flex-wrap items-end justify-between gap-4 border-b border-rule pb-2">
     <h2 id="today-title" class="font-display text-3xl font-extrabold">Jogos de hoje</h2>
     <% if matches.any? %>
       <div class="flex items-center gap-3">
         <span class="text-sm font-bold text-graphite tabular-nums" data-role="today-count"><%= pluralize(matches.size, "jogo", plural: "jogos") %></span>
+        <button type="button" class="<%= secondary_button_classes %>" data-scroller-target="toggle" data-action="scroller#toggle" hidden>Pausar</button>
         <div class="flex gap-2" data-scroller-target="nav" hidden>
           <% [["previous", "Jogos anteriores", "m15 18-6-6 6-6"], ["next", "Próximos jogos", "m9 18 6-6-6-6"]].each do |action, label, path| %>
             <button type="button" class="flex size-12 cursor-pointer items-center justify-center rounded-sm border border-graphite bg-white text-ink hover:border-ink hover:bg-rule"

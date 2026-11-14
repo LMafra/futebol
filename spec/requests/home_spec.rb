@@ -170,8 +170,22 @@ RSpec.describe 'Public home', type: :request do
     expect(cards.first.at_css('a')['href']).to eq(public_match_path(first))
     expect(today.at_css('[data-role="today-count"]').text).to eq('3 jogos')
     expect(today.at_css('ul')['data-action']).to eq('scroll->scroller#scrolled')
-    expect(today.css('button[data-action^="scroller#"]').map { |button| [button['aria-label'], button['disabled']] })
+    expect(today.css('[data-scroller-target="nav"] button').map { |button| [button['aria-label'], button['disabled']] })
       .to eq([['Jogos anteriores', nil], ['Próximos jogos', nil]])
+  end
+
+  it 'avança os jogos de hoje sozinho a cada 6s, com pausa por mouse, foco, toque e botão' do
+    create(:match, championship: public_championship, match_date: Time.current.change(hour: 15))
+
+    get root_path
+
+    today = page.at_css('[data-role="matches-today"]')
+    expect(today['data-scroller-autoplay-value']).to eq('6000')
+    expect(today['data-action'].split).to eq(%w[mouseenter->scroller#hold mouseleave->scroller#release
+                                                focusin->scroller#hold focusout->scroller#release
+                                                touchstart->scroller#stop:passive])
+    toggle = today.at_css('button[data-scroller-target="toggle"]')
+    expect([toggle.text, toggle['data-action'], toggle.key?('hidden')]).to eq(['Pausar', 'scroller#toggle', true])
   end
 
   it 'mostra o top de atletas com J, G, A e Pts' do

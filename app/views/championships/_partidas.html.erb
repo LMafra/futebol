@@ -1,44 +1,33 @@
 <section class="flex flex-col gap-3" aria-labelledby="matches-title">
-  <div class="flex flex-wrap items-end justify-between gap-3">
-    <h2 id="matches-title" class="font-display text-2xl font-extrabold">
-      Partidas<% if @round %> · Rodada <span class="tabular-nums"><%= @round %></span><% end %>
-    </h2>
-    <% if @round %>
-      <nav class="flex items-center gap-2" aria-label="Rodadas">
-        <% previous_round = @rounds.reverse.find { |round| round < @round } %>
-        <% next_round = @rounds.find { |round| round > @round } %>
-        <% if previous_round %>
-          <%= round_nav_link(previous_round, public_championship_path(@championship, tab: "partidas", rodada: previous_round), direction: :previous) %>
-        <% end %>
-        <% if next_round %>
-          <%= round_nav_link(next_round, public_championship_path(@championship, tab: "partidas", rodada: next_round), direction: :next) %>
-        <% end %>
-      </nav>
-    <% end %>
-  </div>
+  <h2 id="matches-title" class="font-display text-2xl font-extrabold">Partidas</h2>
 
   <% if @matches.empty? %>
     <%= empty_notice("Nenhuma partida cadastrada.") %>
   <% else %>
-    <ul class="flex flex-col divide-y divide-rule rounded-md border border-rule bg-white">
-      <% @matches.each do |match| %>
-        <li data-role="match-row">
-          <%= link_to public_match_path(match), class: "grid min-h-12 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 py-3 text-ink hover:bg-rule",
-                      aria: { label: "#{match.home_team.name} × #{match.away_team.name}: abrir a partida" } do %>
+    <%= render Ui::CollectionComponent.new(items: @matches, id: "public-matches", mode: :grouped, group_by: :round.to_proc, open_group: @round,
+                                           group_label: ->(round) { round ? "Rodada #{round}" : "Sem rodada" },
+                                           texts: { label: "Partidas por rodada" }) do |c| %>
+      <% c.card do |match| %>
+        <%= link_to public_match_path(match), data: { role: "match-row", live: match.live? },
+                    class: "grid min-h-12 w-full grid-cols-[1fr_auto_1fr] items-center gap-3 text-ink hover:bg-rule",
+                    aria: { label: "#{match.home_team.name} × #{match.away_team.name}: #{match.live? ? 'acompanhar ao vivo' : 'abrir a partida'}" } do %>
           <span class="text-right font-semibold"><%= match.home_team.name %></span>
           <span class="flex flex-col items-center">
             <span class="font-display text-xl font-extrabold tabular-nums">
               <%= match.home_score || "–" %> × <%= match.away_score || "–" %>
             </span>
-            <span class="text-xs text-graphite">
-              <%= Ui::ScoreboardComponent::STATUS_LABELS.fetch(match.status, match.status) %>
-              <% if match.match_date %> · <%= l(match.match_date, format: "%d/%m %H:%M") %><% end %>
-            </span>
+            <% if match.live? %>
+              <span class="rounded-sm bg-cartola px-2 py-1 text-xs font-bold uppercase tracking-widest text-ink" data-role="live-chip">Ao vivo</span>
+            <% else %>
+              <span class="text-xs text-graphite">
+                <%= Ui::ScoreboardComponent::STATUS_LABELS.fetch(match.status, match.status) %>
+                <% if match.match_date %> · <%= l(match.match_date, format: "%d/%m %H:%M") %><% end %>
+              </span>
+            <% end %>
           </span>
           <span class="font-semibold"><%= match.away_team.name %></span>
-          <% end %>
-        </li>
+        <% end %>
       <% end %>
-    </ul>
+    <% end %>
   <% end %>
 </section>

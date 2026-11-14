@@ -73,7 +73,7 @@ RSpec.describe 'Página pública da partida (/partidas/:id)', type: :request do
     match.update_columns(match_date: Time.current.change(hour: 12))
 
     get public_championship_path(championship, tab: 'partidas')
-    expect(page.at_css('[data-role="match-row"] a')['href']).to eq(public_match_path(match))
+    expect(page.at_css('[data-role="match-row"]')['href']).to eq(public_match_path(match))
 
     get root_path
     expect(page.at_css('[data-role="today-match"] a')['href']).to eq(public_match_path(match))
