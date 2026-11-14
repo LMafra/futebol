@@ -21,7 +21,7 @@ RSpec.describe Cartola::RankingTableComponent do
   it 'shows coins as money' do
     page = render_inline(described_class.new(rows: [row(1, 'Ana', 80)], kind: :coins))
 
-    expect(page.at_css('[data-role="ranking-value"]').text).to eq('C$ 80.00')
+    expect(page.at_css('[data-role="ranking-value"]').text).to eq('E$ 80.00')
   end
 
   it 'falls back to the empty state without rows' do

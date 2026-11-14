@@ -42,7 +42,7 @@ RSpec.describe 'Esquadrão rankings', type: :request do
 
       page = Nokogiri::HTML(response.body)
       expect(page.at_css('nav[aria-label="Classificar por"] a[aria-current="page"]').text).to eq('Moedas')
-      expect(page.css('[data-role="ranking-row"]').map { |row| row.text.squish }).to eq(['1 Bia C$ 70.00'])
+      expect(page.css('[data-role="ranking-row"]').map { |row| row.text.squish }).to eq(['1 Bia E$ 70.00'])
     end
 
     it 'responde 404 para campeonato inexistente' do

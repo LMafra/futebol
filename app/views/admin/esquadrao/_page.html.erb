@@ -36,7 +36,7 @@
                     <td class="text-right tabular-nums"><%= row.position %></td>
                     <td><%= row.user.name.presence || row.user.email_address %></td>
                     <td class="text-right font-semibold tabular-nums"><%= format("%.2f", row.value) %></td>
-                    <td class="text-right tabular-nums"><%= coins[row.user.id] ? format("C$ %.2f", coins[row.user.id]) : "–" %></td>
+                    <td class="text-right tabular-nums"><%= coins[row.user.id] ? esquadrao_money(coins[row.user.id]) : "–" %></td>
                   </tr>
                 <% end %>
               </tbody>

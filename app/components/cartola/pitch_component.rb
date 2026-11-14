@@ -23,7 +23,7 @@ module Cartola
 
     def captain?(player) = player == lineup.captain
 
-    def price(player) = prices[player.id] && format('C$ %.2f', prices[player.id])
+    def price(player) = prices[player.id] && helpers.esquadrao_money(prices[player.id])
 
     def points_label(player) = points[player.id] && format('%.2f pts', points[player.id])
   end

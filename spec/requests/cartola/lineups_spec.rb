@@ -181,7 +181,7 @@ RSpec.describe 'Cartola lineups', type: :request do
       expect { delete lineup_path(round: 7) }.to change(Cartola::Lineup, :count).by(-1)
 
       expect(response).to redirect_to(lineup_path(round: 7))
-      expect(flash[:notice]).to include('C$ 45.00 devolvidos')
+      expect(flash[:notice]).to include('E$ 45.00 devolvidos')
       expect(balance).to eq(100)
     end
 

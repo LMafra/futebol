@@ -58,7 +58,7 @@ RSpec.describe 'Admin Cartola settings', type: :request do
 
     expect(response).to have_http_status(:ok)
     page = Nokogiri::HTML5(response.body)
-    expect(page.at_css('[data-role="ranking-row"]').text.squish).to eq('1 Ana 0.00 C$ 42.00')
+    expect(page.at_css('[data-role="ranking-row"]').text.squish).to eq('1 Ana 0.00 E$ 42.00')
   end
 
   it 'links the championship page to its Esquadrão' do

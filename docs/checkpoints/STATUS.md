@@ -581,3 +581,4 @@ Tickets **0107+**, depois do CI verde do PR #87, um commit assinado por ticket.
 | Bloco | Ticket | Status | Artefatos | Observações |
 |---|---|---|---|---|
 | R1 — português | [0107](../tickets/TICKET-0107.md) | ok | `spec/design/portuguese_spec.rb`, [glossário](../glossary.md) | Situação, Prévia do Bolão, Registros de auditoria, Lances (acontecimento), Estatísticas (total do jogador) e Classificação em todo texto visível; Scout vira nome interno; E-mail, CSV e PWA ficam; spec falha se Status, Preview, Scout, Ranking ou Log voltarem; varredura de 125 páginas sem ocorrência |
+| R2 — moeda E$ | [0108](../tickets/TICKET-0108.md) | ok | `Cartola::Money`, `esquadrao_money`, `spec/design/esquadrao_money_spec.rb` | E$ em todo valor do Esquadrão (orçamento, carteira, preços, valor base, moedas) com um formatador só; nenhum C$ em app, engines, lib, seeds e specs; ADR 0005 intacta, troca registrada no ticket |

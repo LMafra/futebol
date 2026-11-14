@@ -39,7 +39,8 @@ module Cartola
       authorize @lineup
       refund = Cartola::WalletService.destroy(@lineup)
       redirect_to main_app.lineup_path(lineup_location),
-                  notice: format('Escalação desfeita: C$ %.2f devolvidos à carteira.', refund), status: :see_other
+                  notice: "Escalação desfeita: #{helpers.esquadrao_money(refund)} devolvidos à carteira.",
+                  status: :see_other
     end
 
     private

@@ -29,7 +29,7 @@ module ChampionshipSummary
 
   def self.esquadrao(championship)
     limits = POSITIONS.keys.index_with { |position| championship.public_send(:"cartola_#{position}_limit") }
-    "#{squad(limits)} · #{format('orçamento de C$ %.2f', championship.cartola_initial_budget)}"
+    "#{squad(limits)} · #{"orçamento de #{Cartola::Money.format(championship.cartola_initial_budget)}"}"
   end
 
   def self.premiacao(championship)

@@ -2,6 +2,7 @@
 
 - **Craquefy**: marca do produto, vinda de `brand.name` no `config/locales/pt-BR.yml`. O repositório, os engines, as tabelas e as classes continuam com os nomes internos (`futebol`, `cartola`, `Cartola::...`). _Avoid_: Futebol como nome do produto.
 - **Esquadrão**: nome visível do módulo de fantasy (engine `cartola`, rotas `/esquadrao`). Use `module_label(:fantasy)`. _Avoid_: Cartola em texto visível.
+- **E$**: moeda do Esquadrão (preços, carteira, orçamento, valor base). Formatada só por `Cartola::Money.format` (`esquadrao_money` nas views): "E$ 12.50". _Avoid_: C$, R$, cartoletas.
 - **Estatísticas** (nome interno: Scout): os números oficiais de um jogador numa Match (G, A, SG, DP, DE, CA, CV, GC, Jogou, Destaque), gravados em `cartola_player_scores`. Os contadores (G, A, DP, DE, CA, CV, GC) são a soma dos Lances mantidos; SG é calculado; Jogou e Destaque são marcados direto. "Scout" fica no código (`Cartola::PlayerScore::SCOUTS`, `Scouts::`), nunca no texto da interface. _Avoid_: scout em texto visível.
 - **Lance**: um acontecimento de um jogador com minuto e tempo (`Cartola::ScoutEvent`: G, A, GC, CA, CV, DP ou DE; 1º tempo, 2º tempo, prorrogação, pênaltis). Na interface: "Registrar lances", "Aguardando lances", "Lances de Fulano". Desfazer marca `discarded_at`, nunca apaga. _Avoid_: evento, jogada, scout.
 - **Classificação**: ordem dos times de um campeonato (pontos, vitórias, saldo) e, por extensão, dos participantes do Bolão e do Esquadrão. _Avoid_: ranking, tabela de líderes.

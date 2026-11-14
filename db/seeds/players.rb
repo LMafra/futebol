@@ -19,7 +19,7 @@ module Seeds
 
   def self.player_traits(seed, position) = { name: player_name(seed), base_value: player_base_value(position, seed) }
 
-  # C$ 4-13: a full lineup at the default limits (9 players) costs about C$ 75 of the C$ 100 wallet, so the
+  # E$ 4-13: a full lineup at the default limits (9 players) costs about E$ 75 of the E$ 100 wallet, so the
   # budget is a real constraint.
   def self.player_base_value(position, seed)
     { 'GOL' => 5, 'LAT' => 4, 'ZAG' => 4, 'MEI' => 6, 'ATA' => 7 }.fetch(position) + (seed % 7)

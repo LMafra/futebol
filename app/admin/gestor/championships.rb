@@ -57,8 +57,8 @@ ActiveAdmin.register Core::Championship, as: 'Championship', namespace: :gestor 
         row('Limite de defensores', &:cartola_defender_limit)
         row('Limite de meio-campistas', &:cartola_midfielder_limit)
         row('Limite de atacantes', &:cartola_forward_limit)
-        row('Orçamento inicial') { |championship| format('C$ %.2f', championship.cartola_initial_budget) }
-        row('Valor base do jogador') { |championship| format('C$ %.2f', championship.cartola_base_player_value) }
+        row('Orçamento inicial') { |championship| esquadrao_money(championship.cartola_initial_budget) }
+        row('Valor base do jogador') { |championship| esquadrao_money(championship.cartola_base_player_value) }
       end
     end
   end

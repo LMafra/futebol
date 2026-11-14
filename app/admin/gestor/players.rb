@@ -28,7 +28,8 @@ ActiveAdmin.register Core::Player, as: 'Player', namespace: :gestor do
       f.input :name
       f.input :position, as: :select, collection: Core::Player::POSITIONS
       f.input :shirt_number
-      f.input :base_value, label: 'Valor base (C$)', hint: 'Em branco: o valor base do campeonato no Esquadrão.',
+      f.input :base_value, label: Cartola::Money.label('Valor base'),
+                           hint: 'Em branco: o valor base do campeonato no Esquadrão.',
                            input_html: { min: 0, step: '0.01' }
       f.input :external_id if current_user.admin?
     end

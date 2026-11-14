@@ -31,8 +31,8 @@ module AdminChampionshipForm
     f.input :cartola_defender_limit, label: 'Limite de defensores', input_html: { min: 0 }
     f.input :cartola_midfielder_limit, label: 'Limite de meio-campistas', input_html: { min: 0 }
     f.input :cartola_forward_limit, label: 'Limite de atacantes', input_html: { min: 0 }
-    f.input :cartola_initial_budget, label: 'Orçamento inicial (C$)', input_html: { min: 0, step: '0.01' }
-    f.input :cartola_base_player_value, label: 'Valor base do jogador (C$)',
+    f.input :cartola_initial_budget, label: Cartola::Money.label('Orçamento inicial'), input_html: { min: 0, step: '0.01' }
+    f.input :cartola_base_player_value, label: Cartola::Money.label('Valor base do jogador'),
                                         hint: 'Usado para jogadores sem valor base próprio.',
                                         input_html: { min: 0, step: '0.01' }
   end

@@ -15,7 +15,7 @@
   <% c.column(:position, label: "Posição", sortable: true) %>
   <% c.column(:shirt_number, label: "Número", numeric: true, sortable: true) %>
   <% c.column(:base_value, label: "Valor base", numeric: true, sortable: true) do |player| %>
-    <%= player.base_value ? format("C$ %.2f", player.base_value) : "padrão do campeonato" %>
+    <%= player.base_value ? esquadrao_money(player.base_value) : "padrão do campeonato" %>
   <% end %>
   <% c.column(:actions, label: "Ações") do |player| %>
     <% if authorized?(:update, player) %>

@@ -23,6 +23,6 @@ module Cartola
 
     def selected?(player) = selected_ids.include?(player.id)
 
-    def price(player) = prices[player.id] && format('C$ %.2f', prices[player.id])
+    def price(player) = prices[player.id] && helpers.esquadrao_money(prices[player.id])
   end
 end

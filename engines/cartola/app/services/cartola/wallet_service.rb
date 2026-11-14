@@ -41,8 +41,8 @@ module Cartola
     def self.affordable?(lineup, cost, wallet)
       return true if cost <= wallet.balance
 
-      lineup.errors.add(:base, format('Saldo insuficiente: a escalação custa mais C$ %<cost>.2f e o saldo é ' \
-                                      'C$ %<balance>.2f', cost:, balance: wallet.balance))
+      lineup.errors.add(:base, "Saldo insuficiente: a escalação custa mais #{Money.format(cost)} e o saldo é " \
+                               "#{Money.format(wallet.balance)}")
       false
     end
 

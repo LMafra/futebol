@@ -13,7 +13,7 @@ RSpec.describe Cartola::PitchComponent do
     counts = %w[forward midfielder defender goalkeeper].to_h { |slot| [slot, count_on(page, slot, 'pitch-player')] }
     expect(counts).to eq('forward' => 3, 'midfielder' => 3, 'defender' => 2, 'goalkeeper' => 1)
     expect(page.at_css('[data-role="formation"]').text).to include('4-3-3')
-    expect(page.text).to include('C$ 7.50')
+    expect(page.text).to include('E$ 7.50')
   end
 
   it 'shows the open slots of the preset, capped by the championship limits' do

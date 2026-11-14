@@ -16,7 +16,7 @@ module Cartola
 
     def value_header = kind == :coins ? 'Moedas' : 'Pontos'
 
-    def formatted(value) = kind == :coins ? format('C$ %.2f', value) : format('%.2f', value)
+    def formatted(value) = kind == :coins ? helpers.esquadrao_money(value) : format('%.2f', value)
 
     def player_name(user) = user.name.presence || user.email_address
   end
