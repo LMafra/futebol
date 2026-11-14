@@ -539,13 +539,12 @@ Ambiente local (WSL): Postgres do projeto na porta 5440 (`~/.local/share/futebol
 
 ## Gestor, campeonato, partida ao vivo e participantes
 
-Tickets **0085+**, na branch canônica `cursor/admin-ui-docs-e3a0` (PR #87), um commit assinado por ticket.
+Tickets **0085–0106**, na branch canônica `cursor/admin-ui-docs-e3a0` (PR #87), um commit assinado por ticket, na ordem 0085 → 0086 → 0087 → 0088 → 0106 → 0089 → 0090 → 0091 → 0092 → 0093 → 0102 → 0094 → 0095 → 0096 → 0097 → 0098 → 0099 → 0100 → 0101 → 0103 → 0104 → 0105.
 
 | Bloco | Ticket | Status | Artefatos | Observações |
 |---|---|---|---|---|
 | G0 — bug escalações | [0085](../tickets/TICKET-0085.md) | ok | `Cartola::Lineup` ransackable | `/gestor/esquadrao_lineups` voltou a abrir com filtros |
 | G1 — mostrar senha | [0086](../tickets/TICKET-0086.md) | ok | `PasswordRevealHelper`, `password_reveal_controller.js` | login, cadastro e redefinição; botão 48px com `aria-pressed`, oculto sem JS |
-| G1 — siglas dos scouts | [0087](../tickets/TICKET-0087.md) | ok | `ScoutLegendHelper` | legenda acima da planilha; `abbr` ≥640px e nome por extenso no celular; SG do scout = jogo sem sofrer gols |
 | G1 — siglas dos scouts | [0087](../tickets/TICKET-0087.md) | ok | `ScoutLegendHelper` | legenda acima da planilha; `abbr` ≥640px e nome por extenso no celular; SG do scout = jogo sem sofrer gols |
 | G1 — busca por nome | [0088](../tickets/TICKET-0088.md) | ok | `AdminNameSearch`, `autocomplete_controller.js`, `autocomplete?` | sem operadores; sugestões no escopo do Pundit via `<datalist>`; rodada/temporada/auditoria em select |
 | G1 — links x botões | [0106](../tickets/TICKET-0106.md) | ok | [links-e-botoes.md](../ux/links-e-botoes.md), `LinkClassesHelper`, `spec/design/links_spec.rb` | links sublinhados em repouso; ícones com verbo + registro; sem "Ver"/"nesta página"; Sair é botão |
@@ -566,3 +565,11 @@ Tickets **0085+**, na branch canônica `cursor/admin-ui-docs-e3a0` (PR #87), um 
 | G7 — listagens | [0103](../tickets/TICKET-0103.md) | ok | `AdminCollectionIndex`, `CollectionSortParams`, `ListingsHelper`, `admin/listings/*`, `docs/checkpoints/UX-LISTAGENS.md` | auditoria heurística com screenshots antes e depois; campeonatos e bolões em cartões, times em grade ↔ tabela, jogadores, usuários e CSV em tabela ordenável, partidas por rodada ↔ agenda, auditoria em linha do tempo; filas dos painéis em cartões no celular; nada rola para o lado em 390px |
 | G7 — ações em lote | [0104](../tickets/TICKET-0104.md) | ok | `AdminBulkActions`, `app/services/bulk/*`, `Bulk::Report`, `c.bulk_fields`, políticas `bulk_*?` | times: inscrever, remover do campeonato e excluir; jogadores: mover e excluir; partidas: reagendar com motivo e excluir; usuários: aprovar gestor (Admin); relatório com o que foi mantido e por quê; `AuditLog` por registro; barra fixa acima do menu inferior em 390px |
 | G7 — público | [0105](../tickets/TICKET-0105.md) | ok | `championships/_partidas`, `ChampionshipsController#load_round`, `scroller_controller.js`, `home/_matches_today` | aba Partidas em sanfona por rodada (componente `grouped`), rodada em aberto aberta, `?rodada=` abre outra, partida ao vivo com selo e "acompanhar ao vivo"; "Jogos de hoje" avança a cada 6s, segura com mouse ou foco, para com toque ou "Pausar", desligado com "reduzir movimento" |
+
+Fechamento: `docs/checkpoints/ux-audit/after-0085/`, em 390px e 1440px:
+- público: home, partidas do campeonato e partida ao vivo;
+- Gestor: painel, campeonatos, times, partidas, tela da partida, bolão e Esquadrão;
+- Admin: painel, campeonatos, usuários e auditoria;
+- PWA: página offline e menu "Mais".
+
+As 28 telas respondem 200 sem rolagem lateral. O manifesto e o service worker estão ativos. Gate: `1302 examples, 0 failures, 4 pending` (system specs sem Chrome); RuboCop, Packwerk e Zeitwerk limpos.
