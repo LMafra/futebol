@@ -84,6 +84,19 @@ Cartola::PlayerValueHistory:
   player:
     MissingDependentDestroyChecker:
       enabled: false
+Cartola::ScoutEvent:
+  match:
+    MissingDependentDestroyChecker:
+      enabled: false
+  player:
+    MissingDependentDestroyChecker:
+      enabled: false
+  recorded_by:
+    MissingDependentDestroyChecker:
+      enabled: false
+  team:
+    MissingDependentDestroyChecker:
+      enabled: false
 Cartola::Squad:
   user:
     MissingDependentDestroyChecker:

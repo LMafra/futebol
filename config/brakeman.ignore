@@ -1,0 +1,23 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "SQL Injection",
+      "fingerprint": "d4c15f985c756159e83723d3de35d3913438fcefa2688c4ed1036c305787a9b7",
+      "file": "engines/core/app/data_migrations/core/team_ownership_backfill.rb",
+      "note": "Data migration: team_id is an integer id read from core_teams; no request input."
+    },
+    {
+      "warning_type": "SQL Injection",
+      "fingerprint": "2dacb0971e35a134bf476607cc50e94febdde5e7a06122f69c4cfb72a08316a5",
+      "file": "engines/core/app/data_migrations/core/team_ownership_backfill.rb",
+      "note": "Data migration: column names come from connection.columns, values go through connection.quote and team_id is an integer id from the database; no request input."
+    },
+    {
+      "warning_type": "SQL Injection",
+      "fingerprint": "4463709e46f362484b18d0c56f98d1a57160165b0eb5f5962b7c8314015ec631",
+      "file": "engines/core/app/data_migrations/core/team_ownership_backfill.rb",
+      "note": "Data migration: the external id is read from core_teams and goes through connection.quote; no request input."
+    }
+  ],
+  "brakeman_version": "8.1.0"
+}

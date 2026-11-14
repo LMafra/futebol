@@ -20,8 +20,8 @@ module Cartola
 
     # Match order: by period, then minute; lances without them (backfilled totals) first.
     scope :chronological, lambda {
-      order(Arel.sql("array_position(ARRAY[#{PERIODS.keys.map { "'#{_1}'" }.join(',')}]::varchar[], period) " \
-                     'NULLS FIRST'), Arel.sql('minute NULLS FIRST'), :id)
+      period_order = sanitize_sql_array(['array_position(ARRAY[?]::varchar[], period) NULLS FIRST', PERIODS.keys])
+      order(Arel.sql(period_order), Arel.sql('minute NULLS FIRST'), :id)
     }
 
     # The kept lances of a match, newest first (the timeline of the match pages).

@@ -422,7 +422,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_000059) do
     t.string "captain_phone"
     t.index ["external_id"], name: "index_core_teams_on_external_id", unique: true
     t.index ["manager_id", "short_name"], name: "index_core_teams_on_manager_id_and_short_name", unique: true, nulls_not_distinct: true
-    t.index ["manager_id"], name: "index_core_teams_on_manager_id"
     t.check_constraint "char_length(short_name::text) = 3", name: "core_teams_short_name_length"
   end
 

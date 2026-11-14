@@ -90,12 +90,15 @@ RSpec.describe 'Admin and Gestor listings on Ui::CollectionComponent (TICKET-010
     end
 
     it 'walks the agenda week by week, also through an empty week' do
-      monday = Date.new(2026, 11, 9)
-      create(:match, championship:, match_date: Time.zone.local(2026, 11, 15, 16), home_team: team)
+      monday = 1.year.from_now.to_date.beginning_of_week
+      sunday = monday + 6
+      create(:match, championship:, match_date: sunday.in_time_zone.change(hour: 16), home_team: team)
 
-      get '/gestor/matches', params: { view: 'agenda', q: { match_date_gteq: '2026-11-11' } }
-      expect(page_html.at_css('[data-role="agenda-week"]').text).to eq('Semana de 09/11 a 15/11')
-      expect(page_html.css('#matches [data-role="collection-group"] h3').map(&:text)).to eq(['Domingo, 15/11/2026'])
+      get '/gestor/matches', params: { view: 'agenda', q: { match_date_gteq: (monday + 2).iso8601 } }
+      expect(page_html.at_css('[data-role="agenda-week"]').text)
+        .to eq("Semana de #{monday.strftime('%d/%m')} a #{sunday.strftime('%d/%m')}")
+      expect(page_html.css('#matches [data-role="collection-group"] h3').map(&:text))
+        .to eq(["Domingo, #{sunday.strftime('%d/%m/%Y')}"])
 
       get week_link('Próxima semana')['href']
       next_week = "Semana de #{(monday + 7).strftime('%d/%m')} a #{(monday + 13).strftime('%d/%m')}"
