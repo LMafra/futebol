@@ -33,10 +33,8 @@ class RevertMatchPointsService
 
   def revert!
     scoring_token = @match.scoring_token
-    @match.revert_match!(@reversal_token)
-    discarded = Bolao::PredictionScore.kept.where(scoring_token:).discard_all
-    Cartola::PlayerValue.revert!(scoring_token) if scoring_token
-    audit!(scoring_token:, discarded_scores: discarded.size)
+    discarded_scores = MatchPoints.unscore!(@match, @reversal_token)
+    audit!(scoring_token:, discarded_scores:)
   end
 
   def audit!(**metadata)

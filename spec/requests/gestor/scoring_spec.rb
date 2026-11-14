@@ -60,18 +60,17 @@ RSpec.describe 'Gestor match page (lances, finalizar e reverter)', type: :reques
     expect(Cartola::ScoutEvent.count).to eq(0)
   end
 
-  it 'finaliza a própria partida após os lances e enfileira a pontuação' do
+  it 'finaliza a própria partida após os lances e pontua na hora' do
     2.times { record(own_match, striker) }
     record(own_match, rival)
 
     expect do
       post "/gestor/matches/#{own_match.id}/finalize",
-           params: { modal: 'finalize', return_to: "/gestor/matches/#{own_match.id}",
-                     finalize: { score_confirmation: '2x1' } }
-    end.to have_enqueued_job(ProcessMatchPointsJob).with(own_match.id, kind_of(String))
+           params: { modal: 'finalize', return_to: "/gestor/matches/#{own_match.id}" }
+    end.not_to have_enqueued_job
 
     expect(response).to redirect_to("/gestor/matches/#{own_match.id}")
-    expect(own_match.reload).to have_attributes(status: 'finished', home_score: 2, away_score: 1)
+    expect(own_match.reload).to have_attributes(status: 'scored', home_score: 2, away_score: 1)
   end
 
   it 'reverte pontuação da própria partida pontuada' do
@@ -80,10 +79,7 @@ RSpec.describe 'Gestor match page (lances, finalizar e reverter)', type: :reques
                       scores_calculated_at: 1.hour.ago, scoring_token:)
     create(:bolao_prediction_score, prediction: create(:bolao_prediction, match: own_match), scoring_token:)
 
-    perform_enqueued_jobs do
-      post '/gestor/matchreversal/revert',
-           params: { reversal: { match_id: own_match.id, reason: 'Erro de lançamento' } }
-    end
+    post '/gestor/matchreversal/revert', params: { reversal: { match_id: own_match.id, reason: 'Erro de lançamento' } }
 
     expect(response).to redirect_to("/gestor/matches/#{own_match.id}")
     expect(own_match.reload).to be_reverted

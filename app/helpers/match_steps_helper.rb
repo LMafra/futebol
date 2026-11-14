@@ -2,8 +2,7 @@
 # lists. Steps without a page of their own (or edit on /admin, where matches are not edited) are a note.
 module MatchStepsHelper
   MATCH_STEP_LINKS = { edit: 'Editar partida', scouts: 'Registrar lances', finalize: 'Finalizar partida' }.freeze
-  MATCH_STEP_NOTES = { edit: 'Agendada', scoring: 'Aguardando a pontuação', scored: 'Concluída',
-                       reverted: 'Aguardando nova pontuação' }.freeze
+  MATCH_STEP_NOTES = { edit: 'Agendada', scored: 'Concluída' }.freeze
 
   def match_next_step(match, step, namespace, classes: inline_link_classes(tone: :ink), role: 'match-step')
     path = match_step_path(match, step, namespace)

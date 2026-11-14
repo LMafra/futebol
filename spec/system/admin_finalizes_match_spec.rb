@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Admin finalizes a match', type: :system do
-  include ActiveJob::TestHelper
-
   let(:admin) { create(:user, :admin) }
   let(:match) { create(:match, status: 'live', match_date: 2.hours.ago) }
   let!(:home_striker) { create(:player, team: match.home_team, position: 'ATA') }
@@ -36,11 +34,8 @@ RSpec.describe 'Admin finalizes a match', type: :system do
     expect(page).to have_css('[data-role="timeline-event"]', count: 3)
 
     click_link 'Finalizar partida'
-    within('dialog#modal-finalize') do
-      fill_in 'finalize[score_confirmation]', with: '2x1'
-      perform_enqueued_jobs { click_button 'Finalizar partida' }
-    end
-    expect(page).to have_text('Partida finalizada em 2 × 1; pontuação enfileirada.')
+    within('dialog#modal-finalize') { click_button 'Finalizar e pontuar' }
+    expect(page).to have_text('Partida finalizada em 2 × 1 e pontuada.')
 
     expect(match.reload).to have_attributes(status: 'scored', home_score: 2, away_score: 1)
     expect(Bolao::PredictionScore.kept.where(prediction: [exact_bet, wrong_bet]).pluck(:prediction_id, :points))

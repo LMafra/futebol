@@ -112,25 +112,14 @@ RSpec.describe 'Admin/Gestor consistency (TICKET-0084)', type: :request do
       expect(page_html.at_css('legend').text.strip).to eq('Arquivo CSV')
     end
 
-    it 'flags the finalize confirmation inline with ARIA' do
+    it 'explains why a match without lances cannot be finalized' do
       match = create(:match, status: 'live', match_date: 2.hours.ago)
-      create(:cartola_scoring_rule, name: Cartola::ScoringRule::DEFAULT_NAME)
-      Cartola::RecordScoutsService.call(
-        match:, actor: admin, ip_address: '127.0.0.1',
-        rows: [{ player_id: create(:player, team: match.home_team, position: 'ATA').id, team_id: match.home_team_id,
-                 played: true, goals: 1 }]
-      )
 
-      post "/admin/matches/#{match.id}/finalize",
-           params: { modal: 'finalize', return_to: "/admin/matches/#{match.id}",
-                     finalize: { score_confirmation: '0x0' } }
+      post "/admin/matches/#{match.id}/finalize", params: { modal: 'finalize', return_to: "/admin/matches/#{match.id}" }
       follow_redirect!
 
-      field = page_html.at_css('input[name="finalize[score_confirmation]"]')
-      expect([field['aria-invalid'], field['aria-describedby']]).to eq(%w[true finalize_score_confirmation_error])
-      expect(page_html.at_css('#finalize_score_confirmation_error').text).to include('não confere')
-      expect(page_html.at_css('label[for="finalize_score_confirmation"]').text.squish)
-        .to eq('Confirme o placar, ex.: 2x1 (obrigatório)')
+      expect(response.body).to include('Registre os lances antes de finalizar')
+      expect(match.reload).to be_live
     end
 
     it 'uses the same required marker in resource forms' do

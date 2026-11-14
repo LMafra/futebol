@@ -20,7 +20,7 @@ RSpec.describe Gestor::MatchQueue do
 
     steps = queue.items.to_h { |item| [item.match, item.step] }
 
-    expect(steps).to eq(finished => :scoring, live_scouted => :finalize, live_empty => :scouts, overdue => :scouts,
+    expect(steps).to eq(finished => :finalize, live_scouted => :finalize, live_empty => :scouts, overdue => :scouts,
                         future => :edit, scored => :scored)
     expect(steps.keys.last).to eq(scored)
   end

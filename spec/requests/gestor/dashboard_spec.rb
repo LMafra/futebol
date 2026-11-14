@@ -39,14 +39,15 @@ RSpec.describe 'Gestor dashboard', type: :request do
     expect(queue_row(scored).at_css('[data-role="status-badge"]').text.squish).to eq('Pontuada')
   end
 
-  it 'labels a finished match as scoring, with no CTA' do
+  it 'offers Finalizar partida for a match finished without points' do
     finished = create(:match, championship:, status: 'finished', match_date: 3.hours.ago, home_score: 0,
                               away_score: 0)
 
     get '/gestor'
 
-    expect(queue_row(finished).at_css('[data-role="status-badge"]').text.squish).to eq('Pontuando')
-    expect(queue_row(finished).css('[data-role="queue-cta"]')).to be_empty
+    expect(queue_row(finished).at_css('[data-role="status-badge"]').text.squish).to eq('Encerrada')
+    cta = queue_row(finished).at_css('[data-role="queue-cta"]')
+    expect([cta.text, cta['href']]).to eq(['Finalizar partida', "/gestor/matches/#{finished.id}?modal=finalize"])
   end
 
   it 'keeps Reverter only inside the row overflow, never as a global shortcut' do

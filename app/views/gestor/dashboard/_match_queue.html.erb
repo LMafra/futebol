@@ -5,7 +5,7 @@
                                            texts: { label: "Fila de partidas" }) do |c| %>
       <% c.column(:match, label: "Partida", primary: true) { |item| link_to item.match, gestor_match_path(item.match), class: inline_link_classes(tone: :ink) } %>
       <% c.column(:match_date, label: "Início", numeric: true) { |item| l(item.match.match_date, format: "%d/%m %H:%M") } %>
-      <% c.column(:status, label: "Situação") { |item| admin_match_status_badge(item.match, label: (item.step == :scoring ? "Pontuando" : nil)) } %>
+      <% c.column(:status, label: "Situação") { |item| admin_match_status_badge(item.match) } %>
       <% c.column(:step, label: "Próximo passo") { |item| match_next_step(item.match, item.step, :gestor, classes: AdminHelper::ADMIN_BUTTON_CLASSES, role: "queue-cta") } %>
       <% c.column(:more, label: "Mais ações") do |item| %>
         <% match = item.match %>

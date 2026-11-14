@@ -23,10 +23,9 @@ RSpec.describe 'Admin match page (tela única da partida)', type: :request do
                    lance: { player_id: player.id, stat:, period:, minute: } }
   end
 
-  def finalize(confirmation)
+  def finalize
     post "/admin/matches/#{match.id}/finalize",
-         params: { modal: 'finalize', return_to: "/admin/matches/#{match.id}",
-                   finalize: { score_confirmation: confirmation } }
+         params: { modal: 'finalize', return_to: "/admin/matches/#{match.id}" }
   end
 
   it 'mostra placar, abas por time, botões de lance (DE só para goleiro), linha do tempo e legenda' do
@@ -114,23 +113,18 @@ RSpec.describe 'Admin match page (tela única da partida)', type: :request do
       record(rival, 'goals')
     end
 
-    it 'confirmação diferente volta ao diálogo com o erro' do
-      finalize('1x2')
+    it 'confirma em um clique, sem redigitar o placar: encerra e pontua na hora' do
+      get "/admin/matches/#{match.id}?modal=finalize"
+      dialog = page.at_css('dialog#modal-finalize')
+      expect(dialog.at_css('[data-role="finalize-score"]').text.squish).to include('2 × 1')
+      expect(dialog.css('input:not([type="hidden"])')).to be_empty
 
-      expect(response).to redirect_to("/admin/matches/#{match.id}?modal=finalize")
-      follow_redirect!
-      expect(page.at_css('dialog#modal-finalize [role="alert"]').text)
-        .to include('não confere com o placar dos lances (digite 2x1)')
-      expect(match.reload).to be_live
-    end
-
-    it 'finaliza com o placar dos lances e enfileira a pontuação' do
-      expect { finalize('2 x 1') }.to have_enqueued_job(ProcessMatchPointsJob).with(match.id, kind_of(String))
+      expect { finalize }.not_to have_enqueued_job
 
       expect(response).to redirect_to("/admin/matches/#{match.id}")
-      expect(match.reload).to have_attributes(status: 'finished', home_score: 2, away_score: 1)
+      expect(match.reload).to have_attributes(status: 'scored', home_score: 2, away_score: 1)
       follow_redirect!
-      expect(response.body).to include('Partida finalizada em 2 × 1; pontuação enfileirada.')
+      expect(response.body).to include('Partida finalizada em 2 × 1 e pontuada.')
     end
   end
 

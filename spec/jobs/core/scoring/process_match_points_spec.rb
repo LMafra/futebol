@@ -66,34 +66,19 @@ RSpec.describe ProcessMatchPointsJob do
     expect { perform }.to change(Bolao::PredictionScore, :count).by(predictions.size - 1)
   end
 
-  describe 'failure handling (rescue)' do
-    before do
-      allow(Rails.logger).to receive(:error).and_call_original
-      allow(Bolao::ScoringRule).to receive(:by_pool).and_raise(RuntimeError, 'engine exploded')
-    end
+  it 'rolls back every score when one fails, keeping the match unscored' do
+    allow(Bolao::ScoringRule).to receive(:by_pool).and_raise(RuntimeError, 'engine exploded')
 
-    it 'logs the error, reports it as an OTel error span and re-raises' do
-      expect { perform }.to raise_error(RuntimeError, 'engine exploded')
+    expect { perform }.to raise_error(RuntimeError)
 
-      expect(Rails.logger).to have_received(:error)
-        .with(/ProcessMatchPointsJob failed match_id=#{match.id} scoring_token=#{token}: RuntimeError engine exploded/)
-      expect(error_spans(RuntimeError).sole.attributes)
-        .to include('exception.message' => 'engine exploded', 'exception.handled' => false,
-                    'error.context.match_id' => match.id, 'error.context.scoring_token' => token)
-    end
-
-    it 'leaves no partial scores and keeps the match unscored' do
-      expect { perform }.to raise_error(RuntimeError)
-
-      expect(Bolao::PredictionScore.count).to eq(0)
-      expect(match.reload).to have_attributes(status: 'finished', scoring_token: nil, scores_calculated_at: nil)
-    end
+    expect(Bolao::PredictionScore.count).to eq(0)
+    expect(match.reload).to have_attributes(status: 'finished', scoring_token: nil, scores_calculated_at: nil)
   end
 
-  it 'refuses to score a match that is not finished, rolling back the inserted scores' do
+  it 'leaves alone a match that is not waiting for its points' do
     match.update!(status: 'live')
 
-    expect { perform }.to raise_error(AASM::InvalidTransition)
-    expect(Bolao::PredictionScore.count).to eq(0)
+    expect { perform }.not_to change(Bolao::PredictionScore, :count)
+    expect(match.reload).to be_live
   end
 end

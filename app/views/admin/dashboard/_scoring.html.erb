@@ -55,7 +55,9 @@
       <div class="px-4 py-3">
         <%= render Ui::CollectionComponent.new(items: pending, id: "pending-scoring", mode: :table, texts: { label: "Encerradas com pontuação pendente", empty: "Nada pendente: toda partida encerrada já foi pontuada." }) do |c| %>
           <% c.column(:match, label: "Partida", primary: true) { |match| link_to match, admin_match_path(match), class: inline_link_classes(tone: :ink) } %>
+          <% c.column(:status, label: "Situação") { |match| admin_match_status_badge(match) } %>
           <% c.column(:score, label: "Placar", numeric: true) { |match| admin_score(match) } %>
+          <% c.column(:actions, label: "Ações") { |match| link_to "Finalizar", admin_match_path(match, modal: "finalize"), class: inline_link_classes(tone: :ink) } %>
         <% end %>
       </div>
     </section>

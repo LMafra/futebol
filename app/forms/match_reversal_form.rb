@@ -14,8 +14,7 @@ class MatchReversalForm
   def save
     return false unless valid?
 
-    RevertMatchPointsJob.perform_later(match.id, SecureRandom.uuid, ip_address:, actor_id: actor&.id,
-                                                                    reason: reason.strip)
+    RevertMatchPointsService.call(match:, actor:, ip_address:, reason: reason.strip)
     true
   end
 
@@ -24,6 +23,7 @@ class MatchReversalForm
   def match_can_revert
     return if match.nil? || match.may_revert_match?
 
-    errors.add(:base, "A partida está #{match.status} e sem pontuação calculada: nada para reverter")
+    status = Ui::StatusBadgeComponent::LABELS.fetch(match.status.to_sym).downcase
+    errors.add(:base, "A partida está #{status} e sem pontuação calculada: nada para reverter")
   end
 end

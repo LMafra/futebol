@@ -39,7 +39,8 @@ RSpec.describe 'db/seeds.rb' do
 
     after(:context) do
       [Bolao::PredictionScore, Bolao::Prediction, Bolao::PoolMembership, Bolao::ScoringRule, Bolao::Pool,
-       Cartola::PlayerScore, Cartola::Wallet, Cartola::LineupPlayer, Cartola::Lineup, Cartola::Squad,
+       Cartola::PlayerValueHistory, Cartola::PlayerValue, Cartola::PlayerScore, Cartola::Wallet,
+       Cartola::LineupPlayer, Cartola::Lineup, Cartola::Squad,
        Cartola::ScoringRule, Core::ChampionshipTeam, Core::Match, Core::Player,
        Core::Team, Core::Championship, Core::Session, Core::User].each(&:delete_all)
     end

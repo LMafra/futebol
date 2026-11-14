@@ -1,7 +1,7 @@
 <%# Tela única da partida (Admin e Gestor): placar, lances por time, linha do tempo, legenda e Finalizar. %>
 <% match = board.match %>
 <% can_score = authorized?(:record_event, match) && !match.scored? && (!match.scheduled? || match.may_start_match?) %>
-<% can_finalize = authorized?(:finalize, match) && (match.live? || match.may_start_match?) %>
+<% can_finalize = authorized?(:finalize, match) && FinalizeMatchService.finalizable?(match) %>
 <div class="flex flex-col gap-6 <%= 'pb-24' if can_finalize %>" data-role="match-board">
   <%= render("admin/match_board/scoreboard", match:) %>
 

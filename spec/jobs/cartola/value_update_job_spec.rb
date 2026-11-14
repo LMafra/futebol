@@ -99,11 +99,13 @@ RSpec.describe Cartola::ValueUpdateJob do
     expect(Cartola::PlayerValueHistory.where(scoring_token: token)).to be_empty
   end
 
-  it 'is enqueued by ProcessMatchPointsJob after the Scoring' do
+  it 'runs with the Scoring itself, under its token' do
     finished = create(:match, championship:, status: 'finished', home_score: 1, away_score: 0,
                               match_date: 1.hour.ago)
+    player = score(8, in_match: finished)
 
-    expect { ProcessMatchPointsJob.perform_now(finished.id, token) }
-      .to have_enqueued_job(described_class).with(finished.id, token)
+    expect { ProcessMatchPointsJob.perform_now(finished.id, token) }.not_to have_enqueued_job(described_class)
+
+    expect(Cartola::PlayerValueHistory.find_by!(player:)).to have_attributes(scoring_token: token)
   end
 end

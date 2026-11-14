@@ -34,13 +34,13 @@ module Gestor
       }
     end
 
+    # Finished (scored by a queue before) and reverted matches are finalized again, scored in the same request.
     def step_for(match)
       case match.status
       when 'scheduled' then match.match_date > @now ? :edit : :scouts
       when 'live' then step_for_due(match.id, 'live')
-      when 'finished' then :scoring
       when 'scored' then :scored
-      else :reverted
+      else :finalize
       end
     end
 

@@ -13,7 +13,9 @@ ActiveAdmin.register Core::Match, as: 'Match' do
   filter :match_date
 
   scope :all, default: true
-  scope('Encerradas sem pontuação') { |matches| matches.where(status: 'finished', scores_calculated_at: nil) }
+  scope('Encerradas sem pontuação') do |matches|
+    matches.where(status: %w[finished reverted], scores_calculated_at: nil)
+  end
   scope('Pontuadas') { |matches| matches.where(status: 'scored') }
 
   AdminCollectionIndex.register(self, 'admin/listings/matches')

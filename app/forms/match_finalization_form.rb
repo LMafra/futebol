@@ -1,18 +1,15 @@
-# Admin "MatchFinalizer": the final score comes from the official scouts (Cartola::PlayerScore.score_for) and is
-# read-only; the admin confirms it by typing it as "2x1" in score_confirmation before the match is finished and
-# scored. Without scouts the match cannot be finalized.
+# Finalização on the match page (Admin and Gestor): the final score comes from the official scouts
+# (Cartola::PlayerScore.score_for) and is read-only; confirming the dialog finishes the match and scores it in the
+# same request (FinalizeMatchService). Without scouts the match cannot be finalized.
 class MatchFinalizationForm
   include ActiveModel::Model
   include ActiveModel::Attributes
 
   NO_SCOUTS = 'Registre os lances antes de finalizar'.freeze
 
-  attribute :score_confirmation, :string
   attr_accessor :match, :actor, :ip_address
 
   validate :scouts_recorded
-  validates :score_confirmation, presence: { message: 'é obrigatória: digite o placar final para confirmar' }
-  validate :confirmation_matches_score, if: -> { errors.none? }
   validate :match_can_finish
 
   def self.model_name = ActiveModel::Name.new(self, nil, 'Finalization')
@@ -28,8 +25,6 @@ class MatchFinalizationForm
   def home_score = derived_score&.first
   def away_score = derived_score&.last
 
-  def expected_confirmation = "#{home_score}x#{away_score}"
-
   def save
     return false unless valid?
 
@@ -43,16 +38,10 @@ class MatchFinalizationForm
     errors.add(:base, NO_SCOUTS) if match && !scouts?
   end
 
-  def confirmation_matches_score
-    typed = score_confirmation.to_s.downcase.delete(' ').tr('×', 'x')
-    return if typed == expected_confirmation
-
-    errors.add(:score_confirmation, "não confere com o placar dos lances (digite #{expected_confirmation})")
-  end
-
   def match_can_finish
-    return if match.nil? || match.live? || match.may_start_match?
+    return if match.nil? || FinalizeMatchService.finalizable?(match)
 
-    errors.add(:base, "A partida está #{match.status}: só partidas ao vivo ou já iniciadas podem ser finalizadas")
+    status = Ui::StatusBadgeComponent::LABELS.fetch(match.status.to_sym).downcase
+    errors.add(:base, "A partida está #{status}: só partidas ao vivo, encerradas ou revertidas podem ser finalizadas")
   end
 end

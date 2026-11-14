@@ -22,7 +22,7 @@ ActiveAdmin.register_page 'Dashboard' do
     def load_dashboard
       matches = Core::Match.includes(:home_team, :away_team).order(:match_date)
       @live = matches.where(status: 'live')
-      @pending = matches.where(status: 'finished', scores_calculated_at: nil)
+      @pending = matches.where(status: %w[finished reverted], scores_calculated_at: nil)
       @recent_logs = recent_audit_logs
       @recent_matches = matches.reorder(match_date: :desc).limit(8)
       @manager_queue = Users::PendingManagerQueue.call
@@ -34,7 +34,7 @@ ActiveAdmin.register_page 'Dashboard' do
                                 .includes(:user).order(created_at: :desc).limit(8)
     end
 
-    # Active = still has a match that is not scored yet (scheduled, live, finished awaiting scoring or reverted).
+    # Active = still has a match that is not scored yet (scheduled, live, finished or reverted).
     def active_championships_count
       Core::Championship.where(id: Core::Match.where.not(status: 'scored').select(:championship_id)).count
     end

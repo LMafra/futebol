@@ -39,7 +39,6 @@ pt-BR:
       finalization:
         home_score: "Placar do mandante"
         away_score: "Placar do visitante"
-        score_confirmation: "Confirmação do placar"
       reversal:
         reason: "Motivo"
   public_profile_consent:

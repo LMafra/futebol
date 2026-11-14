@@ -41,15 +41,12 @@ module AdminMatchBoard
 
   FINALIZE = proc do
     member_action :finalize, method: :post do
-      form = MatchFinalizationForm.new(score_confirmation: params.dig(:finalize, :score_confirmation),
-                                       match: resource, actor: current_user, ip_address: request.remote_ip)
+      form = MatchFinalizationForm.new(match: resource, actor: current_user, ip_address: request.remote_ip)
       if form.save
         redirect_to resource_path, status: :see_other,
-                                   notice: "Partida finalizada em #{form.home_score} × #{form.away_score}; " \
-                                           'pontuação enfileirada.'
+                                   notice: "Partida finalizada em #{form.home_score} × #{form.away_score} e pontuada."
       else
-        redirect_back_to_modal(form.errors, values: { 'score_confirmation' => form.score_confirmation.to_s },
-                                            fallback: resource_path)
+        redirect_to resource_path, alert: form.errors.full_messages.to_sentence, status: :see_other
       end
     end
   end
