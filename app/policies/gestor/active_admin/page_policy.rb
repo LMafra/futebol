@@ -7,6 +7,7 @@ module Gestor
       def record? = admin? || manager?
       def finalize? = admin? || manager?
       def revert? = admin? || manager?
+      def update_lineup? = admin? || manager?
     end
   end
 end

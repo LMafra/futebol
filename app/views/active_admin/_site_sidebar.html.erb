@@ -1,0 +1,60 @@
+<%
+  # Placar sidebar: paper surface, rule borders, task navigation (Block A/B).
+  nav_idle = "text-ink hover:bg-white flex items-center w-full min-h-10 rounded-md p-2 gap-x-2 text-sm font-body no-underline"
+  nav_active = "bg-cartola/15 font-semibold shadow-[inset_4px_0_0_var(--color-cartola)] selected"
+  child_idle = "text-ink hover:bg-white flex items-center min-h-10 rounded-md px-2 text-sm font-body no-underline"
+  toggle_label = ->(section) { "Expandir ou recolher #{section}" }
+%>
+<aside id="main-menu" class="fixed top-0 md:top-16 bottom-0 inset-s-0 z-40 w-72 md:w-60 p-4 overflow-y-auto transition-transform duration-200 -translate-x-full md:translate-x-0 bg-paper md:border-e md:border-rule" tabindex="-1" data-role="craquefy-admin-sidebar" aria-label="<%= t('active_admin.main_navigation', default: 'Menu principal') %>">
+  <ul role="list" class="flex flex-1 flex-col space-y-1.5 font-body" data-role="craquefy-admin-task-nav">
+    <% current_menu.items(self).each do |item| %>
+      <% children = item.items(self).presence %>
+      <% url = item.url(self) %>
+      <% section_label = item.label(self) %>
+      <% open = current_menu_item?(item) %>
+      <% label = capture do %>
+        <% if url.present? %>
+          <% active = current_menu_item?(item, children: false) %>
+          <%= link_to url, item.html_options.merge(class: "#{nav_idle} #{(active ? nav_active : '')}", aria: { current: (active ? 'page' : nil) }) do %>
+            <%= admin_nav_section_icon(section_label) %>
+            <span><%= section_label %></span>
+          <% end %>
+        <% else %>
+          <span class="<%= nav_idle %>"><%= admin_nav_section_icon(section_label) %><span><%= section_label %></span></span>
+        <% end %>
+      <% end %>
+      <li <%= "data-open" if open %> class="group" data-item-id="<%= item.id %>" data-nav-section="<%= section_label %>">
+        <% if children %>
+          <% if url.present? && url == "#" %>
+            <button type="button" data-menu-button class="<%= nav_idle %> cursor-pointer" aria-expanded="<%= open.present? %>" aria-controls="main-menu-<%= item.id %>">
+              <%= admin_nav_section_icon(section_label) %>
+              <span class="grow text-start"><%= section_label %></span>
+              <svg class="group-data-open:rotate-90 group-data-open:rtl:-rotate-90 ms-auto h-5 w-5 shrink-0 rtl:-scale-x-100" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          <% elsif url.present? && url != "#" %>
+            <div data-parent-id="<%= item.id %>" class="flex">
+              <%= label %>
+              <button type="button" data-menu-button data-parent-id="<%= item.id %>" class="<%= nav_idle %> w-10 shrink-0 cursor-pointer justify-center" aria-label="<%= toggle_label.(section_label) %>" aria-expanded="<%= open.present? %>" aria-controls="main-menu-<%= item.id %>">
+                <svg class="group-data-open:rotate-90 group-data-open:rtl:-rotate-90 h-5 w-5 shrink-0 rtl:-scale-x-100" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          <% end %>
+          <ul role="list" id="main-menu-<%= item.id %>" class="mt-1 space-y-1 hidden group-data-open:block ms-1 ps-2 border-s-2 border-rule">
+            <% children.each do |j| %>
+              <% child_active = current_menu_item?(j) %>
+              <li data-item-id="<%= j.id %>">
+                <%= link_to j.label(self), j.url(self), j.html_options.merge(class: "#{child_idle} #{(child_active ? nav_active : '')}", aria: { current: (child_active ? 'page' : nil) }) %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <%= label %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</aside>

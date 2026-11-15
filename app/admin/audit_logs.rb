@@ -5,20 +5,13 @@ ActiveAdmin.register Core::AuditLog, as: 'AuditLog' do
   includes :user
   config.sort_order = 'created_at_desc'
 
-  filter :action
-  filter :user
-  filter :auditable_type
-  filter :created_at
+  filter :action, label: 'Ação', as: :select, collection: -> { admin_audit_log_options(:action) }
+  filter :user, label: 'Quem'
+  filter :auditable_type, label: 'Tipo de registro', as: :select,
+                          collection: -> { admin_audit_log_options(:auditable_type) }
+  filter :created_at, label: 'Quando'
 
-  index do
-    id_column
-    column :action
-    column :user
-    column(:auditable) { |log| "#{log.auditable_type} ##{log.auditable_id}" if log.auditable_type }
-    column(:ip_address) { |log| log.ip_address.to_s }
-    column :created_at
-    actions
-  end
+  AdminCollectionIndex.register(self, 'admin/listings/audit_logs')
 
   show do
     attributes_table do

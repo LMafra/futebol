@@ -39,7 +39,8 @@ module Cartola
       authorize @lineup
       refund = Cartola::WalletService.destroy(@lineup)
       redirect_to main_app.lineup_path(lineup_location),
-                  notice: format('Escalação desfeita: C$ %.2f devolvidos à carteira.', refund), status: :see_other
+                  notice: "Escalação desfeita: #{helpers.esquadrao_money(refund)} devolvidos à carteira.",
+                  status: :see_other
     end
 
     private
@@ -52,7 +53,7 @@ module Cartola
 
     def championship
       @championship ||= if params[:championship_id]
-                          Core::Championship.find(params[:championship_id])
+                          Core::Championship.published.find(params[:championship_id])
                         else
                           Core::Championship.latest || raise(ActiveRecord::RecordNotFound, 'Nenhum campeonato')
                         end

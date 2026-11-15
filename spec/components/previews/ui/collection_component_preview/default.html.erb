@@ -1,0 +1,12 @@
+<%= render Ui::CollectionComponent.new(items:, id: "preview-collection", mode:, selectable:, sort: "points", direction: "desc",
+                                       group_by: :team, open_group: "Várzea FC", selected: 1,
+                                       texts: { label: "Participantes" }) do |c| %>
+  <% c.column(:name, label: "Nome", primary: true, sortable: true) %>
+  <% c.column(:team, label: "Time") %>
+  <% c.column(:points, label: "Pontos", numeric: true, sortable: true) %>
+  <% c.detail do |item| %>
+    <p class="font-display text-2xl"><%= item.name %></p>
+    <p class="text-sm text-graphite"><%= item.team %> · <%= item.points %> pontos</p>
+  <% end %>
+  <% c.bulk_action("Mover de time", url: "#") %>
+<% end %>

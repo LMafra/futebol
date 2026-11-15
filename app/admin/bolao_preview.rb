@@ -1,7 +1,8 @@
 ActiveAdmin.register_page 'BolaoPreview' do
-  menu parent: 'Pontuação', label: 'Preview do Bolão', priority: 1
+  menu false
+  breadcrumb { match_crumbs(@match) }
 
-  content title: 'Preview do Bolão' do
+  content title: 'Prévia do Bolão' do
     render partial: 'admin/bolao_preview/panel', locals: {
       matches: assigns[:matches], match: assigns[:match], preview: assigns[:preview],
       preview_error: assigns[:preview_error], pools: assigns[:pools], users: assigns[:users],

@@ -1,0 +1,10 @@
+<%# Inscrever time em diálogo, na página do campeonato do Admin e do Gestor. %>
+<%= modal_form :enroll, title: "Inscrever time", submit: "Inscrever time",
+               url: public_send(:"enroll_#{namespace}_championship_path", championship) do |f| %>
+  <%= modal_field f, :team_id, label: "Time", required: true,
+                  choices: options_from_collection_for_select(candidates, :id, :name, modal_value(:enroll, :team_id)) %>
+  <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">
+    Não está na lista?
+    <%= link_to "Cadastrar time", public_send(:"new_#{namespace}_team_path"), class: inline_link_classes("font-body") %>
+  </p>
+<% end %>

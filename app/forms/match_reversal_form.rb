@@ -6,7 +6,8 @@ class MatchReversalForm
   attribute :reason, :string
   attr_accessor :match, :actor, :ip_address
 
-  validates :reason, presence: { message: 'é obrigatório' }, length: { maximum: 500 }
+  validates :reason, presence: { message: 'é obrigatório' },
+                     length: { minimum: 20, maximum: 500, too_short: 'deve ter no mínimo 20 caracteres' }
   validate :match_can_revert
 
   def self.model_name = ActiveModel::Name.new(self, nil, 'Reversal')
@@ -14,8 +15,7 @@ class MatchReversalForm
   def save
     return false unless valid?
 
-    RevertMatchPointsJob.perform_later(match.id, SecureRandom.uuid, ip_address:, actor_id: actor&.id,
-                                                                    reason: reason.strip)
+    RevertMatchPointsService.call(match:, actor:, ip_address:, reason: reason.strip)
     true
   end
 
@@ -24,6 +24,7 @@ class MatchReversalForm
   def match_can_revert
     return if match.nil? || match.may_revert_match?
 
-    errors.add(:base, "A partida está #{match.status} e sem pontuação calculada: nada para reverter")
+    status = Ui::StatusBadgeComponent::LABELS.fetch(match.status.to_sym).downcase
+    errors.add(:base, "A partida está #{status} e sem pontuação calculada: nada para reverter")
   end
 end

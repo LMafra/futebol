@@ -15,7 +15,7 @@ module Ui
     # @param players toggle "Top athletes, with extra columns"
     def default(compact: false, players: false)
       unless players
-        return render LeaderboardTableComponent.new(rows: ROWS, texts: { label: 'Ranking do Bolão' }, compact:)
+        return render LeaderboardTableComponent.new(rows: ROWS, texts: { label: 'Classificação do Bolão' }, compact:)
       end
 
       render LeaderboardTableComponent.new(rows: PLAYERS, texts: { label: 'Top atletas', name_header: 'Atleta' },

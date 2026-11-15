@@ -16,7 +16,7 @@ RSpec.describe 'Admin AuditHistory page', type: :request do
     get '/admin/audithistory'
 
     expect(response).to have_http_status(:ok)
-    rows = Nokogiri::HTML(response.body).css('[data-role="audit-logs"] tbody tr').map { _1.text.squish }
+    rows = Nokogiri::HTML(response.body).css('#audit-logs [data-role="collection-item"]').map { _1.text.squish }
     expect(rows.size).to eq(2)
     expect(rows.join).to include('revert', 'chefe@futebol.test', "Core::Match ##{match.id}", '203.0.113.9',
                                  'súmula corrigida')
@@ -27,7 +27,7 @@ RSpec.describe 'Admin AuditHistory page', type: :request do
 
     get '/admin/audithistory', params: { audit_action: 'revert', match_id: match.id }
 
-    expect(Nokogiri::HTML(response.body).css('[data-role="audit-logs"] tbody tr').size).to eq(1)
+    expect(Nokogiri::HTML(response.body).css('#audit-logs [data-role="collection-item"]').size).to eq(1)
   end
 
   it 'answers 403 to non-admins' do

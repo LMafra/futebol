@@ -1,0 +1,7 @@
+<%# Abas da página do campeonato no Admin e no Gestor (AdminChampionshipStandings). %>
+<nav class="mb-4 flex flex-wrap gap-2" aria-label="Seções do campeonato" data-role="championship-tabs">
+  <% AdminChampionshipStandings::TABS.each do |tab, label| %>
+    <%= link_to label, public_send(:"#{namespace}_championship_path", championship, aba: tab),
+                aria: { current: (tab == current.presence ? "page" : nil) }, class: tab_link_classes(tab == current.presence) %>
+  <% end %>
+</nav>

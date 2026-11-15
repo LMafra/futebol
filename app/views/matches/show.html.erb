@@ -1,0 +1,19 @@
+<% championship = @match.championship %>
+<% content_for(:title, brand_title(@match.to_s)) %>
+
+<div class="flex max-w-3xl flex-col gap-6">
+  <header class="border-b-4 border-ink pb-2" data-role="match-header">
+    <p class="flex flex-wrap gap-x-2 text-xs font-bold uppercase tracking-widest text-graphite">
+      <% if championship.private? %>
+        <span><%= championship.name %></span>
+      <% else %>
+        <%= link_to championship.name, public_championship_path(championship, tab: "partidas", rodada: @match.round), class: inline_link_classes %>
+      <% end %>
+      <% if @match.round %><span>· Rodada <span class="tabular-nums"><%= @match.round %></span></span><% end %>
+    </p>
+    <h1 class="mt-1 font-display text-3xl font-extrabold tracking-tight sm:text-4xl"><%= @match.home_team.name %> × <%= @match.away_team.name %></h1>
+  </header>
+
+  <%= turbo_stream_from @match %>
+  <%= render "matches/live", match: @match, events: @events %>
+</div>

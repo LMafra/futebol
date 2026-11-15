@@ -1,0 +1,49 @@
+<% enrollments = championship.championship_teams.includes(:team).sort_by { |enrollment| enrollment.team.name } %>
+<% played_ids = championship.matches.pluck(:home_team_id, :away_team_id).flatten.to_set %>
+<% can_enroll = authorized?(:enroll, championship) %>
+<div class="flex flex-col gap-4" data-role="enrollments">
+  <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Só times inscritos entram nas partidas deste campeonato.</p>
+  <% if enrollments.empty? %>
+    <%= empty_notice('Nenhum time inscrito ainda.') %>
+  <% else %>
+    <ul class="divide-y divide-rule" role="list">
+      <% enrollments.each do |enrollment| %>
+        <% team = enrollment.team %>
+        <li class="flex flex-wrap items-center justify-between gap-3 py-3" data-role="enrollment">
+          <div class="min-w-0">
+            <%= link_to team.name, public_send(:"#{namespace}_team_path", team), class: inline_link_classes('font-body') %>
+            <span class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>"><%= team.short_name %></span>
+            <% if team.captain_name.present? %>
+              <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Capitão: <%= [team.captain_name, formatted_phone(team.captain_phone)].compact.join(' · ') %></p>
+            <% end %>
+          </div>
+          <% if can_enroll %>
+            <% if played_ids.include?(team.id) %>
+              <span class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Tem partidas</span>
+            <% else %>
+              <%= button_to "Remover #{team.name}", public_send(:"unenroll_#{namespace}_championship_path", championship),
+                            method: :delete, params: { team_id: team.id },
+                            class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES,
+                            form: { data: { turbo_confirm: "Remover #{team.name} deste campeonato?" } } %>
+            <% end %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <% if can_enroll %>
+    <% candidates = enrollable_teams(championship) %>
+    <% if candidates.any? %>
+      <div data-role="enroll-form">
+        <%= modal_trigger "Inscrever time", :enroll, public_send(:"#{namespace}_championship_path", championship, modal: :enroll) %>
+        <%= render "admin/modals/enroll", championship:, candidates:, namespace: %>
+      </div>
+    <% else %>
+      <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">
+        Todos os seus times já estão inscritos.
+        <%= link_to 'Cadastrar time', public_send(:"new_#{namespace}_team_path"), class: inline_link_classes('font-body') %>
+      </p>
+    <% end %>
+  <% end %>
+</div>

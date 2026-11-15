@@ -19,6 +19,10 @@ module Cartola
 
     def percent = budget.zero? ? 100 : [(spent * 100 / budget).round, 100].min
 
-    def money(value) = format('C$ %.2f', value)
+    def money(value) = helpers.esquadrao_money(value)
+
+    def value_text
+      over_budget? ? "Estourou #{money(-remaining)} de #{money(budget)}" : "Gasto #{money(spent)} de #{money(budget)}"
+    end
   end
 end

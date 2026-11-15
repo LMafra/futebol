@@ -1,0 +1,66 @@
+<%# Editar escalação (organizador): formação, jogadores, capitão e motivo; com erro, volta preenchido. %>
+<% state = flash[:lineup_edit] if flash[:lineup_edit].is_a?(Hash) && flash[:lineup_edit]["lineup_id"].to_s == lineup.id.to_s %>
+<% values = state&.dig("values") || {} %>
+<% selected_ids = Array(values["player_ids"] || lineup.selected_players.map(&:id)).map(&:to_i) %>
+<% captain_id = (values["captain_id"].presence || lineup.captain_id).to_i %>
+<% candidates = board.candidates(lineup) %>
+<% cancel_path = "?#{request.query_parameters.except('editar').to_query}#lineups" %>
+<%= form_with url: public_send(:"#{active_admin_namespace.name}_esquadrao_update_lineup_path"), scope: :lineup,
+              class: "flex flex-col gap-4", data: { turbo: false, role: "lineup-form" } do |f| %>
+  <%= hidden_field_tag :lineup_id, lineup.id, id: nil %>
+  <% if state&.dig("messages").present? %>
+    <div role="alert" class="<%= AdminHelper::ADMIN_ALERT_CLASSES %>">
+      <p class="font-semibold">Corrija para continuar:</p>
+      <ul class="list-disc ps-4"><% state["messages"].each do |message| %><li><%= message %></li><% end %></ul>
+    </div>
+  <% end %>
+
+  <div class="w-40">
+    <%= f.label :formation, "Formação", class: AdminHelper::ADMIN_LABEL_CLASSES %>
+    <%= f.select :formation, Cartola::Lineup.formations_for(board.championship) | [lineup.formation],
+                 { selected: values["formation"].presence || lineup.formation }, class: AdminHelper::ADMIN_INPUT_CLASSES %>
+  </div>
+
+  <% Core::Player::SLOTS.each do |slot| %>
+    <% players = candidates[slot.to_sym] %>
+    <% next if players.blank? %>
+    <fieldset class="flex flex-col gap-1">
+      <legend class="mb-1 text-sm font-semibold uppercase tracking-wide text-graphite">
+        <%= Cartola::Lineup::SLOT_LABELS.fetch(slot.to_sym).capitalize %>
+        <span class="font-normal normal-case">(até <%= board.championship.cartola_limits.fetch(slot.to_sym) %>)</span>
+      </legend>
+      <div class="grid gap-1 sm:grid-cols-2">
+        <% players.each do |player| %>
+          <label class="flex min-h-11 items-center gap-2 rounded-sm px-2 hover:bg-paper" for="lineup_player_<%= player.id %>">
+            <%= check_box_tag "lineup[player_ids][]", player.id, selected_ids.include?(player.id), id: "lineup_player_#{player.id}",
+                              class: "size-5 accent-ink" %>
+            <span class="min-w-0"><span class="font-semibold text-ink"><%= player.name %></span>
+              <span class="text-sm text-graphite"><%= player.team&.short_name %></span></span>
+          </label>
+        <% end %>
+      </div>
+    </fieldset>
+  <% end %>
+
+  <div class="w-full sm:w-80">
+    <%= f.label :captain_id, "Capitão", class: AdminHelper::ADMIN_LABEL_CLASSES %>
+    <%= f.select :captain_id, options_for_select(candidates.values.flatten.sort_by(&:name).map { [_1.name, _1.id] }, captain_id),
+                 { include_blank: "Escolha entre os escalados" }, class: AdminHelper::ADMIN_INPUT_CLASSES,
+                 aria: { describedby: "lineup_captain_hint" } %>
+    <p id="lineup_captain_hint" class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Os pontos do capitão contam em dobro.</p>
+  </div>
+
+  <% reason_missing = state.present? && values["reason"].blank? %>
+  <div>
+    <%= f.label :reason, admin_required_label("Motivo"), class: AdminHelper::ADMIN_LABEL_CLASSES %>
+    <%= f.text_area :reason, value: values["reason"], rows: 3, required: true, autofocus: reason_missing,
+                    class: [AdminHelper::ADMIN_INPUT_CLASSES, (ModalFormHelper::INVALID_INPUT_CLASSES if reason_missing)].compact.join(" "),
+                    aria: { describedby: "lineup_reason_hint", invalid: (true if reason_missing) } %>
+    <p id="lineup_reason_hint" class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Fica na auditoria. A carteira do participante paga ou recebe a diferença de preço, como numa troca feita por ele.</p>
+  </div>
+
+  <div class="flex flex-wrap justify-end gap-2">
+    <%= link_to "Cancelar", cancel_path, class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES %>
+    <%= f.submit "Salvar escalação", name: nil, class: AdminHelper::ADMIN_BUTTON_CLASSES %>
+  </div>
+<% end %>

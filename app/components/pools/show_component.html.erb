@@ -4,6 +4,7 @@
       <div>
         <p class="text-xs font-bold uppercase tracking-widest text-graphite"><%= pool.championship %></p>
         <h1 class="mt-1 font-display text-4xl font-extrabold tracking-tight"><%= pool.name %></h1>
+        <p class="mt-1 text-sm text-graphite" data-role="organizer">Organizado por <%= organizer_label %></p>
       </div>
       <div class="text-right">
         <p class="text-xs font-bold uppercase tracking-widest text-graphite">Código</p>
@@ -23,9 +24,6 @@
           <li class="flex items-center justify-between gap-4 px-4 py-3">
             <span class="font-semibold"><%= member_label(membership) %></span>
             <span class="flex items-center gap-3 text-sm text-graphite">
-              <% if owner?(membership) %>
-                <span class="rounded-sm bg-win px-2 py-1 text-xs font-bold uppercase tracking-widest text-ink">Dono</span>
-              <% end %>
               <span class="tabular-nums">desde <%= joined_on(membership) %></span>
             </span>
           </li>
@@ -49,12 +47,12 @@
 
   <div class="flex flex-wrap items-center gap-4">
     <% if pool&.persisted? %>
-      <%= link_to "Palpites", pool_bets_path(pool), class: "rounded-sm bg-pitch px-4 py-2 font-semibold text-white hover:bg-night" %>
+      <%= link_to "Palpites", pool_bets_path(pool), class: primary_button_classes %>
     <% end %>
-    <%= link_to "Voltar para meus bolões", pools_path, class: "font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
+    <%= link_to "Voltar para meus bolões", pools_path, class: inline_link_classes %>
     <% if can_destroy? %>
       <%= button_to "Excluir bolão", pool_path(pool), method: :delete, form: { data: { turbo_confirm: "Excluir o bolão #{pool.name}?" } },
-                    class: "cursor-pointer text-graphite underline underline-offset-2 hover:no-underline" %>
+                    class: danger_button_classes %>
     <% end %>
   </div>
 </section>

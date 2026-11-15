@@ -14,7 +14,7 @@ module Pools
 
     def can_destroy? = @can_destroy && pool.present?
 
-    def owner?(membership) = membership.user_id == pool.owner_id
+    def organizer_label = pool.owner&.name.presence || 'o gestor do campeonato'
 
     def member_label(membership) = membership.user.name.presence || membership.user.email_address
 

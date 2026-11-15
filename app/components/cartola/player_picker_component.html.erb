@@ -4,7 +4,7 @@
     <% if list? %>
       <label class="flex items-center gap-2 text-sm font-semibold">
         Posição
-        <select class="rounded-sm border border-rule px-2 py-1" data-action="player-filter#filter" data-role="position-filter">
+        <select class="<%= form_control_classes %>" data-action="player-filter#filter" data-role="position-filter">
           <option value="">Todas</option>
           <% POSITION_LABELS.each do |position, label| %>
             <option value="<%= position %>"><%= label %></option>
@@ -29,18 +29,18 @@
         <legend class="text-sm font-bold"><%= label %></legend>
         <ul class="mt-2 grid gap-1 sm:grid-cols-2">
           <% players_by_position[position].each do |player| %>
-            <li class="flex items-center gap-2 rounded-sm px-2 py-1 hover:bg-paper">
-              <label class="flex flex-1 cursor-pointer items-center justify-between gap-3">
+            <li class="flex items-center gap-2 rounded-sm px-2 py-1 hover:bg-rule/40">
+              <label class="flex min-h-12 flex-1 cursor-pointer items-center justify-between gap-3">
                 <span class="flex items-center gap-2">
-                  <input type="checkbox" name="lineup[player_ids][]" value="<%= player.id %>" <%= "checked" if selected?(player) %>>
+                  <input type="checkbox" name="lineup[player_ids][]" value="<%= player.id %>" class="size-4 accent-pitch" <%= "checked" if selected?(player) %>>
                   <span><%= player.name %> <span class="text-sm text-graphite"><%= player.team&.short_name %></span></span>
                 </span>
                 <span class="text-sm tabular-nums text-graphite"><%= price(player) %></span>
               </label>
-              <label class="flex cursor-pointer items-center gap-1 text-xs font-bold" title="Capitão: pontos em dobro">
-                <input type="radio" name="lineup[captain_id]" value="<%= player.id %>" <%= "checked" if captain_id == player.id %>
+              <label class="cursor-pointer" title="Capitão: pontos em dobro">
+                <input type="radio" name="lineup[captain_id]" value="<%= player.id %>" class="peer sr-only" <%= "checked" if captain_id == player.id %>
                        aria-label="Capitão: <%= player.name %>">
-                C
+                <span class="flex size-12 items-center justify-center rounded-sm border border-graphite bg-white text-sm font-bold text-ink peer-checked:border-cartola peer-checked:bg-cartola peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ink" aria-hidden="true">C</span>
               </label>
             </li>
           <% end %>

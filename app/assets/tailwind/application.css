@@ -6,6 +6,14 @@
     @apply bg-paper font-sans text-ink antialiased;
   }
 
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ink;
+  }
+
+  :is(header, .bg-pitch, .bg-night) :focus-visible {
+    @apply outline-white;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     ::before,

@@ -1,0 +1,10 @@
+<%# Menu inferior do Admin e do Gestor abaixo de 640px: até 4 seções + Mais (drawer). %>
+<% items = current_menu.items(self).filter_map do |item|
+     label = item.label(self)
+     url = item.url(self)
+     url = item.items(self).first&.url(self) if url.blank? || url == "#"
+     next if url.blank?
+
+     { label:, path: url, icon_html: admin_nav_section_icon(label), current: current_menu_item?(item) }
+   end.first(4) %>
+<%= render Ui::BottomNavComponent.new(items:) %>

@@ -8,6 +8,7 @@ module Gestor
       def update? = false
       def edit? = false
       def destroy? = false
+      def correct? = admin? || (record_instance? && manages?(record.championship))
 
       class Scope < ApplicationPolicy::Scope
         private

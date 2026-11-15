@@ -19,7 +19,8 @@ module Simulador
 
     def show
       authorize %i[simulador simulation], :show?
-      return unless stale?(etag: [@championship, @championship.matches.maximum(:updated_at)])
+      return unless stale?(etag: [@championship, @championship.matches.maximum(:updated_at),
+                                  @championship.point_deductions.maximum(:updated_at)])
 
       load_matches
       @simulation = Simulador::Simulation.new(championship_id: @championship.id, guesses: live_scores, errors: {})
@@ -45,9 +46,10 @@ module Simulador
     end
 
     def load_matches
-      @matches = @championship.matches.includes(:home_team, :away_team).order(:round, :match_date, :id).to_a
+      @matches = @championship.matches.with_team_crests.order(:round, :match_date, :id).to_a
       @teams = teams_of(@matches)
       @open_matches = @matches.select { |match| match.status.in?(EDITABLE_STATUSES) }
+      @deductions = @championship.point_deductions.active.to_a
       @fixtures = @matches.map { |match| fixture(match) }
       @real = calculate({})
     end
@@ -65,7 +67,7 @@ module Simulador
 
     def calculate(overrides)
       Simulador::StandingsCalculator.call(matches: @fixtures, teams: @teams.to_h { |team| [team.id, team.name] },
-                                          overrides:)
+                                          overrides:, deductions: @deductions)
     end
 
     def project(guesses)

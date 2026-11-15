@@ -13,7 +13,7 @@ RSpec.describe Cartola::PitchComponent do
     counts = %w[forward midfielder defender goalkeeper].to_h { |slot| [slot, count_on(page, slot, 'pitch-player')] }
     expect(counts).to eq('forward' => 3, 'midfielder' => 3, 'defender' => 2, 'goalkeeper' => 1)
     expect(page.at_css('[data-role="formation"]').text).to include('4-3-3')
-    expect(page.text).to include('C$ 7.50')
+    expect(page.text).to include('E$ 7.50')
   end
 
   it 'shows the open slots of the preset, capped by the championship limits' do
@@ -26,5 +26,12 @@ RSpec.describe Cartola::PitchComponent do
     expect(count_on(page, 'midfielder', 'pitch-open-slot')).to eq(3)
     expect(count_on(page, 'forward', 'pitch-open-slot')).to eq(2)
     expect(count_on(page, 'goalkeeper', 'pitch-open-slot')).to eq(0)
+  end
+
+  it 'keeps text on the pitch green white, not rule (TICKET-0082)' do
+    page = render_inline(described_class.new(lineup: create(:cartola_lineup, formation: '4-3-3')))
+
+    expect(page.at_css('[data-role="formation"]')['class']).to include('text-white')
+    expect(page.at_css('[data-role="pitch-open-slot"]')&.[]('class').to_s).not_to include('text-rule')
   end
 end

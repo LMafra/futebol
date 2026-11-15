@@ -1,8 +1,10 @@
 <% content_for(:title, brand_title("Acesso negado")) %>
 
 <section class="mx-auto max-w-xl rounded-md border border-rule bg-white px-6 py-8 shadow-sm" aria-labelledby="forbidden-title">
-  <p class="text-sm font-bold uppercase tracking-widest text-graphite">Erro 403</p>
-  <h1 id="forbidden-title" class="mt-2 font-display text-3xl font-bold">Acesso negado</h1>
+  <header class="border-b-4 border-ink pb-2">
+    <p class="text-xs font-bold uppercase tracking-widest text-graphite">Erro 403</p>
+    <h1 id="forbidden-title" class="mt-1 font-display text-4xl font-extrabold tracking-tight">Acesso negado</h1>
+  </header>
   <p class="mt-4 text-graphite"><%= local_assigns[:message] || "A área administrativa é restrita a administradores. Se você precisa de acesso, fale com a organização do bolão." %></p>
-  <%= link_to "Voltar para o início", main_app.root_path, class: "mt-6 inline-block font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
+  <%= link_to "Voltar para o início", main_app.root_path, class: primary_button_classes("mt-6") %>
 </section>

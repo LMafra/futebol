@@ -1,5 +1,5 @@
 <% if form.errors.any? %>
-  <div class="mb-4 rounded-md border-l-4 border-red-700 bg-red-50 px-4 py-3 text-sm text-red-900 dark:bg-red-950 dark:text-red-100" role="alert" data-role="form-errors">
+  <div class="mb-4 <%= AdminHelper::ADMIN_ALERT_CLASSES %>" role="alert" data-role="form-errors">
     <p class="font-semibold">Corrija os campos abaixo:</p>
     <ul class="mt-1 list-disc ps-5">
       <% form.errors.full_messages.each do |message| %>

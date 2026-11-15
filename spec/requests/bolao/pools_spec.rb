@@ -4,32 +4,16 @@ RSpec.describe 'Bolão pools', type: :request do
   let(:owner) { create(:user) }
   let(:championship) { create(:championship) }
 
-  def create_pool(name: 'Bolão da firma')
-    post pools_path, params: { pool: { name:, championship_id: championship.id } }
-    Bolao::Pool.order(:id).last
-  end
-
-  it 'cria o pool com a membership do owner e um código de 6 caracteres' do
+  it 'não cria bolão pelo site público: só o gestor ou o admin criam (TICKET-0093)' do
     sign_in(owner)
 
-    expect { create_pool }.to change(Bolao::Pool, :count).by(1).and change(Bolao::PoolMembership, :count).by(1)
+    get pools_path
+    expect(response.body).not_to include('Criar bolão')
+    expect(Nokogiri::HTML(response.body).at_css('[data-role="join-hint"]').text).to include('gestor')
 
-    pool = Bolao::Pool.last
-    expect(response).to redirect_to(pool_path(pool))
-    expect(pool.owner).to eq(owner)
-    expect(pool.code).to match(/\A[A-HJ-NP-Z2-9]{6}\z/)
-    expect(pool.members).to contain_exactly(owner)
-  end
-
-  it 'gera códigos únicos e troca o código quando há colisão' do
-    sign_in(owner)
-    first = create_pool(name: 'Primeiro')
-    allow(Bolao::Pool).to receive(:generate_code).and_return(first.code, 'ZZZZZZ')
-
-    second = create_pool(name: 'Segundo')
-
-    expect(second.code).to eq('ZZZZZZ')
-    expect(Bolao::Pool.distinct.count(:code)).to eq(2)
+    expect { post pools_path, params: { pool: { name: 'Bolão da firma', championship_id: championship.id } } }
+      .not_to change(Bolao::Pool, :count)
+    expect(response).to have_http_status(:not_found)
   end
 
   it 'entra no pool com um código válido' do
@@ -38,7 +22,7 @@ RSpec.describe 'Bolão pools', type: :request do
     sign_in(member)
 
     expect { post join_pools_path, params: { code: pool.code.downcase } }
-      .to change { pool.members.reload.count }.from(1).to(2)
+      .to change { pool.members.reload.count }.from(0).to(1)
     expect(response).to redirect_to(pool_path(pool))
   end
 

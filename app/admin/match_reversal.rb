@@ -1,6 +1,7 @@
 %i[admin gestor].each do |ns|
   ActiveAdmin.register_page 'MatchReversal', namespace: ns do
-    menu parent: 'Pontuação', label: 'Reverter pontuação', priority: 3
+    menu false
+    breadcrumb { match_crumbs(@match) }
 
     content title: 'Reverter pontuação' do
       render partial: 'admin/match_reversal/form',
@@ -17,7 +18,7 @@
       if @form.save
         redirect_to helpers.scoring_match_path(@match),
                     status: :see_other,
-                    notice: 'Reversão enfileirada: os pontos serão descartados e auditados.'
+                    notice: 'Pontuação revertida e registrada na auditoria. Finalize a partida de novo para pontuar.'
       else
         render_page status: :unprocessable_content
       end

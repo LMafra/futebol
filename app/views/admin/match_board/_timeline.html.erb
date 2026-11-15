@@ -1,0 +1,20 @@
+<%# Linha do tempo: os lances mantidos, do mais recente ao mais antigo. %>
+<section class="rounded-md border border-rule bg-white p-4" aria-labelledby="timeline-title" data-role="timeline">
+  <h3 id="timeline-title" class="mb-3 font-display text-xl font-semibold text-ink">Linha do tempo</h3>
+  <% if board.events.empty? %>
+    <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Nenhum lance ainda.</p>
+  <% else %>
+    <ol class="flex flex-col divide-y divide-rule" role="list">
+      <% board.events.each do |event| %>
+        <li class="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2 text-sm font-body text-ink" data-role="timeline-event">
+          <span class="w-24 shrink-0 tabular-nums text-graphite">
+            <%= [(event.minute && "#{event.minute}'"), event.period_label].compact.join(" · ").presence || "Sem minuto" %>
+          </span>
+          <span class="font-semibold"><%= scout_label(event.stat.to_sym) %></span>
+          <span><%= event.player.name %></span>
+          <span class="text-graphite"><%= event.team_id == board.match.home_team_id ? board.match.home_team.name : board.match.away_team.name %></span>
+        </li>
+      <% end %>
+    </ol>
+  <% end %>
+</section>

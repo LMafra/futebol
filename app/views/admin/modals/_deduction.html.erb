@@ -1,0 +1,11 @@
+<%# Deduzir pontos em diálogo, na aba Classificação do campeonato no Admin e no Gestor. %>
+<%= modal_form :deduction, title: "Deduzir pontos", submit: "Deduzir pontos",
+               record: Core::PointDeduction.new(championship:),
+               url: public_send(:"deduct_points_#{namespace}_championship_path", championship) do |f| %>
+  <%= modal_field f, :team_id, label: "Time", required: true, include_blank: "Escolha o time",
+                  choices: options_from_collection_for_select(teams, :id, :name, f.object.team_id) %>
+  <%= modal_field f, :points, label: "Pontos a deduzir", as: :number_field, min: 1, step: 1, required: true %>
+  <%= modal_field f, :reason, label: "Motivo", as: :text_area, rows: 3, required: true,
+                  maxlength: Core::PointDeduction::REASON_MAX,
+                  hint: "Aparece ao lado da classificação pública. Ex.: W.O. na 3ª rodada." %>
+<% end %>

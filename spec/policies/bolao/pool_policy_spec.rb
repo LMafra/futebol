@@ -11,9 +11,22 @@ RSpec.describe Bolao::PoolPolicy do
 
   it { expect(Pundit.policy(nil, Bolao::Pool.new)).to be_a(described_class) }
 
-  permissions :index?, :create?, :new?, :join? do
+  permissions :index?, :join? do
     it('grants any signed-in user') { expect(policy).to permit(outsider, Bolao::Pool) }
     it('denies an anonymous visitor') { expect(policy).not_to permit(nil, Bolao::Pool) }
+  end
+
+  permissions :create?, :new? do
+    let(:manager) { create(:user, :manager) }
+
+    it('grants an admin') { expect(policy).to permit(admin, Bolao::Pool.new(championship: create(:championship))) }
+    it('denies a user') { expect(policy).not_to permit(outsider, Bolao::Pool) }
+    it('denies an anonymous visitor') { expect(policy).not_to permit(nil, Bolao::Pool) }
+
+    it 'grants a gestor only on his own championship' do
+      expect(policy).to permit(manager, Bolao::Pool.new(championship: create(:championship, manager:)))
+      expect(policy).not_to permit(manager, Bolao::Pool.new(championship: create(:championship)))
+    end
   end
 
   permissions :show? do

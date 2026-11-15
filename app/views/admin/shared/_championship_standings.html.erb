@@ -1,0 +1,55 @@
+<% table = Core::ChampionshipStandingsService.table(championship) %>
+<% history = championship.point_deductions.includes(:team, :created_by, :revoked_by).order(created_at: :desc).to_a %>
+<% can_deduct = authorized?(:deduct_points, championship) %>
+<% teams = championship.teams.order(:name).to_a %>
+<div class="flex flex-col gap-6" data-role="championship-standings">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">
+      Só entram as partidas encerradas. Pontos = V × 3 + E − dedução.
+    </p>
+    <% if can_deduct && teams.any? %>
+      <div data-role="deduct-points">
+        <%= modal_trigger "Deduzir pontos", :deduction,
+                          public_send(:"#{namespace}_championship_path", championship, aba: AdminChampionshipStandings::TAB, modal: :deduction),
+                          classes: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES %>
+        <%= render "admin/modals/deduction", championship:, namespace:, teams: %>
+      </div>
+    <% end %>
+  </div>
+
+  <%= render Ui::StandingsTableComponent.new(rows: simulador_rows(table.standings.map { |standing| [standing, nil] }, table.teams),
+                                             empty_message: "Nenhum time com partidas neste campeonato.") %>
+
+  <section class="flex flex-col gap-2" aria-labelledby="deductions-title" data-role="deductions">
+    <h3 id="deductions-title" class="font-display text-xl font-semibold text-ink">Deduções (<%= history.size %>)</h3>
+    <% if history.empty? %>
+      <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">Nenhuma dedução neste campeonato.</p>
+    <% else %>
+      <ul class="divide-y divide-rule" role="list">
+        <% history.each do |deduction| %>
+          <li class="flex flex-wrap items-center justify-between gap-3 py-3" data-role="deduction-entry" data-state="<%= deduction.revoked? ? "revoked" : "active" %>">
+            <div class="min-w-0">
+              <p class="font-semibold text-ink <%= "line-through" if deduction.revoked? %>">
+                <%= deduction.team.name %> · <span class="tabular-nums">−<%= deduction.points %></span> <%= "ponto".pluralize(deduction.points) %>
+              </p>
+              <p class="text-sm text-ink"><%= deduction.reason %></p>
+              <p class="<%= AdminHelper::ADMIN_MUTED_TEXT_CLASSES %>">
+                Por <%= deduction.created_by.name.presence || deduction.created_by.email_address %> em <%= l(deduction.created_at, format: :short) %>
+                <% if deduction.revoked? %>
+                  · revogada por <%= deduction.revoked_by.name.presence || deduction.revoked_by.email_address %> em <%= l(deduction.revoked_at, format: :short) %>
+                <% end %>
+              </p>
+            </div>
+            <% if can_deduct && !deduction.revoked? %>
+              <%= button_to "Revogar", public_send(:"revoke_deduction_#{namespace}_championship_path", championship),
+                            method: :patch, params: { deduction_id: deduction.id },
+                            class: AdminHelper::ADMIN_SECONDARY_BUTTON_CLASSES,
+                            aria: { label: "Revogar a dedução de #{deduction.team.name}" },
+                            form: { data: { turbo_confirm: "Revogar a dedução de #{deduction.points} pontos de #{deduction.team.name}? Ela continua no histórico." } } %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </section>
+</div>

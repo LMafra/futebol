@@ -15,13 +15,16 @@ module Bolao
     accepts_nested_attributes_for :scoring_rule, allow_destroy: true, reject_if: :all_blank
 
     before_validation :assign_code, on: :create
-    after_create :add_owner_as_member
 
     validates :name, presence: true
     validates :code, presence: true, length: { is: CODE_LENGTH }, uniqueness: true
 
     def self.ransackable_attributes(_auth_object = nil) = %w[name championship_id code]
     def self.ransackable_associations(_auth_object = nil) = %w[championship]
+
+    def self.with_members_count
+      left_joins(:memberships).group(:id).select('bolao_pools.*, COUNT(bolao_pool_memberships.id) AS members_count')
+    end
 
     def self.generate_code = Array.new(CODE_LENGTH) { CODE_ALPHABET.sample(random: SecureRandom) }.join
 
@@ -41,10 +44,6 @@ module Bolao
 
       candidates = Array.new(MAX_CODE_ATTEMPTS) { self.class.generate_code }.uniq
       self.code = (candidates - self.class.where(code: candidates).pluck(:code)).first
-    end
-
-    def add_owner_as_member
-      memberships.create!(user: owner)
     end
   end
 end

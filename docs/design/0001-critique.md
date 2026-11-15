@@ -36,3 +36,16 @@ Modo batch: perguntas com resposta recomendada adotada como default (revisar com
 - Tokens `win/draw/loss` como tints (≤15% opacidade) + glifo
 - Fraunces mínimo 20px; tabelas 100% Source Sans 3
 - Placeholder de imagem P&B
+
+## Checklist operacional (anti-padrões)
+
+Evitar no console Admin/Gestor (pesquisa de UX + [0002](0002-interaction-patterns.md)):
+
+- [ ] Esconder filtros só no sidebar (usar barra horizontal + chips)
+- [ ] Situação só por cor (obrigatório ícone + texto + cor)
+- [ ] Confirmação cega "Tem certeza?" (usar preview com impacto)
+- [ ] Undo de 5s para ação em cascata (exigir justificativa)
+- [ ] Toast para erro de validação (usar inline + banner)
+- [ ] Scroll horizontal em tabela no mobile (usar cards empilhados)
+- [ ] Swipe para ação crítica (ação no card, ≥44pt)
+- [ ] Banner no topo para feedback de ação de linha (inline + toast)

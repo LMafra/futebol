@@ -10,7 +10,7 @@ pt-BR:
     attributes:
       core/user:
         role: "Papel"
-        manager_status: "Status do gestor"
+        manager_status: "Situação do gestor"
       cartola/scoring_rule:
         name: "Nome"
         goal_points: "Gol (G)"
@@ -39,11 +39,10 @@ pt-BR:
       finalization:
         home_score: "Placar do mandante"
         away_score: "Placar do visitante"
-        score_confirmation: "Confirmação do placar"
       reversal:
         reason: "Motivo"
   public_profile_consent:
-    label: "Autorizo exibir meu nome (primeiro nome + inicial) nos rankings públicos do Craquefy"
+    label: "Autorizo exibir meu nome (primeiro nome + inicial) nas classificações públicas do Craquefy"
   modules:
     fantasy:
       name: "Esquadrão"

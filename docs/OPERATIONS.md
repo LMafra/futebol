@@ -39,6 +39,27 @@ Em development e test, `db:seed` cria dados de demonstração. É idempotente: r
 - 5 campeonatos fictícios de 6 a 12 times (`db/seeds/small_championships.yml`), em turno único, com a rodada do meio hoje: os 3 públicos alimentam "Jogos de hoje" na home; Liga Amadora Carioca e Liga Sulista Sub-20 são privados (só aparecem para quem está logado, como no Simulador). Rodar o seed em outro dia traz essa rodada para o dia corrente.
 - Cada campeonato pequeno tem elenco de 11 por time, um bolão com os 5 usuários e palpites até a rodada de hoje, scouts e pontuação nas partidas encerradas, e uma escalação de cada usuário na última rodada encerrada: os cards da home mostram Top 3 Bolão e Top 3 Esquadrão.
 
+### Cenários de teste
+
+Os cenários (`db/seeds/scenarios.rb`, `scenario_matches.rb`, `scenario_platform.rb`) completam os seeds com um caso para cada funcionalidade. Usam os mesmos serviços das telas, então pontos, auditoria e "Histórico da partida" saem como no uso real. Rodam uma vez: com a Copa dos Testes já no banco, o `db:seed` não mexe neles, e as datas ficam relativas à primeira carga. Para recomeçar do zero: `bin/rails db:reset`.
+
+| O que testar | Onde | Login |
+|---|---|---|
+| Partida pontuada e editada depois (placar e pontos refeitos, Destaque, histórico) | Copa dos Testes, rodada 1, Vila Nova do Teste × Atlético Cenário | gestor |
+| Partida revertida com motivo, pronta para "Finalizar partida" | rodada 1, Esporte Clube Ensaio × Unidos do Protótipo | gestor |
+| Partida encerrada sem pontuação (como a fila antiga deixava) | rodada 2, Vila Nova do Teste × Esporte Clube Ensaio | gestor ou admin (painel "Encerradas com pontuação pendente") |
+| Partida ao vivo com lances, minuto, tempo e um lance desfeito | rodada 2, Atlético Cenário × Unidos do Protótipo | gestor |
+| Partida agendada com o horário já passado ("Registrar lances") | rodada 3, Vila Nova do Teste × Unidos do Protótipo | gestor |
+| Partida remarcada com motivo | rodada 3, Atlético Cenário × Esporte Clube Ensaio | gestor |
+| Bolão com regra própria (12/6), palpite corrigido pelo organizador, participante removido e participante anonimizado | Bolão dos Testes (`TESTES`) | gestor; `demo1`–`demo4` |
+| Classificação com dedução ativa (−3, W.O.) e dedução revogada | Copa dos Testes › Classificação | gestor ou admin |
+| Escalação corrigida pelo organizador (capitão de `demo1`) | Copa da Várzea Paulista › Participantes › Esquadrão | gestor |
+| Escudos dos times e logo do campeonato | Copa dos Testes | qualquer |
+| Campeonato em rascunho | Copa Feminina de Futsal | gestor |
+| Pedido de gestor pendente e pedido recusado com motivo | `pedido@demo.local`, `recusado@demo.local` (senha `demo-futebol`) | admin (Painel, Usuários) |
+| Importação CSV concluída (rodada 4 da Copa dos Testes) e com falha (time desconhecido) | Importações CSV | admin |
+| Histórico de auditoria com todas essas ações | Configurações › Histórico de auditoria | admin |
+
 Fora de development/test, os dados demo não são criados: a senha acima é pública.
 
 ## Filas

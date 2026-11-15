@@ -19,6 +19,14 @@ RSpec.describe Bolao::MyBetsComponent do
     expect(rows.first.text).to include('Exato')
   end
 
+  it 'uses the pitch header inside a rounded horizontal scroll wrapper' do
+    page = render_inline(described_class.new(results: [result(:exact, 10)]))
+
+    expect(page.at_css('[data-role="table-scroll"]')['class'].split).to include('overflow-x-auto', 'rounded-md')
+    expect(page.at_css('thead')['class'].split).to include('bg-pitch', 'text-paper')
+    expect(page.css('thead th').map { _1['scope'] }.uniq).to eq(['col'])
+  end
+
   it 'shows a dash for pending bets' do
     page = render_inline(described_class.new(results: [result(:pending, nil, home_score: nil, away_score: nil)]))
 

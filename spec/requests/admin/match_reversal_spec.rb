@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Admin MatchReversal page', type: :request do
-  include ActiveJob::TestHelper
-
   let(:admin) { create(:user, :admin) }
   let(:scoring_token) { SecureRandom.uuid }
   let(:match) do
@@ -25,9 +23,7 @@ RSpec.describe 'Admin MatchReversal page', type: :request do
   end
 
   it 'reversão exige motivo (campo vazio → erro)' do
-    perform_enqueued_jobs do
-      expect { revert('   ') }.not_to change(Core::AuditLog, :count)
-    end
+    expect { revert('   ') }.not_to change(Core::AuditLog, :count)
 
     expect(response).to have_http_status(:unprocessable_content)
     expect(response.body).to include('Motivo é obrigatório')
@@ -36,9 +32,7 @@ RSpec.describe 'Admin MatchReversal page', type: :request do
   end
 
   it 'AuditLog criado após reversão (motivo, ator e IP), com os pontos descartados' do
-    perform_enqueued_jobs do
-      expect { revert('Placar lançado errado pela súmula') }.to change(Core::AuditLog, :count).by(1)
-    end
+    expect { revert('Placar lançado errado pela súmula') }.to change(Core::AuditLog, :count).by(1)
 
     expect(response).to redirect_to("/admin/matches/#{match.id}")
     log = Core::AuditLog.last
@@ -58,10 +52,13 @@ RSpec.describe 'Admin MatchReversal page', type: :request do
     expect(response.body).to include('nada para reverter')
   end
 
-  it 'não-admin recebe 403 e nada é enfileirado' do
+  it 'não-admin recebe 403 e a pontuação fica como estava' do
     sign_in(create(:user))
 
-    expect { revert('motivo') }.not_to have_enqueued_job(RevertMatchPointsJob)
+    revert('motivo')
+
     expect(response).to have_http_status(:forbidden)
+    expect(match.reload).to be_scored
+    expect(score.reload).to be_kept
   end
 end

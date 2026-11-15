@@ -1,0 +1,23 @@
+<%# Campeonatos (/admin e /gestor): cartões com a modalidade, os inscritos e o próximo passo do rascunho. %>
+<% teams = listing_counts(Core::ChampionshipTeam, :championship_id, records)
+   matches = listing_counts(Core::Match, :championship_id, records) %>
+<%= render Ui::CollectionComponent.new(items: records, id: "championships", mode: :cards, texts: { label: "Campeonatos" }) do |c| %>
+  <% c.column(:logo, label: "Logo", media: true) { |championship| championship_logo(championship) } %>
+  <% c.column(:name, label: "Campeonato", primary: true) { |championship| link_to championship.name, public_send(:"#{namespace}_championship_path", championship), class: inline_link_classes(tone: :ink) } %>
+  <% c.column(:season, label: "Temporada", numeric: true) %>
+  <% c.column(:modality, label: "Modalidade", &:modality_label) %>
+  <% c.column(:teams, label: "Times", numeric: true) { |championship| teams.fetch(championship.id, 0) } %>
+  <% c.column(:matches, label: "Partidas", numeric: true) { |championship| matches.fetch(championship.id, 0) } %>
+  <% c.column(:status, label: "Situação") do |championship| %>
+    <% situation = championship.draft? ? "rascunho" : "publicado" %>
+    <%= tag.span(situation, class: "status-tag", data: { status: situation }) %>
+    <%= tag.span("privado", class: "status-tag", data: { status: "privado" }) if championship.private? %>
+  <% end %>
+  <% c.column(:next_step, label: "Próximo passo") do |championship| %>
+    <% if championship.draft? && authorized?(:update, championship) %>
+      <%= link_to "Continuar rascunho", public_send(:"edit_#{namespace}_championship_path", championship), class: inline_link_classes(tone: :ink) %>
+    <% else %>
+      <%= link_to "Abrir", public_send(:"#{namespace}_championship_path", championship), class: inline_link_classes(tone: :ink), aria: { label: "Abrir #{championship.name}" } %>
+    <% end %>
+  <% end %>
+<% end %>

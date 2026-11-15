@@ -15,11 +15,10 @@ RSpec.describe Bolao::Pool do
     expect(build(:bolao_pool, code: existing.code)).not_to be_valid
   end
 
-  it 'adds the owner as a member on create' do
+  it 'does not make the owner a member: the Gestor organizes, users join by code' do
     pool = create(:bolao_pool)
 
-    expect(pool.members).to contain_exactly(pool.owner)
-    expect(pool).to be_member(pool.owner)
+    expect(pool.members).to be_empty
   end
 
   it 'normalizes codes typed by hand' do

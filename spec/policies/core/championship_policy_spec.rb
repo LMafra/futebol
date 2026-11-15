@@ -25,6 +25,13 @@ RSpec.describe Core::ChampionshipPolicy do
     it('denies a manager') { expect(policy).not_to permit(manager, Core::Championship) }
   end
 
+  permissions :deduct_points?, :revoke_deduction? do
+    it('grants an admin') { expect(policy).to permit(admin, foreign_record) }
+    it('grants the manager of the championship') { expect(policy).to permit(manager, own_record) }
+    it('denies another manager') { expect(policy).not_to permit(manager, foreign_record) }
+    it('denies a regular user') { expect(policy).not_to permit(regular_user, own_record) }
+  end
+
   describe 'Scope' do
     before { own_record && foreign_record }
 

@@ -27,5 +27,9 @@ RSpec.describe Pools::IndexComponent do
     page = render_inline(described_class.new(error: 'Código de bolão inválido.', state: :error))
 
     expect(page.at_css('[data-role="error-message"]').text).to eq('Código de bolão inválido.')
+
+    code = page.at_css('input[name="code"]')
+    expect(code['aria-invalid']).to eq('true')
+    expect(page.at_css("##{code['aria-describedby']}").text).to eq('Código de bolão inválido.')
   end
 end

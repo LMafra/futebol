@@ -22,7 +22,13 @@ module Ui
 
     def submit_label = prediction.persisted? ? 'Atualizar' : 'Palpitar'
 
-    def field_error(attribute) = prediction.errors[attribute].first
+    def field_errors = %i[home_guess away_guess].filter_map { prediction.errors[_1].first }.uniq
+
+    def error_id = "prediction-error-#{prediction.match_id || prediction.id}"
+
+    def guess_aria(label)
+      { label:, invalid: field_errors.any? || nil, describedby: (error_id if field_errors.any?) }
+    end
 
     def base_errors = prediction&.errors&.[](:base).presence || ['Não foi possível salvar o palpite.']
 
@@ -33,7 +39,7 @@ module Ui
     end
 
     def guess_input_classes
-      'w-14 rounded-sm border border-rule px-2 py-1 text-center text-lg font-bold tabular-nums'
+      form_control_classes('w-16 text-center text-lg font-bold tabular-nums', invalid: field_errors.any?)
     end
   end
 end

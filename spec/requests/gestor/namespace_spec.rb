@@ -74,8 +74,9 @@ RSpec.describe 'Gestor namespace', type: :request do
       }
     end.to change(Core::Championship, :count).by(1)
 
-    expect(Core::Championship.order(:id).last).to have_attributes(name: 'Copa Nova', manager:)
-    expect(response).to redirect_to(gestor_championship_path(Core::Championship.last))
+    championship = Core::Championship.order(:id).last
+    expect(championship).to have_attributes(name: 'Copa Nova', manager:, status: 'draft')
+    expect(response).to redirect_to(edit_gestor_championship_path(championship, step: 'modalidade'))
   end
 
   it 'comentários do ActiveAdmin não existem em /gestor' do

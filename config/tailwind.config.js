@@ -14,7 +14,8 @@ module.exports = {
     colors: {
       paper: '#F4F1EA', pitch: '#0B6B3A', cartola: '#E85D04', ink: '#161616',
       graphite: '#4A4A45', rule: '#D9D3C4', night: '#0E1A13', white: '#FFFFFF', transparent: 'transparent',
-      win: 'rgb(11 107 58 / 0.15)', draw: 'rgb(138 133 119 / 0.15)', loss: 'rgb(164 22 26 / 0.15)'
+      win: 'rgb(11 107 58 / 0.15)', draw: 'rgb(138 133 119 / 0.15)', loss: 'rgb(164 22 26 / 0.15)',
+      'loss-solid': '#A4161A'
     },
     fontFamily: {
       display: ['Fraunces', 'Bitter', 'Georgia', 'serif'],

@@ -21,7 +21,7 @@
       <% if bolao %>
         <div class="mt-4 text-sm" data-role="bolao-result" role="status">
           <% if bolao[:error] %>
-            <p class="text-red-800 dark:text-red-300"><%= bolao[:error] %></p>
+            <p class="<%= AdminHelper::ADMIN_ALERT_CLASSES %>"><%= bolao[:error] %></p>
           <% else %>
             <p><span class="text-2xl font-bold tabular-nums"><%= bolao[:points] %></span> pontos · faixa: <strong><%= { exact: "placar exato", winner: "vencedor", miss: "erro" }.fetch(bolao[:kind]) %></strong></p>
           <% end %>
@@ -41,7 +41,7 @@
   </section>
 
   <section class="panel" aria-labelledby="cartola-tester-title">
-    <h3 class="panel-title" id="cartola-tester-title">Esquadrão: scouts do jogador</h3>
+    <h3 class="panel-title" id="cartola-tester-title">Esquadrão: estatísticas do jogador</h3>
     <div class="panel-body">
       <%= form_with url: admin_scoringruletester_path, method: :get, scope: :cartola, class: "flex flex-col gap-3", data: { turbo: false } do |f| %>
         <div>
@@ -70,7 +70,7 @@
       <% if cartola %>
         <div class="mt-4 text-sm" data-role="cartola-result" role="status">
           <% if cartola[:error] %>
-            <p class="text-red-800 dark:text-red-300"><%= cartola[:error] %></p>
+            <p class="<%= AdminHelper::ADMIN_ALERT_CLASSES %>"><%= cartola[:error] %></p>
           <% else %>
             <p><span class="text-2xl font-bold tabular-nums"><%= cartola[:points] %></span> pontos · regra: <strong><%= cartola[:rule].name %></strong></p>
           <% end %>

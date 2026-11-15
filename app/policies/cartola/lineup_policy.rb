@@ -5,6 +5,8 @@ module Cartola
     def update? = owner?
     def destroy? = owner? && record.persisted?
     def manage? = record_instance? && manages?(record.championship)
+    # Participantes › Esquadrão: the organizer's edit, with a reason (Cartola::LineupCorrection).
+    def correct? = admin?
 
     private
 

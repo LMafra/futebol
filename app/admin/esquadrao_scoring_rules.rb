@@ -1,15 +1,15 @@
 ActiveAdmin.register Cartola::ScoringRule, as: 'EsquadraoScoringRule' do
-  menu parent: 'Pontuação', label: 'Regras do Esquadrão'
+  menu parent: 'Configurações', label: 'Regras do Esquadrão', priority: 2
 
   permit_params :name, *Cartola::ScoringRule::POINT_COLUMNS
 
-  filter :name
+  AdminNameSearch.register(self)
 
   index do
     selectable_column
     id_column
     column :name
-    Cartola::ScoringRule::POINT_COLUMNS.each { |points| column points }
+    Cartola::ScoringRule::POINT_COLUMNS.each { |points| column points, class: 'text-right tabular-nums' }
     actions
   end
 

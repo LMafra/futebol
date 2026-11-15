@@ -14,11 +14,28 @@ export default {
     './app/admin/**/*.{arb,erb,html,rb}',
     './app/views/active_admin/**/*.{arb,erb,html,rb}',
     './app/views/admin/**/*.{arb,erb,html,rb}',
+    './app/views/gestor/**/*.{arb,erb,html,rb}',
+    './app/components/**/*.{rb,erb}',
     './app/helpers/admin_helper.rb',
+    './app/helpers/admin_icons_helper.rb',
+    './app/helpers/admin_breadcrumbs_helper.rb',
+    './app/helpers/page_intro_helper.rb',
+    './app/helpers/championship_wizard_helper.rb',
+    './lib/admin_championship_form.rb',
+    './lib/championship_summary.rb',
+    './lib/admin_record_panels.rb',
+    './lib/admin_pool_participants.rb',
+    './app/helpers/modal_form_helper.rb',
+    './app/helpers/scout_legend_helper.rb',
+    './app/helpers/link_classes_helper.rb',
+    './app/helpers/images_helper.rb',
+    './app/helpers/match_board_helper.rb',
     './app/views/layouts/active_admin*.{erb,html}',
     './app/javascript/**/*.js'
   ],
-  darkMode: "selector",
+  // Editorial light admin only: AA's dark_mode_toggle.js adds `.dark` from the OS preference,
+  // so `dark:` variants must target a selector the app never renders.
+  darkMode: ["selector", "[data-theme=never]"],
   plugins: [
     activeAdminPlugin
   ]

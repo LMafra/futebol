@@ -4,7 +4,7 @@
   <header class="border-b-4 border-ink pb-2">
     <p class="text-xs font-bold uppercase tracking-widest text-graphite"><%= @pool.championship %></p>
     <h1 class="mt-1 font-display text-4xl font-extrabold tracking-tight">Palpites · <%= @pool.name %></h1>
-    <%= link_to "Voltar para o bolão", main_app.pool_path(@pool), class: "mt-2 inline-block font-semibold text-pitch underline underline-offset-2 hover:no-underline" %>
+    <%= link_to "Voltar para o bolão", main_app.pool_path(@pool), class: inline_link_classes("mt-2 inline-block") %>
   </header>
 
   <div><%= render "shared/flash" %></div>

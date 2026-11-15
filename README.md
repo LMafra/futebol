@@ -181,7 +181,7 @@ Detalhes e custo em horas free: [OPERATIONS.md → Keep-alive](docs/OPERATIONS.m
 4. **Escalação:** monte o time da rodada no Esquadrão em [`/esquadrao`](http://localhost:3000/esquadrao), com um capitão, e acompanhe os rankings em [`/esquadrao/rankings`](http://localhost:3000/esquadrao/rankings).
 5. **Scouts e finalização:** no `/admin` ou, para o próprio campeonato, no `/gestor`, Pontuação → Scouts da partida lança os scouts; Finalizar confirma o placar derivado e o job pontua palpites e escalações (Reverter desfaz).
 
-Login demo (só development/test, criado pelo `db:seed`): `demo1@demo.local` … `demo5@demo.local` / `demo-futebol`, o gestor `gestor@demo.local` / `demo-futebol` (campeonato demo atribuído) e o admin `admin@futebol.dev` / `futebol-admin`, com o bolão `DEMO01` já pontuado e mais 5 campeonatos pequenos (6 a 12 times; 3 públicos e 2 privados) com jogos hoje, para a seção "Jogos de hoje" da home. Detalhes dos dados demo, filas e comandos: [docs/OPERATIONS.md](docs/OPERATIONS.md).
+Login demo (só development/test, criado pelo `db:seed`): `demo1@demo.local` … `demo5@demo.local` / `demo-futebol`, o gestor `gestor@demo.local` / `demo-futebol` (campeonato demo atribuído) e o admin `admin@futebol.dev` / `futebol-admin`, com o bolão `DEMO01` já pontuado e mais 5 campeonatos pequenos (6 a 12 times; 3 públicos e 2 privados) com jogos hoje, para a seção "Jogos de hoje" da home, e os cenários de teste da "Copa dos Testes" (partida em cada situação, correções, deduções, pedidos de gestor, importação CSV). Detalhes dos dados demo, filas e comandos: [docs/OPERATIONS.md](docs/OPERATIONS.md).
 
 Em produção não há contas demo, porque a senha acima é pública: o seed cria só o admin, com senha forte guardada fora do repositório, além de times, jogadores e partidas. Novas contas saem do cadastro público em [`/signup`](http://localhost:3000/signup) (link "Criar conta" no login); ainda não há tela de usuários no admin.
 
@@ -200,6 +200,22 @@ Três papéis, com áreas separadas no ActiveAdmin e login dedicado onde a conta
 | **Usuário** | [`/entrar`](http://localhost:3000/entrar) | Bolão, Esquadrão, conta e pedido de acesso de gestor em [`/gestor/solicitar`](http://localhost:3000/gestor/solicitar) |
 
 Detalhes dos tickets: [0056–0062](docs/tickets/INDEX.md).
+
+### Admin e Gestor (UI Placar de Domingo)
+
+`/admin` e `/gestor` compartilham o tema **Placar de Domingo** via Tailwind CSS v4 do ActiveAdmin 4: header `pitch` com Fraunces, navegação `paper`/`rule` por tarefa com ícones SVG e item ativo `cartola`, filtros acima da tabela, tabelas com thead pitch / zebra / ações SVG, formulários em seções (Dados · Esquadrão · Bolão · Premiação) com `border-rule` e submit `bg-cartola text-ink`, dashboards status-first em grade 8/4, `EmptyState` / toast / sidebar colapsável abaixo de `md`, badges de status e medalhas SVG no ranking. Tokens em `app/assets/stylesheets/active_admin.css`; tickets [0063–0067](docs/tickets/INDEX.md) (tema), [0068–0073](docs/tickets/INDEX.md) (UX status-first) e [0074–0078](docs/tickets/INDEX.md) (work queue Admin/Gestor).
+
+### Console operacional
+
+Padrões de interação do Admin/Gestor (pesquisa de UX → tickets [0114–0121](docs/tickets/INDEX.md); DS em [0001](docs/design/0001-direction.md), [0002](docs/design/0002-interaction-patterns.md), [0003](docs/design/0003-components-specs.md)):
+
+- **Dashboard:** hero + 4 KPIs acionáveis (`Ui::KpiCardComponent`) + Central de ações (`Ui::ActionCenterComponent`); clique no KPI filtra via `?urgency=`
+- **Tabelas:** badges triplos (ícone+texto+cor), ação contextual + kebab, paginação “Exibindo X–Y de Z”
+- **Filtros:** barra horizontal com chips, “Limpar todos”, views salvas (Pendências / Rodada Atual / Todas), Lista | Por rodada
+- **Ações críticas:** preview com impacto + botão imperativo; toast + badge via Turbo Stream; reversão com justificativa ≥20 caracteres
+- **Formulários:** banner de erros + erro inline (sem toast de validação)
+- **Mobile:** cards empilhados, bottom nav (4 itens + Mais), ação ≥44pt no card
+- **A11y:** contraste ≥4.5:1 (números ≥7:1), `<abbr title>` pontilhado, rótulos Verbo+Substantivo
 
 ### Login
 

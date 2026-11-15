@@ -5,7 +5,7 @@ module Cartola
 
     def show
       authorize %i[cartola ranking], :show?
-      @championships = Core::Championship.order(season: :desc, name: :asc).to_a
+      @championships = Core::Championship.published.order(season: :desc, name: :asc).to_a
       @championship = selected_championship
       @tab = TABS.key?(params[:tab]) ? params[:tab] : TABS.keys.first
       @rows = @championship ? ranking_rows : []

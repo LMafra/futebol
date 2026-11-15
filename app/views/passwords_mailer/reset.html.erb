@@ -1,6 +1,9 @@
 <p>
-  Você pode redefinir sua senha
-  <%= link_to "nesta página", edit_password_url(@user.password_reset_token) %>.
-
+  Você pode redefinir sua senha pelo link abaixo:
+</p>
+<p>
+  <%= link_to "Redefinir minha senha", edit_password_url(@user.password_reset_token) %>
+</p>
+<p>
   O link expira em <%= distance_of_time_in_words(0, @user.password_reset_token_expires_in) %>.
 </p>

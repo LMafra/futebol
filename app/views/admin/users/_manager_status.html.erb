@@ -1,0 +1,4 @@
+<% label = I18n.t("activerecord.enums.core/user.manager_status.#{user.manager_status}") %>
+<span id="manager-status-badge" data-role="manager-status-badge" data-status="<%= user.manager_status %>">
+  <span class="status-tag" data-status="<%= user.manager_status %>"><%= label %></span>
+</span>

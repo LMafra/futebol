@@ -20,13 +20,26 @@ RSpec.describe Ui::StandingsTableComponent do
     expect(page.css('[data-role="standing-row"] td').map(&:text)).to include('+4', '-1')
   end
 
+  it 'shows the Dedução of every team and the reasons of the ones that lost points' do
+    deducted = rows.map(&:dup).tap { |list| list[1].merge!(deduction: 2, deduction_reasons: ['W.O. na 2ª rodada']) }
+
+    plain = render_inline(described_class.new(rows:))
+    expect(plain.css('th').map(&:text)).to include('Dedução')
+    expect(plain.css('[data-role="deduction"]').map(&:text)).to eq(%w[0 0])
+    expect(plain.at_css('[data-role="deduction-notes"]')).to be_nil
+
+    page = render_inline(described_class.new(rows: deducted))
+    expect(page.css('[data-role="deduction"]').map(&:text)).to eq(%w[0 −2])
+    expect(page.at_css('[data-role="deduction-notes"]').text.squish).to eq('Palmeiras: −2 pontos (W.O. na 2ª rodada)')
+  end
+
   it 'pairs every win/draw/loss tint with its V/E/D glyph and an accessible label' do
     glyphs = render_inline(described_class.new(rows:)).css('[data-role="form-glyph"]')
 
-    expect(glyphs.map(&:text)).to eq(%w[V E V D V D])
+    expect(glyphs.map { _1.at_css('[aria-hidden="true"]').text }).to eq(%w[V E V D V D])
     tints = glyphs.map { |glyph| glyph['class'][/bg-(win|draw|loss)/] }
     expect(tints).to eq(%w[bg-win bg-draw bg-win bg-loss bg-win bg-loss])
-    expect(glyphs.first['aria-label']).to eq('Vitória')
+    expect(glyphs.first.at_css('.sr-only').text).to eq('Vitória')
   end
 
   it 'marks the leader with the cartola accent' do
@@ -55,8 +68,15 @@ RSpec.describe Ui::StandingsTableComponent do
     changes = rows.zip([2, -1]).map { |row, change| row.merge(change:) }
     glyphs = render_inline(described_class.new(rows: changes)).css('[data-role="position-change"]')
 
-    expect(glyphs.map(&:text)).to eq(%w[▲2 ▼1])
-    expect(glyphs.map { |glyph| glyph['aria-label'] }).to eq(['Subiu 2', 'Caiu 1'])
+    expect(glyphs.map { _1.at_css('[aria-hidden="true"]').text }).to eq(%w[▲2 ▼1])
+    expect(glyphs.map { _1.at_css('.sr-only').text }).to eq(['Subiu 2', 'Caiu 1'])
+  end
+
+  it 'scrolls horizontally inside its wrapper and uses the pitch header' do
+    page = render_inline(described_class.new(rows:))
+
+    expect(page.at_css('[data-role="table-scroll"]')['class']).to include('overflow-x-auto')
+    expect(page.at_css('thead')['class'].split).to include('bg-pitch', 'text-paper')
   end
 
   it 'hides the change column when no row has one' do

@@ -1,0 +1,25 @@
+<% attrs = root_attributes(label: label || name.to_s) %>
+<% attrs[:class] = 'flex flex-col gap-1' %>
+<% attrs[:data] = (attrs[:data] || {}).merge(role: 'form-field', field_state: field_state) %>
+<div <%= tag.attributes(attrs) %>>
+  <% case rendered_state %>
+  <% when :default %>
+    <%= label_tag name, label, class: 'text-sm font-body font-semibold text-ink' %>
+    <%= text_field_tag name, value, class: input_classes, disabled: field_state == :disabled,
+                                    aria: { invalid: error_state? || nil, describedby: error_state? ? "#{name}-error" : nil },
+                                    autofocus: error_state? %>
+    <% if hint.present? && !error_state? %>
+      <p class="text-sm font-body text-graphite"><%= hint %></p>
+    <% end %>
+    <% if error_state? %>
+      <p id="<%= name %>-error" class="text-sm font-body font-semibold text-red-800" data-role="form-field-error"><%= error %></p>
+    <% end %>
+  <% when :loading %>
+    <span class="sr-only">Carregando campo…</span>
+    <div class="h-12 w-full <%= skeleton_classes %>" aria-hidden="true"></div>
+  <% when :empty %>
+    <%= empty_notice('Campo vazio.') %>
+  <% when :error %>
+    <p class="text-sm text-red-800" role="alert">Erro no campo</p>
+  <% end %>
+</div>

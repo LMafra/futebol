@@ -1,20 +1,20 @@
 ActiveAdmin.register Bolao::Pool, as: 'Pool' do
-  menu parent: 'Bolão', label: 'Bolões'
+  menu parent: 'Participantes', label: 'Bolões', priority: 1
 
   permit_params :name, :championship_id, :owner_id,
                 scoring_rule_attributes: %i[id exact_score_points winner_points _destroy]
   includes :championship, :owner
 
-  filter :name
+  AdminNameSearch.register(self)
+  AdminPoolParticipants.register(self)
   filter :championship
 
-  index do
-    selectable_column
-    id_column
-    column :name
-    column :championship
-    column :owner
-    actions
+  AdminCollectionIndex.register(self, 'admin/listings/pools')
+
+  controller do
+    include ModalFormResponses
+
+    before_build { |pool| pool.owner ||= pool.championship&.manager || current_user }
   end
 
   form do |f|
@@ -22,7 +22,8 @@ ActiveAdmin.register Bolao::Pool, as: 'Pool' do
     f.inputs do
       f.input :name
       f.input :championship
-      f.input :owner, collection: Core::User.active.order(:email_address)
+      f.input :owner, collection: Core::User.active.order(:email_address),
+                      hint: 'Quem organiza: o gestor do campeonato ou um administrador. Não entra como participante.'
     end
     rule = f.object.scoring_rule || Bolao::ScoringRule.new(exact_score_points: nil, winner_points: nil)
     f.inputs 'Pontuação própria (opcional; em branco usa a regra do campeonato)', for: [:scoring_rule, rule] do |r|

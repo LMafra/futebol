@@ -4,8 +4,12 @@ import { Controller } from "@hotwired/stimulus"
 // "next" from anywhere in the originals still has room), hidden from assistive tech and the tab order. Once a
 // scroll settles outside the originals, the list jumps by one set to the same card among them, so it never reaches
 // an end. Previous/next move one card. Without JS the list is a plain horizontal scroll.
+//
+// With an autoplay value (ms) it advances one card on that interval while the items overflow. Pointer or focus
+// inside holds it; a touch or the toggle button stops it until the button resumes it. "Reduce motion" turns it off.
 export default class extends Controller {
-  static targets = ["list", "nav"]
+  static targets = ["list", "nav", "toggle"]
+  static values = { autoplay: Number }
 
   connect() {
     if (!this.hasListTarget) return
@@ -22,15 +26,18 @@ export default class extends Controller {
   disconnect() {
     this.observer?.disconnect()
     clearTimeout(this.timer)
+    clearInterval(this.interval)
     if (this.hasListTarget) this.removeCopies()
   }
 
   previous() {
     this.scroll(-1)
+    this.play()
   }
 
   next() {
     this.scroll(1)
+    this.play()
   }
 
   // Wraps only after the scroll settles (smooth, snapped or touch momentum), never mid-gesture.
@@ -39,11 +46,45 @@ export default class extends Controller {
     this.timer = setTimeout(() => this.wrap(), 150)
   }
 
+  hold() {
+    this.held = true
+    this.play()
+  }
+
+  // Runs after focus moves, so leaving one card for another inside keeps it held.
+  release() {
+    setTimeout(() => {
+      this.held = this.element.matches(":hover") || this.element.contains(document.activeElement)
+      this.play()
+    })
+  }
+
+  stop() {
+    this.stopped = true
+    this.play()
+  }
+
+  toggle() {
+    this.stopped = !this.stopped
+    this.play()
+  }
+
+  play() {
+    clearInterval(this.interval)
+    if (this.hasToggleTarget) this.toggleTarget.textContent = this.stopped ? "Continuar" : "Pausar"
+    if (!this.autoplays || this.stopped || this.held) return
+
+    this.interval = setInterval(() => this.scroll(1), this.autoplayValue)
+  }
+
   scroll(direction) {
     this.wrap()
-    const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches
     const step = this.listTarget.firstElementChild.offsetWidth
-    this.listTarget.scrollBy({ left: direction * step, behavior: smooth ? "smooth" : "auto" })
+    this.listTarget.scrollBy({ left: direction * step, behavior: this.reducedMotion ? "auto" : "smooth" })
+  }
+
+  get reducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches
   }
 
   layout() {
@@ -52,6 +93,9 @@ export default class extends Controller {
     this.setWidth = 0
     const overflows = list.scrollWidth > list.clientWidth + 1
     if (this.hasNavTarget) this.navTarget.hidden = !overflows
+    this.autoplays = overflows && this.autoplayValue > 0 && !this.reducedMotion
+    if (this.hasToggleTarget) this.toggleTarget.hidden = !this.autoplays
+    this.play()
     if (!overflows) return
 
     const items = [...list.children]

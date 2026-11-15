@@ -36,7 +36,7 @@ RSpec.describe 'Craquefy brand', type: :request do
 
     get '/admin'
 
-    expect(page.at_css('title').text).to end_with('Craquefy')
+    expect(page.at_css('title').text).to end_with('Craquefy Admin')
     expect(response.body).not_to include('Futebol')
   end
 

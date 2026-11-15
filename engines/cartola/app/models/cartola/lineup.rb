@@ -18,6 +18,9 @@ module Cartola
     validate :some_players, :within_championship_limits, :one_captain
     before_save :release_captaincy
 
+    def self.ransackable_attributes(_auth_object = nil) = %w[championship_id round]
+    def self.ransackable_associations(_auth_object = nil) = %w[championship squad]
+
     # "4-3-3" => { goalkeeper: 1, defender: 4, midfielder: 3, forward: 3 }
     def self.preset(formation)
       defender, midfielder, forward = formation.split('-').map(&:to_i)

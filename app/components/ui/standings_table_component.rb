@@ -1,9 +1,11 @@
 module Ui
   class StandingsTableComponent < BaseComponent
     # change: places gained (+) or lost (-) against another table; nil hides the column.
+    # team: the Core::Team, for its crest; without it the short name stands in.
+    # deduction: points taken from the team (already out of points); deduction_reasons show under the table.
     Row = Data.define(:position, :team_name, :short_name, :played, :wins, :draws, :losses, :goal_difference,
-                      :points, :form, :change) do
-      def initialize(form: [], change: nil, **) = super
+                      :points, :form, :change, :team, :deduction, :deduction_reasons) do
+      def initialize(form: [], change: nil, team: nil, deduction: 0, deduction_reasons: [], **) = super
     end
 
     FORM_GLYPHS = {
@@ -40,6 +42,8 @@ module Ui
 
     def changes? = rows.any? { |row| !row.change.nil? }
 
+    def deduction(value) = value.positive? ? "−#{value}" : '0'
+
     def zone(row)
       return unless @zones
 
@@ -66,15 +70,17 @@ module Ui
                           elsif change.negative? then ["▼#{-change}", 'bg-loss', "Caiu #{-change}"]
                           else ['=', 'bg-rule', 'Manteve a posição']
                           end
-      tag.span(text, class: "inline-flex min-w-8 justify-center rounded-sm px-1 #{tint} text-xs font-bold text-ink",
-                     title: label, aria: { label: }, data: { role: 'position-change' })
+      tag.span(class: "inline-flex min-w-8 justify-center rounded-sm px-1 #{tint} text-xs font-bold text-ink",
+               title: label, data: { role: 'position-change' }) { glyph_with_label(text, label) }
     end
 
     def form_glyph(result)
       glyph = FORM_GLYPHS.fetch(result)
-      tag.span(result, class: "inline-flex size-6 items-center justify-center rounded-sm #{glyph[:tint]} " \
-                              'text-xs font-bold text-ink',
-                       title: glyph[:label], aria: { label: glyph[:label] }, data: { role: 'form-glyph' })
+      tag.span(class: "inline-flex size-6 items-center justify-center rounded-sm #{glyph[:tint]} " \
+                      'text-xs font-bold text-ink',
+               title: glyph[:label], data: { role: 'form-glyph' }) { glyph_with_label(result, glyph[:label]) }
     end
+
+    def glyph_with_label(glyph, label) = tag.span(glyph, aria: { hidden: true }) + tag.span(label, class: 'sr-only')
   end
 end

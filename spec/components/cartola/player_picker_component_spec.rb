@@ -19,4 +19,13 @@ RSpec.describe Cartola::PlayerPickerComponent do
 
     expect(page.at_css('input[type="hidden"][name="lineup[player_ids][]"]')).to be_present
   end
+
+  it 'uses pitch checkboxes and a 48px captain chip over a native radio (TICKET-0082)' do
+    page = render_inline(described_class.new(players: [striker], selected_ids: [striker.id], captain_id: striker.id))
+
+    expect(page.at_css('input[type="checkbox"][name="lineup[player_ids][]"]')['class']).to include('accent-pitch')
+    captain = page.at_css('input[type="radio"][name="lineup[captain_id]"]')
+    expect(captain['class'].split).to include('peer', 'sr-only')
+    expect(captain.next_element['class'].split).to include('size-12', 'peer-checked:bg-cartola')
+  end
 end
