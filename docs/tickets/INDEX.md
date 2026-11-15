@@ -1,4 +1,4 @@
-# Tickets — INDEX (119 tickets)
+# Tickets — INDEX (120 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -121,6 +121,7 @@
 | [0117](TICKET-0117.md) | O3 | Filtros com chips e views salvas | 0116 | — |
 | [0118](TICKET-0118.md) | O4 | Ações críticas com preview e feedback | 0117 | — |
 | [0119](TICKET-0119.md) | O5 | Validação de formulários sem perda de dados | 0118 | — |
+| [0120](TICKET-0120.md) | O6 | Mobile: cards empilhados e bottom nav | 0119 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}

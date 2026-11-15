@@ -1,0 +1,39 @@
+<% attrs = root_attributes(label: 'Atalhos') %>
+<% attrs[:class] = 'fixed inset-x-0 bottom-0 z-30 border-t border-rule bg-white pb-[env(safe-area-inset-bottom)] sm:hidden' %>
+<% attrs[:data] = (attrs[:data] || {}).merge(role: 'admin-bottom-nav') %>
+<% attrs[:'aria-label'] = 'Atalhos' %>
+<nav <%= tag.attributes(attrs) %>>
+  <% case rendered_state %>
+  <% when :default %>
+    <ul role="list" class="grid grid-cols-5">
+      <% items.each do |item| %>
+        <li>
+          <%= link_to item.path, class: item_classes(item.current),
+                                 aria: { current: (item.current ? 'page' : nil) },
+                                 data: { nav_section: item.label, role: 'bottom-nav-item' } do %>
+            <%= item.icon_html %>
+            <span class="max-w-full truncate"><%= item.label.to_s.split.first %></span>
+          <% end %>
+        </li>
+      <% end %>
+      <li>
+        <button type="button"
+                class="<%= item_classes(false) %> cursor-pointer border-transparent text-graphite"
+                data-drawer-target="main-menu" data-drawer-show="main-menu" aria-controls="main-menu"
+                data-role="admin-bottom-nav-more">
+          <svg class="h-5 w-5 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+          </svg>
+          <span><%= more_label %></span>
+        </button>
+      </li>
+    </ul>
+  <% when :loading %>
+    <span class="sr-only">Carregando navegação…</span>
+    <div class="h-14 w-full <%= skeleton_classes %>" aria-hidden="true"></div>
+  <% when :empty %>
+    <%= empty_notice('Sem atalhos.') %>
+  <% when :error %>
+    <div class="<%= error_classes %>" role="alert">Navegação indisponível.</div>
+  <% end %>
+</nav>
