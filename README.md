@@ -176,18 +176,22 @@ Detalhes e custo em horas free: [OPERATIONS.md → Keep-alive](docs/OPERATIONS.m
 ## Uso
 
 1. **Campeonato:** em [`/admin`](http://localhost:3000/admin), cadastre o campeonato e os times (Cadastros) e importe as partidas por CSV (Cadastros → Importações CSV). O `match_date` do CSV é lido no horário de Brasília, o fuso do app (`config.time_zone = 'Brasilia'`); o banco guarda em UTC.
-2. **Bolão:** crie um bolão em [`/pools/new`](http://localhost:3000/pools/new) e compartilhe o código; os amigos entram por [`/pools`](http://localhost:3000/pools).
-3. **Palpites:** cada participante palpita o placar das partidas na página de palpites do bolão.
-4. **Escalação:** monte o time da rodada no Esquadrão em [`/esquadrao`](http://localhost:3000/esquadrao), com um capitão, e acompanhe os rankings em [`/esquadrao/rankings`](http://localhost:3000/esquadrao/rankings).
+2. **Bolão:** o gestor/admin cria o bolão; o usuário entra por código em [`/pools`](http://localhost:3000/pools) (busca por nome nos bolões em que já participa).
+3. **Palpites:** cada participante palpita o placar das partidas na página de palpites do bolão (countdown até o `match_date`).
+4. **Escalação:** monte o time da rodada no Esquadrão em [`/esquadrao`](http://localhost:3000/esquadrao), com um capitão; a escalação fecha **15 minutos** antes do primeiro jogo da rodada. Classificação em [`/esquadrao/rankings`](http://localhost:3000/esquadrao/rankings).
 5. **Scouts e finalização:** no `/admin` ou, para o próprio campeonato, no `/gestor`, Pontuação → Scouts da partida lança os scouts; Finalizar confirma o placar derivado e o job pontua palpites e escalações (Reverter desfaz).
 
 Login demo (só development/test, criado pelo `db:seed`): `demo1@demo.local` … `demo5@demo.local` / `demo-futebol`, o gestor `gestor@demo.local` / `demo-futebol` (campeonato demo atribuído) e o admin `admin@futebol.dev` / `futebol-admin`, com o bolão `DEMO01` já pontuado e mais 5 campeonatos pequenos (6 a 12 times; 3 públicos e 2 privados) com jogos hoje, para a seção "Jogos de hoje" da home, e os cenários de teste da "Copa dos Testes" (partida em cada situação, correções, deduções, pedidos de gestor, importação CSV). Detalhes dos dados demo, filas e comandos: [docs/OPERATIONS.md](docs/OPERATIONS.md).
 
 Em produção não há contas demo, porque a senha acima é pública: o seed cria só o admin, com senha forte guardada fora do repositório, além de times, jogadores e partidas. Novas contas saem do cadastro público em [`/signup`](http://localhost:3000/signup) (link "Criar conta" no login); ainda não há tela de usuários no admin.
 
+### Fluxo do usuário
+
+Após login ou cadastro, o papel **Usuário** vai para [`/minha-area`](http://localhost:3000/minha-area): KPIs (palpites em aberto, escalação, classificação), pendências com prazo, meus bolões e atalho do Simulador. O menu "Minha conta" inclui **Minha área**, Meus bolões, Meu esquadrão e Classificação do Esquadrão. Na home pública logada há banner "Ir para Minha área" e badge "Você participa" nos campeonatos com bolão ou escalação do usuário. Auditoria: [docs/ux/user-flow-audit.md](docs/ux/user-flow-audit.md); tickets [0122–0128](docs/tickets/INDEX.md).
+
 ### Home pública
 
-[`/`](http://localhost:3000/) abre sem login: hero com "Entrar" e "Criar conta", contadores, os três módulos, jogos de hoje, os campeonatos públicos com o Top 3 do Bolão e do Esquadrão e o top 10 de atletas (jogos, gols, assistências e pontos). Campeonatos marcados como privados no admin ("Campeonato privado?") não aparecem nas listas, mas entram nos contadores (campeonatos, partidas e jogadores no total). Fora do admin, nenhum texto diz se um campeonato é público ou privado. A home encaixa as seções ao parar de rolar perto do início de uma delas (scroll snap por proximidade).
+[`/`](http://localhost:3000/) abre sem login: hero com "Entrar" e "Criar conta", contadores, os três módulos, jogos de hoje, os campeonatos públicos com o Top 3 do Bolão e do Esquadrão e o top 10 de atletas (jogos, gols, assistências e pontos). Campeonatos marcados como privados no admin ("Campeonato privado?") não aparecem nas listas, mas entram nos contadores (campeonatos, partidas e jogadores no total). Fora do admin, nenhum texto diz se um campeonato é público ou privado. A home encaixa as seções ao parar de rolar perto do início de uma delas (scroll snap por proximidade). Logado, a home ganha banner para Minha área e badge "Você participa" nos campeonatos do usuário.
 
 ### Níveis de acesso
 
@@ -197,7 +201,7 @@ Três papéis, com áreas separadas no ActiveAdmin e login dedicado onde a conta
 |---|---|---|
 | **Admin** | [`/admin`](http://localhost:3000/admin) ou [`/admin/login`](http://localhost:3000/admin/login) | Plataforma inteira: usuários, importações CSV, auditoria, comentários nos recursos, preview do Bolão |
 | **Gestor** | [`/gestor`](http://localhost:3000/gestor) ou [`/gestor/login`](http://localhost:3000/gestor/login) | Só os campeonatos com `manager_id` dele: cadastro, partidas, regras do Bolão, premiação; **scouts**, **finalizar** e **reverter** partidas nesses campeonatos (mesmas telas de Pontuação, em `/gestor`) |
-| **Usuário** | [`/entrar`](http://localhost:3000/entrar) | Bolão, Esquadrão, conta e pedido de acesso de gestor em [`/gestor/solicitar`](http://localhost:3000/gestor/solicitar) |
+| **Usuário** | [`/entrar`](http://localhost:3000/entrar) → [`/minha-area`](http://localhost:3000/minha-area) | Bolão, Esquadrão, conta e pedido de acesso de gestor em [`/gestor/solicitar`](http://localhost:3000/gestor/solicitar) |
 
 Detalhes dos tickets: [0056–0062](docs/tickets/INDEX.md).
 
@@ -219,12 +223,13 @@ Padrões de interação do Admin/Gestor (pesquisa de UX → tickets [0114–0121
 
 ### Login
 
-O link "Entrar" leva a [`/entrar`](http://localhost:3000/entrar); páginas que exigem sessão continuam redirecionando para `/session/new`. Operação restringida usa [`/admin/login`](http://localhost:3000/admin/login) e [`/gestor/login`](http://localhost:3000/gestor/login) (campo oculto `area`, para não abrir sessão na área errada). Logado, o cabeçalho mostra o menu "Minha conta" (Minha conta, Meus bolões, Meu esquadrão, Rankings) e "Sair". O rodapé mostra "Área do gestor" para admin ou gestor e "Acesso administrativo" só para admin (visitante ainda vê o link do admin).
+O link "Entrar" leva a [`/entrar`](http://localhost:3000/entrar); páginas que exigem sessão continuam redirecionando para `/session/new`. Operação restringida usa [`/admin/login`](http://localhost:3000/admin/login) e [`/gestor/login`](http://localhost:3000/gestor/login) (campo oculto `area`, para não abrir sessão na área errada). Logado, o cabeçalho mostra o menu "Minha conta" (Minha área, Minha conta, Meus bolões, Meu esquadrão, Classificação do Esquadrão) e "Sair". O rodapé mostra "Área do gestor" para admin ou gestor e "Acesso administrativo" só para admin (visitante ainda vê o link do admin).
 
 ### Módulos
 
 | Módulo | Onde | Login |
 |---|---|---|
+| Minha área | [`/minha-area`](http://localhost:3000/minha-area) | sim (destino pós-login) |
 | Bolão | [`/pools`](http://localhost:3000/pools) | sim |
 | Esquadrão | [`/esquadrao`](http://localhost:3000/esquadrao) e [`/esquadrao/rankings`](http://localhost:3000/esquadrao/rankings) | sim |
 | Simulador | [`/simulador`](http://localhost:3000/simulador) (escolha o campeonato) e `/simulador/:id` | não |

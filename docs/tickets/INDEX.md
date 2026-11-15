@@ -1,4 +1,4 @@
-# Tickets — INDEX (121 tickets)
+# Tickets — INDEX (128 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -123,6 +123,13 @@
 | [0119](TICKET-0119.md) | O5 | Validação de formulários sem perda de dados | 0118 | — |
 | [0120](TICKET-0120.md) | O6 | Mobile: cards empilhados e bottom nav | 0119 | — |
 | [0121](TICKET-0121.md) | O7 | Acessibilidade WCAG AA do console | 0120 | — |
+| [0122](TICKET-0122.md) | U0 | Auditoria do fluxo do usuário | — | — |
+| [0123](TICKET-0123.md) | U1 | Área pessoal do usuário | 0122 | — |
+| [0124](TICKET-0124.md) | U2 | Entrada em bolão facilitada | 0123 | — |
+| [0125](TICKET-0125.md) | U3 | Onboarding do Esquadrão | 0123 | — |
+| [0126](TICKET-0126.md) | U4 | Prazos e lembretes | 0123, 0125 | — |
+| [0127](TICKET-0127.md) | U5 | Navegação pós-login e home contextual | 0123 | — |
+| [0128](TICKET-0128.md) | U6 | Empty states e feedback | 0123, 0124, 0125 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -143,3 +150,4 @@
 - Revisão do PR #87 (ordem dos commits): 0107 → 0108 → 0109
 - Finalização da partida (ordem dos commits): 0110 → 0111 → 0112 → 0113
 - Console operacional (UX): 0114 → 0115 → 0116 → 0117 → 0118 → 0119 → 0120 → 0121
+- UX usuário padrão: 0122 → 0123 → {0124, 0125, 0127} → 0126 → 0128

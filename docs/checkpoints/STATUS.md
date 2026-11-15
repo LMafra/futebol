@@ -617,3 +617,27 @@ HOST=https://SEU_HOST
 curl -sS -o /dev/null -w '%{http_code}\n' -L "$HOST/admin"
 curl -sS -o /dev/null -w '%{http_code}\n' -L "$HOST/gestor"
 ```
+
+## UX do usuário padrão (2026-11-15)
+
+Tickets **0122–0128**. Branch `feature/ux-usuario-padrao`. Sem alteração de engines/models/ADRs/design. Entrada em bolão permanece **só por código** (grilling). Commits com assinatura SSH (`gpg.format=ssh`).
+
+| Bloco | Ticket | Status | Artefatos | Observações |
+|---|---|---|---|---|
+| A — Auditoria | [0122](../tickets/TICKET-0122.md) | ok | `docs/ux/user-flow-audit.md` | 5 fricções; sem join público |
+| B — Minha área | [0123](../tickets/TICKET-0123.md) | ok | `Users::DashboardController`, redirect auth | `/minha-area` pós-login/signup |
+| C — Bolão | [0124](../tickets/TICKET-0124.md) | ok | busca `q`, cards, código owner | code_only |
+| D — Onboarding | [0125](../tickets/TICKET-0125.md) | ok | tour banner, position badge | session dismiss |
+| E — Prazos | [0126](../tickets/TICKET-0126.md) | ok | ClosingSoonMatches, LineupDeadline | T−15 bloqueia update |
+| F — Home | [0127](../tickets/TICKET-0127.md) | ok | banner, Você participa | menu Minha área |
+| G — Empty | [0128](../tickets/TICKET-0128.md) | ok | EmptyState contextuais | toasts intactos |
+| H — Docs | — | ok | INDEX, README, STATUS | este bloco |
+
+Smoke (produção — ajustar `HOST`; rotas autenticadas exigem cookie de sessão):
+
+```bash
+HOST=https://SEU_HOST
+curl -sS -o /dev/null -w '%{http_code}\n' -L "$HOST/minha-area"   # 302 → /session/new sem cookie
+curl -sS -o /dev/null -w '%{http_code}\n' -L "$HOST/pools"
+curl -sS -o /dev/null -w '%{http_code}\n' -L "$HOST/esquadrao"
+```
