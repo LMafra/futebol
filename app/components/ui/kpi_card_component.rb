@@ -8,15 +8,7 @@ module Ui
 
     def initialize(state: :default, **options)
       super(state:)
-      unknown = options.keys - OPTIONS
-      raise ArgumentError, "unknown kpi options: #{unknown.join(', ')}" if unknown.any?
-
-      @value = options[:value]
-      @label = options[:label]
-      @action_text = options[:action_text]
-      @action_path = options[:action_path]
-      @data_role = options.fetch(:data_role, 'kpi-card')
-      @data_label = options[:data_label] || @label
+      assign_kpi_options(options)
       require_in_default_state!(:label, @label)
       require_in_default_state!(:value, @value)
       @status = default? ? resolve_status(options[:status]) : :normal
@@ -38,6 +30,18 @@ module Ui
     end
 
     private
+
+    def assign_kpi_options(options)
+      unknown = options.keys - OPTIONS
+      raise ArgumentError, "unknown kpi options: #{unknown.join(', ')}" if unknown.any?
+
+      @value = options[:value]
+      @label = options[:label]
+      @action_text = options[:action_text]
+      @action_path = options[:action_path]
+      @data_role = options.fetch(:data_role, 'kpi-card')
+      @data_label = options[:data_label] || @label
+    end
 
     def resolve_status(value)
       key = (value || inferred_status).to_s.to_sym

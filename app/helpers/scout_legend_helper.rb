@@ -12,8 +12,8 @@ module ScoutLegendHelper
 
   # Table header: the abbreviation (with its meaning on hover) from 640px up, the full label on phones.
   def abbreviated_header(abbreviation, label)
-    safe_join([tag.abbr(abbreviation, title: label, class: 'hidden decoration-dotted underline underline-offset-2 sm:inline'),
-               tag.span(label, class: 'sm:hidden')])
+    abbr_classes = 'hidden decoration-dotted underline underline-offset-2 sm:inline'
+    safe_join([tag.abbr(abbreviation, title: label, class: abbr_classes), tag.span(label, class: 'sm:hidden')])
   end
 
   def scout_header(scout) = abbreviated_header(scout_abbreviation(scout), scout_label(scout))

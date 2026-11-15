@@ -27,7 +27,11 @@ RSpec.describe 'Admin and Gestor listings on Ui::CollectionComponent (TICKET-010
     it 'renders every listing in its mode, without the ActiveAdmin table' do
       { championships: :cards, teams: :grid, players: :table, matches: :grouped, users: :table, pools: :cards,
         csv_imports: :table, audit_logs: :timeline }.each do |resource, mode|
-        get "/admin/#{resource}"
+        if resource == :matches
+          get "/admin/#{resource}", params: { scope: 'all' }
+        else
+          get "/admin/#{resource}"
+        end
 
         expect(response).to have_http_status(:ok)
         expect(collection(resource.to_s.dasherize)&.[]('data-mode')).to eq(mode.to_s), resource.to_s
@@ -39,7 +43,7 @@ RSpec.describe 'Admin and Gestor listings on Ui::CollectionComponent (TICKET-010
       get '/admin/teams', params: { view: 'table' }
       expect(collection('teams')['data-mode']).to eq('table')
 
-      get '/admin/matches', params: { view: 'agenda' }
+      get '/admin/matches', params: { view: 'agenda', scope: 'all' }
       expect(collection('matches')['data-mode']).to eq('agenda')
     end
 
@@ -68,7 +72,11 @@ RSpec.describe 'Admin and Gestor listings on Ui::CollectionComponent (TICKET-010
 
     it 'renders the gestor listings and offers to continue the draft' do
       %w[championships teams players matches pools].each do |resource|
-        get "/gestor/#{resource}"
+        if resource == 'matches'
+          get "/gestor/#{resource}", params: { scope: 'all' }
+        else
+          get "/gestor/#{resource}"
+        end
 
         expect(response).to have_http_status(:ok)
         expect(collection(resource)).to be_present, resource
@@ -82,11 +90,11 @@ RSpec.describe 'Admin and Gestor listings on Ui::CollectionComponent (TICKET-010
     it 'shows the next step of each match' do
       live = create(:match, championship:, status: 'live', match_date: 1.hour.ago, home_team: team)
 
-      get '/gestor/matches'
+      get '/gestor/matches', params: { scope: 'all' }
 
-      steps = page_html.css('#matches [data-role="match-step"]').to_h { [_1.text, _1['href']] }
-      expect(steps).to include('Registrar lances' => "/gestor/matches/#{live.id}")
-      expect(steps.keys).to include('Editar partida')
+      actions = page_html.css('#matches [data-role="match-primary-action"]').to_h { [_1.text, _1['href']] }
+      expect(actions).to include('Lances' => "/gestor/matches/#{live.id}")
+      expect(actions.keys).to include('Editar')
     end
 
     it 'walks the agenda week by week, also through an empty week' do
@@ -94,7 +102,7 @@ RSpec.describe 'Admin and Gestor listings on Ui::CollectionComponent (TICKET-010
       sunday = monday + 6
       create(:match, championship:, match_date: sunday.in_time_zone.change(hour: 16), home_team: team)
 
-      get '/gestor/matches', params: { view: 'agenda', q: { match_date_gteq: (monday + 2).iso8601 } }
+      get '/gestor/matches', params: { view: 'agenda', scope: 'all', q: { match_date_gteq: (monday + 2).iso8601 } }
       expect(page_html.at_css('[data-role="agenda-week"]').text)
         .to eq("Semana de #{monday.strftime('%d/%m')} a #{sunday.strftime('%d/%m')}")
       expect(page_html.css('#matches [data-role="collection-group"] h3').map(&:text))
@@ -104,12 +112,12 @@ RSpec.describe 'Admin and Gestor listings on Ui::CollectionComponent (TICKET-010
       next_week = "Semana de #{(monday + 7).strftime('%d/%m')} a #{(monday + 13).strftime('%d/%m')}"
       expect(page_html.at_css('[data-role="agenda-week"]').text).to eq(next_week)
       expect(page_html.at_css('[data-role="empty-state"]')).to be_present
-      expect(page_html.at_css('.active-filters-title').text.squish).to eq('Filtros ativos')
+      expect(page_html.at_css('.active-filters-title').text.squish).to eq('Filtros ativos em Todos')
       expect(week_link('Semana anterior')).to be_present
     end
 
     it 'opens the round of the next match by default' do
-      get '/gestor/matches'
+      get '/gestor/matches', params: { scope: 'all' }
 
       group = page_html.at_css('#matches details[data-role="collection-group"][open]')
       expect(group.at_css('summary').text).to include('Rodada 2')

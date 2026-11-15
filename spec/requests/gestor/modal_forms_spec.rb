@@ -41,7 +41,10 @@ RSpec.describe 'Creation dialogs (TICKET-0095)', type: :request do
     expect(dialog(:player).at_css('[role="alert"]').text).to include('Posição')
     expect(dialog(:player).at_css('#player_name')['value']).to eq('Zé do Gol')
     expect(dialog(:player).at_css('#player_position')['aria-invalid']).to eq('true')
-    expect(page.css('[data-role="craquefy-admin-flashes"]')).to be_empty
+    flashes = page.css('[data-role="craquefy-admin-flashes"] [data-role="admin-toast"], ' \
+                       '[data-role="craquefy-admin-flashes"] [role="status"]')
+    expect(flashes).to be_empty
+    expect(page.at_css('#flash-toasts[data-role="craquefy-admin-flashes"]')).to be_present
   end
 
   it 'ignores a return_to outside the namespace' do

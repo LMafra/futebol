@@ -47,7 +47,7 @@ RSpec.describe 'Classificação com dedução de pontos', type: :request do
 
       expect(response).to redirect_to("#{tab}&modal=deduction")
       follow_redirect!
-      expect(response.body).to include('Corrija para continuar', 'Motivo não pode ficar em branco')
+      expect(response.body).to include('precisam de atenção', 'Motivo não pode ficar em branco')
     end
 
     it 'revokes a deduction and keeps it in the history' do

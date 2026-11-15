@@ -29,6 +29,10 @@ ActiveAdmin.register_page 'Dashboard' do
       @manager_queue = Users::PendingManagerQueue.call
       @metrics_counts = metric_counts
       @urgency = params[:urgency]
+      assign_dashboard_action_groups
+    end
+
+    def assign_dashboard_action_groups
       @action_groups = Admin::DashboardActionGroups.call(
         live: @live, pending: @pending, manager_queue: @manager_queue, paths: helpers
       )

@@ -6,7 +6,8 @@ RSpec.describe 'Public visual base (TICKET-0082)' do
   # Rendered only inside the Admin/Gestor, whose Tailwind build keeps the default spacing scale.
   let(:admin_only) do
     %w[toast_component empty_state_component form_section_component status_badge_component admin_table_component
-       preview_panel_component csv_import_status_component]
+       preview_panel_component csv_import_status_component action_center_component bottom_nav_component
+       filter_bar_component form_field_component form_error_summary_component kpi_card_component]
   end
 
   let(:public_sources) do

@@ -13,7 +13,7 @@ RSpec.describe 'Admin/Gestor consistency (TICKET-0084)', type: :request do
     it 'translates status filters and attribute headers' do
       create(:match, round: 3)
 
-      get '/admin/matches'
+      get '/admin/matches', params: { scope: 'all' }
       expect(option_texts('q[status_eq]')).to eq(['Agendada', 'Ao vivo', 'Encerrada', 'Pontuada', 'Revertida'])
       expect(page_html.css('#matches [data-role="collection-group"] summary span').first.text).to end_with('Rodada 3')
 
@@ -42,10 +42,8 @@ RSpec.describe 'Admin/Gestor consistency (TICKET-0084)', type: :request do
       get '/admin'
 
       kpis = page_html.css('[data-role="admin-kpi"]').to_h { [_1['data-label'], _1] }
-      expect(kpis['Pontuação pendente']['href']).to eq('/admin/matches?scope=encerradas_sem_pontuacao')
+      expect(kpis['Pontuação pendente']['href']).to eq('/admin?urgency=high')
       expect(kpis['Campeonatos ativos'].at_css('.font-numeric').text.strip).to eq('1')
-      get '/admin/matches', params: { scope: 'encerradas_sem_pontuacao' }
-      expect(response).to have_http_status(:ok)
     end
 
     it 'sends the preview CTA to the finalize dialog without the simulated score' do

@@ -21,18 +21,16 @@ module Ui
 
     def rendered_state = default? && rows.empty? ? :empty : state
 
-    def normalize_headers(list)
-      list.map do |header|
-        case header
-        when Hash
-          {
-            label: header.fetch(:label),
-            numeric: header.fetch(:numeric, false),
-            actions: header.fetch(:actions, false)
-          }
-        else { label: header, numeric: false, actions: false }
-        end
-      end
+    def normalize_headers(list) = list.map { normalize_header(_1) }
+
+    def normalize_header(header)
+      return { label: header, numeric: false, actions: false } unless header.is_a?(Hash)
+
+      {
+        label: header.fetch(:label),
+        numeric: header.fetch(:numeric, false),
+        actions: header.fetch(:actions, false)
+      }
     end
   end
 end

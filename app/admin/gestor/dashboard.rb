@@ -30,10 +30,14 @@ ActiveAdmin.register_page 'Dashboard', namespace: :gestor do
       @queue = match_queue.items
       @kpis = match_queue.kpis
       @urgency = params[:urgency]
+      assign_gestor_action_groups
+      @upcoming_matches = upcoming_matches_for(scoped)
+    end
+
+    def assign_gestor_action_groups
       @action_groups = Gestor::DashboardActionGroups.call(
         items: @queue, paths: helpers, status_label: ->(status) { helpers.admin_match_status_label(status) }
       )
-      @upcoming_matches = upcoming_matches_for(scoped)
     end
 
     def upcoming_matches_for(scoped)

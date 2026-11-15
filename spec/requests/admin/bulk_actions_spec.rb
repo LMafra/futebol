@@ -22,7 +22,7 @@ RSpec.describe 'Bulk actions of the listings (TICKET-0104)', type: :request do
       expect(bar.css('button').map(&:text)).to eq(['Inscrever no campeonato', 'Remover do campeonato', 'Excluir'])
       expect(bar.css('select[name="championship_id"] option').map(&:text)).to include(championship.to_s)
 
-      get '/gestor/matches'
+      get '/gestor/matches', params: { scope: 'all' }
       expect(page_html.css('#matches-bulk input, #matches-bulk select').map { _1['name'] })
         .to include('shift_amount', 'shift_unit', 'reason')
     end

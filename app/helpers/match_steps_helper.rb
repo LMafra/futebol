@@ -15,7 +15,9 @@ module MatchStepsHelper
   # Primary row action for the matches listing (live→Lances, pending→Finalizar, scheduled→Editar).
   def match_contextual_action(match, step, namespace)
     path = match_step_path(match, step, namespace)
-    return tag.span('—', class: AdminHelper::ADMIN_MUTED_TEXT_CLASSES, data: { role: 'match-primary-action' }) unless path
+    unless path
+      return tag.span('—', class: AdminHelper::ADMIN_MUTED_TEXT_CLASSES, data: { role: 'match-primary-action' })
+    end
 
     link_to MATCH_STEP_SHORT.fetch(step), path,
             class: "#{AdminHelper::ADMIN_BUTTON_CLASSES} min-h-11 min-w-[44px]",

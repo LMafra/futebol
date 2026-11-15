@@ -26,8 +26,10 @@ module AdminFilterChipsHelper
     base = public_send(:"#{namespace}_matches_path")
     current = params[:scope].presence || 'pendencias'
     [
-      { key: 'pendencias', label: 'Minhas Pendências', path: "#{base}?scope=pendencias", current: current == 'pendencias' },
-      { key: 'rodada_atual', label: 'Rodada Atual', path: "#{base}?scope=rodada_atual", current: current == 'rodada_atual' },
+      { key: 'pendencias', label: 'Minhas Pendências', path: "#{base}?scope=pendencias",
+        current: current == 'pendencias' },
+      { key: 'rodada_atual', label: 'Rodada Atual', path: "#{base}?scope=rodada_atual",
+        current: current == 'rodada_atual' },
       { key: 'all', label: 'Todas as Partidas', path: "#{base}?scope=all", current: current == 'all' }
     ]
   end

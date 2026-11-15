@@ -14,7 +14,8 @@ RSpec.describe ScoutLegendHelper, type: :helper do
     header = Nokogiri::HTML.fragment(helper.scout_header(:yellow_cards))
 
     expect(header.at_css('abbr').attributes.transform_values(&:value))
-      .to include('title' => 'Cartão amarelo', 'class' => 'hidden no-underline sm:inline')
+      .to include('title' => 'Cartão amarelo',
+                  'class' => 'hidden decoration-dotted underline underline-offset-2 sm:inline')
     expect(header.at_css('abbr').text).to eq('CA')
     expect(header.at_css('span.sm\:hidden').text).to eq('Cartão amarelo')
   end

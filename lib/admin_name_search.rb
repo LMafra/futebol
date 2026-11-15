@@ -19,8 +19,19 @@ module AdminNameSearch
     term = term.to_s.strip
     return [] if term.length < MIN_LENGTH
 
-    column = scope.klass.arel_table[attribute]
-    scope.unscope(:includes, :order).where(column.matches("%#{ActiveRecord::Base.sanitize_sql_like(term)}%"))
-         .distinct.order(attribute).limit(LIMIT).pluck(attribute)
+    matching_names(scope, attribute, term)
   end
+
+  def self.matching_names(scope, attribute, term)
+    column = scope.klass.arel_table[attribute]
+    like = "%#{ActiveRecord::Base.sanitize_sql_like(term)}%"
+    scope.unscope(:includes, :order).where(column.matches(like))
+         .group(attribute).order(collated_name_order(scope, attribute)).limit(LIMIT).pluck(attribute)
+  end
+
+  def self.collated_name_order(scope, attribute)
+    quoted = scope.klass.connection.quote_column_name(attribute.to_s)
+    Arel.sql("#{quoted} COLLATE \"C\"")
+  end
+  private_class_method :matching_names, :collated_name_order
 end

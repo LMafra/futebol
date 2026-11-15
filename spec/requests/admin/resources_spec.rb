@@ -23,7 +23,7 @@ RSpec.describe 'ActiveAdmin resources (Pundit)', type: :request do
     it 'admin acessa /admin/matches (200)' do
       match
 
-      get '/admin/matches'
+      get '/admin/matches', params: { scope: 'all' }
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include(match.to_s)
