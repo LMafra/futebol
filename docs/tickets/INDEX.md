@@ -1,4 +1,4 @@
-# Tickets — INDEX (113 tickets)
+# Tickets — INDEX (114 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -115,6 +115,7 @@
 | [0111](TICKET-0111.md) | F2 | Lances e estatísticas editáveis depois de pontuada (placar e pontos refeitos na hora) | 0110 | playwright |
 | [0112](TICKET-0112.md) | F3 | Histórico da partida (quem fez o quê e quando, placar antes → depois, reversões) | 0111 | playwright |
 | [0113](TICKET-0113.md) | F4 | Seeds com cenários de teste de todas as funcionalidades (Copa dos Testes) | 0112 | playwright |
+| [0114](TICKET-0114.md) | O0 | Atualizar DS com pesquisa de UX (0001–0003 + critique) | 0073, 0081 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}
@@ -134,3 +135,4 @@
 - Gestor, campeonato, partida ao vivo e participantes (ordem dos commits): 0085 → 0086 → 0087 → 0088 → 0106 → 0089 → 0090 → 0091 → 0092 → 0093 → 0102 → 0094 → 0095 → 0096 → 0097 → 0098 → 0099 → 0100 → 0101 → 0103 → 0104 → 0105
 - Revisão do PR #87 (ordem dos commits): 0107 → 0108 → 0109
 - Finalização da partida (ordem dos commits): 0110 → 0111 → 0112 → 0113
+- Console operacional (UX): 0114 → 0115 → 0116 → 0117 → 0118 → 0119 → 0120 → 0121

@@ -2,6 +2,8 @@
 
 Referência: placa de estádio + grafismo de TV esportiva (mesa redonda de domingo) + jornal impresso (revista **Placar**, diário **Lance!**). Informação densa, hierarquia editorial, números protagonistas.
 
+Padrões de interação do console Admin/Gestor: ver [0002-interaction-patterns.md](0002-interaction-patterns.md). Specs de componentes: [0003-components-specs.md](0003-components-specs.md).
+
 ## 1. Paleta 60-30-10 (fora do eixo azul/violeta)
 | papel | token | hex | uso |
 |---|---|---|---|
@@ -27,27 +29,51 @@ Referência: placa de estádio + grafismo de TV esportiva (mesa redonda de domin
 - PROIBIDO: Inter, Roboto, Space Grotesk como default
 - Escala (rem): 0.75 · 0.875 · 1 · 1.25 · 1.5 · 2 · 3 · 4.5 (placar TV: 6–9)
 - Manchete: Fraunces 800, tracking -0.02em, caixa alta só em chapéus (kicker) Source Sans 700 0.08em
+- Fraunces mínimo 20px (só display); tabelas 100% Source Sans 3
 
 ## 3. Grid e densidade
 - 12 colunas, gutter 24px (admin) / 16px (mobile), max 1280px
+- Breakpoints: **mobile** `<768px` · **tablet** `768–1024px` · **desktop** `>1024px`
 - Admin: quebras assimétricas 8/4 (conteúdo/contexto) e 3/9 (filtros/tabela); nunca 3 cards iguais lado a lado
 - Scoreboard TV: densidade alta, 16:9, linhas de 64px, placar 2/8/2 (brasão/nomes+placar/minuto), legível a 3m
 - Ranking: tabela tipo classificação de jornal (posição, brasão, nome, P, J, V, E, D, saldo) com fios finos
 
-## 4. Tokens
+## 4. Foundations (tokens)
 | grupo | valores |
 |---|---|
-| espaçamento (base 4/8) | 4, 8, 12, 16, 24, 32, 48, 64 |
+| espaçamento (base 4/8) | 4, 8, 12, 16, 24, 32, 48 (e 64 só em seções amplas) |
 | raios | `sm` 4 · `md` 8 · `lg` 16 (lg só em modais/painéis) |
-| sombras (sutis, neutras) | `sm` 0 1px 2px rgb(22 22 22 / .06) · `md` 0 2px 6px rgb(22 22 22 / .08) |
-| motion | `fast` 120ms · `base` 150ms · `slow` 180ms · easing cubic-bezier(.2,.8,.2,1); respeita `prefers-reduced-motion` |
+| elevação (sombra sutil, sem glow) | `sm` 0 1px 2px rgb(22 22 22 / .06) · `md` 0 2px 6px rgb(22 22 22 / .08) |
+| motion | `fast` 120ms · `base` 180ms · `slow` 240ms · easing cubic-bezier(.2,.8,.2,1); respeita `prefers-reduced-motion` |
 | bordas | 1px `rule`; fio grosso 3px `ink` sob manchetes (estilo jornal) |
 
-## 5. Imagem
+## 5. Estados de componente
+Todo componente interativo declara estes estados (tokens de cor/tipo acima; motion nos tokens):
+
+| estado | comportamento |
+|---|---|
+| `default` | aparência de repouso |
+| `hover` | feedback leve (fundo `rule/40` ou underline); sem glow |
+| `focus` | anel visível 2px `ink` / `cartola` (nunca só mudança de cor) |
+| `disabled` | opacidade ≤50%, sem pointer; aria-disabled |
+| `error` | borda `loss` + mensagem inline; contraste ≥4.5:1 |
+| `loading` | skeleton ou spinner; conteúdo anunciado via `aria-busy` / sr-only |
+| `empty` | EmptyState (ícone SVG + título + descrição + CTA opcional) |
+
+## 6. Contraste e acessibilidade
+- Texto normal (corpo, labels): contraste mínimo **4.5:1** (`ink`/`graphite` sobre `paper`/`white`)
+- Números de tabela, placares e KPIs: contraste mínimo **7:1** (`text-ink` ou `text-graphite`; nunca `text-gray-400`)
+- Situação / status: **nunca só cor** — badge triplo (ícone + texto + cor)
+- Cabeçalhos abreviados: `<abbr title="…">` com sublinhado pontilhado; texto completo no drawer/tooltip
+- Rótulos de ação: imperativos Verbo+Substantivo ("Finalizar e Pontuar Partida", não "OK")
+- Alvos tocáveis ≥44×44pt no mobile
+
+## 7. Imagem
 - Brasões oficiais (SVG/PNG) dos clubes e fotos reais de partida (R2), nunca ilustração genérica/3D
 - Fotos com legenda e crédito (padrão jornal); P&B permitido em arquivo histórico
+- Placeholder = silhueta P&B, nunca ilustração IA
 
-## 6. Checklist ANTI-AI
+## 8. Checklist ANTI-AI
 ### Proibido
 - [x] Gradiente roxo/rosa/violeta (qualquer gradiente decorativo)
 - [x] Glassmorphism / backdrop-blur decorativo
