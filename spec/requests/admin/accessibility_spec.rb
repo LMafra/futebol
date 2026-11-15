@@ -68,7 +68,7 @@ RSpec.describe 'Admin accessibility (TICKET-0081)', type: :request do
     it 'flags the current page with aria-current and 40px targets' do
       create_list(:match, 35)
 
-      get '/admin/matches'
+      get '/admin/matches', params: { scope: 'all' }
 
       current = page_html.at_css('[data-test-pagination] a[aria-current="page"]')
       expect(current.text.squish).to eq('1')
@@ -77,10 +77,11 @@ RSpec.describe 'Admin accessibility (TICKET-0081)', type: :request do
   end
 
   describe 'flash' do
-    it 'renders no flash container without messages' do
+    it 'keeps an empty flash-toasts mount point for Turbo Stream toasts' do
       get '/admin/championships'
 
-      expect(response.body).not_to include('data-role="craquefy-admin-flashes"')
+      expect(page_html.at_css('#flash-toasts[data-role="craquefy-admin-flashes"]')).to be_present
+      expect(page_html.css('[data-role="admin-toast"]')).to be_empty
     end
   end
 
