@@ -15,6 +15,16 @@ ActiveAdmin.register Core::Match, as: 'Match', namespace: :gestor do
   filter :status, as: :select, collection: -> { admin_match_status_options }
   filter :match_date
 
+  scope :pendencias, default: true, show_count: false do |matches|
+    matches.where(status: 'live')
+           .or(matches.where(status: %w[finished reverted], scores_calculated_at: nil))
+  end
+  scope :rodada_atual, show_count: false do |matches|
+    current_round = matches.where(status: %w[scheduled live]).maximum(:round)
+    current_round ? matches.where(round: current_round) : matches.none
+  end
+  scope :all, show_count: false
+
   before_build do |match|
     assign_external_id(match)
     load_teams(match)

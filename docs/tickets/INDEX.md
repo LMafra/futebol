@@ -1,4 +1,4 @@
-# Tickets — INDEX (116 tickets)
+# Tickets — INDEX (117 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -118,6 +118,7 @@
 | [0114](TICKET-0114.md) | O0 | Atualizar DS com pesquisa de UX (0001–0003 + critique) | 0073, 0081 | — |
 | [0115](TICKET-0115.md) | O1 | Dashboard com Action Center e KPIs | 0114 | — |
 | [0116](TICKET-0116.md) | O2 | Tabelas escaneáveis com badges triplos | 0115 | — |
+| [0117](TICKET-0117.md) | O3 | Filtros com chips e views salvas | 0116 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}

@@ -12,7 +12,15 @@ ActiveAdmin.register Core::Match, as: 'Match' do
   filter :external_id_eq, label: 'ID externo', as: :string
   filter :match_date
 
-  scope :all, default: true
+  scope :pendencias, default: true, show_count: false do |matches|
+    matches.where(status: 'live')
+           .or(matches.where(status: %w[finished reverted], scores_calculated_at: nil))
+  end
+  scope :rodada_atual, show_count: false do |matches|
+    current_round = matches.where(status: %w[scheduled live]).maximum(:round)
+    current_round ? matches.where(round: current_round) : matches.none
+  end
+  scope :all, show_count: false
   scope('Encerradas sem pontuação') do |matches|
     matches.where(status: %w[finished reverted], scores_calculated_at: nil)
   end

@@ -32,7 +32,7 @@ RSpec.describe 'ActiveAdmin Placar tables', type: :request do
   it 'paginates with pitch current page instead of Flowbite blue' do
     create_list(:match, 35)
 
-    get '/admin/matches'
+    get '/admin/matches', params: { scope: 'all' }
 
     expect(response).to have_http_status(:ok)
     expect(response.body).to include('data-test-pagination', 'bg-pitch')

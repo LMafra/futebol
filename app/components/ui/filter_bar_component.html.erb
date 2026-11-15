@@ -1,0 +1,55 @@
+<% attrs = root_attributes(label: 'Filtros') %>
+<% attrs[:class] = 'w-full rounded-md border border-rule bg-white px-4 py-3' %>
+<% attrs[:data] = (attrs[:data] || {}).merge(role: 'filter-bar') %>
+<section <%= tag.attributes(attrs) %>>
+  <% case rendered_state %>
+  <% when :default %>
+    <% if views.any? %>
+      <nav aria-label="Views salvas" class="mb-3 flex flex-wrap gap-2 border-b border-rule pb-3" data-role="filter-saved-views">
+        <% views.each do |view| %>
+          <%= link_to view.label, view.path,
+                      class: "inline-flex min-h-11 items-center rounded-sm px-3 text-sm font-body font-semibold no-underline #{view.current ? 'bg-pitch text-paper' : 'bg-paper text-ink hover:bg-rule/40'}",
+                      aria: { current: (view.current ? 'page' : nil) },
+                      data: { role: 'filter-view', view: view.key } %>
+        <% end %>
+      </nav>
+    <% end %>
+
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="min-w-0 flex-1" data-role="filter-controls">
+        <%= controls %>
+      </div>
+      <% if layout_toggle.present? %>
+        <div class="shrink-0" data-role="filter-layout-toggle">
+          <%= layout_toggle %>
+        </div>
+      <% end %>
+    </div>
+
+    <% if chips? %>
+      <div class="mt-3 flex flex-wrap items-center gap-2 border-t border-rule pt-3" data-role="filter-chips">
+        <% chips.each do |chip| %>
+          <%= link_to chip.remove_path,
+                      class: "inline-flex min-h-11 items-center gap-1 rounded-sm bg-rule px-2 text-sm font-body text-ink no-underline hover:bg-rule/70",
+                      data: { role: 'filter-chip' },
+                      aria: { label: "Remover filtro #{chip.label}" } do %>
+            <span><%= chip.label %></span>
+            <span aria-hidden="true">×</span>
+          <% end %>
+        <% end %>
+        <% if clear_path.present? %>
+          <%= link_to "Limpar todos", clear_path,
+                      class: "text-sm font-body font-semibold text-cartola no-underline hover:underline",
+                      data: { role: 'filter-clear-all' } %>
+        <% end %>
+      </div>
+    <% end %>
+  <% when :loading %>
+    <span class="sr-only">Carregando filtros…</span>
+    <div class="h-12 w-full <%= skeleton_classes %>" aria-hidden="true"></div>
+  <% when :empty %>
+    <%= empty_notice('Sem filtros.') %>
+  <% when :error %>
+    <div class="<%= error_classes %>" role="alert">Não foi possível montar os filtros.</div>
+  <% end %>
+</section>
