@@ -9,7 +9,7 @@ RSpec.describe Ui::StatusBadgeComponent do
     pending_scouts: ['bg-cartola/15', 'text-ink', 'Aguardando lances'],
     finished: ['bg-pitch/10', 'text-pitch', 'Encerrada'],
     scored: %w[bg-pitch text-paper Pontuada],
-    reverted: ['bg-red-50', 'text-red-800', 'Revertida']
+    reverted: %w[bg-red-50 text-red-800 Revertida]
   }.each do |status, (bg, color, label)|
     it "renders the #{status} badge with icon + text + color" do
       page = render_inline(described_class.new(status:))
