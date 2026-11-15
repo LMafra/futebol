@@ -21,7 +21,8 @@ module Ui
       reverted: 'Revertida'
     }.freeze
 
-    # Heroicons-style path `d` attributes (24 viewBox).
+    # Heroicons-style path `d` attributes (24 viewBox). Rubocop: long SVG paths.
+    # rubocop:disable-next Layout/LineLength
     ICONS = {
       scheduled: 'M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z',
       live: 'M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z',
