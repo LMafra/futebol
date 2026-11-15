@@ -13,12 +13,20 @@ RSpec.describe Ui::AdminTableComponent do
 
     expect(page.at_css('section')['aria-label']).to eq('Classificação')
     expect(page.at_css('thead')['class']).to include('bg-pitch', 'text-paper')
-    expect(page.at_css('thead tr')['class']).to include('text-sm', 'uppercase', 'tracking-wide')
+    expect(page.at_css('thead tr')['class']).to include('font-display', 'text-xs', 'uppercase', 'tracking-wide')
     expect(page.css('[data-role="admin-table-row"]').map { |row| row['class'] })
       .to contain_exactly(a_string_including('bg-paper'), a_string_including('bg-white'))
     expect(page.at_css('th:last-child')['class']).to include('text-right', 'tabular-nums')
     expect(page.at_css('[data-role="admin-table-row"] td:last-child')['class'])
-      .to include('text-right', 'tabular-nums')
+      .to include('text-right', 'tabular-nums', 'text-ink')
+  end
+
+  it 'marks the actions column for primary + kebab cells' do
+    headers = [{ label: 'Nome' }, { label: 'Ação', actions: true }]
+    rows = [['Ana', 'Finalizar · ⋯']]
+    page = render_inline(described_class.new(headers:, rows:))
+
+    expect(page.at_css('[data-role="admin-table-actions"]').text).to include('Finalizar')
   end
 
   it 'shows the empty notice when there are no rows' do

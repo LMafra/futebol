@@ -1,0 +1,7 @@
+pt-BR:
+  active_admin:
+    pagination:
+      multiple: "Exibindo %{from}–%{to} de %{total}"
+      multiple_without_total: "Exibindo %{from}–%{to}"
+      one: "Exibindo 1 de 1"
+      one_page: "Exibindo 1–%{n} de %{n}"

@@ -37,11 +37,25 @@ module AdminHelper
     [match.home_score, match.away_score].map { |goals| goals.nil? ? '–' : goals }.join(' × ')
   end
 
-  def admin_match_status_badge(match, label: nil)
-    status = match.status.to_s
-    return status_tag(match.status) unless Ui::StatusBadgeComponent::STYLES.key?(status.to_sym)
+  def admin_match_status_badge(match, label: nil, scouted_ids: nil)
+    status = match_badge_status(match, scouted_ids:)
+    return status_tag(match.status) unless Ui::StatusBadgeComponent::STYLES.key?(status)
 
     render Ui::StatusBadgeComponent.new(status:, label:)
+  end
+
+  # live without lances → pending_scouts (Aguardando lances).
+  def match_badge_status(match, scouted_ids: nil)
+    status = match.status.to_s.to_sym
+    return :pending_scouts if status == :live && !match_scouted?(match, scouted_ids)
+
+    status
+  end
+
+  def match_scouted?(match, scouted_ids = nil)
+    return scouted_ids.include?(match.id) if scouted_ids
+
+    Cartola::PlayerScore.kept.exists?(match_id: match.id)
   end
 
   def admin_match_option(match)

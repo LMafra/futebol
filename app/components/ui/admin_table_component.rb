@@ -24,8 +24,13 @@ module Ui
     def normalize_headers(list)
       list.map do |header|
         case header
-        when Hash then { label: header.fetch(:label), numeric: header.fetch(:numeric, false) }
-        else { label: header, numeric: false }
+        when Hash
+          {
+            label: header.fetch(:label),
+            numeric: header.fetch(:numeric, false),
+            actions: header.fetch(:actions, false)
+          }
+        else { label: header, numeric: false, actions: false }
         end
       end
     end

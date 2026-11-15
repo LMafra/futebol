@@ -4,7 +4,10 @@
 <span <%= tag.attributes(attrs) %>>
   <% case rendered_state %>
   <% when :default %>
-    <%= label %>
+    <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" data-role="status-badge-icon">
+      <path stroke-linecap="round" stroke-linejoin="round" d="<%= icon_path %>" />
+    </svg>
+    <span data-role="status-badge-text"><%= label %></span>
   <% when :loading %>
     <span class="sr-only">Carregando situação…</span>
     <span class="inline-block h-3 w-16 <%= skeleton_classes %>" aria-hidden="true"></span>

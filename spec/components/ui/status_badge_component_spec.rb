@@ -6,17 +6,19 @@ RSpec.describe Ui::StatusBadgeComponent do
   {
     scheduled: %w[bg-rule text-ink Agendada],
     live: ['bg-cartola', 'text-ink', 'Ao vivo'],
+    pending_scouts: ['bg-cartola/15', 'text-ink', 'Aguardando lances'],
     finished: ['bg-pitch/10', 'text-pitch', 'Encerrada'],
     scored: %w[bg-pitch text-paper Pontuada],
-    reverted: %w[bg-loss text-ink Revertida]
+    reverted: ['bg-red-50', 'text-red-800', 'Revertida']
   }.each do |status, (bg, color, label)|
-    it "renders the #{status} badge" do
+    it "renders the #{status} badge with icon + text + color" do
       page = render_inline(described_class.new(status:))
 
       badge = page.at_css('[data-role="status-badge"]')
       expect(badge['class']).to include(bg, color)
       expect(badge['data-status']).to eq(status.to_s)
-      expect(badge.text.squish).to eq(label)
+      expect(badge.at_css('[data-role="status-badge-icon"]')).to be_present
+      expect(badge.at_css('[data-role="status-badge-text"]').text.squish).to eq(label)
     end
   end
 

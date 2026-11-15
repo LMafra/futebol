@@ -3,9 +3,9 @@
   <% when :default %>
     <table class="data-table w-full border-collapse border border-rule text-sm font-body" data-role="<%= table_role %>">
       <thead class="bg-pitch text-paper">
-        <tr class="text-sm font-body font-semibold uppercase tracking-wide">
+        <tr class="font-display text-xs font-semibold uppercase tracking-wide">
           <% headers.each do |header| %>
-            <th scope="col" class="border-b border-pitch px-3 py-3.5 <%= header[:numeric] ? 'text-right tabular-nums' : 'text-start' %>">
+            <th scope="col" class="border-b border-pitch px-3 py-3.5 text-paper <%= header[:numeric] ? 'text-right tabular-nums' : 'text-start' %>">
               <%= header[:label] %>
             </th>
           <% end %>
@@ -15,8 +15,11 @@
         <% rows.each_with_index do |row, index| %>
           <tr class="border-b border-rule last:border-b-0 <%= index.even? ? 'bg-paper' : 'bg-white' %>" data-role="admin-table-row">
             <% row.each_with_index do |cell, cell_index| %>
-              <% numeric = headers[cell_index]&.dig(:numeric) %>
-              <td class="px-3 py-4 <%= 'text-right tabular-nums' if numeric %>"><%= cell %></td>
+              <% header = headers[cell_index] %>
+              <% numeric = header&.dig(:numeric) %>
+              <% actions = header&.dig(:actions) %>
+              <td class="px-3 py-4 text-ink <%= 'text-right tabular-nums' if numeric %> <%= 'whitespace-nowrap' if actions %>"
+                  <% if actions %>data-role="admin-table-actions"<% end %>><%= cell %></td>
             <% end %>
           </tr>
         <% end %>
