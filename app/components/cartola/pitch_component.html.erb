@@ -35,7 +35,12 @@
     <span class="sr-only">Carregando escalação…</span>
     <div class="h-[24rem] w-full <%= skeleton_classes %>" data-role="skeleton" aria-hidden="true"></div>
   <% when :empty %>
-    <%= empty_notice("Nenhuma escalação para esta rodada.") %>
+    <div data-role="lineup-empty">
+      <%= render Ui::EmptyStateComponent.new(
+            title: 'Monte sua primeira escalação',
+            description: 'Escolha a formação e compre jogadores.'
+          ) %>
+    </div>
   <% when :error %>
     <div class="<%= error_classes %>" role="alert">
       <span class="font-bold">Não foi possível carregar a escalação.</span>
