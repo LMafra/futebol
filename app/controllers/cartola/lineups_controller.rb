@@ -5,26 +5,34 @@ module Cartola
   # only players of the championship's teams can be picked.
   # ::ApplicationController: inside Cartola, the bare constant resolves to the engine's Cartola::ApplicationController.
   class LineupsController < ::ApplicationController
+    include Cartola::LineupTour
+    include Cartola::LineupDeadlines
+
     rescue_from Pundit::NotAuthorizedError do |exception|
       render_forbidden(exception, message: 'Esta escalação pertence a outro usuário.')
     end
 
     before_action :dismiss_tour_if_requested, only: %i[show edit]
     before_action :set_lineup
-    helper_method :lineup_location, :show_esquadrao_tour?
+    helper_method :lineup_location
 
     def show
       authorize @lineup
       load_budget
+      load_lineup_deadline
     end
 
     def edit
       authorize @lineup
       load_players
+      load_lineup_deadline
     end
 
     def update
       authorize @lineup
+      load_lineup_deadline
+      return render_lineup_closed if @lineup_deadline.closed?
+
       assign_lineup
       return save_lineup_success if Cartola::WalletService.save(@lineup)
 
@@ -51,17 +59,6 @@ module Cartola
       flash.now[:alert] = @lineup_errors.to_sentence
       load_players
       render :edit, status: :unprocessable_content
-    end
-
-    def dismiss_tour_if_requested
-      return unless params[:pular_tour] == '1'
-
-      session[:esquadrao_tour_dismissed] = true
-      redirect_to main_app.lineup_path(request.query_parameters.except('pular_tour'))
-    end
-
-    def show_esquadrao_tour?
-      session[:esquadrao_tour_dismissed].blank? && !@lineup.persisted?
     end
 
     def set_lineup

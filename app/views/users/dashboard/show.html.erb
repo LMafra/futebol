@@ -38,6 +38,17 @@
         ) %>
   </div>
 
+  <% if @data.open_predictions_closing_today_count.positive? %>
+    <div class="mb-6 rounded-md border border-rule border-l-[3px] border-l-cartola bg-white px-4 py-3"
+         data-role="open-bets-today-alert" role="status">
+      <p class="font-body font-semibold text-ink">
+        Você tem <span class="tabular-nums"><%= @data.open_predictions_closing_today_count %></span>
+        palpites em aberto que fecham hoje
+      </p>
+      <%= link_to 'Ver bolões', pools_path, class: 'mt-1 inline-flex min-h-12 items-center text-sm font-bold text-cartola hover:underline' %>
+    </div>
+  <% end %>
+
   <div class="mb-10" data-role="dashboard-pendencias">
     <%= render Ui::ActionCenterComponent.new(
           title: 'Minhas pendências',

@@ -25,10 +25,15 @@
         ) %>
   <% end %>
 
+  <% if @lineup_deadline&.badge_text %>
+    <p class="inline-flex items-center rounded-sm border border-rule bg-white px-3 py-2 text-sm font-semibold text-ink"
+       data-role="lineup-deadline-badge"><%= @lineup_deadline.badge_text %></p>
+  <% end %>
+
   <%= render Cartola::BudgetBarComponent.new(spent: @spent, budget: @budget) %>
   <%= render Cartola::PitchComponent.new(lineup: @lineup, prices: @prices, state: @lineup.persisted? ? :default : :empty) %>
 
-  <% if policy(@lineup).update? %>
+  <% if policy(@lineup).update? && (@lineup_deadline.nil? || @lineup_deadline.open?) %>
     <div class="flex flex-wrap items-center gap-4">
       <%= link_to(@lineup.persisted? ? "Editar escalação" : "Escalar time", main_app.edit_lineup_path(lineup_location),
                   class: primary_button_classes) %>

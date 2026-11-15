@@ -15,7 +15,8 @@
               <p class="text-sm tabular-nums text-graphite">
                 <%= kickoff(match) %> ·
                 <span data-controller="countdown" data-countdown-deadline-value="<%= match.match_date.iso8601 %>"
-                      data-countdown-closed-value="<%= CLOSED_LABEL %>"><%= countdown_label(match) %></span>
+                      data-countdown-closed-value="<%= CLOSED_LABEL %>"
+                      data-role="match-deadline-badge"><%= countdown_label(match) %></span>
               </p>
             </div>
             <div class="col-span-12 sm:col-span-7">

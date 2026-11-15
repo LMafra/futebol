@@ -13,6 +13,20 @@ module Users
 
     def open_predictions_count = open_prediction_slots.size
 
+    def open_predictions_closing_today_count
+      open_prediction_slots.count { |slot| closes_today?(slot.fetch(:match).match_date) }
+    end
+
+    def closing_soon_matches
+      championship_ids = pools.map(&:championship_id)
+      return Core::Match.none if championship_ids.empty?
+
+      Users::ClosingSoonMatches.call(
+        relation: Core::Match.where(championship_id: championship_ids),
+        within: 24.hours
+      )
+    end
+
     def lineup_ready?
       return false unless championship
 
@@ -94,6 +108,10 @@ module Users
       Core::Match.where(championship_id: pool.championship_id, status: OPEN_MATCH_STATUSES)
                  .includes(:home_team, :away_team)
                  .order(:match_date).limit(10)
+    end
+
+    def closes_today?(time)
+      time.present? && time.to_date == Time.current.to_date
     end
   end
 end
