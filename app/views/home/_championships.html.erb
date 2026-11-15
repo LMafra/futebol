@@ -1,3 +1,4 @@
+<% participating_ids ||= Set.new %>
 <section class="flex flex-col gap-6" aria-labelledby="championships-title">
   <h2 id="championships-title" class="border-b border-rule pb-2 font-display text-3xl font-extrabold">Campeonatos</h2>
   <% if championships.empty? %>
@@ -15,7 +16,13 @@
                 <p class="text-sm text-graphite">Temporada <span class="tabular-nums"><%= championship.season %></span> · <span class="tabular-nums"><%= fact[:teams] %></span> times</p>
               </div>
             </div>
-            <span class="rounded-sm border border-ink px-2 py-1 text-xs font-bold uppercase tracking-widest" data-role="championship-status"><%= fact[:status] %></span>
+            <div class="flex flex-col items-end gap-2">
+              <span class="rounded-sm border border-ink px-2 py-1 text-xs font-bold uppercase tracking-widest" data-role="championship-status"><%= fact[:status] %></span>
+              <% if participating_ids&.include?(championship.id) %>
+                <span class="rounded-sm border border-pitch bg-pitch/10 px-2 py-1 text-xs font-bold uppercase tracking-widest text-pitch"
+                      data-role="you-participate">Você participa</span>
+              <% end %>
+            </div>
           </header>
           <div data-role="standings-leaders">
             <div class="mb-1 flex items-baseline justify-between gap-2">
@@ -40,8 +47,9 @@
           </div>
           <div class="mt-auto flex flex-wrap items-center justify-between gap-4">
             <%= link_to "Ver classificação do Bolão", public_championship_path(championship, tab: "bolao"), class: inline_link_classes %>
-            <%= link_to "Simular", simulador_championship_path(championship), data: { role: "simulate-championship" },
-                        aria: { label: "Simular #{championship.name}" },
+            <%= link_to "Simular este campeonato", simulador_championship_path(championship),
+                        data: { role: "simulate-championship" },
+                        aria: { label: "Simular este campeonato: #{championship.name}" },
                         class: secondary_button_classes %>
           </div>
         </article>

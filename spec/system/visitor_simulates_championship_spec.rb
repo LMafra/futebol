@@ -14,7 +14,7 @@ RSpec.describe 'Visitor simulates a championship', type: :system do
   it 'opens on the first open round, goes back to past results and forward through the open rounds' do
     visit root_path
     expect(page.evaluate_script("document.documentElement.classList.contains('snap-proximity')")).to be(true)
-    click_on 'Simular Copa Teste'
+    click_on 'Simular este campeonato: Copa Teste'
 
     expect(page).to have_text('Rodada 2 · 2 de 3')
     expect(page.evaluate_script("document.documentElement.classList.contains('snap-proximity')")).to be(false)

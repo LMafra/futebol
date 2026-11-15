@@ -1,11 +1,22 @@
 <div class="flex flex-col gap-16 *:snap-start *:scroll-mt-8" data-controller="scroll-snap" data-role="home-sections">
   <%= render "shared/flash" %>
+  <% if user_signed_in? %>
+    <div class="rounded-md border border-rule border-l-[3px] border-l-pitch bg-white px-4 py-3" data-role="logged-in-home-banner">
+      <p class="font-body text-ink">
+        Você está logado.
+        <%= link_to "Ir para Minha área →", users_dashboard_path,
+                    class: "font-bold text-cartola hover:underline",
+                    data: { role: "goto-minha-area" } %>
+      </p>
+    </div>
+  <% end %>
   <%= render "home/hero" %>
   <%= render "home/counters", counters: @counters %>
   <%= render "home/modules" %>
   <%= render "home/how_it_works" %>
   <%= render "home/matches_today", matches: @matches_today %>
   <%= render "home/championships", championships: @championships, standings: @standings, rankings: @rankings,
-                                    facts: @championship_facts %>
+                                    facts: @championship_facts,
+                                    participating_ids: @participating_championship_ids %>
   <%= render "home/top_players", players: @top_players %>
 </div>

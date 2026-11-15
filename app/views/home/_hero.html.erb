@@ -10,6 +10,7 @@
   <div class="flex flex-col justify-end gap-3 md:col-span-4" data-role="hero-actions">
     <% if user_signed_in? %>
       <p class="text-sm font-semibold text-graphite">Continue de onde parou</p>
+      <%= link_to "Minha área", users_dashboard_path, class: primary_button_classes(size: :lg) %>
       <%= link_to "Meus bolões", pools_path, class: secondary_button_classes(size: :lg) %>
       <%= link_to "Meu #{module_label(:fantasy).downcase}", esquadrao_path, class: secondary_button_classes(size: :lg) %>
       <%= link_to "Simulador", simulador_path, class: secondary_button_classes(size: :lg) %>

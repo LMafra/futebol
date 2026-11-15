@@ -9,9 +9,20 @@ class HomeController < ApplicationController
   skip_after_action :verify_policy_scoped
 
   def index
+    load_home_payload
+  end
+
+  private
+
+  def load_home_payload
     public_championships = Core::Championship.publicly_visible
     @championships = public_championships.with_attached_logo.order(season: :desc, name: :asc).to_a
     public_matches = Core::Match.where(championship: public_championships)
+    assign_home_collections(public_matches)
+    @participating_championship_ids = participating_championship_ids
+  end
+
+  def assign_home_collections(public_matches)
     @counters = { championships: Core::Championship.published.count, matches: Core::Match.count,
                   players: Core::Player.count }
     @matches_today = matches_today(public_matches)
@@ -21,7 +32,24 @@ class HomeController < ApplicationController
     @top_players = Cartola::TopPlayersService.call(@championships)
   end
 
-  private
+  def participating_championship_ids
+    return Set.new unless current_user
+
+    Set.new(pool_championship_ids + lineup_championship_ids)
+  end
+
+  def pool_championship_ids
+    Bolao::Pool.joins(:memberships)
+               .where(bolao_pool_memberships: { user_id: current_user.id })
+               .distinct.pluck(:championship_id)
+  end
+
+  def lineup_championship_ids
+    squad = Cartola::Squad.find_by(user: current_user)
+    return [] unless squad
+
+    squad.lineups.distinct.pluck(:championship_id)
+  end
 
   def matches_today(matches)
     matches.where(match_date: Date.current.all_day).includes(:championship, :home_team, :away_team)

@@ -37,8 +37,8 @@ RSpec.describe 'Public home', type: :request do
 
     sign_in(create(:user))
     get root_path
-    expect(page.at_css('[data-role="hero-actions"]').css('a').map(&:text))
-      .to eq(['Meus bolões', 'Meu esquadrão', 'Simulador'])
+      expect(page.at_css('[data-role="hero-actions"]').css('a').map(&:text))
+        .to eq(['Minha área', 'Meus bolões', 'Meu esquadrão', 'Simulador'])
   end
 
   it 'lista só os campeonatos públicos, com contadores gerais, Top 3 do Bolão e do Esquadrão e link para o ranking' do
@@ -96,9 +96,9 @@ RSpec.describe 'Public home', type: :request do
     get root_path
 
     simulate = page.at_css('[data-role="championship-card"] [data-role="simulate-championship"]')
-    expect(simulate.text).to eq('Simular')
+    expect(simulate.text).to eq('Simular este campeonato')
     expect(simulate['href']).to eq(simulador_championship_path(public_championship))
-    expect(simulate['aria-label']).to eq('Simular Copa Aberta')
+    expect(simulate['aria-label']).to eq('Simular este campeonato: Copa Aberta')
     expect(page.at_css('nav[aria-label="Principal"]').text).not_to include('Simulador')
   end
 
