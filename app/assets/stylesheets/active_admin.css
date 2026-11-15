@@ -52,18 +52,8 @@
 }
 
 /* Unlayered class overrides beat the AA plugin @layer components (Flowbite blue/gray). */
-.page-title {
-  @apply font-display text-ink;
-}
-
 .action-item-button {
   @apply inline-flex min-h-10 cursor-pointer items-center rounded-md border-0 bg-cartola px-3 py-2 text-sm font-body font-semibold text-ink no-underline hover:bg-cartola/90 hover:text-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2;
-}
-
-/* Visible filter bar above the index table (not a narrow right rail). */
-#filters_sidebar_section,
-[data-role="admin-filter-bar"] {
-  @apply w-full rounded-md border border-rule bg-white px-4 py-3;
 }
 
 .filters-form-title {
@@ -126,13 +116,11 @@
   @apply rounded-sm bg-rule px-2 py-0.5 text-xs font-body font-semibold uppercase tracking-wide text-ink;
 }
 
-.status-tag:where([data-status=yes]),
-.status-tag:where([data-status=sim]) {
+.status-tag:where([data-status=yes]) {
   @apply bg-pitch/10 text-pitch;
 }
 
-.status-tag:where([data-status=no]),
-.status-tag:where([data-status=não]) {
+.status-tag:where([data-status=no]) {
   @apply bg-rule text-graphite;
 }
 
@@ -276,8 +264,4 @@
 .paginated-collection-pagination,
 .paginated-collection-footer {
   @apply border-t border-rule;
-}
-
-[data-test-page-header] {
-  @apply border-rule bg-paper;
 }

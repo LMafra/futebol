@@ -23,10 +23,16 @@ RSpec.describe 'ActiveAdmin Placar tables', type: :request do
 
     get '/admin/championships'
 
-    expect(response.body).to include('data-role="admin-filter-bar"', 'filters-form')
+    expect(response.body).to include('data-role="admin-filter-bar"', 'filters-form', 'data-role="filter-bar"')
     filter_at = response.body.index('data-role="admin-filter-bar"')
     table_at = response.body.index('data-role="collection-cards"')
     expect(filter_at).to be < table_at
+    sheet = File.read(Rails.root.join('app/assets/stylesheets/active_admin.css'))
+    expect(sheet).not_to match(/#filters_sidebar_section/)
+    expect(sheet).not_to match(/\[data-role="admin-filter-bar"\]/)
+    %w[.page-title [data-test-page-header] data-status=sim data-status=não].each do |dead|
+      expect(sheet).not_to include(dead)
+    end
   end
 
   it 'paginates with pitch current page instead of Flowbite blue' do
