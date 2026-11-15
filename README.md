@@ -205,6 +205,18 @@ Detalhes dos tickets: [0056–0062](docs/tickets/INDEX.md).
 
 `/admin` e `/gestor` compartilham o tema **Placar de Domingo** via Tailwind CSS v4 do ActiveAdmin 4: header `pitch` com Fraunces, navegação `paper`/`rule` por tarefa com ícones SVG e item ativo `cartola`, filtros acima da tabela, tabelas com thead pitch / zebra / ações SVG, formulários em seções (Dados · Esquadrão · Bolão · Premiação) com `border-rule` e submit `bg-cartola text-ink`, dashboards status-first em grade 8/4, `EmptyState` / toast / sidebar colapsável abaixo de `md`, badges de status e medalhas SVG no ranking. Tokens em `app/assets/stylesheets/active_admin.css`; tickets [0063–0067](docs/tickets/INDEX.md) (tema), [0068–0073](docs/tickets/INDEX.md) (UX status-first) e [0074–0078](docs/tickets/INDEX.md) (work queue Admin/Gestor).
 
+### Console operacional
+
+Padrões de interação do Admin/Gestor (pesquisa de UX → tickets [0114–0121](docs/tickets/INDEX.md); DS em [0001](docs/design/0001-direction.md), [0002](docs/design/0002-interaction-patterns.md), [0003](docs/design/0003-components-specs.md)):
+
+- **Dashboard:** hero + 4 KPIs acionáveis (`Ui::KpiCardComponent`) + Central de ações (`Ui::ActionCenterComponent`); clique no KPI filtra via `?urgency=`
+- **Tabelas:** badges triplos (ícone+texto+cor), ação contextual + kebab, paginação “Exibindo X–Y de Z”
+- **Filtros:** barra horizontal com chips, “Limpar todos”, views salvas (Pendências / Rodada Atual / Todas), Lista | Por rodada
+- **Ações críticas:** preview com impacto + botão imperativo; toast + badge via Turbo Stream; reversão com justificativa ≥20 caracteres
+- **Formulários:** banner de erros + erro inline (sem toast de validação)
+- **Mobile:** cards empilhados, bottom nav (4 itens + Mais), ação ≥44pt no card
+- **A11y:** contraste ≥4.5:1 (números ≥7:1), `<abbr title>` pontilhado, rótulos Verbo+Substantivo
+
 ### Login
 
 O link "Entrar" leva a [`/entrar`](http://localhost:3000/entrar); páginas que exigem sessão continuam redirecionando para `/session/new`. Operação restringida usa [`/admin/login`](http://localhost:3000/admin/login) e [`/gestor/login`](http://localhost:3000/gestor/login) (campo oculto `area`, para não abrir sessão na área errada). Logado, o cabeçalho mostra o menu "Minha conta" (Minha conta, Meus bolões, Meu esquadrão, Rankings) e "Sair". O rodapé mostra "Área do gestor" para admin ou gestor e "Acesso administrativo" só para admin (visitante ainda vê o link do admin).

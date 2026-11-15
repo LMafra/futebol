@@ -4,8 +4,8 @@
 |---|---|---|---|---|
 | 0 Bootstrap | ok (v2) | `.gitignore`, `.githooks/pre-commit`, `.claude/`, `.rubocop.yml` | — | +`*.sqlite3` no `.gitignore` |
 | 1 ADR | warning (v3) | `docs/adr/0001-arch.md`, `docs/adr/0002-activeadmin-rails81.md` | — | docs originais ausentes; ADR 0002 proposto (confirmar) |
-| 2 Design | ok | `docs/design/0001-direction.md` | — | — |
-| 2.5 Critique | ok | `docs/design/0001-critique.md` | — | 1 violação tratada na spec |
+| 2 Design | ok | `docs/design/0001-direction.md` (+0002/0003 em 0114) | — | exceção agents: DS atualizado no console operacional |
+| 2.5 Critique | ok | `docs/design/0001-critique.md` | — | + checklist operacional (0114) |
 | 3 Spec | ok (v3) | `docs/spec-v3.md` | — | 4 conflitos do revert_match! resolvidos no TIER-2 (spec-v2 preservada) |
 | 4 Tickets | ok (v4) | `docs/tickets/INDEX.md` (27) | — | 0003-v2 herda conflitos; sobreposições 0015×0010, 0017×0004, 0022×0002; +5 tickets de UI/demo (0023–0027) não implementados |
 | 5 Scaffold | ok | `engines/*`, `app/*` | — | lock = Rails 8.1.4 (checkpoint dizia 8.1.2) |
@@ -594,3 +594,26 @@ Tickets **0110+**: o gestor controla a pontuação da partida sem depender de fi
 | F2 — editar depois de pontuada | [0111](../tickets/TICKET-0111.md) | ok | `Scouts::Rescore`, `spec/services/scouts/rescore_spec.rb` | Lances, "−" e "Jogou"/"Destaque" na partida pontuada; cada alteração refaz o placar e os pontos (Bolão e Esquadrão) sob um token novo, sem reverter; aviso "Placar e pontos refeitos"; auditoria `rescore` com o placar e o token anteriores |
 | F3 — histórico da partida | [0112](../tickets/TICKET-0112.md) | ok | `MatchHistory`, `MatchHistoryHelper`, `spec/requests/match_history_spec.rb` | Seção "Histórico da partida" no Admin e no Gestor a partir da auditoria: lances, participação, finalização, placar antes → depois, reversão com motivo e remarcação, com autor e data, do mais recente ao mais antigo |
 | F4 — cenários de teste | [0113](../tickets/TICKET-0113.md) | ok | `db/seeds/scenarios.rb`, `scenario_matches.rb`, `scenario_platform.rb`, `spec/seeds_spec.rb` | Copa dos Testes com uma partida em cada situação, Bolão com regra própria e correções, deduções, escalação corrigida, pedidos de gestor, anonimização, rascunho e importação CSV, tudo pelos serviços reais; base local recriada com `db:reset`; tabela em `docs/OPERATIONS.md` |
+
+## UI/UX operacional (console Admin/Gestor)
+
+Tickets **0114–0121**. Exceção autorizada a `docs/agents.md`: atualização de `docs/design/0001-*` e criação de `0002`/`0003` (ADRs 0001–0004 e `docs/spec-v2.md` intactos). Branches `cursor/ops-ux-0114` … `cursor/ops-ux-0121` + `cursor/ops-ux-docs-h`. Commits sem GPG local (sem secret key no ambiente; padrão dos commits recentes do repo).
+
+| Bloco | Ticket | Status | Artefatos | Observações |
+|---|---|---|---|---|
+| 0 — DS | [0114](../tickets/TICKET-0114.md) | ok | `0001-direction`, `0001-critique`, `0002-interaction-patterns`, `0003-components-specs` | Foundations, estados, contraste; checklist operacional |
+| A — Dashboard | [0115](../tickets/TICKET-0115.md) | ok | `Ui::KpiCardComponent`, `Ui::ActionCenterComponent` | 4 KPIs + Central; `?urgency=` |
+| B — Tabelas | [0116](../tickets/TICKET-0116.md) | ok | StatusBadge triplo, AdminTable, listings/matches | 6 colunas + kebab; Exibindo X–Y de Z |
+| C — Filtros | [0117](../tickets/TICKET-0117.md) | ok | `Ui::FilterBarComponent`, scopes pendencias/rodada | chips + views + Lista/Por rodada |
+| D — Ações | [0118](../tickets/TICKET-0118.md) | ok | finalize impact, toast, reversão ≥20 | botões imperativos |
+| E — Validação | [0119](../tickets/TICKET-0119.md) | ok | FormField, FormErrorSummary | banner + inline; sem toast |
+| F — Mobile | [0120](../tickets/TICKET-0120.md) | ok | `Ui::BottomNavComponent` | cards + ≥44pt; sem FAB |
+| G — A11y | [0121](../tickets/TICKET-0121.md) | ok | abbr pontilhado, contraste ink | WCAG AA gate |
+
+Smoke (produção — ajustar `HOST`):
+
+```bash
+HOST=https://SEU_HOST
+curl -sS -o /dev/null -w '%{http_code}\n' -L "$HOST/admin"
+curl -sS -o /dev/null -w '%{http_code}\n' -L "$HOST/gestor"
+```
