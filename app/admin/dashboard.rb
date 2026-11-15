@@ -10,7 +10,8 @@ ActiveAdmin.register_page 'Dashboard' do
     render partial: 'admin/dashboard/scoring', locals: {
       live: assigns[:live], pending: assigns[:pending], recent_logs: assigns[:recent_logs],
       metrics_counts: assigns[:metrics_counts], recent_matches: assigns[:recent_matches],
-      manager_queue: assigns[:manager_queue]
+      manager_queue: assigns[:manager_queue], action_groups: assigns[:action_groups],
+      urgency: assigns[:urgency]
     }
   end
 
@@ -27,6 +28,10 @@ ActiveAdmin.register_page 'Dashboard' do
       @recent_matches = matches.reorder(match_date: :desc).limit(8)
       @manager_queue = Users::PendingManagerQueue.call
       @metrics_counts = metric_counts
+      @urgency = params[:urgency]
+      @action_groups = Admin::DashboardActionGroups.call(
+        live: @live, pending: @pending, manager_queue: @manager_queue, paths: helpers
+      )
     end
 
     def recent_audit_logs

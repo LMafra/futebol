@@ -59,24 +59,71 @@
 
 <%= championships if overview.empty? %>
 
-<div class="mb-6 grid grid-cols-1 gap-3 md:grid-cols-3" data-role="gestor-kpis">
-  <% [
-       { label: "Partidas hoje", value: kpis[:today], accent: "border-l-pitch" },
-       { label: "Aguardando lances", value: kpis[:awaiting_scouts], accent: "border-l-cartola" },
-       { label: "Aguardando finalização", value: kpis[:awaiting_finalization], accent: "border-l-ink" }
-     ].each do |metric| %>
-    <div class="rounded-md border border-rule border-l-[3px] <%= metric[:accent] %> bg-white px-4 py-3" data-role="gestor-kpi" data-label="<%= metric[:label] %>">
-      <div class="flex items-center justify-between gap-2">
-        <p class="text-xs font-body font-bold uppercase tracking-widest text-graphite"><%= metric[:label] %></p>
-        <%= admin_kpi_icon(metric[:label]) %>
-      </div>
-      <p class="mt-1 font-numeric text-3xl font-bold tabular-nums text-ink"><%= metric[:value] %></p>
-    </div>
-  <% end %>
+<div class="mb-2" data-role="gestor-dashboard-hero">
+  <p class="font-body text-sm text-graphite">Console do gestor — pendências dos seus campeonatos.</p>
 </div>
+
+<div class="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4" data-role="gestor-kpis">
+  <%= render Ui::KpiCardComponent.new(
+        value: kpis[:awaiting_finalization],
+        label: "Partidas pendentes",
+        action_text: "Filtrar central",
+        action_path: gestor_root_path(urgency: "high"),
+        status: kpis[:awaiting_finalization].zero? ? :zero : :alert,
+        data_role: "gestor-kpi"
+      ) %>
+  <%= render Ui::KpiCardComponent.new(
+        value: kpis[:awaiting_scouts],
+        label: "Aguardando lances",
+        action_text: "Filtrar central",
+        action_path: gestor_root_path(urgency: "critical"),
+        status: kpis[:awaiting_scouts].zero? ? :zero : :alert,
+        data_role: "gestor-kpi"
+      ) %>
+  <%= render Ui::KpiCardComponent.new(
+        value: kpis[:next_round_hours].nil? ? 0 : "#{kpis[:next_round_hours]}h",
+        label: "Próxima rodada",
+        action_text: kpis[:next_round_hours].nil? ? nil : "Ver fila",
+        action_path: kpis[:next_round_hours].nil? ? nil : gestor_root_path(urgency: "medium"),
+        status: kpis[:next_round_hours].nil? ? :zero : :normal,
+        data_role: "gestor-kpi"
+      ) %>
+  <%= render Ui::KpiCardComponent.new(
+        value: kpis[:inconsistencies],
+        label: "Inconsistências",
+        action_text: "Filtrar central",
+        action_path: gestor_root_path(urgency: "high"),
+        status: kpis[:inconsistencies].zero? ? :zero : :alert,
+        data_role: "gestor-kpi"
+      ) %>
+</div>
+
+<%= render Ui::ActionCenterComponent.new(
+      groups: action_groups,
+      filter_urgency: urgency,
+      title: "Central de ações"
+    ) %>
 
 <div class="mb-6">
   <%= render "gestor/dashboard/match_queue", queue: queue %>
 </div>
+
+<section class="mb-6 rounded-md border border-rule bg-white" aria-labelledby="upcoming-matches-title" data-role="gestor-upcoming-matches">
+  <h3 class="border-b border-rule px-4 py-3 font-display text-xl text-ink" id="upcoming-matches-title">Próximas partidas</h3>
+  <div class="px-4 py-3">
+    <%= render Ui::AdminTableComponent.new(
+          headers: ["Partida", "Início", "Situação"],
+          rows: upcoming_matches.map { |match|
+            [
+              link_to(match.to_s, gestor_match_path(match), class: inline_link_classes(tone: :ink)),
+              l(match.match_date, format: "%d/%m %H:%M"),
+              admin_match_status_badge(match)
+            ]
+          },
+          texts: { label: "Próximas partidas", empty: "Nenhuma partida agendada." },
+          table_role: "upcoming-matches"
+        ) %>
+  </div>
+</section>
 
 <%= championships unless overview.empty? %>

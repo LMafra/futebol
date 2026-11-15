@@ -18,10 +18,13 @@ RSpec.describe 'Gestor dashboard', type: :request do
     expect(response).to have_http_status(:ok)
     expect(response.body).to include('Copa do Gestor', 'data-role="gestor-championships"')
     expect(page_html.css('[data-role="gestor-kpi"]').map { _1['data-label'] })
-      .to eq(['Partidas hoje', 'Aguardando lances', 'Aguardando finalização'])
+      .to eq(['Partidas pendentes', 'Aguardando lances', 'Próxima rodada', 'Inconsistências'])
+    expect(response.body).to include('data-role="action-center"', 'Central de ações')
     expect(response.body).to include('data-role="gestor-match-queue"', 'Fila de partidas')
+    expect(response.body).to include('data-role="gestor-upcoming-matches"', 'Próximas partidas')
     expect(page_html.at_css('[data-role="gestor-championships"]').text).not_to include('Finalizar')
-    order = %w[gestor-kpis gestor-match-queue gestor-championships].map { response.body.index("data-role=\"#{_1}\"") }
+    order = %w[gestor-kpis action-center gestor-match-queue gestor-championships]
+            .map { response.body.index("data-role=\"#{_1}\"") }
     expect(order).to eq(order.sort)
   end
 

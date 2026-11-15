@@ -36,8 +36,18 @@ RSpec.describe 'ActiveAdmin dashboard', type: :request do
     expect([header_cta.text, header_cta['href']]).to eq(['Criar campeonato', '/admin/championships/new'])
     expect(header_cta['class'].split).to include('bg-white')
     expect(header_cta['class'].split).not_to include('bg-cartola')
-    expect(response.body).to include('font-numeric', 'text-3xl', 'border-l-[3px]')
-    expect(response.body).to include('data-role="admin-kpi"', '<svg')
+    expect(response.body).to include('font-numeric', 'text-4xl', 'border-l-[3px]')
+    expect(response.body).to include('data-role="admin-kpi"')
+    expect(response.body).to include('data-role="action-center"', 'Central de ações')
     expect(response.body).to include('data-role="admin-recent-matches"', 'Últimas partidas')
+  end
+
+  it 'filters the Action Center when urgency is present and shows the zero state' do
+    sign_in(create(:user, :admin))
+    get '/admin', params: { urgency: 'critical' }
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include('data-role="action-center-filter"', 'Crítica')
+    expect(response.body).to include('Tudo em dia').or include('Nada na central de ações')
   end
 end

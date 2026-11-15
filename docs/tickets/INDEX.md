@@ -1,4 +1,4 @@
-# Tickets — INDEX (114 tickets)
+# Tickets — INDEX (115 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -116,6 +116,7 @@
 | [0112](TICKET-0112.md) | F3 | Histórico da partida (quem fez o quê e quando, placar antes → depois, reversões) | 0111 | playwright |
 | [0113](TICKET-0113.md) | F4 | Seeds com cenários de teste de todas as funcionalidades (Copa dos Testes) | 0112 | playwright |
 | [0114](TICKET-0114.md) | O0 | Atualizar DS com pesquisa de UX (0001–0003 + critique) | 0073, 0081 | — |
+| [0115](TICKET-0115.md) | O1 | Dashboard com Action Center e KPIs | 0114 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}

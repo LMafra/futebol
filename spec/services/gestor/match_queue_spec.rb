@@ -30,8 +30,10 @@ RSpec.describe Gestor::MatchQueue do
     match('scheduled', now - 1.hour)
     match('live', now - 2.hours).tap { scout(_1) }
     match('live', now - 26.hours)
+    match('finished', now - 4.hours, home_score: 1, away_score: 0, scores_calculated_at: nil)
 
-    expect(queue.kpis).to eq(today: 3, awaiting_scouts: 2, awaiting_finalization: 1)
+    expect(queue.kpis).to include(today: 4, awaiting_scouts: 2, awaiting_finalization: 1,
+                                  next_round_hours: 2, inconsistencies: 1)
   end
 
   it 'ignores discarded scouts' do

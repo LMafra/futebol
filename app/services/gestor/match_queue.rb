@@ -30,7 +30,9 @@ module Gestor
       {
         today: @matches.where(match_date: @now.all_day).count,
         awaiting_scouts: steps.count(:scouts),
-        awaiting_finalization: steps.count(:finalize)
+        awaiting_finalization: steps.count(:finalize),
+        next_round_hours: next_round_hours,
+        inconsistencies: inconsistencies_count
       }
     end
 
@@ -50,6 +52,17 @@ module Gestor
 
     def scouted
       @scouted ||= ::Cartola::PlayerScore.kept.where(match_id: @matches.select(:id)).distinct.pluck(:match_id).to_set
+    end
+
+    def next_round_hours
+      next_at = @matches.where(status: 'scheduled').where('match_date > ?', @now).minimum(:match_date)
+      return nil if next_at.blank?
+
+      [((next_at - @now) / 1.hour).ceil, 0].max
+    end
+
+    def inconsistencies_count
+      @matches.where(status: %w[finished reverted], scores_calculated_at: nil).count
     end
   end
 end

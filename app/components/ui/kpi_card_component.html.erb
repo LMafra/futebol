@@ -1,0 +1,35 @@
+<% attrs = root_attributes(label: label) %>
+<% attrs[:class] = card_classes %>
+<% attrs[:data] = (attrs[:data] || {}).merge(role: data_role, label: data_label, kpi_status: status) %>
+<% body = capture do %>
+  <% case rendered_state %>
+  <% when :default %>
+    <div class="flex items-center justify-between gap-2">
+      <p class="text-sm font-body text-graphite"><%= label %></p>
+      <% if zero_status? %>
+        <svg class="h-5 w-5 shrink-0 text-pitch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+      <% end %>
+    </div>
+    <p class="mt-1 font-numeric text-4xl font-bold tabular-nums text-ink"><%= display_value %></p>
+    <% if zero_status? %>
+      <p class="mt-1 text-sm font-body text-pitch">Tudo em dia</p>
+    <% elsif action_text.present? %>
+      <p class="mt-1 text-sm font-body text-cartola"><%= action_text %></p>
+    <% end %>
+  <% when :loading %>
+    <span class="sr-only">Carregando indicador…</span>
+    <div class="h-4 w-24 <%= skeleton_classes %>" aria-hidden="true"></div>
+    <div class="mt-2 h-10 w-16 <%= skeleton_classes %>" aria-hidden="true"></div>
+  <% when :empty %>
+    <p class="text-sm text-graphite">—</p>
+  <% when :error %>
+    <p class="text-sm text-ink" role="alert">Erro no indicador</p>
+  <% end %>
+<% end %>
+<% if action_path.present? && default? %>
+  <%= link_to action_path, **attrs do %><%= body %><% end %>
+<% else %>
+  <div <%= tag.attributes(attrs) %>><%= body %></div>
+<% end %>
