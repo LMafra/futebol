@@ -1,0 +1,25 @@
+<% return unless render? %>
+<% attrs = root_attributes(label: title) %>
+<% attrs[:class] = 'mb-4 rounded-md border border-red-800 bg-red-50 p-4 font-body text-ink' %>
+<% attrs[:data] = (attrs[:data] || {}).merge(role: 'form-error-summary') %>
+<% attrs[:role] = 'alert' %>
+<div <%= tag.attributes(attrs) %>>
+  <% case rendered_state %>
+  <% when :default %>
+    <p class="font-semibold" data-role="form-error-summary-title"><%= title %></p>
+    <% if messages.any? %>
+      <ul class="mt-2 list-disc ps-4 text-sm">
+        <% messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    <% end %>
+  <% when :loading %>
+    <span class="sr-only">Carregando erros…</span>
+    <div class="h-8 w-full <%= skeleton_classes %>" aria-hidden="true"></div>
+  <% when :empty %>
+    <%= empty_notice('Sem erros.') %>
+  <% when :error %>
+    <p class="font-semibold">Não foi possível montar o resumo de erros.</p>
+  <% end %>
+</div>

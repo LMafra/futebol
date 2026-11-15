@@ -91,10 +91,7 @@ module ModalFormHelper
     messages = modal_state(modal)&.dig('messages')
     return if messages.blank?
 
-    tag.div(role: 'alert', class: AdminHelper::ADMIN_ALERT_CLASSES) do
-      safe_join([tag.p('Corrija para continuar:', class: 'font-semibold'),
-                 tag.ul(safe_join(messages.map { tag.li(_1) }), class: 'list-disc ps-4')])
-    end
+    render Ui::FormErrorSummaryComponent.new(count: messages.size, messages:)
   end
 
   def modal_actions(submit)
