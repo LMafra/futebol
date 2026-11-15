@@ -9,8 +9,9 @@ module Cartola
       render_forbidden(exception, message: 'Esta escalação pertence a outro usuário.')
     end
 
+    before_action :dismiss_tour_if_requested, only: %i[show edit]
     before_action :set_lineup
-    helper_method :lineup_location
+    helper_method :lineup_location, :show_esquadrao_tour?
 
     def show
       authorize @lineup
@@ -25,14 +26,9 @@ module Cartola
     def update
       authorize @lineup
       assign_lineup
+      return save_lineup_success if Cartola::WalletService.save(@lineup)
 
-      if Cartola::WalletService.save(@lineup)
-        redirect_to main_app.lineup_path(lineup_location), notice: 'Escalação salva.', status: :see_other
-      else
-        flash.now[:alert] = @lineup.errors.full_messages.to_sentence
-        load_players
-        render :edit, status: :unprocessable_content
-      end
+      render_invalid_lineup
     end
 
     def destroy
@@ -44,6 +40,29 @@ module Cartola
     end
 
     private
+
+    def save_lineup_success
+      session[:esquadrao_tour_dismissed] = true
+      redirect_to main_app.lineup_path(lineup_location), notice: 'Escalação salva.', status: :see_other
+    end
+
+    def render_invalid_lineup
+      @lineup_errors = @lineup.errors.full_messages
+      flash.now[:alert] = @lineup_errors.to_sentence
+      load_players
+      render :edit, status: :unprocessable_content
+    end
+
+    def dismiss_tour_if_requested
+      return unless params[:pular_tour] == '1'
+
+      session[:esquadrao_tour_dismissed] = true
+      redirect_to main_app.lineup_path(request.query_parameters.except('pular_tour'))
+    end
+
+    def show_esquadrao_tour?
+      session[:esquadrao_tour_dismissed].blank? && !@lineup.persisted?
+    end
 
     def set_lineup
       squad = params[:squad_id] ? Cartola::Squad.find(params[:squad_id]) : current_squad

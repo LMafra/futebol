@@ -1,0 +1,4 @@
+<% attrs = root_attributes(label: position) %>
+<% attrs[:class] = "inline-flex min-w-[2.5rem] items-center justify-center rounded-sm px-1.5 py-0.5 text-[0.65rem] font-bold tracking-wide #{tone_classes}" %>
+<% attrs[:data] = (attrs[:data] || {}).merge(role: 'position-badge') %>
+<span <%= tag.attributes(attrs) %>><%= position %></span>

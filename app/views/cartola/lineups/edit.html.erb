@@ -13,13 +13,20 @@
 
   <div><%= render "shared/flash" %></div>
 
+  <% if show_esquadrao_tour? %>
+    <%= render Cartola::OnboardingBannerComponent.new(
+          dismiss_path: main_app.edit_lineup_path(lineup_location.merge(pular_tour: 1))
+        ) %>
+  <% end %>
+
   <%= form_with url: main_app.lineup_path(lineup_location), method: :patch, class: "flex flex-col gap-4" do %>
     <%= render Cartola::FormationPickerComponent.new(selected: @lineup.formation,
                                                      state: @lineup.errors[:formation].any? ? :error : :default) %>
     <%= render Cartola::BudgetBarComponent.new(spent: @spent, budget: @budget) %>
     <%= render Cartola::PlayerPickerComponent.new(players: @players, selected_ids: @lineup.selected_players.map(&:id), prices: @prices,
                                                   captain_id: @lineup.captain_id,
-                                                  state: @lineup.errors[:players].any? || @lineup.errors[:base].any? ? :error : :default) %>
+                                                  errors: @lineup_errors || @lineup.errors.full_messages,
+                                                  state: @lineup.errors.any? ? :error : :default) %>
     <div class="flex items-center gap-4">
       <button type="submit" class="<%= primary_button_classes %>">Salvar escalação</button>
       <%= link_to "Cancelar", main_app.lineup_path(lineup_location), class: support_link_classes %>

@@ -1,0 +1,18 @@
+<aside class="rounded-md border border-rule border-l-[3px] border-l-cartola bg-white px-4 py-4" <%= tag.attributes(root_attributes(label: "Tour do Esquadrão")) %> data-role="esquadrao-tour">
+  <div class="flex flex-wrap items-start justify-between gap-3">
+    <div>
+      <p class="text-xs font-bold uppercase tracking-widest text-graphite">Primeiros passos</p>
+      <h2 class="mt-1 font-display text-2xl text-ink">Como montar seu Esquadrão</h2>
+    </div>
+    <%= link_to "Pular tour", dismiss_path, class: support_link_classes, data: { role: "skip-tour" } %>
+  </div>
+  <ol class="mt-4 grid gap-4 sm:grid-cols-3">
+    <% Cartola::OnboardingBannerComponent::STEPS.each_with_index do |step, index| %>
+      <li class="rounded-md border border-rule bg-paper/50 px-3 py-3" data-role="tour-step" data-step="<%= index + 1 %>">
+        <p class="font-numeric text-sm font-bold tabular-nums text-cartola">Passo <%= index + 1 %></p>
+        <p class="mt-1 font-body font-semibold text-ink"><%= step.fetch(:title) %></p>
+        <p class="mt-1 text-sm font-body text-graphite"><%= step.fetch(:body) %></p>
+      </li>
+    <% end %>
+  </ol>
+</aside>

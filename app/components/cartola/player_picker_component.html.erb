@@ -15,8 +15,12 @@
   </div>
 
   <% if error? %>
-    <div class="mt-3 <%= error_classes %>" role="alert">
-      <span class="font-bold">Revise a escalação: confira os limites por posição e o saldo.</span>
+    <div class="mt-3 <%= error_classes %>" role="alert" data-role="lineup-inline-errors">
+      <ul class="list-disc space-y-1 pl-5">
+        <% error_messages.each do |message| %>
+          <li class="font-bold"><%= message %></li>
+        <% end %>
+      </ul>
     </div>
   <% end %>
 
@@ -33,6 +37,7 @@
               <label class="flex min-h-12 flex-1 cursor-pointer items-center justify-between gap-3">
                 <span class="flex items-center gap-2">
                   <input type="checkbox" name="lineup[player_ids][]" value="<%= player.id %>" class="size-4 accent-pitch" <%= "checked" if selected?(player) %>>
+                  <%= render Cartola::PositionBadgeComponent.new(position: player.position) %>
                   <span><%= player.name %> <span class="text-sm text-graphite"><%= player.team&.short_name %></span></span>
                 </span>
                 <span class="text-sm tabular-nums text-graphite"><%= price(player) %></span>

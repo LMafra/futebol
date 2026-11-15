@@ -19,6 +19,12 @@
 
   <div><%= render "shared/flash" %></div>
 
+  <% if show_esquadrao_tour? %>
+    <%= render Cartola::OnboardingBannerComponent.new(
+          dismiss_path: main_app.lineup_path(lineup_location.merge(pular_tour: 1))
+        ) %>
+  <% end %>
+
   <%= render Cartola::BudgetBarComponent.new(spent: @spent, budget: @budget) %>
   <%= render Cartola::PitchComponent.new(lineup: @lineup, prices: @prices, state: @lineup.persisted? ? :default : :empty) %>
 
