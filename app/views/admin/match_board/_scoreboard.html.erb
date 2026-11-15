@@ -6,7 +6,7 @@
     <span><%= match.championship %></span>
     <% if match.round %><span>· Rodada <%= match.round %></span><% end %>
     <span>· <%= match.match_date&.strftime("%d/%m %H:%M") %></span>
-    <%= admin_match_status_badge(match) %>
+    <%= render "admin/match_board/status_badge", match: match %>
   </p>
   <div class="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
     <% [match.home_team, match.away_team].each_with_index do |team, index| %>

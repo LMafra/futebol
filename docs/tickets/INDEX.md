@@ -1,4 +1,4 @@
-# Tickets — INDEX (117 tickets)
+# Tickets — INDEX (118 tickets)
 
 | # | item | título | deps | MCP |
 |---|---|---|---|---|
@@ -119,6 +119,7 @@
 | [0115](TICKET-0115.md) | O1 | Dashboard com Action Center e KPIs | 0114 | — |
 | [0116](TICKET-0116.md) | O2 | Tabelas escaneáveis com badges triplos | 0115 | — |
 | [0117](TICKET-0117.md) | O3 | Filtros com chips e views salvas | 0116 | — |
+| [0118](TICKET-0118.md) | O4 | Ações críticas com preview e feedback | 0117 | — |
 
 ## Ordem de execução (topológica; numeração não é ordem)
 - 0001 → {0002, 0011, 0013, 0014, 0020}

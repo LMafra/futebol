@@ -79,7 +79,8 @@ RSpec.describe 'Gestor match page (lances, finalizar e reverter)', type: :reques
                       scores_calculated_at: 1.hour.ago, scoring_token:)
     create(:bolao_prediction_score, prediction: create(:bolao_prediction, match: own_match), scoring_token:)
 
-    post '/gestor/matchreversal/revert', params: { reversal: { match_id: own_match.id, reason: 'Erro de lançamento' } }
+    post '/gestor/matchreversal/revert',
+         params: { reversal: { match_id: own_match.id, reason: 'Erro de lançamento na súmula' } }
 
     expect(response).to redirect_to("/gestor/matches/#{own_match.id}")
     expect(own_match.reload).to be_reverted

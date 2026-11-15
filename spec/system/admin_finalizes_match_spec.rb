@@ -34,7 +34,7 @@ RSpec.describe 'Admin finalizes a match', type: :system do
     expect(page).to have_css('[data-role="timeline-event"]', count: 3)
 
     click_link 'Finalizar partida'
-    within('dialog#modal-finalize') { click_button 'Finalizar e pontuar' }
+    within('dialog#modal-finalize') { click_button 'Finalizar e Pontuar Partida' }
     expect(page).to have_text('Partida finalizada em 2 × 1 e pontuada.')
 
     expect(match.reload).to have_attributes(status: 'scored', home_score: 2, away_score: 1)

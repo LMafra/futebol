@@ -45,8 +45,19 @@ module AdminMatchBoard
     member_action :finalize, method: :post do
       form = MatchFinalizationForm.new(match: resource, actor: current_user, ip_address: request.remote_ip)
       if form.save
-        redirect_to resource_path, status: :see_other,
-                                   notice: "Partida finalizada em #{form.home_score} × #{form.away_score} e pontuada."
+        count = form.pool_participants_count
+        notice = "Partida finalizada e #{count} #{count == 1 ? 'pontuação recalculada' : 'pontuações recalculadas'}"
+        respond_to do |format|
+          format.turbo_stream do
+            badge = render_to_string(partial: 'admin/match_board/status_badge', locals: { match: resource.reload })
+            toast = render_to_string(Ui::ToastComponent.new(message: notice, variant: :success))
+            render turbo_stream: [
+              turbo_stream.replace('match-status-badge', badge),
+              turbo_stream.prepend('flash-toasts', toast)
+            ]
+          end
+          format.html { redirect_to resource_path, status: :see_other, notice: notice }
+        end
       else
         redirect_to resource_path, alert: form.errors.full_messages.to_sentence, status: :see_other
       end

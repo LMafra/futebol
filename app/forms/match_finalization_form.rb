@@ -25,6 +25,17 @@ class MatchFinalizationForm
   def home_score = derived_score&.first
   def away_score = derived_score&.last
 
+  def pool_participants_count
+    return 0 if match.nil?
+
+    Bolao::PoolMembership.joins(:pool).where(bolao_pools: { championship_id: match.championship_id }).count
+  end
+
+  def impact_summary
+    count = pool_participants_count
+    "#{count} #{count == 1 ? 'participante' : 'participantes'} do Bolão serão pontuados"
+  end
+
   def save
     return false unless valid?
 

@@ -6,7 +6,8 @@ class MatchReversalForm
   attribute :reason, :string
   attr_accessor :match, :actor, :ip_address
 
-  validates :reason, presence: { message: 'é obrigatório' }, length: { maximum: 500 }
+  validates :reason, presence: { message: 'é obrigatório' },
+                     length: { minimum: 20, maximum: 500, too_short: 'deve ter no mínimo 20 caracteres' }
   validate :match_can_revert
 
   def self.model_name = ActiveModel::Name.new(self, nil, 'Reversal')

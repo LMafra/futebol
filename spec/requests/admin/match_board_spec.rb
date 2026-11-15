@@ -117,6 +117,8 @@ RSpec.describe 'Admin match page (tela única da partida)', type: :request do
       get "/admin/matches/#{match.id}?modal=finalize"
       dialog = page.at_css('dialog#modal-finalize')
       expect(dialog.at_css('[data-role="finalize-score"]').text.squish).to include('2 × 1')
+      expect(dialog.at_css('[data-role="finalize-impact"]').text).to include('Bolão serão pontuados')
+      expect(dialog.at_css('[type="submit"]').text).to eq('Finalizar e Pontuar Partida')
       expect(dialog.css('input:not([type="hidden"])')).to be_empty
 
       expect { finalize }.not_to have_enqueued_job
@@ -124,7 +126,8 @@ RSpec.describe 'Admin match page (tela única da partida)', type: :request do
       expect(response).to redirect_to("/admin/matches/#{match.id}")
       expect(match.reload).to have_attributes(status: 'scored', home_score: 2, away_score: 1)
       follow_redirect!
-      expect(response.body).to include('Partida finalizada em 2 × 1 e pontuada.')
+      expect(response.body).to include('pontuações recalculadas').or include('pontuação recalculada')
+      expect(response.body).to include('data-role="admin-toast"')
     end
   end
 
