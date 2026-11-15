@@ -14,6 +14,7 @@ module Bolao
     def show
       authorize @pool
       @memberships = @pool.memberships.includes(:user).order(:joined_at)
+      @show_code = reveal_pool_code?(@pool)
     end
 
     def join
@@ -47,9 +48,31 @@ module Bolao
     end
 
     def render_index(error: nil)
-      @pools = policy_scope(Bolao::Pool).includes(:championship).order(:name)
+      @query = params[:q].to_s.strip
+      @pools = filtered_pools.to_a
+      @pool_cards = Users::PoolCardBuilder.new(current_user, @pools).cards
       @error = error
+      @index_state = index_state_for(error)
       render :index, status: error ? :unprocessable_content : :ok
+    end
+
+    def index_state_for(error)
+      return :error if error
+      return :empty if @pools.empty?
+
+      :default
+    end
+
+    def filtered_pools
+      scope = policy_scope(Bolao::Pool).includes(:championship, :memberships).order(:name)
+      return scope if @query.blank?
+
+      pattern = "%#{Bolao::Pool.sanitize_sql_like(@query)}%"
+      scope.where('bolao_pools.name ILIKE ?', pattern)
+    end
+
+    def reveal_pool_code?(pool)
+      current_user.admin? || current_user.manager? || pool.owned_by?(current_user)
     end
   end
 end

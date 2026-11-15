@@ -2,17 +2,20 @@ module Pools
   class ShowComponent < Ui::BaseComponent
     attr_reader :pool, :memberships
 
-    def initialize(pool: nil, memberships: [], can_destroy: false, state: :default)
+    def initialize(pool: nil, memberships: [], can_destroy: false, show_code: false, state: :default)
       super(state:)
       @pool = pool
       @memberships = memberships
       @can_destroy = can_destroy
+      @show_code = show_code
       require_in_default_state!(:pool, pool)
     end
 
     private
 
     def can_destroy? = @can_destroy && pool.present?
+
+    def show_code? = @show_code && pool.present?
 
     def organizer_label = pool.owner&.name.presence || 'o gestor do campeonato'
 

@@ -31,17 +31,43 @@
       <p class="basis-full text-sm text-graphite" data-role="join-hint">Os bolões são criados pelo gestor de cada campeonato. Peça o código a ele para entrar.</p>
     <% end %>
 
-    <% if empty? %>
-      <%= empty_notice("Você ainda não participa de nenhum bolão.") %>
-    <% elsif listed_pools.any? %>
+    <%= form_with url: pools_path, method: :get, class: "flex flex-wrap items-end gap-3", data: { role: "pools-search" } do |form| %>
+      <div class="flex flex-col gap-1">
+        <%= form.label :q, "Buscar por nome", class: "text-sm font-semibold" %>
+        <%= form.search_field :q, value: query, placeholder: "Nome do bolão",
+                               class: form_control_classes("min-w-[14rem]"),
+                               data: { role: "pools-search-input" } %>
+      </div>
+      <%= form.submit "Buscar", class: secondary_button_classes, name: nil %>
+    <% end %>
+
+    <% if empty? || listed_cards.empty? %>
+      <div data-role="pools-empty">
+        <%= render Ui::EmptyStateComponent.new(title: empty_title, description: empty_description) %>
+      </div>
+    <% else %>
       <ul class="divide-y divide-rule rounded-md border border-rule bg-white" data-role="pools">
-        <% listed_pools.each do |pool| %>
-          <li class="flex items-center justify-between gap-4 px-4 py-3">
-            <div>
-              <%= link_to pool.name, pool_path(pool), class: inline_link_classes %>
-              <p class="text-sm text-graphite"><%= pool.championship %></p>
+        <% listed_cards.each do |card| %>
+          <li class="flex flex-wrap items-center justify-between gap-4 px-4 py-3" data-role="pool-card" data-pool-id="<%= card.pool.id %>">
+            <div class="min-w-0">
+              <%= link_to card.pool.name, pool_path(card.pool), class: inline_link_classes %>
+              <p class="text-sm text-graphite">
+                <%= card.pool.championship %> ·
+                <span class="tabular-nums"><%= card.members_count %></span> membros
+                <% if card.position %>
+                  · Posição <span class="font-semibold tabular-nums text-ink"><%= card.position %></span>
+                <% end %>
+              </p>
             </div>
-            <span class="font-semibold tabular-nums tracking-widest text-graphite"><%= pool.code %></span>
+            <% if card.show_code %>
+              <div class="flex items-center gap-2" data-controller="clipboard" data-role="pool-code">
+                <code class="font-semibold tabular-nums tracking-widest text-graphite" data-clipboard-target="source"><%= card.pool.code %></code>
+                <button type="button" class="<%= secondary_button_classes %>" data-action="clipboard#copy" data-clipboard-target="button">
+                  Copiar código
+                </button>
+                <span class="sr-only" aria-live="polite" data-clipboard-target="status"></span>
+              </div>
+            <% end %>
           </li>
         <% end %>
       </ul>

@@ -7,19 +7,21 @@ RSpec.describe Pools::IndexComponent do
     expect { described_class.new }.to raise_error(ArgumentError, /pools is required/)
   end
 
-  it 'lists pools with their code and the join form' do
+  it 'lists pools with members and the join form' do
     pool = create(:bolao_pool, name: 'Bolão da firma')
     page = render_inline(described_class.new(pools: [pool]))
 
     expect(page.at_css('[data-role="pools"] a').text).to eq('Bolão da firma')
-    expect(page.at_css('[data-role="pools"]').text).to include(pool.code)
+    expect(page.at_css('[data-role="pools"]').text).to include('membros')
+    expect(page.at_css('[data-role="pool-code"]')).to be_nil
     expect(page.at_css('[data-role="join-form"]')).to be_present
+    expect(page.at_css('[data-role="pools-search"]')).to be_present
   end
 
   it 'keeps the join form in the empty state' do
     page = render_inline(described_class.new(pools: [], state: :empty))
 
-    expect(page.text).to include('Você ainda não participa de nenhum bolão.')
+    expect(page.text).to include('Você ainda não está em nenhum bolão', 'Peça o código ao organizador')
     expect(page.at_css('[data-role="join-form"]')).to be_present
   end
 

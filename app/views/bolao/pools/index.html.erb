@@ -2,5 +2,11 @@
 
 <div class="max-w-3xl">
   <%= render "shared/flash" %>
-  <%= render Pools::IndexComponent.new(pools: @pools, error: @error, state: @error ? :error : (@pools.empty? ? :empty : :default)) %>
+  <%= render Pools::IndexComponent.new(
+        pools: @pools,
+        pool_cards: @pool_cards,
+        query: @query,
+        error: @error,
+        state: @index_state || (@error ? :error : (@pools.empty? ? :empty : :default))
+      ) %>
 </div>
