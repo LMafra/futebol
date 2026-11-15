@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   resources :users, only: %i[new create]
   get 'signup', to: 'users#new'
   resource :account, path: 'minha-conta', only: %i[show update]
+  resource :dashboard, only: :show, path: 'minha-area', controller: 'users/dashboard', as: :users_dashboard
   # Before ActiveAdmin.routes: /gestor is also the ActiveAdmin namespace of championship managers.
   get 'gestor/solicitar', to: 'manager_requests#new', as: :new_manager_request
   post 'gestor/solicitar', to: 'manager_requests#create', as: :manager_request

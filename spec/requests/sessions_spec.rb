@@ -42,7 +42,7 @@ RSpec.describe 'Sessions', type: :request do
     page = Nokogiri::HTML(response.body)
     menu = page.at_css('header [data-role="account-menu"]')
     expect(menu.css('a').map(&:text))
-      .to eq(['Minha conta', 'Meus bolões', 'Meu esquadrão', 'Classificação do Esquadrão'])
+      .to eq(['Minha área', 'Minha conta', 'Meus bolões', 'Meu esquadrão', 'Classificação do Esquadrão'])
     expect(page.at_css('header form[action="/session"] button').text).to eq('Sair')
     expect(page.at_css('header nav a[href="/entrar"]')).to be_nil
   end
@@ -59,10 +59,10 @@ RSpec.describe 'Sessions', type: :request do
   it 'signs in with valid credentials and records the request origin' do
     sign_in(user)
 
-    expect(response).to redirect_to(root_url)
+    expect(response).to redirect_to(users_dashboard_url)
     expect(user.sessions.last.ip_address).to be_present
 
-    get root_path
+    get users_dashboard_path
     expect(Nokogiri::HTML(response.body).at_css('[data-role="account-menu"]')).to be_present
   end
 

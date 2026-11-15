@@ -50,7 +50,7 @@ module Authentication
     case area.to_s
     when 'admin' then admin_root_url
     when 'gestor' then gestor_root_url
-    else root_url
+    else users_dashboard_url
     end
   end
 

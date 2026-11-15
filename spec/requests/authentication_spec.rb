@@ -17,10 +17,10 @@ RSpec.describe 'Authentication by area', type: :request do
     expect(response).to redirect_to(gestor_root_url)
   end
 
-  it 'torcedor vai para a home após entrar' do
+  it 'torcedor vai para /minha-area após entrar' do
     post session_path, params: { email_address: user.email_address, password: 'password123' }
 
-    expect(response).to redirect_to(root_url)
+    expect(response).to redirect_to(users_dashboard_url)
   end
 
   it 'torcedor é recusado em /gestor/login' do

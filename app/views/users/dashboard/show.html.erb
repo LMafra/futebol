@@ -1,0 +1,95 @@
+<% content_for :title, "Minha área · #{brand(:name)}" %>
+
+<section class="mb-8" data-role="users-dashboard">
+  <header class="mb-6">
+    <p class="text-xs font-body font-bold uppercase tracking-widest text-graphite">Área pessoal</p>
+    <h1 class="font-display text-4xl font-extrabold tracking-tight text-ink">
+      Olá, <%= current_user.name.presence || 'torcedor' %>!
+    </h1>
+    <p class="mt-2 max-w-2xl font-body text-graphite">
+      Palpites, escalação e classificação num só lugar.
+    </p>
+  </header>
+
+  <div class="mb-8 grid gap-4 sm:grid-cols-3" data-role="dashboard-kpis">
+    <%= render Ui::KpiCardComponent.new(
+          value: @data.open_predictions_count,
+          label: 'Palpites em aberto',
+          action_text: @data.open_predictions_count.positive? ? 'Ver bolões' : nil,
+          action_path: pools_path,
+          status: @data.open_predictions_count.positive? ? :alert : :zero,
+          data_label: 'Palpites em aberto'
+        ) %>
+    <%= render Ui::KpiCardComponent.new(
+          value: @data.lineup_ready? ? 'Pronta' : 'Pendente',
+          label: 'Escalação da rodada',
+          action_text: @data.lineup_ready? ? 'Ver escalação' : 'Montar escalação',
+          action_path: esquadrao_path,
+          status: @data.lineup_ready? ? :normal : :alert,
+          data_label: 'Escalação da rodada'
+        ) %>
+    <%= render Ui::KpiCardComponent.new(
+          value: @data.esquadrao_position || 0,
+          label: 'Classificação',
+          action_text: @data.esquadrao_position.present? ? 'Ver classificação' : nil,
+          action_path: esquadrao_rankings_path,
+          status: @data.esquadrao_position.present? ? :normal : :zero,
+          data_label: 'Classificação'
+        ) %>
+  </div>
+
+  <div class="mb-10" data-role="dashboard-pendencias">
+    <%= render Ui::ActionCenterComponent.new(
+          title: 'Minhas pendências',
+          groups: @data.action_center_groups
+        ) %>
+  </div>
+
+  <div class="grid gap-8 lg:grid-cols-2">
+    <section data-role="dashboard-pools">
+      <h2 class="mb-3 font-display text-2xl text-ink">Meus bolões</h2>
+      <% if @data.pool_cards.empty? %>
+        <%= render Ui::EmptyStateComponent.new(
+              title: 'Você ainda não está em nenhum bolão',
+              description: 'Peça o código ao organizador.'
+            ) do |c| %>
+          <% c.with_action { link_to 'Ir para bolões', pools_path, class: 'inline-flex min-h-12 items-center rounded-sm bg-cartola px-4 font-bold text-white' } %>
+        <% end %>
+      <% else %>
+        <ul class="flex flex-col gap-3">
+          <% @data.pool_cards.each do |card| %>
+            <li class="rounded-md border border-rule bg-white px-4 py-3" data-role="pool-card" data-pool-id="<%= card.pool.id %>">
+              <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <p class="font-body font-semibold text-ink"><%= card.pool.name %></p>
+                <% if card.position %>
+                  <p class="font-numeric text-sm tabular-nums text-graphite">
+                    Posição <span class="font-bold text-ink"><%= card.position %></span>
+                  </p>
+                <% end %>
+              </div>
+              <p class="mt-1 text-sm font-body text-graphite">
+                <%= card.pool.championship.name %> ·
+                <span class="tabular-nums"><%= card.members_count %></span> membros
+              </p>
+              <%= link_to 'Palpitar', pool_bets_path(card.pool),
+                          class: 'mt-2 inline-flex min-h-12 items-center text-sm font-bold text-cartola hover:underline' %>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    </section>
+
+    <section data-role="dashboard-simulador">
+      <h2 class="mb-3 font-display text-2xl text-ink">Simulador</h2>
+      <% if (championship = @data.simulator_championship) %>
+        <div class="rounded-md border border-rule bg-white px-4 py-3">
+          <p class="font-body font-semibold text-ink"><%= championship.name %></p>
+          <p class="mt-1 text-sm font-body text-graphite">Projete placares e veja a classificação.</p>
+          <%= link_to 'Simular este campeonato', simulador_championship_path(championship),
+                      class: 'mt-2 inline-flex min-h-12 items-center text-sm font-bold text-cartola hover:underline',
+                      data: { role: 'simulator-link' } %>
+        </div>
+      <% end %>
+    </section>
+  </div>
+</section>

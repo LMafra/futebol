@@ -30,6 +30,7 @@
             <details class="group relative" data-role="account-menu">
               <summary class="flex min-h-12 cursor-pointer list-none items-center gap-1 rounded-sm px-2 hover:bg-white/10 [&::-webkit-details-marker]:hidden">Minha conta<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-fast group-open:rotate-180" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
               <ul class="absolute right-0 z-10 mt-2 flex w-max min-w-[12rem] flex-col rounded-sm border border-rule bg-white py-1 text-ink">
+                <li><%= link_to "Minha área", main_app.users_dashboard_path, class: "flex min-h-12 items-center px-3 py-2 hover:bg-rule" %></li>
                 <li><%= link_to "Minha conta", main_app.account_path, class: "flex min-h-12 items-center px-3 py-2 hover:bg-rule" %></li>
                 <li><%= link_to "Meus bolões", main_app.pools_path, class: "flex min-h-12 items-center px-3 py-2 hover:bg-rule" %></li>
                 <li><%= link_to "Meu #{module_label(:fantasy).downcase}", main_app.esquadrao_path, class: "flex min-h-12 items-center px-3 py-2 hover:bg-rule" %></li>

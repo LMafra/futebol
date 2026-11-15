@@ -15,12 +15,12 @@ RSpec.describe 'Users (public signup)', type: :request do
     expect(user.sessions.last.ip_address).to be_present
   end
 
-  it 'redirects to root with the "Conta criada" notice, already signed in' do
+  it 'redirects to /minha-area with the "Conta criada" notice, already signed in' do
     signup
 
-    expect(response).to redirect_to(root_path)
+    expect(response).to redirect_to(users_dashboard_path)
     expect(flash[:notice]).to eq('Conta criada')
-    get root_path
+    get users_dashboard_path
     expect(response).to have_http_status(:ok)
   end
 

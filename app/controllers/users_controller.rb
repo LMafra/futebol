@@ -15,7 +15,7 @@ class UsersController < ApplicationController
     if @user.save
       start_new_session_for @user
       grant_public_profile_consent if params.dig(:user, :public_profile_consent) == '1'
-      redirect_to root_path, notice: 'Conta criada'
+      redirect_to users_dashboard_path, notice: 'Conta criada'
     else
       @public_profile_consent = params.dig(:user, :public_profile_consent) == '1'
       render :new, status: :unprocessable_content
